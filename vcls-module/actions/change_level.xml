@@ -1,0 +1,17 @@
+<odoo>
+    <data>
+        <record id="change_level_on_write" model="base.automation">
+            <field name="name">change_level_on_write</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="trigger">on_write</field>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+for rec in records:
+    rec['level'] = 42
+            ]]></field>
+        </record>
+
+        
+        
+    </data>
+</odoo>

@@ -1,0 +1,15 @@
+id,name,company_id:id,manager_id:id,parent_id:id
+dept01,Administration,,,
+dept02,Business Development,,,
+dept03,Finance,,,
+dept04,Accounting,,,dept03
+dept05,Controlling,,,dept03
+dept06,Human Resources,,,
+dept07,IT,,,
+dept08,Legal,,,
+dept09,Marketing,,,
+dept10,Operations,,,
+dept11,Quality,,,
+dept12,Resource Management,,,dept10
+dept13,Project Assistance,,,dept10
+dept14,Neighborhood,,,

@@ -1,0 +1,14 @@
+Add a proper testing after the leave request creation in case of future counter.
+
+Add org chart to my view
+
+Manage views and navigation (e.g. create bonus through employee)
+
+OK > Health Care management
+
+Trial Periods
+
+Type of benefits
+
+Rights management
+

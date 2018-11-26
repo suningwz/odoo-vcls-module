@@ -1,0 +1,124 @@
+<odoo>
+  <data>
+      
+        <record id="vcls_contract_form1" model="ir.ui.view">
+            <field name="name">vcls_contract_form1</field>
+            <field name="model">hr.contract</field>
+            
+            <field name="arch" type="xml">
+                <form string="Current Contract">
+                    
+                    <header>
+                        <field name="state" widget="statusbar" options="{'clickable': '1'}"/>
+                    </header>
+                    
+                    <sheet>
+                        
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
+                        </button>
+                    </div>
+                    <div class="oe_title" name="title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Contract Reference"/>
+                        </h1>
+                    </div>
+                        
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="department_id"/>
+                        </group>
+                        <group>
+                            <!--<field name="job_id"/>-->
+                            <field name="type_id" string="Contract Type"/>
+                        </group>
+                    </group>
+                        
+                    <notebook>
+                        <page string="Contract Details" name="other">
+                            <group>
+                                <group name="duration_group" string="Contract Terms">
+                                    <field name="company_id" string="VCLS Entity"/>
+                                    <field name="date_start"/>
+                                    <label for="date_end"/>
+                                    <div class="o_row">
+                                        <field name="date_end" nolabel="1"/>
+                                        <span class="text-muted">(If fixed-term contract)</span>
+                                    </div>
+                                    <field name="resource_calendar_id"/>
+                                </group>
+                            </group>
+                            <group string="Notes">
+                                <field name="notes" nolabel="1"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Salary Information" name="information">
+                            <group>
+                                <field name="currency_id" string="Currency"/>
+                                <field name="fulltime_salary" options="{'currency_field':'currency_id'}"/>
+                                <field name="prorated_salary" options="{'currency_field':'currency_id'}"/>
+                                <field name="charge_percentage"/>
+                                <field name="wage" invisible="1"/>
+                            </group>
+                            <group string="Comments">
+                                <field name="salary_comment" nolabel="1"/>
+                            </group>
+                        </page>
+                        
+                        <page string="French Specificities" name="france">
+                            <group>
+                                <field name="contract_coefficient"/>
+                                <field name="contract_echelon"/>
+                                <field name="tax_rate_percentage"/>
+                            </group>
+                        </page>
+                        
+                    </notebook>
+                        
+                    </sheet>
+                    
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                    
+                </form>
+            </field>
+            
+        </record>
+      
+  </data>
+</odoo>
+                
+  <!--    
+           <group name="main_info">
+                                <group name="salary_and_advantages" string="Monthly Advantages in Cash">
+                                    <label for="wage"/>
+                                    <div class="o_row" name="wage">
+                                        <field name="wage" nolabel="1"/>
+                                        <span>/ month</span>
+                                    </div>
+                                    <field name="advantages" nolabel="1" placeholder="Advantages..." colspan="2" invisible="1"/>
+                                </group>
+                            </group>
+
+
+
+
+
+                    
+                    <group>
+                        
+                        <group>
+                            
+                            <field name="reported_to_secretariat" widget="toggle_button" options="{&quot;active&quot;: &quot;Reported to the social secretariat&quot;, &quot;inactive&quot;: &quot;To report to the social secretariat&quot;}"/>
+                        </group>
+                    </group>
+                    
+                    
+                -->

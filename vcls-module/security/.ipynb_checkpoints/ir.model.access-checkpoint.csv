@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_diploma,hr.diploma,model_hr_diploma,,1,1,1,1
+access_hr_project_business_fct,hr.project_business_fct,model_hr_project_business_fct,,1,1,1,1
+access_hr_project_role,hr.project_role,model_hr_project_role,,1,1,1,1
+access_hr_vcls_activities,hr.vcls_activities,model_hr_vcls_activities,,1,1,1,1
+access_hr_job_profile,hr.job_profile,model_hr_job_profile,,1,1,1,1
+access_hr_bonus,hr.bonus,model_hr_bonus,,1,1,1,1
+access_hr_benefit,hr.benefit,model_hr_benefit,,1,1,1,1
+access_hr_exceptional_leave_category,hr.exceptional.leave.category,model_hr_exceptional_leave_category,,1,1,1,1
+access_hr_exceptional_leave_case,hr.exceptional.leave.case,model_hr_exceptional_leave_case,,1,1,1,1
+access_hr_trial_period,hr.trial.period,model_hr_trial_period,,1,1,1,1
+access_hr_bank_holiday,hr.bank.holiday,model_hr_bank_holiday,,1,0,1,1
