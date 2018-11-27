@@ -1,15 +1,15 @@
 id,name
-diploma01,B.Sc.
-diploma02,B.Sc. (Hons)
-diploma03,Bioengineering
-diploma04,CCRP
-diploma05,Dip RA
-diploma06,MBA
-diploma07,MBBS
-diploma08,MD
-diploma09,MPH
-diploma10,M.Sc.
-diploma11,MTOPRA
-diploma12,Pharm.D.
-diploma13,Ph.D.
-diploma14,RAC
+diploma_BSC,B.Sc.
+diploma_BSCH,B.Sc. (Hons)
+diploma_BIOENG,Bioengineering
+diploma_CCRP,CCRP
+diploma_RA,Dip RA
+diploma_MBA,MBA
+diploma_MBBS,MBBS
+diploma_MD,MD
+diploma_MPH,MPH
+diploma_MSC,M.Sc.
+diploma_MTOPRA,MTOPRA
+diploma_PHARMD,Pharm.D.
+diploma_PHD,Ph.D.
+diploma_RAC,RAC
