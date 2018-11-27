@@ -22,15 +22,17 @@ class VclsBusinessFct(models.Model):
     short = fields.Char(
         required=True,)    
 
-class ProjectBusinessFct(models.Model):
+# A list of business functions to be used for permission management as well as segmentation of the employee
+class BusinessFct(models.Model):
     _name = 'hr.project_business_fct'
-    _description = 'Project Functions'
+    _description = 'Business Functions'
     
     name = fields.Char(
         required=True,)
     short = fields.Char(
         required=True,)
 
+#The list of role will be used on invoices, this is the client oriented side of our internal organisation
 class ProjectRole(models.Model):
     _name = 'hr.project_role'
     _description = 'Project Roles'
