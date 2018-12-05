@@ -35,6 +35,8 @@
         # SECURITY #
         ############
         'security/ir.model.access.csv',
+        'security/hr_employee_rules.xml',
+        'security/hr_employee_menu.xml',
         
         ###################
         # DEFAULT RECORDS #
