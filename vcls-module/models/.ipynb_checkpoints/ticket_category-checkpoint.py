@@ -19,13 +19,15 @@ class Ticket(models.Model):
         'helpdesk.ticket.subcategory',
         string='Subcategory',)
     
+    
+    '''
     employee_id = fields.Many2one(
         'hr.employee',
         string='Requester',)
     
     priority = fields.Selection(
         default='0',)
-    '''
+        
     team_id = fields.Many2one(
         compute='_get_assignment',
         inverse='_set_assignment',)
