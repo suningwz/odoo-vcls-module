@@ -47,6 +47,7 @@
         'data/hr.diploma.csv',
         'data/hr.project_business_fct.csv',
         'data/hr.project_role.csv',
+        'data/hr.office.csv',
         
         # leaves details
         'data/hr.leave.type.csv',
