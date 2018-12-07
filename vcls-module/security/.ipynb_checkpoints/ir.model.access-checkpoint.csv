@@ -12,3 +12,4 @@ access_hr_office_default,hr.office.default,model_hr_office,,1,0,0,0
 access_hr_office_admin,hr.office.admin,model_hr_office,base.group_system,1,1,1,1,1
 access_helpdesk_ticket_employee,helpdesk.ticket.employee,helpdesk.model_helpdesk_ticket,base.group_user,1,1,1,0
 access_helpdesk_stage_employee,helpdesk.stage.employee,helpdesk.model_helpdesk_stage,base.group_user,1,0,0,0
+access_helpdesk_ticket_type_employee,helpdesk.ticket.type.employee,helpdesk.model_helpdesk_ticket_type,base.group_user,1,0,0,0
