@@ -1,7 +1,7 @@
 <odoo>
     <data>
         
-        <record id="company_VWW" model="res.company">
+        <record id="base.main_company" model="res.company">
             <field name="name">Voisin WW SAS</field>
         </record>
         

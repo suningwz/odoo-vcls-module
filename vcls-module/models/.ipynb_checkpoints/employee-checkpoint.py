@@ -81,6 +81,10 @@ class Employee(models.Model):
         selection='_selection_termination',
         track_visibility='always',)
     
+    office_id = fields.Many2one(
+        'hr.office',
+        string='Office',)
+    
     #Trial period management
     trial_period_id = fields.Many2one(
         'hr.trial.period',

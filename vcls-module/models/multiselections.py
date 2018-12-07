@@ -50,6 +50,13 @@ class VclsActivities(models.Model):
         'hr.employee',
         string='Head',)
 
+class Office(models.Model):
+    
+    _name = 'hr.office'
+    _description = 'VCLS Office'
+    
+    name = fields.Char()
+
 class BenefitType(models.Model):
     _name = 'hr.benefit_type'
     _description = 'Type of Benefits'

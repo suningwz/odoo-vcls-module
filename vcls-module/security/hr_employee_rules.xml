@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    
+         <record id="helpdesk_employee_ticket_rule" model="ir.rule">
+            <field name="name">Tickets: internal users: client or following</field>
+            <field name="model_id" ref="helpdesk.model_helpdesk_ticket"/>
+            <field name="domain_force">[
+                '|',
+                    ('message_partner_ids', 'child_of', [user.partner_id.commercial_partner_id.id]),
+                    ('message_partner_ids', 'in', [user.partner_id.id])
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <record id="helpdesk_user_ticket_rule" model="ir.rule">
+            <field name="name">Tickets:support: see all</field>
+            <field name="model_id" ref="helpdesk.model_helpdesk_ticket"/>
+            <field name="domain_force">[
+                    (1, '=', 1)
+            ]</field>
+            <field name="groups" eval="[(4, ref('helpdesk.group_helpdesk_user'))]"/>
+        </record>
+            
+        <function model="ir.model.data" name="_remove_no_update" eval="[False,'helpdesk.helpdesk_ticket_company_rule']"/>
+        <record id="helpdesk.helpdesk_ticket_company_rule" model="ir.rule">
+                <field name="active">0</field>
+        </record>
+        
+    </data>
+</odoo>
