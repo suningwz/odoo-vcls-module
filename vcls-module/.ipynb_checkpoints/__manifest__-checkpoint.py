@@ -38,10 +38,11 @@
         'security/ir.model.access.csv',
         'security/hr_employee_rules.xml',
         
+        'views/ticket.xml',
         ###########
         # ACTIONS #
         ###########
-        
+       
         'actions/helpdesk_menu.xml',
         
         ###################
