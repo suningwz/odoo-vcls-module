@@ -26,6 +26,7 @@
                 'hr_holidays',
                 'helpdesk',
                 'snailmail',
+                'web_studio',
                ],
 
     # always loaded
@@ -36,7 +37,12 @@
         ############
         'security/ir.model.access.csv',
         'security/hr_employee_rules.xml',
-        'security/hr_employee_menu.xml',
+        
+        ###########
+        # ACTIONS #
+        ###########
+        
+        'actions/helpdesk_menu.xml',
         
         ###################
         # DEFAULT RECORDS #
@@ -62,6 +68,7 @@
         # VIEWS #
         #########
         
+        'views/ticket.xml',
        # 'views/employee.xml', #the VCLS default employee view
        # 'views/job.xml',
        # 'views/job_profile.xml',

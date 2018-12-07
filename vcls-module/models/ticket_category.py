@@ -13,7 +13,7 @@ class Ticket(models.Model):
     @api.model
     def _get_partner_id(self):
         user = self.env['res.users'].browse(self._uid)
-        return user.partner_id.id
+        return user.partner_id
     
     #################
     # Custom Fields #
@@ -25,7 +25,8 @@ class Ticket(models.Model):
     
     #overrides for renaming purpose
     name = fields.Char(
-        compute='_get_name',)
+        compute='_get_name',
+        reverse='_set_name',)
     
     team_id = fields.Many2one(
         string="Category",
@@ -34,6 +35,9 @@ class Ticket(models.Model):
     partner_id = fields.Many2one(
         string="Requester",
         default=_get_partner_id,)
+    
+    partner_name = fields.Char(
+        string="Requester Name",)
     
     partner_email = fields.Char(
         string="Email",)
@@ -66,6 +70,10 @@ class Ticket(models.Model):
                 ticket.name = "{} | {}".format(ticket.name,ticket.team_id.name)
             if ticket.subcategory_id:
                 ticket.name = "{} - {}".format(ticket.name,ticket.subcategory_id.name)
+    
+    @api.onchange('name')
+    def _set_name(self):
+        for ticket in self: pass
                 
     
     '''
@@ -149,7 +157,7 @@ class TicketSubCategory(models.Model):
     name = fields.Char()
     
     team_id = fields.Many2one(
-        'helpdesk.ticket.team',
+        'helpdesk.team',
         string='Category',)
     
 class TicketRoute(models.Model):
