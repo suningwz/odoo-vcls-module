@@ -180,5 +180,5 @@ class TicketRoute(models.Model):
         string='Office',)
     
     assignee_id = fields.Many2one(
-        'res.user',
-        string='assigned to')
+        'res.users',
+        string='Assigned to',)

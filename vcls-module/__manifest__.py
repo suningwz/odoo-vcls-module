@@ -16,7 +16,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.2.2',
+    'version': '0.2.3',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -35,14 +35,19 @@
         ############
         # SECURITY #
         ############
+        'security/vcls_groups.xml',
         'security/ir.model.access.csv',
         'security/hr_employee_rules.xml',
+        'security/helpdesk_rules.xml',
         
+        #########
+        # VIEWS #
+        #########
         'views/ticket.xml',
+        
         ###########
         # ACTIONS #
         ###########
-       
         'actions/helpdesk_menu.xml',
         
         ###################
@@ -65,11 +70,9 @@
         #'data/hr.job.csv',
         #'data/hr.benefit_type.csv',
         
-        #########
-        # VIEWS #
-        #########
+       
         
-        'views/ticket.xml',
+       
        # 'views/employee.xml', #the VCLS default employee view
        # 'views/job.xml',
        # 'views/job_profile.xml',
@@ -77,6 +80,7 @@
        # 'views/leave_allocation.xml',
        # 'views/leave.xml',
         ##'views/leave2.xml',
+        
   
         
     ],

@@ -143,11 +143,61 @@ class Employee(models.Model):
         string="Need Specific Medical Follow-up",
         track_visibility='always',)
     
+    #technical fields
+    #used to grant access in employee view
+    access_level = fields.Selection([
+        ('base', 'Base'),
+        ('lm', 'Line Manager'),
+        ('hr', 'HR'),], 
+        compute='_get_access_level',
+        store=False,)
     
+    lm_ids = fields.Many2many(
+        'res.users',
+        compute='_get_lm_ids',)
         
     #################################
     # Automated Calculation Methods #
     #################################
+    
+    @api.depends('parent_id','parent_id.parent_id')
+    def _get_lm_ids(self):
+        for rec in self:
+            empl = rec
+            managers = rec.user_id
+            while empl.parent_id:
+                empl = empl.parent_id
+                managers |= empl.user_id
+            rec.lm_ids = managers
+    
+    @api.multi
+    def _get_access_level(self):
+        for rec in self:
+            if rec.user_id.id == self._uid: #for the employee himself
+                rec.access_level = 'hr'
+                continue
+                
+            user = self.env['res.users'].browse(self._uid)
+            
+            #if the user is hr_user, then he grants hr access only if the user is in the same company
+            #else, he gets 'lm' access
+            if user.has_group('hr.group_hr_user'):
+                rec.access_level = 'lm'
+            if user.has_group('hr.group_hr_user') and (rec.company_id in user.company_ids):
+                rec.access_level = 'hr'
+                continue
+                
+            #if user is an hr manager, then he sees all
+            if user.has_group('hr.group_hr_manager'):
+                rec.access_level = 'hr'
+                continue
+            
+            # for the management line
+            if user in rec.lm_ids:
+                rec.access_level = 'lm'
+                continue
+            
+            rec.access_level = 'base'
 
     #Automatically update the job_info string if one of the component is changed
     @api.depends('job_title','diploma_ids')
