@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- ACTIONS -->
+        <record id="action_hr_employee_base" model="ir.actions.act_window">
+            <field name="name">Employees</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('hr.view_employee_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('employee_view_form_all')}),
+            ]"/>
+        </record>
+        
+        <!-- MENUS TO CREATE -->
+        <menuitem
+            id="menu_hr_employee_base"
+            name="Employees"
+            parent="hr.menu_hr_root"
+            action="action_hr_employee_base"
+            sequence="2"
+        />
+        
+        </data>
+</odoo>

@@ -24,7 +24,6 @@ access_hr_job_employee,hr.job.employee,hr.model_hr_job,base.group_user,1,0,0,0
 access_hr_job_profile_employee,hr.job.profile.employee,model_hr_job_profile,base.group_user,1,0,0,0
 access_hr_job_profile_user,hr.job.profile.user,model_hr_job_profile,hr.group_hr_user,1,1,1,1
 access_hr_office_admin,hr.office.admin,model_hr_office,base.group_system,1,1,1,1
-access_hr_office_admin,hr.office.admin,model_hr_office,base.group_system,1,1,1,1,1
 access_hr_office_default,hr.office.default,model_hr_office,,1,0,0,0
 access_hr_office_employee,hr.office.employee,model_hr_office,base.group_user,1,0,0,0
 access_hr_project_role_admin,hr.project.role.admin,model_hr_project_role,base.group_system,1,1,1,1
@@ -36,9 +35,9 @@ access_hr_vcls_activities_employee,hr.vcls.activities.employee,model_hr_vcls_act
 access_ticket_category_admin,ticket.category.admin,model_helpdesk_ticket_category,base.group_system,1,1,1,1
 access_ticket_category_default,ticket.category.default,model_helpdesk_ticket_category,,1,0,0,0
 access_ticket_category_manager,ticket.category.manager,model_helpdesk_ticket_category,helpdesk.group_helpdesk_manager,1,1,1,1
-access_ticket_route_admin,ticket.route.admin,model_helpdesk_ticket_route,base.group_system,1,1,1,1,1
+access_ticket_route_admin,ticket.route.admin,model_helpdesk_ticket_route,base.group_system,1,1,1,1
 access_ticket_route_default,ticket.route.default,model_helpdesk_ticket_route,,1,0,0,0
-access_ticket_route_manager,ticket.route.manager,model_helpdesk_ticket_route,helpdesk.group_helpdesk_manager,1,1,1,1,1
-access_ticket_subcategory_admin,ticket.subcategory.admin,model_helpdesk_ticket_subcategory,base.group_system,1,1,1,1,1
+access_ticket_route_manager,ticket.route.manager,model_helpdesk_ticket_route,helpdesk.group_helpdesk_manager,1,1,1,1
+access_ticket_subcategory_admin,ticket.subcategory.admin,model_helpdesk_ticket_subcategory,base.group_system,1,1,1,1
 access_ticket_subcategory_default,ticket.subcategory.default,model_helpdesk_ticket_subcategory,,1,0,0,0
-access_ticket_subcategory_manager,ticket.subcategory.manager,model_helpdesk_ticket_subcategory,helpdesk.group_helpdesk_manager,1,1,1,1,1
+access_ticket_subcategory_manager,ticket.subcategory.manager,model_helpdesk_ticket_subcategory,helpdesk.group_helpdesk_manager,1,1,1,1

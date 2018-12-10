@@ -44,11 +44,13 @@
         # VIEWS #
         #########
         'views/ticket.xml',
+        'views/employee.xml',
         
         ###########
         # ACTIONS #
         ###########
         'actions/helpdesk_menu.xml',
+        'actions/hr_employee_menu.xml',
         
         ###################
         # DEFAULT RECORDS #
@@ -73,7 +75,6 @@
        
         
        
-       # 'views/employee.xml', #the VCLS default employee view
        # 'views/job.xml',
        # 'views/job_profile.xml',
        # 'views/contract.xml',
