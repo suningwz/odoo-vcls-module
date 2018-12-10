@@ -11,7 +11,7 @@ class Diploma(models.Model):
     name = fields.Char(
         required=True,)
 
-    """ COVERED BY DEPARTMENT OBJECT >> TO DELETE """
+    """ COVERED BY DEPARTMENT OBJECT >> TO DELETE 
 class VclsBusinessFct(models.Model):
     _name = 'hr.vcls_business_fct'
     _description = 'Business Functions'
@@ -20,7 +20,8 @@ class VclsBusinessFct(models.Model):
         required=True,)
     
     short = fields.Char(
-        required=True,)    
+        required=True,) 
+"""
 
 # A list of business functions to be used for permission management as well as segmentation of the employee
 class BusinessFct(models.Model):

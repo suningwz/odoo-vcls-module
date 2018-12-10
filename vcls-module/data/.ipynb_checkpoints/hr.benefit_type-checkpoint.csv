@@ -1,2 +1,5 @@
 id,name,recurrence
-beneftype01,Car,yearly
+beneftype_car_allowance,Car Allowance,monthly
+beneftype_company_car,Company Car,monthly
+beneftype_meal_voucher,Meal Voucher,monthly
+beneftype_transport,Public Transport,monthly

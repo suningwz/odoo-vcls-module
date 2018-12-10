@@ -65,12 +65,14 @@
         'data/hr.project_role.csv',
         'data/hr.office.csv',
         
+        #employee contracts etc.
+        'data/hr.benefit_type.csv',
+        
         # leaves details
         'data/hr.leave.type.csv',
         'data/hr.exceptional.leave.category.csv',
         'data/hr.exceptional.leave.case.csv',
         #'data/hr.job.csv',
-        #'data/hr.benefit_type.csv',
         
        
         

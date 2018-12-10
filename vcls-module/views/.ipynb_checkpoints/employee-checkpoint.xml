@@ -37,6 +37,7 @@
                                     <group string="">
                                         <field name="work_location" string="Office"/>
                                         <field name="work_email" widget="email"/>
+                                        <field name="access_level" invisible='1'/>
                                     </group>
                                     <group string="">
                                         <field name="department_id"/>
@@ -143,7 +144,7 @@
                             
                             <page name="technical" string="Technical Fields" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
                                 <group>
-                                    <field name="access_level" invisible='1'/>
+                                    
                                     <field name="user_id"/>
                                 </group>
                             </page>

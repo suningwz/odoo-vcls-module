@@ -16,12 +16,25 @@
         
         <!-- MENUS TO CREATE -->
         <menuitem
-            id="menu_hr_employee_base"
+            id="hr.menu_open_view_employee_list_my"
             name="Employees"
             parent="hr.menu_hr_root"
             action="action_hr_employee_base"
             sequence="2"
         />
+        <!--
+        <menuitem
+            id="menu_employee_legal"
+            name="Legal"
+            parent="hr.menu_hr_root"
+            action="action_hr_employee_base"
+            sequence="6"
+        />
         
-        </data>
+        <record id="menu_employee_legal" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('hr.group_hr_user'))]"/>
+        </record>
+        -->
+        
+    </data>
 </odoo>

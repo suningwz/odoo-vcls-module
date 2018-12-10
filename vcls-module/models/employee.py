@@ -181,10 +181,11 @@ class Employee(models.Model):
             
             #if the user is hr_user, then he grants hr access only if the user is in the same company
             #else, he gets 'lm' access
-            if user.has_group('hr.group_hr_user'):
-                rec.access_level = 'lm'
             if user.has_group('hr.group_hr_user') and (rec.company_id in user.company_ids):
-                rec.access_level = 'hr'
+                rec.access_level = 'hr' 
+                continue
+            elif user.has_group('hr.group_hr_user'):
+                rec.access_level = 'lm'
                 continue
                 
             #if user is an hr manager, then he sees all
