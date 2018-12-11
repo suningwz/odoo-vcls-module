@@ -35,7 +35,7 @@
         
                                 <group>
                                     <group string="">
-                                        <field name="work_location" string="Office"/>
+                                        <field name="office_id"/>
                                         <field name="work_email" widget="email"/>
                                         <field name="access_level" invisible='1'/>
                                     </group>
@@ -163,8 +163,28 @@
                 </form>
             </field>
         </record>
+      
+        <!-- Tree view visible by anyone -->
+        <record id="employee_view_tree_all" model="ir.ui.view">
+            <field name="name">employee_view_tree_all</field>
+            <field name="model">hr.employee</field>
+            <field name="priority">9</field>
+            <field name="arch" type="xml">
+                <tree string="Employees" decoration-bf="message_needaction==True">
+                    <field name="name"/>
+                    <field name="work_email"/>
+                    <field name="office_id"/>
+                    <field name="department_id"/>
+                    <field name="job_info"/>
+                    <field name="parent_id"/>
+                    <field name="message_needaction" invisible="1"/>
+                </tree>
+            </field>
+          </record>
+      
     </data>
 </odoo>
+
         <!--
         <record id="vcls_employee_form1" model="ir.ui.view">
             <field name="name">vcls_employee_form1</field>

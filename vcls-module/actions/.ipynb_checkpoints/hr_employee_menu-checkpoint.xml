@@ -9,7 +9,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('hr.view_employee_tree')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('employee_view_tree_all')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('employee_view_form_all')}),
             ]"/>
         </record>
@@ -22,12 +22,19 @@
             action="action_hr_employee_base"
             sequence="2"
         />
-        <!--
+       
         <menuitem
             id="menu_employee_legal"
             name="Legal"
             parent="hr.menu_hr_root"
-            action="action_hr_employee_base"
+            sequence="6"
+        />
+        <!--
+        <menuitem
+            id="menu_employee_legal"
+            name="Contracts"
+            parent="menu_employee_legal"
+            action="hr_contract.action_hr_contract"
             sequence="6"
         />
         

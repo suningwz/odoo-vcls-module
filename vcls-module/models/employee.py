@@ -244,11 +244,9 @@ class Employee(models.Model):
     def _compute_trial_end_date(self):
         for rec in self:
             if rec.trial_start_date and rec.trial_period_id: #if enough info documented
-                #rec.trial_end_date = rec.trial_start_date + relativedelta(months=1, days=-1)
-                rec.trial_end_date = rec._add_employee_working_days(rec.trial_start_date,rec.trial_period_id.duration) 
-                rec.trial_notification_date = rec._add_employee_working_days(rec.trial_start_date,rec.trial_period_id.duration-rec.trial_period_id.notification_delay)
-                
-                
+                rec.trial_end_date = rec._get_previous_working_day(rec.trial_start_date + relativedelta(months=rec.trial_period_id.duration))
+                rec.trial_notification_date = rec._get_previous_working_day(rec.trial_end_date + relativedelta(days=-1*rec.trial_period_id.notification_delay))
+                            
     #####################
     # Selection Methods #
     #####################
@@ -279,7 +277,7 @@ class Employee(models.Model):
     #################
     # Tools Methods #
     #################
-    
+    '''
     def _add_employee_working_days(self, from_date, add_days):
         #calculate target date, taking week-ends in account
         target_date = from_date
@@ -294,7 +292,19 @@ class Employee(models.Model):
                 add_days = add_days-1
         
         return target_date
+    '''
     
-    #def _get_previous_working_day(self,target_date):
+    def _get_previous_working_day(self,target_date):
+        is_worked = False
+        while not is_worked:
+            bank = False
+            if self.env['hr.bank.holiday'].search([('company_id','=',self.company_id.id),('date','=',target_date)]): #check if date is a bank holiday in this company
+                bank = True
+            if target_date.weekday()<5 and not bank: #this is a worked day
+                is_worked = True
+                return target_date
+            else:
+                is_worked = False
+                target_date = target_date + timedelta(days=-1)
         
             

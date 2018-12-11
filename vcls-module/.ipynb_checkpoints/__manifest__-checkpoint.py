@@ -45,6 +45,7 @@
         #########
         'views/ticket.xml',
         'views/employee.xml',
+        'views/job.xml',
         
         ###########
         # ACTIONS #
@@ -64,9 +65,11 @@
         'data/hr.project_business_fct.csv',
         'data/hr.project_role.csv',
         'data/hr.office.csv',
+        'data/hr.employee.category.csv',
         
         #employee contracts etc.
         'data/hr.benefit_type.csv',
+        'data/hr.trial.period.csv',
         
         # leaves details
         'data/hr.leave.type.csv',
@@ -74,10 +77,13 @@
         'data/hr.exceptional.leave.case.csv',
         #'data/hr.job.csv',
         
+        #helpdesk
+        'data/helpdesk.ticket.type.csv',
+        
        
         
        
-       # 'views/job.xml',
+       # 
        # 'views/job_profile.xml',
        # 'views/contract.xml',
        # 'views/leave_allocation.xml',
