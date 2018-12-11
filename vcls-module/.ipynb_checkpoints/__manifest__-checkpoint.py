@@ -16,7 +16,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.2.2',
+    'version': '0.2.3',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -35,15 +35,23 @@
         ############
         # SECURITY #
         ############
+        'security/vcls_groups.xml',
         'security/ir.model.access.csv',
         'security/hr_employee_rules.xml',
+        'security/helpdesk_rules.xml',
         
+        #########
+        # VIEWS #
+        #########
         'views/ticket.xml',
+        'views/employee.xml',
+        'views/job.xml',
+        
         ###########
         # ACTIONS #
         ###########
-       
         'actions/helpdesk_menu.xml',
+        'actions/hr_employee_menu.xml',
         
         ###################
         # DEFAULT RECORDS #
@@ -57,26 +65,31 @@
         'data/hr.project_business_fct.csv',
         'data/hr.project_role.csv',
         'data/hr.office.csv',
+        'data/hr.employee.category.csv',
+        
+        #employee contracts etc.
+        'data/hr.benefit_type.csv',
+        'data/hr.trial.period.csv',
         
         # leaves details
         'data/hr.leave.type.csv',
         'data/hr.exceptional.leave.category.csv',
         'data/hr.exceptional.leave.case.csv',
         #'data/hr.job.csv',
-        #'data/hr.benefit_type.csv',
         
-        #########
-        # VIEWS #
-        #########
+        #helpdesk
+        'data/helpdesk.ticket.type.csv',
         
-        'views/ticket.xml',
-       # 'views/employee.xml', #the VCLS default employee view
-       # 'views/job.xml',
+       
+        
+       
+       # 
        # 'views/job_profile.xml',
        # 'views/contract.xml',
        # 'views/leave_allocation.xml',
        # 'views/leave.xml',
         ##'views/leave2.xml',
+        
   
         
     ],

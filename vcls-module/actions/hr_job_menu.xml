@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- ACTIONS -->
+        <record id="action_hr_job_base" model="ir.actions.act_window">
+            <field name="name">Job Position</field>
+            <field name="res_model">hr.job</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_tree_job_for_employee')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_form_job_for_employee')}),
+            ]"/>
+        </record>
+        
+    </data>
+</odoo>

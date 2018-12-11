@@ -10,14 +10,14 @@
             
             <field name="arch" type="xml">
                 <form string="Helpdesk Ticket">
-                    <header attrs="{'invisible': [('access_level', 'not in', ['support'])]}">
-                        <button name="assign_ticket_to_self" string="Assign To Me" type="object" class="oe_highlight" groups="helpdesk.group_helpdesk_user"/>
-                        <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}"/>
+                    <header >
+                        <button name="assign_ticket_to_self" string="Assign To Me" type="object" class="oe_highlight" groups="helpdesk.group_helpdesk_user" attrs="{'invisible': [('access_level', 'not in', ['support'])]}"/>
+                        <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}" attrs="{'readonly': [('access_level', 'not in', ['support'])]}"/>
                     </header>
                     <sheet>
                         <field name="sla_active" invisible="1"/>
                         <field name="partner_tickets" invisible="1"/>
-                        <div class="oe_button_box" name="button_box" attrs="{'invisible': [('access_level', 'not in', ['support'])]}">
+                        <div class="oe_button_box" name="button_box" attrs="{'readonly': [('access_level', 'not in', ['support'])]}">
                             <button class="oe_stat_button" name="open_customer_tickets" icon="fa-ticket" type="object" attrs="{'invisible': ['|', ('partner_id', '=', False), ('partner_tickets', '&lt;=', 1)]}">
                                 <field name="partner_tickets" string="Customer Tickets" widget="statinfo"/>
                             </button>
@@ -36,7 +36,6 @@
                         <group>
                             <group>
                                 <field name="access_level" invisible="1"/>
-                                <field name="ticket_type_id"/>
                                 <field name="team_id"/>
                                 <field name="subcategory_id" domain="[('team_id','=',team_id)]"/>
                                 <field name="sla_id" invisible="1"/>
@@ -47,13 +46,15 @@
                                 <field name="partner_email"/>
                                 <field name="priority" widget="priority"/>
                             </group>
-                            <group attrs="{'invisible': [('access_level', 'not in', ['support'])]}">
-                                <field name="user_id" class="field_user_id" />
-                                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
-                            </group>
+                            
                             
                         </group>
                         <field name="description" class="field_description" placeholder="Description of the ticket..."/>
+                        <group string='Documented by support'>
+                                <field name="ticket_type_id" attrs="{'readonly': [('access_level', 'not in', ['support'])]}"/>
+                                <field name="user_id" class="field_user_id" attrs="{'readonly': [('access_level', 'not in', ['support'])]}"/>
+                                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" attrs="{'readonly': [('access_level', 'not in', ['support'])]}"/>
+                        </group>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers"/>

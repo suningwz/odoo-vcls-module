@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- ACTIONS -->
+        <record id="action_hr_employee_base" model="ir.actions.act_window">
+            <field name="name">Employees</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('employee_view_tree_all')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('employee_view_form_all')}),
+            ]"/>
+        </record>
+        
+        <!-- MENUS TO CREATE -->
+        <menuitem
+            id="hr.menu_open_view_employee_list_my"
+            name="Employees"
+            parent="hr.menu_hr_root"
+            action="action_hr_employee_base"
+            sequence="2"
+        />
+       
+        <menuitem
+            id="menu_employee_legal"
+            name="Legal"
+            parent="hr.menu_hr_root"
+            sequence="6"
+        />
+        <!--
+        <menuitem
+            id="menu_employee_legal"
+            name="Contracts"
+            parent="menu_employee_legal"
+            action="hr_contract.action_hr_contract"
+            sequence="6"
+        />
+        
+        <record id="menu_employee_legal" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('hr.group_hr_user'))]"/>
+        </record>
+        -->
+        
+    </data>
+</odoo>

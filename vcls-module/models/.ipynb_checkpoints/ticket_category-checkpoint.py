@@ -15,22 +15,31 @@ class Ticket(models.Model):
         user = self.env['res.users'].browse(self._uid)
         return user.partner_id
     
+    @api.model
+    def _get_type_id(self):
+        return self.env.ref('vcls-module.ticket_type_incident').id
+    
     #################
     # Custom Fields #
     #################
     
     subcategory_id = fields.Many2one(
         'helpdesk.ticket.subcategory',
-        string='Subcategory',)
+        string='Subcategory',
+        required=True,)
     
     #overrides for renaming purpose
     name = fields.Char(
         compute='_get_name',
         reverse='_set_name',)
     
+    display_name = fields.Char(
+        compute='_get_name',)
+    
     team_id = fields.Many2one(
         string="Category",
-        default=False,)
+        default=False,
+        required=True)
     
     partner_id = fields.Many2one(
         string="Requester",
@@ -41,6 +50,8 @@ class Ticket(models.Model):
     
     partner_email = fields.Char(
         string="Email",)
+    
+    ticket_type_id =fields.Many2one()
     
     #used for dynamic views
     access_level = fields.Selection([ 
@@ -61,15 +72,17 @@ class Ticket(models.Model):
             else:
                 rec.access_level = 'base'
     
-    @api.depends('ticket_type_id','team_id','subcategory_id')
+    @api.depends('team_id','subcategory_id')
     def _get_name(self):
         for ticket in self:
-            if ticket.ticket_type_id:
-                ticket.name = "{}".format(ticket.ticket_type_id.name)
             if ticket.team_id:
-                ticket.name = "{} | {}".format(ticket.name,ticket.team_id.name)
+                try:
+                    ticket.name = "{:04} | {}".format(ticket.id,ticket.team_id.name)
+                except:
+                    ticket.name = "{}".format(ticket.team_id.name)
             if ticket.subcategory_id:
                 ticket.name = "{} - {}".format(ticket.name,ticket.subcategory_id.name)
+            ticket.display_name = ticket.name
     
     @api.onchange('name')
     def _set_name(self):
@@ -180,5 +193,5 @@ class TicketRoute(models.Model):
         string='Office',)
     
     assignee_id = fields.Many2one(
-        'res.user',
-        string='assigned to')
+        'res.users',
+        string='Assigned to',)

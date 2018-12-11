@@ -14,10 +14,15 @@ class Benefit(models.Model):
     
     name = fields.Char()
     
+    '''
     employee_id = fields.Many2one(
         'hr.employee', 
         string="Employee", 
         required="True",)
+    '''
+    
+    contract_id = fields.Many2one(
+        'hr.contract',)
     
     currency_id = fields.Many2one(
         'res.currency',
