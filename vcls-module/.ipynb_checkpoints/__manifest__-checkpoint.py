@@ -44,6 +44,7 @@
         # VIEWS #
         #########
         'views/ticket.xml',
+        'views/wizard_ticket.xml',
         'views/employee.xml',
         'views/job.xml',
         
@@ -92,6 +93,10 @@
         
   
         
+    ],
+    
+    'qweb': [
+        # 'static/src/xml/user_menu.xml',
     ],
     
     # only loaded in demonstration mode
