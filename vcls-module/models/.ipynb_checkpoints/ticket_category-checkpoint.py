@@ -77,7 +77,7 @@ class Ticket(models.Model):
     
     @api.depends('stage_id')
     def _get_set_to_progress_visible(self):
-        awaiting_stage = self.env.ref('__export__.helpdesk_stage_9_7b11c3b1')
+        awaiting_stage = self.env.ref('__export__.helpdesk_stage_9_1ddd697e')
         for ticket in self:
             ticket.set_to_progress_visible = (ticket.stage_id == awaiting_stage) 
     
