@@ -13,6 +13,8 @@
                     <header >
                         <button name="assign_ticket_to_self" string="Assign To Me" type="object" class="oe_highlight" groups="helpdesk.group_helpdesk_user" attrs="{'invisible': [('access_level', 'not in', ['support'])]}"/>
                         <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}" attrs="{'readonly': [('access_level', 'not in', ['support'])]}"/>
+                        <field name="set_to_progress_visible" invisible="1"/>
+                        <button name="open_wizard_set_in_progress" string="Set to Progress" type="object" class="oe_highlight" attrs="{'invisible': [('set_to_progress_visible', '=', False)]}"/>
                     </header>
                     <sheet>
                         <field name="sla_active" invisible="1"/>

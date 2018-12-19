@@ -3,6 +3,20 @@
 #Odoo Imports
 from odoo import api, fields, models
 
+class WizardTicket(models.TransientModel):
+    _name = 'wizard.ticket'
+    
+    message = fields.Text('Message')
+    ticket_id = fields.Many2one('helpdesk.ticket', 'Ticket')
+    
+    @api.multi
+    def set_to_progess(self):
+        self.ensure_one()
+        progress_stage = self.env.ref('helpdesk.stage_in_progress')
+        self.ticket_id.stage_id = progress_stage
+        self.ticket_id.message_post(body=self.message)
+
+
 class Ticket(models.Model):
     
     _inherit = 'helpdesk.ticket'
@@ -59,6 +73,31 @@ class Ticket(models.Model):
         ('support', 'Support'),
     ], compute='_get_access_level', store=False)
     
+    set_to_progress_visible = fields.Boolean(compute='_get_set_to_progress_visible', store=False)
+    
+    @api.depends('stage_id')
+    def _get_set_to_progress_visible(self):
+        awaiting_stage = self.env.ref('__export__.helpdesk_stage_9_7b11c3b1')
+        for ticket in self:
+            ticket.set_to_progress_visible = (ticket.stage_id == awaiting_stage) 
+    
+    @api.multi
+    def open_wizard_set_in_progress(self):
+        self.ensure_one()
+        
+        wiz = self.env['wizard.ticket'].create({
+            'ticket_id': self.id,
+        })
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Set in Progress',
+            'view_mode': 'form',
+            'res_model': 'wizard.ticket',
+            'res_id': wiz.id,
+            'target': 'new',
+        }
+    
     #################################
     # Automated Calculation Methods #
     #################################
@@ -77,7 +116,7 @@ class Ticket(models.Model):
         for ticket in self:
             if ticket.team_id:
                 try:
-                    ticket.name = "{:04} | {}".format(ticket.id,ticket.team_id.name)
+                    ticket.name = "{:06} | {}".format(ticket.id,ticket.team_id.name)
                 except:
                     ticket.name = "{}".format(ticket.team_id.name)
             if ticket.subcategory_id:
@@ -87,7 +126,11 @@ class Ticket(models.Model):
     @api.onchange('name')
     def _set_name(self):
         for ticket in self: pass
-                
+             
+    @api.onchange('team_id')
+    def _onchange_team_id(self):
+        for ticket in self:
+            ticket.subcategory_id = False
     
     '''
     category_id = fields.Many2one(
@@ -162,6 +205,7 @@ class TicketSubCategory(models.Model):
     
     _name = 'helpdesk.ticket.subcategory'
     _description = 'Ticket SubCategory'
+    _order = 'name'
     
     #################
     # Custom Fields #
