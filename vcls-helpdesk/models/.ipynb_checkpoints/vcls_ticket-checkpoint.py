@@ -2,6 +2,7 @@
 
 #Odoo Imports
 from odoo import api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 class WizardTicket(models.TransientModel):
     _name = 'wizard.ticket'
@@ -46,6 +47,8 @@ class Ticket(models.Model):
     name = fields.Char(
         compute='_get_name',
         reverse='_set_name',)
+    
+    resolution = fields.Char()
     
     display_name = fields.Char(
         compute='_get_name',)
@@ -131,6 +134,12 @@ class Ticket(models.Model):
     def _onchange_team_id(self):
         for ticket in self:
             ticket.subcategory_id = False
+    
+    @api.constrains('stage_id')
+    def _check_resolution(self):
+        for ticket in self:
+            if (ticket.stage_id.name == 'Solved') and not ticket.resolution:
+                raise ValidationError("Please document the resolution field before to save.")
     
     '''
     category_id = fields.Many2one(

@@ -6,7 +6,7 @@
         VCLS customs for helpdesk application""",
 
     'description': """
-        
+        VCLS customs for helpdesk application
     """,
 
     'author': "VCLS",
@@ -20,7 +20,9 @@
 
     # any module necessary for this one to work correctly
     'depends': ['base',
-               'helpdesk',
+                'contacts',
+                'helpdesk',
+                'hr',
                ],
 
     # always loaded

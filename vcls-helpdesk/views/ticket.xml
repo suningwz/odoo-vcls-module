@@ -54,8 +54,9 @@
                         <field name="description" class="field_description" placeholder="Description of the ticket..."/>
                         <group string='Documented by support'>
                                 <field name="ticket_type_id" attrs="{'readonly': [('access_level', 'not in', ['support'])]}"/>
-                                <field name="user_id" class="field_user_id" attrs="{'readonly': [('access_level', 'not in', ['support'])]}"/>
+                                <field name="user_id" class="field_user_id" attrs="{'invisible': [('access_level', 'not in', ['support'])]}"/>
                                 <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" attrs="{'readonly': [('access_level', 'not in', ['support'])]}"/>
+                                <field name="resolution" attrs="{'invisible': [('access_level', 'not in', ['support'])]}"/>
                         </group>
                     </sheet>
                     <div class="oe_chatter">
