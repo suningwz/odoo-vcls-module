@@ -13,5 +13,5 @@ from . import leave
 from . import leave_allocation
 from . import leave_type
 from . import multiselections
-from . import ticket_category
+#from . import ticket_category
 from . import trial_period
