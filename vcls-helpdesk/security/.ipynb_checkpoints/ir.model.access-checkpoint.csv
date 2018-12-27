@@ -1,0 +1,14 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_helpdesk_stage_employee,helpdesk.stage.employee,helpdesk.model_helpdesk_stage,base.group_user,1,0,0,0
+access_helpdesk_tags_employee,helpdesk.tags.employee,helpdesk.model_helpdesk_tag,base.group_user,1,0,0,0
+access_helpdesk_ticket_employee,helpdesk.ticket.employee,helpdesk.model_helpdesk_ticket,base.group_user,1,1,1,0
+access_helpdesk_ticket_type_employee,helpdesk.ticket.type.employee,helpdesk.model_helpdesk_ticket_type,base.group_user,1,0,0,0
+access_ticket_category_admin,ticket.category.admin,model_helpdesk_ticket_category,base.group_system,1,1,1,1
+access_ticket_category_default,ticket.category.default,model_helpdesk_ticket_category,,1,0,0,0
+access_ticket_category_manager,ticket.category.manager,model_helpdesk_ticket_category,helpdesk.group_helpdesk_manager,1,1,1,1
+access_ticket_route_admin,ticket.route.admin,model_helpdesk_ticket_route,base.group_system,1,1,1,1
+access_ticket_route_default,ticket.route.default,model_helpdesk_ticket_route,,1,0,0,0
+access_ticket_route_manager,ticket.route.manager,model_helpdesk_ticket_route,helpdesk.group_helpdesk_manager,1,1,1,1
+access_ticket_subcategory_admin,ticket.subcategory.admin,model_helpdesk_ticket_subcategory,base.group_system,1,1,1,1
+access_ticket_subcategory_default,ticket.subcategory.default,model_helpdesk_ticket_subcategory,,1,0,0,0
+access_ticket_subcategory_manager,ticket.subcategory.manager,model_helpdesk_ticket_subcategory,helpdesk.group_helpdesk_manager,1,1,1,1

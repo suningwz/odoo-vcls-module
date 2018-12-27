@@ -16,12 +16,12 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.2.3',
+    'version': '0.3',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
                 'contacts',
-                'helpdesk',
+                ##'helpdesk',
                 'hr',
                 'hr_contract',
                 'hr_holidays',
@@ -38,20 +38,20 @@
         'security/vcls_groups.xml',
         'security/ir.model.access.csv',
         'security/hr_employee_rules.xml',
-        'security/helpdesk_rules.xml',
+        ##'security/helpdesk_rules.xml',
         
         #########
         # VIEWS #
         #########
-        'views/ticket.xml',
-        'views/wizard_ticket.xml',
+        ##'views/ticket.xml',
+        ##'views/wizard_ticket.xml',
         'views/employee.xml',
         'views/job.xml',
         
         ###########
         # ACTIONS #
         ###########
-        'actions/helpdesk_menu.xml',
+        ##'actions/helpdesk_menu.xml',
         'actions/hr_employee_menu.xml',
         
         ###################
@@ -79,7 +79,7 @@
         #'data/hr.job.csv',
         
         #helpdesk
-        'data/helpdesk.ticket.type.csv',
+        ##'data/helpdesk.ticket.type.csv',
         
        
         
