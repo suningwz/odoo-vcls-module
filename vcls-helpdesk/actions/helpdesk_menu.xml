@@ -15,10 +15,13 @@
             <field name="res_model">helpdesk.ticket</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
+            
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('helpdesk.helpdesk_tickets_view_tree')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('view_ticket_form_default')}),
             ]"/>
+            
+            <field name="search_view_id" ref="client_tickets_view_search"/>
            
         </record>
         

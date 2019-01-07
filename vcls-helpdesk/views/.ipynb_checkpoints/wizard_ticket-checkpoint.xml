@@ -6,13 +6,13 @@
             <field name="name">view_wizard_ticket_form_default</field>
             <field name="model">wizard.ticket</field>
             <field name="arch" type="xml">
-                <form string="Set to Progress">
+                <form string="Reply To Support">
                     <group>
                         <field name="message"/>
                     </group>
                     
                     <footer>
-                        <button string="Set to Progress" name="set_to_progess" type="object" class="btn-primary"/>
+                        <button string="Submit" name="set_to_progess" type="object" class="btn-primary"/>
                         <button string="Discard" class="btn-default" special="cancel"/>
                     </footer>
                 </form>

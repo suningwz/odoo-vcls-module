@@ -94,7 +94,7 @@ class Ticket(models.Model):
         
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Set in Progress',
+            'name': 'Reply To Support',
             'view_mode': 'form',
             'res_model': 'wizard.ticket',
             'res_id': wiz.id,
@@ -158,98 +158,7 @@ class TicketSubCategory(models.Model):
         'helpdesk.team',
         string='Category',)
     
-    '''
-    category_id = fields.Many2one(
-        'helpdesk.ticket.category',
-        string='Category',)
-        
-    employee_id = fields.Many2one(
-        'hr.employee',
-        string='Requester',)
-    
-    priority = fields.Selection(
-        default='0',)
-        
-    
-    
-    
-    user_id = fields.Many2one(
-        compute='_get_assignment',
-        inverse='_set_assignment',)
-    
-    
-    #used to store manually assigned teams or user
-    manual_team_id = fields.Many2one(
-        'helpdesk.team',)
-    
-    manual_user_id = fields.Many2one(
-        'res.user',)
-    
-    
-    
-    @api.onchange('team_id','user_id')
-    def _set_assignment(self): #store the manually entered value
-        for ticket in self:
-            ticket.manual_team_id = ticket.team_id
-            ticket.manual_user_id = ticket.user_id
-    
-    @api.onchange('category_id','subcategory_id','employee_id')
-    def _set_manual_assignment(self):
-        for ticket in self:
-            ticket.manual_team_id = ticket._get_route(ticket.category_id, ticket.subcategory_id,ticket.employee_id.office_id)
-            ticket.manual_user_id = False
-            
-    
-    @api.depends('category_id','subcategory_id','employee_id','manual_team_id','manual_user_id')
-    def _get_assignment(self):
-        for ticket in self:
-            ticket.team_id = ticket.manual_team_id
-            ticket.user_id = ticket.manual_user_id
-    
-    
-        
-    ################
-    # Tool Methods #
-    ################
-    
-    def _get_route(self,category_id=False,subcategory_id=False,office_id=False):
-         return False
-    
-
-class TicketCategory(models.Model):
-    
-    _name = 'helpdesk.ticket.category'
-    _description = 'Ticket Category'
-    
-    #################
-    # Custom Fields #
-    #################
-    
-    name = fields.Char()
-    
-class TicketRoute(models.Model):
-    
-    _name = 'helpdesk.ticket.route'
-    _description = 'Ticket Route'
-    
-    #################
-    # Custom Fields #
-    #################
-    
-    name = fields.Char()
-    
-    subcategory_id = fields.Many2one(
-        'helpdesk.ticket.subcategory',
-        string='Subategory',)
-    
-    office_id = fields.Many2one(
-        'vcls-hr.hr.office',
-        string='Office',)
-    
-    assignee_id = fields.Many2one(
-        'res.users',
-        string='Assigned to',)
-    '''
+ 
     
 
     
