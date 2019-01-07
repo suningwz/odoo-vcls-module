@@ -140,6 +140,23 @@ class Ticket(models.Model):
         for ticket in self:
             if (ticket.stage_id.name == 'Solved') and not ticket.resolution:
                 raise ValidationError("Please document the resolution field before to save.")
+                
+
+class TicketSubCategory(models.Model):
+    
+    _name = 'helpdesk.ticket.subcategory'
+    _description = 'Ticket SubCategory'
+    _order = 'name'
+    
+    #################
+    # Custom Fields #
+    #################
+    
+    name = fields.Char()
+    
+    team_id = fields.Many2one(
+        'helpdesk.team',
+        string='Category',)
     
     '''
     category_id = fields.Many2one(
@@ -197,7 +214,7 @@ class Ticket(models.Model):
     
     def _get_route(self,category_id=False,subcategory_id=False,office_id=False):
          return False
-    '''
+    
 
 class TicketCategory(models.Model):
     
@@ -209,22 +226,6 @@ class TicketCategory(models.Model):
     #################
     
     name = fields.Char()
-    
-class TicketSubCategory(models.Model):
-    
-    _name = 'helpdesk.ticket.subcategory'
-    _description = 'Ticket SubCategory'
-    _order = 'name'
-    
-    #################
-    # Custom Fields #
-    #################
-    
-    name = fields.Char()
-    
-    team_id = fields.Many2one(
-        'helpdesk.team',
-        string='Category',)
     
 class TicketRoute(models.Model):
     
@@ -242,9 +243,13 @@ class TicketRoute(models.Model):
         string='Subategory',)
     
     office_id = fields.Many2one(
-        'hr.office',
+        'vcls-hr.hr.office',
         string='Office',)
     
     assignee_id = fields.Many2one(
         'res.users',
         string='Assigned to',)
+    '''
+    
+
+    

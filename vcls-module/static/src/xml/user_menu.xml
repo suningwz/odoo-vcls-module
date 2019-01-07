@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<t t-extend="UserMenu.Actions">
-    <t t-jquery="li.divider" t-operation="before">
-        <li class="hidden-xs"><a href="#" data-menu="shortcuts">TEST</a></li>
-    </t>
-</t>
