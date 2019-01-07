@@ -1,0 +1,73 @@
+<odoo>
+  <data>
+      
+        <!-- View Form related to the existing employees -->
+        <record id="job_profile_form1" model="ir.ui.view">
+            <field name="name">job_profile_form1</field>
+            <field name="model">hr.job_profile</field>
+            
+            <field name="arch" type="xml">
+                <form string="Job Profile">
+                   
+                   <sheet>
+                        <div class="oe_button_box" name="button_box"/>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" readonly="0"/></h1>
+                        </div>
+                        <group>
+                            <group string="">
+                                <field name="employee_id"/>
+                                <field name="total_working_percentage" widget="percentage"/>
+                            </group>
+                            <group string="">
+                                
+                                <field name="total_working_hours"/>
+                                <field name="total_billable_target"/>
+                            </group>
+                            
+                        </group>
+                        <group>
+                            <group string="Primary Job Position">
+                                <field name="job1_id" readonly="0"/>   
+                                <field name="job1_percentage" readonly="0" widget="percentage"/>
+                                <field name="job1_target" widget="percentage"/>
+                            </group>
+                       
+                            <group string="Secondary Job Position">
+                                <field name="job2_id" readonly="0"/>   
+                                <field name="job2_percentage" readonly="0" widget="percentage"/>
+                                <field name="job2_target" widget="percentage"/>
+                            </group>
+                            
+                        </group>
+                        <div>
+                            <label for="description"/>
+                            <field name="description" readonly="0"/>
+                        </div>
+                    </sheet> 
+                    
+                </form> 
+             </field>
+        </record>
+      
+      <!-- List View -->
+        <record id="job_profile_list1" model="ir.ui.view">
+            <field name="name">job_profile_list1</field>
+            <field name="model">hr.job_profile</field>
+            <field name="priority">4</field>
+            
+            <field name="arch" type="xml">
+                <tree string="Job Profiles" create="true" delete="true" edit="true">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                   
+                    <field name="total_working_percentage"/>
+                    
+                </tree>
+            </field>
+        </record>
+
+            
+  </data>
+</odoo>

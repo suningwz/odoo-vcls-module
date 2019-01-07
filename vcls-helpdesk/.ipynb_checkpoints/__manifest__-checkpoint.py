@@ -23,6 +23,7 @@
                 'contacts',
                 'helpdesk',
                 'hr',
+                'vcls-hr',
                ],
 
     # always loaded
