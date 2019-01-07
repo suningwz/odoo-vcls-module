@@ -14,7 +14,7 @@
                         <button name="assign_ticket_to_self" string="Assign To Me" type="object" class="oe_highlight" groups="helpdesk.group_helpdesk_user" attrs="{'invisible': [('access_level', 'not in', ['support'])]}"/>
                         <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}" attrs="{'readonly': [('access_level', 'not in', ['support'])]}"/>
                         <field name="set_to_progress_visible" invisible="1"/>
-                        <button name="open_wizard_set_in_progress" string="Set to Progress" type="object" class="oe_highlight" attrs="{'invisible': [('set_to_progress_visible', '=', False)]}"/>
+                        <button name="open_wizard_set_in_progress" string="Reply To Support" type="object" class="oe_highlight" attrs="{'invisible': [('set_to_progress_visible', '=', False)]}"/>
                     </header>
                     <sheet>
                         <field name="sla_active" invisible="1"/>
@@ -59,14 +59,46 @@
                                 <field name="resolution" attrs="{'invisible': [('access_level', 'not in', ['support'])]}"/>
                         </group>
                     </sheet>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids" widget="mail_followers"/>
-                        <field name="activity_ids" widget="mail_activity"/>
-                        <field name="message_ids" widget="mail_thread" options="{'post_refresh': 'recipients'}"/>
-                    </div>
+                    <group>
+                        <div class="oe_chatter">
+                            <field name="message_follower_ids" widget="mail_followers"/>
+                            <field name="activity_ids" widget="mail_activity"/>
+                            <field name="message_ids" widget="mail_thread" options="{'post_refresh': 'recipients'}"/>
+                        </div>
+                    </group>
                 </form>
             </field>
             
+
+        </record>
+      
+        <record id="client_tickets_view_search" model="ir.ui.view">
+
+            <field name="name">client.ticket.search</field>
+            <field name="model">helpdesk.ticket</field>
+            <field name="arch" type="xml">
+                <search string="Tickets Search">
+                    <field name="name"/>
+                    <field name="id" string="Ticket ID"/>
+                    <field name="tag_ids"/>
+                    <field name="ticket_type_id"/>
+
+                    <field name="team_id"/>
+                    <field name="user_id"/>
+                    <field name="partner_id"/>
+                    <field name="deadline" groups="helpdesk.group_use_sla"/>
+                    <field name="sla_active" groups="helpdesk.group_use_sla"/>
+
+                    <filter string="Open Tickets" domain="[('stage_id.is_close','=',False)]" name="is_open"/>
+                    <filter string="Closed Tickets" domain="[('stage_id.is_close','=',True)]" name="is_close"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                       <filter string="Category" name="team" context="{'group_by':'team_id'}"/>
+                       <filter string="Stage" name="stage" context="{'group_by':'stage_id'}"/>
+                    </group>
+                </search>
+              
+                </field>
 
         </record>
       
