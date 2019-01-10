@@ -7,10 +7,11 @@
             
             <field name="arch" type="xml">
                 <form string="Current Contract">
-                    
+                    <!--
                     <header>
                         <field name="state" widget="statusbar" options="{'clickable': '1'}"/>
                     </header>
+                    -->
                     
                     <sheet>
                         
@@ -29,12 +30,15 @@
                     <group>
                         <group>
                             <field name="employee_id"/>
-                            <field name="department_id"/>
                         </group>
                         <group>
                             <!--<field name="job_id"/>-->
                             <field name="type_id" string="Contract Type"/>
                         </group>
+                       
+                    </group>
+                    <group>
+                            <field name="job_profile_id" string='Job Profile'/>
                     </group>
                         
                     <notebook>
@@ -46,7 +50,7 @@
                                     <label for="date_end"/>
                                     <div class="o_row">
                                         <field name="date_end" nolabel="1"/>
-                                        <span class="text-muted">(If fixed-term contract)</span>
+                                        <!--<span class="text-muted">(If fixed-term contract)</span>-->
                                     </div>
                                     <field name="resource_calendar_id"/>
                                 </group>

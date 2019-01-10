@@ -10,6 +10,11 @@ from odoo import api, fields, models
 class Employee(models.Model):
     
     _inherit = 'hr.employee'
+    _sql_constraints = [
+                     ('employee_external_id_unique', 
+                      'unique(employee_external_id)',
+                      'Employee ID is not unique.')
+                    ]
     
     #################
     # Custom Fields #
@@ -17,16 +22,31 @@ class Employee(models.Model):
     
     # Connectivity with other systems
     
-    employee_external_ID = fields.Integer(
-        string='Employee ID',)
+    employee_external_id = fields.Char(
+        string='Employee ID',
+        default="/",
+        readonly = True,)
     
     link_employee_folder = fields.Char(
         string='Employee Folder',
         help='Paste folder url',
         track_visibility='always',)
     
-    # Administrative informations
+    # Overriden fields
+    name = fields.Char()
     
+    gender = fields.Selection(
+        default=False,)
+    
+    company_id = fields.Many2one(
+        related = 'contract_id.company_id',
+        readonly=True,)
+    
+    resource_calendar_id = fields.Many2one(
+        related = 'contract_id.resource_calendar_id',
+        readonly=True,)
+    
+    # Administrative informations
     first_name = fields.Char(
         string='First Name',
         track_visibility='always',)
@@ -116,15 +136,21 @@ class Employee(models.Model):
         string="Add Private Phone",)
     
     #Related to job position(s)
+    
     job_profile_id = fields.Many2one(
-        'hr.job_profile',
+        related='contract_id.job_profile_id',
         string="Current Job Profile",
         track_visibility='always',)
     
     bonus_ids = fields.Many2many(
         'hr.bonus',
-        string="Bonuse(s)",
-        track_visibility='always',)
+        string="Bonus",
+        compute = "_get_bonuses",)
+    
+    contract_ids = fields.Many2many(
+        'hr.contract',
+        string="Contract(s)",
+        compute = "_get_contracts",)
     
     #Health Care Management
     last_medical_checkup = fields.Date(
@@ -155,10 +181,59 @@ class Employee(models.Model):
     lm_ids = fields.Many2many(
         'res.users',
         compute='_get_lm_ids',)
+    
+    ################
+    # CRUD Methods #
+    ################
+    
+    #At Employee creation, create a default contract
+    @api.model
+    def create(self,vals):
+        
+        #if no external ID defined, then increment using the sequence
+        if vals.get('employee_external_id','/')=='/':
+            vals['employee_external_id'] = self.env['ir.sequence'].next_by_code('seq_hr_employee_ext_id')
+        
+        #enter default value in first, middle, family names
+        names = vals.get('name','').split(' ')
+        if len(names) == 2:
+            vals.update({
+                'first_name':names[0],
+                'family_name':names[1],
+            })
+        elif len(names) == 3:
+            vals.update({
+                'first_name':names[0],
+                'middle_name':names[1],
+                'family_name':names[2],
+            })
+            
+        empl=super().create(vals)
+        
+        #create the related default contract
+        contract = self.env['hr.contract'].create(
+            {
+                'name':"{} | 01".format(empl.name),
+                'employee_id':empl.id,
+                'wage':0,
+            }
+        )
+
+        return empl
         
     #################################
     # Automated Calculation Methods #
     #################################
+   
+    @api.multi
+    def _get_bonuses(self):
+        for empl in self:
+            empl.bonus_ids = self.env['hr.bonus'].search([('employee_id','=',empl.id)])
+    
+    @api.multi
+    def _get_contracts(self):
+        for empl in self:
+            empl.contract_ids = self.env['hr.contract'].search([('employee_id','=',empl.id)])
     
     @api.depends('parent_id','parent_id.parent_id')
     def _get_lm_ids(self):

@@ -2,7 +2,7 @@
 <odoo>
     <data>
         
-        <!-- ACTIONS -->
+        <!-- Employee Main -->
         <record id="action_hr_employee_base" model="ir.actions.act_window">
             <field name="name">Employees</field>
             <field name="res_model">hr.employee</field>
@@ -14,7 +14,6 @@
             ]"/>
         </record>
         
-        <!-- MENUS TO CREATE -->
         <menuitem
             id="hr.menu_open_view_employee_list_my"
             name="Employees"
@@ -22,14 +21,120 @@
             action="action_hr_employee_base"
             sequence="2"
         />
-       
+        
+        <!-- HR Actions & Menus -->
+         <menuitem
+            id="menu_hr_hr"
+            name="HR"
+            parent="hr.menu_hr_root"
+            sequence="6"
+        />
+        
+        <menuitem
+            id="menu_hr_contract"
+            name="Employee Contracts"
+            parent="menu_hr_hr"
+            action="hr_contract.action_hr_contract"
+            sequence="3"
+        />
+        
+        <!-- Company Organization Actions & Menu -->
+        <menuitem
+            id="menu_hr_company_org"
+            name="Company Organization"
+            parent="hr.menu_hr_root"
+            sequence="9"
+        />
+        
+        <record id="action_hr_officies" model="ir.actions.act_window">
+            <field name="name">VCLS Officies</field>
+            <field name="res_model">hr.office</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_tree_officies')}),
+            ]"/>
+        </record>
+        
+        <menuitem
+            id="menu_hr_officies"
+            name="VCLS Officies"
+            parent="menu_hr_company_org"
+            action="action_hr_officies"
+            sequence="3"
+        />
+        
+        <menuitem
+            id="menu_hr_department"
+            name="Departments"
+            parent="menu_hr_company_org"
+            action="hr.open_module_tree_department"
+            sequence="6"
+        />
+        
+        <record id="action_hr_vcls_activities" model="ir.actions.act_window">
+            <field name="name">VCLS Activities</field>
+            <field name="res_model">hr.vcls_activities</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_tree_vcls_activities')}),
+            ]"/>
+        </record>
+        
+        <menuitem
+            id="menu_hr_vcls_activities"
+            name="VCLS Activities"
+            parent="menu_hr_company_org"
+            action="action_hr_vcls_activities"
+            sequence="9"
+        />
+        
+        <record id="action_hr_job_base" model="ir.actions.act_window">
+            <field name="name">Job Position</field>
+            <field name="res_model">hr.job</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_tree_job_for_employee')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_form_job_for_employee')}),
+            ]"/>
+        </record>
+        
+        <menuitem
+            id="menu_hr_job"
+            name="Job Positions"
+            parent="menu_hr_company_org"
+            action="action_hr_job_base"
+            sequence="12"
+        />
+        
+        <record id="action_hr_project_role" model="ir.actions.act_window">
+            <field name="name">Project Roles</field>
+            <field name="res_model">hr.project_role</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_tree_project_roles')}),
+            ]"/>
+        </record>
+        
+        <menuitem
+            id="menu_hr_project_role"
+            name="Project Roles"
+            parent="menu_hr_company_org"
+            action="action_hr_project_role"
+            sequence="15"
+        />
+        
+       <!--
         <menuitem
             id="menu_employee_legal"
             name="Legal"
             parent="hr.menu_hr_root"
             sequence="6"
         />
-        <!--
+        
         <menuitem
             id="menu_employee_legal"
             name="Contracts"
