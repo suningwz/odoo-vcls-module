@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.2',
+    'version': '0.4',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -41,11 +41,19 @@
         #########
         'views/employee.xml',
         'views/job.xml',
+        'views/contract.xml',
+        'views/company_org.xml',
         
         ###########
         # ACTIONS #
         ###########
         'actions/hr_employee_menu.xml',
+        #'actions/hr_job_menu.xml',
+        
+        #############
+        # SEQUENCES #
+        #############
+        'sequences/hr_sequences.xml',
         
         ###################
         # DEFAULT RECORDS #

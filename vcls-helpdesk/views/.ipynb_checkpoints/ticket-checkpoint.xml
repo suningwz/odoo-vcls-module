@@ -35,8 +35,10 @@
                             <h1><field name="name" class="field_name" placeholder="Subject..."/></h1>
                             <field name="sla_name" class="badge badge-danger oe_inline" attrs="{'invisible': [('sla_active','=',False)]}"/>
                         </div>
+                        <field name="help_url" widget="url" readonly="1" text="Click for Help" string=''/>
                         <group>
                             <group>
+                                
                                 <field name="access_level" invisible="1"/>
                                 <field name="team_id"/>
                                 <field name="subcategory_id" domain="[('team_id','=',team_id)]"/>
@@ -47,6 +49,8 @@
                                 <field name="partner_name" attrs="{'invisible': [('partner_id', '!=', False)]}"/>
                                 <field name="partner_email"/>
                                 <field name="priority" widget="priority"/>
+                                <field name="create_uid" attrs="{'invisible': [('behalf', '==', False)]}"/>
+                                <field name="behalf" invisible="1"/>
                             </group>
                             
                             

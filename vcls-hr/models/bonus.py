@@ -7,22 +7,24 @@ class bonus(models.Model):
     
     _name = 'hr.bonus'
     _description = 'Employee Bonus'
+    _order = 'date desc'
     
     #################
     # Custom Fields #
     #################
     
-    name = fields.Char()
+    name = fields.Char(
+        required="True",)
     
     employee_id = fields.Many2one(
         'hr.employee',
         string="Employee",
-        required="True",)
+        required=True,)
     
     currency_id = fields.Many2one(
-        'res.currency',
+        related = 'employee_id.company_id.currency_id',
         string="Currency",
-        required="True",)
+        readonly=True,)
     
     amount = fields.Monetary(
         string="Amount",

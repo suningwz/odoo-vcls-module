@@ -6,10 +6,16 @@ from odoo import api, fields, models
 class Contract(models.Model):
     
     _inherit = 'hr.contract'
+    _order = 'date_start desc'
    
     #################
     # Custom Fields #
     #################
+    
+    job_profile_id = fields.Many2one(
+        'hr.job_profile',
+        string="Job Profile",
+        track_visibility='always',)
     
     fulltime_salary = fields.Monetary(
         string='Fulltime Gross Annual Salary',)

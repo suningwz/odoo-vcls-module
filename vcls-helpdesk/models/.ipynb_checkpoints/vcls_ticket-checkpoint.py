@@ -49,6 +49,7 @@ class Ticket(models.Model):
         reverse='_set_name',)
     
     resolution = fields.Char()
+    behalf = fields.Boolean(default=False)
     
     display_name = fields.Char(
         compute='_get_name',)
@@ -69,6 +70,11 @@ class Ticket(models.Model):
         string="Email",)
     
     ticket_type_id =fields.Many2one()
+    
+    help_url = fields.Char(
+        string='Click for Help',
+        default='http://frb-sp-01/sites/IT/VCLS%20Software/Odoo/OdooTickets_QuickGuide_v1.pdf',
+        )
     
     #used for dynamic views
     access_level = fields.Selection([ 
@@ -134,7 +140,15 @@ class Ticket(models.Model):
     def _onchange_team_id(self):
         for ticket in self:
             ticket.subcategory_id = False
-    
+            
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        user = self.env['res.users'].browse(self._uid)
+        for ticket in self:
+            if (ticket.partner_id != user.partner_id):
+                ticket.behalf = True
+
+              
     @api.constrains('stage_id')
     def _check_resolution(self):
         for ticket in self:
