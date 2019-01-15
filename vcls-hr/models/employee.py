@@ -24,8 +24,7 @@ class Employee(models.Model):
     
     employee_external_id = fields.Char(
         string='Employee ID',
-        default="/",
-        readonly = True,)
+        default="/",)
     
     link_employee_folder = fields.Char(
         string='Employee Folder',
