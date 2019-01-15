@@ -7,6 +7,9 @@ class Contract(models.Model):
     
     _inherit = 'hr.contract'
     _order = 'date_start desc'
+    
+   
+    
    
     #################
     # Custom Fields #
@@ -40,6 +43,16 @@ class Contract(models.Model):
     
     tax_rate_percentage = fields.Float(
         string='Tax Rate Percentage',)
+    
+    ####################
+    # Overriden Fields #
+    ####################
+    
+    resource_calendar_id = fields.Many2one(
+        'resource.calendar',
+        related='job_profile_id.resource_calendar_id',
+        string='Working Schedule',
+        readonly='1',)
     
     #####################
     # Selection Methods #
