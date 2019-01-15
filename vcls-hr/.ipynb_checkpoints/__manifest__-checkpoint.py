@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.4',
+    'version': '0.5',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -40,10 +40,12 @@
         # VIEWS #
         #########
         'views/employee.xml',
-        'views/job.xml',
-        'views/contract.xml',
+        'views/bonuses.xml',
         'views/company_org.xml',
-        
+        'views/contract.xml',
+        'views/job.xml',
+        'views/job_profile.xml',
+      
         ###########
         # ACTIONS #
         ###########
@@ -72,6 +74,7 @@
         #employee contracts etc.
         'data/hr.benefit_type.csv',
         'data/hr.trial.period.csv',
+        'data/hr.contract.type.csv',
         
         # leaves details
         'data/hr.leave.type.csv',

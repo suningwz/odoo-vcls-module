@@ -1,7 +1,7 @@
 <odoo>
   <data>
       
-        <!-- View Form related to the existing employees -->
+        <!-- View Form related to the existing employees 
         <record id="job_profile_form1" model="ir.ui.view">
             <field name="name">job_profile_form1</field>
             <field name="model">hr.job_profile</field>
@@ -19,7 +19,6 @@
                             <group string="">
                                 <field name="employee_id"/>
                                 <field name="total_working_percentage" widget="percentage"/>
-                                <field name="resource_calendar_id"/>
                             </group>
                             <group string="">
                                 
@@ -33,14 +32,12 @@
                                 <field name="job1_id" readonly="0"/>   
                                 <field name="job1_percentage" readonly="0" widget="percentage"/>
                                 <field name="job1_target" widget="percentage"/>
-                                <field name="job1_head"/>
                             </group>
                        
                             <group string="Secondary Job Position">
                                 <field name="job2_id" readonly="0"/>   
                                 <field name="job2_percentage" readonly="0" widget="percentage"/>
                                 <field name="job2_target" widget="percentage"/>
-                                <field name="job2_head"/>
                             </group>
                             
                         </group>
@@ -53,19 +50,20 @@
                 </form> 
              </field>
         </record>
+§§-->
       
       <!-- List View -->
-        <record id="job_profile_list1" model="ir.ui.view">
-            <field name="name">job_profile_list1</field>
-            <field name="model">hr.job_profile</field>
+        <record id="view_bonuses_tree_1" model="ir.ui.view">
+            <field name="name">view_bonuses_tree_1</field>
+            <field name="model">hr.bonus</field>
             <field name="priority">4</field>
             
             <field name="arch" type="xml">
-                <tree string="Job Profiles" create="true" delete="true" edit="true">
-                    <field name="name"/>
+                <tree string="Bonuses" create="true" delete="true" edit="true">
                     <field name="employee_id"/>
-                    <field name="total_working_percentage"/>
-                    
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="amount"/>
                 </tree>
             </field>
         </record>

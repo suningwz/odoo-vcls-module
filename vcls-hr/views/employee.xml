@@ -1,5 +1,6 @@
 <odoo>
   <data>
+      
         <!-- Base View visible by everyone on everyone in the company -->
         <record id="employee_view_form_all" model="ir.ui.view">
             

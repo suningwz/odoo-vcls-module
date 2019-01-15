@@ -37,11 +37,7 @@ class Employee(models.Model):
     
     gender = fields.Selection(
         default=False,)
-    
-    company_id = fields.Many2one(
-        related = 'contract_id.company_id',
-        readonly=True,)
-    
+     
     resource_calendar_id = fields.Many2one(
         related = 'contract_id.resource_calendar_id',
         readonly=True,)

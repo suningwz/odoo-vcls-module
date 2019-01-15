@@ -2,6 +2,13 @@
 <odoo>
     <data>
         
+        <!-- Deactivate original non-used menus by removing the related action 
+        <record id="hr_contract.hr_menu_contract" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+            <field name="action" ref=""/>
+        </record>
+        -->
+        
         <!-- Employee Main -->
         <record id="action_hr_employee_base" model="ir.actions.act_window">
             <field name="name">Employees</field>
@@ -30,12 +37,59 @@
             sequence="6"
         />
         
+        <record id="hr_contract.action_hr_contract" model="ir.actions.act_window">
+            <field name="search_view_id" ref='hr_contract.hr_contract_view_search'/>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('hr_contract.hr_contract_view_kanban')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('hr_contract.hr_contract_view_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_contract_form1')}),
+                
+            ]"/>
+        </record>
+        
         <menuitem
             id="menu_hr_contract"
             name="Employee Contracts"
             parent="menu_hr_hr"
             action="hr_contract.action_hr_contract"
             sequence="3"
+        />
+        
+        <record id="action_hr_job_profiles" model="ir.actions.act_window">
+            <field name="name">Job Profiles</field>
+            <field name="res_model">hr.job_profile</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('job_profile_list1')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('job_profile_form1')}),
+            ]"/>
+        </record>
+        
+        <menuitem
+            id="menu_hr_job_profiles"
+            name="Job Profiles"
+            parent="menu_hr_hr"
+            action="action_hr_job_profiles"
+            sequence="6"
+        />
+        
+        <record id="action_hr_bonuses" model="ir.actions.act_window">
+            <field name="name">Bonuses</field>
+            <field name="res_model">hr.bonus</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_bonuses_tree_1')}),
+            ]"/>
+        </record>
+        
+        <menuitem
+            id="menu_hr_bonuses"
+            name="Bonuses"
+            parent="menu_hr_hr"
+            action="action_hr_bonuses"
+            sequence="9"
         />
         
         <!-- Company Organization Actions & Menu -->
@@ -126,6 +180,24 @@
             action="action_hr_project_role"
             sequence="15"
         />
+        
+        <menuitem
+            id="menu_hr_contract_type"
+            name="Contract Types"
+            parent="menu_hr_company_org"
+            action="hr_contract.action_hr_contract_type"
+            sequence="18"
+        />
+        
+        <menuitem
+            id="menu_hr_employee_tags"
+            name="Employee Tags"
+            parent="menu_hr_company_org"
+            action="hr.open_view_categ_form"
+            sequence="21"
+        />
+        
+        
         
        <!--
         <menuitem
