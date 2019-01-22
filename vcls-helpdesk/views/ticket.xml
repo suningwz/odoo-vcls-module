@@ -50,7 +50,7 @@
                                 <field name="partner_email"/>
                                 <field name="priority" widget="priority"/>
                                 <field name="create_uid" attrs="{'invisible': [('behalf', '==', False)]}"/>
-                                <field name="behalf" invisible="1"/>
+
                             </group>
                             
                             
@@ -59,6 +59,7 @@
                         <group string='Documented by support'>
                                 <field name="ticket_type_id" attrs="{'readonly': [('access_level', 'not in', ['support'])]}"/>
                                 <field name="user_id" class="field_user_id" attrs="{'invisible': [('access_level', 'not in', ['support'])]}"/>
+                                <field name="behalf"/>
                                 <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" attrs="{'readonly': [('access_level', 'not in', ['support'])]}"/>
                                 <field name="resolution" attrs="{'invisible': [('access_level', 'not in', ['support'])]}"/>
                         </group>
