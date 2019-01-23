@@ -64,6 +64,7 @@ class job_profile(models.Model):
         readonly='1',
         string='Secondary Head',)
     
+    '''
     total_working_percentage = fields.Float(
         string="Total Working %",
         compute='_compute_aggregations',)
@@ -75,6 +76,7 @@ class job_profile(models.Model):
     total_billable_target = fields.Float(
         string="Total Billable Target",
         compute='_compute_aggregations',)
+    '''
     
     resource_calendar_id = fields.Many2one(
         'resource.calendar',

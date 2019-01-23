@@ -1,0 +1,48 @@
+<odoo>
+  <data>
+      
+        <!-- List View -->
+        <record id="view_benefit_form" model="ir.ui.view">
+            <field name="name">view_benefit_form</field>
+            <field name="model">hr.benefit</field>
+            <field name="priority">4</field>
+            
+            <field name="arch" type="xml">
+                <form string="Benefits">
+                    <sheet>
+                        <group>
+                            <field name="currency_id" invisible='1'/>
+                            <field name="employee_id"/>
+                            <field name="date"/>
+                            <field name="car_info"/>
+                            <field name="car_allowance"/>
+                            <field name="transport_allowance"/>
+                            <field name="phone"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+      
+        <!-- List View -->
+        <record id="view_benefit_tree" model="ir.ui.view">
+            <field name="name">view_benefit_tree</field>
+            <field name="model">hr.benefit</field>
+            <field name="priority">4</field>
+            
+            <field name="arch" type="xml">
+                <tree string="Benefits" create="true" delete="true" edit="true">
+                    <field name="currency_id" invisible='1'/>
+                    <field name="employee_id"/>
+                    <field name="date"/>
+                    <field name="car_info"/>
+                    <field name="car_allowance"/>
+                    <field name="transport_allowance"/>
+                    <field name="phone"/>
+                </tree>
+            </field>
+        </record>
+
+            
+  </data>
+</odoo>

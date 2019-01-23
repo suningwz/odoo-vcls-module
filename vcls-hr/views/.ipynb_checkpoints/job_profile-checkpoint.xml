@@ -18,13 +18,12 @@
                         <group>
                             <group string="">
                                 <field name="employee_id"/>
-                                <field name="total_working_percentage" widget="percentage"/>
+                                
                                 <field name="resource_calendar_id"/>
                             </group>
                             <group string="">
                                 
-                                <field name="total_working_hours"/>
-                                <field name="total_billable_target"/>
+                                
                             </group>
                             
                         </group>
@@ -64,7 +63,6 @@
                 <tree string="Job Profiles" create="true" delete="true" edit="true">
                     <field name="name"/>
                     <field name="employee_id"/>
-                    <field name="total_working_percentage"/>
                     
                 </tree>
             </field>

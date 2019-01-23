@@ -90,7 +90,6 @@ class Employee(models.Model):
         string="Private Email",)
     
     private_mobile = fields.Char(
-        related="address_home_id.mobile",
         string="Private Mobile",)
     
     private_phone = fields.Char(
@@ -169,11 +168,19 @@ class Employee(models.Model):
         string="Contract(s)",
         compute = "_get_contracts",)
     
+    #Benefit related
+    benefit_ids = fields.Many2many(
+        'hr.benefit',
+        string = "Benefits",
+        compute = '_get_benefits',)
+    
+    '''
     #Benefits
     car_info = fields.Char(
         string='Company car',
         compute='_get_car_info',
         )
+    '''
    
     #Health Care Management
     last_medical_checkup = fields.Date(
@@ -256,7 +263,7 @@ class Employee(models.Model):
             })
             
         empl=super().create(vals)
-        
+        '''
         #create the related default contract
         contract = self.env['hr.contract'].create(
             {
@@ -265,6 +272,7 @@ class Employee(models.Model):
                 'wage':0,
             }
         )
+        '''
 
         return empl
         
@@ -295,19 +303,10 @@ class Employee(models.Model):
             else:
                 empl.employee_status = False #no dates = no status
     
-        
     @api.multi
-    def _get_car_info(self):
+    def _get_benefits(self):
         for empl in self:
-            wt = self.env['fleet.vehicle']
-            cars = wt.search([('driver_id','=',empl.user_id.partner_id.id),('active','=',True)])
-            
-            if len(cars)>0: #if a car has been found
-                car = wt.browse(cars[0].id)
-                empl.car_info = car.info
-            else:
-                empl.car_info = 'no car'
-    
+            empl.benefit_ids = self.env['hr.benefit'].search([('employee_id','=',empl.id)])
 
     @api.multi
     def _get_bonuses(self):
@@ -333,7 +332,7 @@ class Employee(models.Model):
     def _get_access_level(self):
         for rec in self:
             if rec.user_id.id == self._uid: #for the employee himself
-                rec.access_level = 'hr'
+                rec.access_level = 'me'
                 continue
                 
             user = self.env['res.users'].browse(self._uid)
@@ -468,17 +467,20 @@ class Employee(models.Model):
     
     def new_bonus_pop_up(self):
         return {
-            'name': 'Create a new bonus',
+            'name': 'Create a new over variable salary',
             'view_type': 'form',
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'hr.bonus',
             'type': 'ir.actions.act_window',
-            'context': "{'default_employee_id': %s}" % (str(self.id)),
+            'context': "{{'default_employee_id': {}}}".format(self.id),
         }
     
     def new_contract_pop_up(self):
         view_id = self.env.ref('vcls-hr.vcls_contract_form1').id
+        count = len(self.env['hr.contract'].search([('employee_id','=',self.id)]))
+        contract_name = "{} | {:02}".format(self.name,count+1),
+        
         return {
             'name': 'Create a new contract',
             'view_type': 'form',
@@ -487,5 +489,18 @@ class Employee(models.Model):
             'target': 'new',
             'res_model': 'hr.contract',
             'type': 'ir.actions.act_window',
-            'context': "{'default_employee_id': %s}" % (str(self.id)),
+            'context': "{{'default_employee_id': {},'default_name': {}}}".format(self.id,contract_name),
+        }
+    
+    def new_benefit_pop_up(self):
+        view_id = self.env.ref('vcls-hr.view_benefit_form').id
+        return {
+            'name': 'Create a new benefit set',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': view_id,
+            'target': 'new',
+            'res_model': 'hr.benefit',
+            'type': 'ir.actions.act_window',
+            'context': "{{'default_employee_id': {}}}".format(self.id),
         }

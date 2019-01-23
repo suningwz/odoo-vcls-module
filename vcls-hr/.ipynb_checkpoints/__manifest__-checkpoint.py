@@ -42,6 +42,7 @@
         #########
         'views/employee.xml',
         'views/bonuses.xml',
+        'views/benefits.xml',
         'views/company_org.xml',
         'views/contract.xml',
         'views/job.xml',
@@ -75,7 +76,7 @@
         'data/hr.employee.category.csv',
         
         #employee contracts etc.
-        'data/hr.benefit_type.csv',
+        #'data/hr.benefit_type.csv',
         'data/hr.trial.period.csv',
         'data/hr.contract.type.csv',
         

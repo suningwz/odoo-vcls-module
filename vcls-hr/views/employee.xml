@@ -19,8 +19,13 @@
                                 attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"/>
                         
                         <!-- Button pop up new bonus -->
-                        <button name = "new_bonus_pop_up" string = "New bonus" type = "object"
+                        <button name = "new_bonus_pop_up" string = "New over variable salary" type = "object"
                                 icon="fa-trophy"
+                                attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"/>
+                        
+                        <!-- Button pop up new bonus -->
+                        <button name = "new_benefit_pop_up" string = "New benefit set" type = "object"
+                                icon="fa-coffee"
                                 attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"/>
 
                     </header>
@@ -73,7 +78,7 @@
                         
                         <notebook>
                             
-                            <page name="personal_information" string="Personal Information" attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}">
+                            <page name="personal_information" string="Personal Information" attrs="{'invisible': [('access_level', 'not in', ['hr','support','me'])]}">
                                 <group>
                                     <group string="Administrative Information">
                                         <field name="employee_external_id"/>
@@ -116,7 +121,7 @@
                                 <field name="notes" placeholder="Other Information ..." colspan="4"/>
                             </page>
                             
-                            <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['lm', 'hr','hl','support'])]}">
+                            <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['lm', 'hr','hl','support','me'])]}">
                                 <group>
                                     <group string="General Information">
                         
@@ -143,7 +148,7 @@
                                     
                             </page>
                             
-                            <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr','support']),('country_name', '=', 'United States')]}">
+                            <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr','support','me']),('country_name', '=', 'United States')]}">
                                 <group>
                                     <group>
                                         <field name="trial_period_id" placeholder='Please select the period type.'/>
@@ -157,7 +162,7 @@
                             </page>
                             
                             
-                            <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','support'])]}">
+                            <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','support','me'])]}">
                                 <group string="Salaries">
                                     <field name="contract_ids" string="">
                                         <tree string="Employee Salaries">
@@ -181,17 +186,23 @@
                             </page>
                             
                             
-                            <page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','support'])]}">
-                                <group>
-                                    <group>
-                                        <field name="car_info"/>
-                                        
-                                    </group>
+                            <page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','support','me'])]}">
+                                <group string="Benefits">
+                                    <field name="benefit_ids" string="">
+                                        <tree string="Employee Benefits">
+                                            <field name="currency_id" invisible='1'/>
+                                            <field name="date"/>
+                                            <field name="car_info"/>
+                                            <field name="car_allowance"/>
+                                            <field name="transport_allowance"/>
+                                            <field name="phone"/>
+                                        </tree>
+                                    </field>
                                 </group> 
                             </page>
 
                             
-                            <page name="health_care" string="Health Care" attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}">
+                            <page name="health_care" string="Health Care" attrs="{'invisible': [('access_level', 'not in', ['hr','support','me'])]}">
                                 <group>
                                     <group attrs="{'invisible': [('country_name', 'not in', ['France'])]}">
                                         <field name="last_medical_checkup"/>
@@ -218,7 +229,7 @@
                             
                         </notebook>
                         
-                        <group attrs="{'invisible': [('access_level', 'not in', ['hr'])]}" >
+                        <group attrs="{'invisible': [('access_level', 'not in', ['hr','me'])]}" >
                             <div class="oe_chatter">
                                 <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
                                 <field name="activity_ids" widget="mail_activity"/>

@@ -52,7 +52,7 @@ class WorkPermit(models.Model):
     
     name = fields.Char()
     company_id = 
-'''
+
 
 class BenefitType(models.Model):
     _name = 'hr.benefit_type'
@@ -71,3 +71,4 @@ class BenefitType(models.Model):
             ('monthly','Monthly'),
             ('yearly','Yearly'),
         ]
+'''

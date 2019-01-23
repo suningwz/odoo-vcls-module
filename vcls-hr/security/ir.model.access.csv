@@ -1,8 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_hr_bank_holiday_hr,hr.bank.holiday.hr,model_hr_bank_holiday,vcls_group_HR_local,1,0,1,1
 access_hr_benefit_employee,hr.benefit.employee,model_hr_benefit,base.group_user,1,0,0,0
-access_hr_benefit_type_employee,hr.benefit.type.employee,model_hr_benefit_type,base.group_user,1,0,0,0
-access_hr_benefit_type_local,hr.benefit.type.local,model_hr_benefit_type,vcls_group_HR_local,1,1,1,1
 access_hr_benefit_local,hr.benefit.local,model_hr_benefit,vcls_group_HR_local,1,1,1,1
 access_hr_bonus_employee,hr.bonus.employee,model_hr_bonus,base.group_user,1,0,0,0
 access_hr_bonus_local,hr.bonus.local,model_hr_bonus,vcls_group_HR_local,1,1,1,1

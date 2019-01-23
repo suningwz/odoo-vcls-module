@@ -102,6 +102,25 @@
             sequence="9"
         />
         
+        <record id="action_hr_benefits" model="ir.actions.act_window">
+            <field name="name">Benefit Sets</field>
+            <field name="res_model">hr.benefit</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_benefit_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_benefit_form')}),
+            ]"/>
+        </record>
+        
+        <menuitem
+            id="menu_hr_benefits"
+            name="Benefit Sets"
+            parent="menu_hr_hr"
+            action="action_hr_benefits"
+            sequence="12"
+        />
+        
         <!-- Company Organization Actions & Menu -->
         <menuitem
             id="menu_hr_company_org"
