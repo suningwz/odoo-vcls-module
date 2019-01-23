@@ -10,6 +10,20 @@
             <field name="arch" type="xml">
                 
                 <form string="Employee">
+                    <header attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"> <!-- UNDER TEST -->
+                        <!-- Header containing action buttons only visible by HR -->
+                        
+                        <!-- Button pop up new contract -->
+                        <button name = "new_contract_pop_up" string = "New contract" type = "object"
+                                icon="fa-legal"
+                                attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"/>
+                        
+                        <!-- Button pop up new bonus -->
+                        <button name = "new_bonus_pop_up" string = "New bonus" type = "object"
+                                icon="fa-trophy"
+                                attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"/>
+
+                    </header>
                     
                     <sheet>
                         
@@ -39,7 +53,7 @@
                                     <group string="">
                                         <field name="office_id"/>
                                         <field name="work_email" widget="email"/>
-                                        <field name="access_level" invisible='1'/>
+                                        
                                     </group>
                                     <group string="">
                                         <field name="department_id"/>
@@ -59,7 +73,7 @@
                         
                         <notebook>
                             
-                            <page name="personal_information" string="Personal Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
+                            <page name="personal_information" string="Personal Information" attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}">
                                 <group>
                                     <group string="Administrative Information">
                                         <field name="employee_external_id"/>
@@ -67,9 +81,9 @@
                                         <field name="first_name"/>
                                         <field name="middle_name"/>
                                         <field name="family_name"/>
+                                        <field name="diploma_ids" widget="many2many_tags"/>
                                         <field name="family_name_at_birth"/>
                                         <field name="birthday" string="Date of Birth"/>
-                                        <field name="diploma_ids" widget="many2many_tags"/>
                                         <field name="ssnid" string="Social Security Number"/>
                                         <field name="country_id" string="Primary Citizenship"/>
                                         <field name="country2_id"/>
@@ -78,25 +92,31 @@
                                         <field name="link_employee_folder" widget="url"/>
                                     </group>
                                     
-                                    <group string=" Contact Information">
-                                        <field name="address_home_id" context="{                                                 'show_address': 1,                                                 'default_type': 'private',                                                 'form_view_ref': 'base.res_partner_view_form_private'}" options="{&quot;always_reload&quot;: True, &quot;highlight_first_line&quot;: True}"/>
-                                        <field name="is_address_home_a_company" invisible="1"/>
-                                        <div class="text-warning" groups="hr.group_hr_user" attrs="{'invisible': [('is_address_home_a_company','=', False)]}">
-                                            Use here the home address of the employee.
-                                            This private address is used in the expense report reimbursement document.
-                                            It should be different from the work address.
+                                    <group string="Contact Information">
+                                        
+                                        <label for="street" string="Private Address"/>
+                                        <div class="o_address_format">
+                                            <field name="street" placeholder="Street..." class="o_address_street"/>
+                                            <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                            <field name="city" placeholder="City" class="o_address_city"/>
+                                            <field name="state_id" class="o_address_state" placeholder="State" options="{&quot;no_open&quot;: True}"/>
+                                            <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                            <field name="address_country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
                                         </div>
+                    
                                         <field name="private_email" widget="email"/>
+                                        <field name="private_phone" widget="phone"/>
                                         <field name="private_mobile" widget="phone"/>
-                                        <field name="emergency_contact"/>
+                                        <field name="emergency_contact" placehoder="First Name then Last Name"/>
                                         <field name="emergency_phone" widget="phone"/>
                                         <field name="ice_contact_relationship"/>
+                                        
                                     </group>
                                 </group>
                                 <field name="notes" placeholder="Other Information ..." colspan="4"/>
                             </page>
                             
-                            <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['lm', 'hr'])]}">
+                            <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['lm', 'hr','hl','support'])]}">
                                 <group>
                                     <group string="General Information">
                         
@@ -123,17 +143,21 @@
                                     
                             </page>
                             
-                            <page name="trial_period" string="Trial Period" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
+                            <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr','support']),('country_name', '=', 'United States')]}">
                                 <group>
-                                    <field name="trial_period_id"/>
-                                    <field name="trial_start_date"/>
-                                    <field name="trial_notification_date"/>
-                                    <field name="trial_end_date"/>
+                                    <group>
+                                        <field name="trial_period_id" placeholder='Please select the period type.'/>
+                                        <field name="trial_start_date" placeholder='And define period start date.'/>
+                                    </group>
+                                    <group>
+                                        <field name="trial_notification_date"/>
+                                        <field name="trial_end_date"/>
+                                    </group>
                                 </group>
                             </page>
                             
                             
-                            <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
+                            <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','support'])]}">
                                 <group string="Salaries">
                                     <field name="contract_ids" string="">
                                         <tree string="Employee Salaries">
@@ -144,7 +168,7 @@
                                         </tree>
                                     </field>
                                 </group>
-                                <group string="Bonuses">
+                                <group string="Over Variable Salary">
                                     <field name="bonus_ids" string="">
                                         <tree string="Employee Bonus">
                                             <field name="currency_id" invisible='1'/>
@@ -156,19 +180,39 @@
                                 </group>
                             </page>
                             
-                            <page name="health_care" string="Health Care" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
+                            
+                            <page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','support'])]}">
                                 <group>
-                                    <field name="last_medical_checkup"/>
-                                    <field name="next_medical_checkup"/>
-                                    <field name="need_specific_medical" widget="checkbox"/>
+                                    <group>
+                                        <field name="car_info"/>
+                                        
+                                    </group>
+                                </group> 
+                            </page>
+
+                            
+                            <page name="health_care" string="Health Care" attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}">
+                                <group>
+                                    <group attrs="{'invisible': [('country_name', 'not in', ['France'])]}">
+                                        <field name="last_medical_checkup"/>
+                                        <field name="next_medical_checkup"/>
+                                        <field name="need_specific_medical" widget="checkbox"/>
+                                    </group>
+                                    <group string= 'Health Insurance'>
+                                        <field name="affiliated_company"/>
+                                        <field name="affiliation_date"/>
+                                        <field name="medical_policy_number"/>
+                                    </group>
                                 </group>
                             </page>
                             
                              
-                            <page name="technical" string="Technical Fields" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
+                            <page name="technical" string="Technical Fields" attrs="{'invisible': [('access_level', 'not in', ['support'])]}">
                                 <group>
-                                    
                                     <field name="user_id"/>
+                                    <field name="employee_status"/>
+                                    <field name="access_level" invisible='0'/>
+                                    <field name="country_name" invisible='0'/>
                                 </group>
                             </page>
                             
@@ -202,6 +246,29 @@
                     <field name="parent_id"/>
                     <field name="message_needaction" invisible="1"/>
                 </tree>
+            </field>
+          </record>
+      
+          <!-- Search view -->
+        <record id="view_employee_search" model="ir.ui.view">
+            <field name="name">view_employee_search</field>
+            <field name="model">hr.employee</field>
+            <field name="priority">9</field>
+            <field name="arch" type="xml">
+                <search string="Employees">
+                    <field name="name" string="Employees" filter_domain="['|',('work_email','ilike',self),('name','ilike',self)]"/>
+                    <field name="category_ids" groups="hr.group_hr_user"/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <separator/>
+                    <filter string="Unread Messages" name="message_needaction" domain="[('message_needaction', '=', True)]"/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_company" string="Company" domain="[]" context="{'group_by':'company_id'}" />
+                        <filter name="group_office" string="Office" domain="[]" context="{'group_by':'office_id'}" />
+                        <filter name="group_manager" string="Manager" domain="[]" context="{'group_by':'parent_id'}"/>
+                        <filter name="group_department" string="Department" domain="[]" context="{'group_by':'department_id'}"/>
+                    </group>
+                </search>
+                
             </field>
           </record>
       

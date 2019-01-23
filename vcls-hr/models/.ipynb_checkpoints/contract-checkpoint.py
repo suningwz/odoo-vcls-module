@@ -7,9 +7,6 @@ class Contract(models.Model):
     
     _inherit = 'hr.contract'
     _order = 'date_start desc'
-    
-   
-    
    
     #################
     # Custom Fields #
@@ -31,6 +28,10 @@ class Contract(models.Model):
     
     charge_percentage = fields.Float(
         string='Charge Percentage',)
+   
+    country_name = fields.Char(
+        related='company_id.country_id.name',)
+        
     
     #For french employees only
     contract_coefficient = fields.Selection(
@@ -53,6 +54,24 @@ class Contract(models.Model):
         related='job_profile_id.resource_calendar_id',
         string='Working Schedule',
         readonly='1',)
+    
+    company_id = fields.Many2one(
+        related='employee_id.company_id',)
+    
+    date_start = fields.Date(
+        required=True,
+        default=False,)
+    
+    type_id = fields.Many2one(
+        required=True,
+        default=False,)
+    
+    #######################
+    # Calculation Methods #
+    #######################
+    '''
+    @api.depends('fulltime_salary')
+    '''
     
     #####################
     # Selection Methods #

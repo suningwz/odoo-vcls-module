@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #Python Imports
-from datetime import datetime, time
+from datetime import date, datetime, time
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 #Odoo Imports
@@ -54,6 +54,8 @@ class Employee(models.Model):
         string='Family Name',
         track_visibility='always',)
     
+    # private info, to be overriden in the read function according to the read access
+    
     family_name_at_birth = fields.Char(
         string='Family Name at Birth',
         track_visibility='always',)
@@ -65,20 +67,40 @@ class Employee(models.Model):
     work_permit_expire = fields.Date(
         string='Work Permit Expiring Date',)
     
+    street = fields.Char(
+        string='Street',)
+    
+    street2 = fields.Char(
+        string='Street 2',)
+    
+    city = fields.Char()
+    
+    state_id = fields.Many2one(
+        'res.country.state',
+        string = 'State')
+    
+    zip = fields.Char(
+        string='ZIP',)
+    
+    address_country_id = fields.Many2one(
+        'res.country',
+        string="Country",)
+    
     private_email = fields.Char(
-        related="address_home_id.email",
         string="Private Email",)
     
     private_mobile = fields.Char(
         related="address_home_id.mobile",
         string="Private Mobile",)
     
+    private_phone = fields.Char(
+        string='Private Phone',)
+    
     ice_contact_relationship = fields.Selection(
         string='Emergency Contact Relationship',
         selection='_selection_relationship',)
     
     #Generic job info (i.e. not linked to the job position object nor the employee contract)
-    
     employee_seniority_date = fields.Date(
         string='Employee Seniority Date',
         track_visibility='always',)
@@ -139,7 +161,7 @@ class Employee(models.Model):
     
     bonus_ids = fields.Many2many(
         'hr.bonus',
-        string="Bonus",
+        string="Over Variable Salary",
         compute = "_get_bonuses",)
     
     contract_ids = fields.Many2many(
@@ -147,6 +169,12 @@ class Employee(models.Model):
         string="Contract(s)",
         compute = "_get_contracts",)
     
+    #Benefits
+    car_info = fields.Char(
+        string='Company car',
+        compute='_get_car_info',
+        )
+   
     #Health Care Management
     last_medical_checkup = fields.Date(
         string="Last Medical Check-up",
@@ -164,18 +192,42 @@ class Employee(models.Model):
         string="Need Specific Medical Follow-up",
         track_visibility='always',)
     
+    affiliation_date = fields.Date(
+        string='Affiliation Date',)
+    
+    affiliated_company = fields.Char(
+        string='Affiliated Company')
+    
+    medical_policy_number = fields.Char(
+        string='Medical Policy Number',)
+    
     #technical fields
     #used to grant access in employee view
     access_level = fields.Selection([
         ('base', 'Base'),
         ('lm', 'Line Manager'),
-        ('hr', 'HR'),], 
+        ('hl', 'Hierarchical Line'),
+        ('hr', 'HR'),
+        ('me','Me'),
+        ('support', 'Support'),], 
         compute='_get_access_level',
-        store=False,)
+        store=False,
+        default='hr',)
     
     lm_ids = fields.Many2many(
         'res.users',
         compute='_get_lm_ids',)
+    
+    country_name = fields.Char(
+        related='company_id.country_id.name',)
+    
+    employee_status = fields.Selection([
+        ('future','Future'),
+        ('active','Active'),
+        ('departed','Departed')],
+        default = 'future',
+        )
+    
     
     ################
     # CRUD Methods #
@@ -219,7 +271,44 @@ class Employee(models.Model):
     #################################
     # Automated Calculation Methods #
     #################################
-   
+    
+    
+    @api.model #to be called from CRON job
+    def _check_employee_status(self):
+        date_ref = date.today()
+        employees = self.env['hr.employee'].search([])
+        for empl in employees:
+            if empl.employee_end_date: #if end date configured
+                if empl.employee_end_date <= date_ref:
+                    empl.employee_status = 'departed'
+                    continue
+                else: #end date is documented but in the fulture
+                    empl.employee_status = 'active'
+                    continue
+                    
+            elif empl.employee_start_date: #if start date documented
+                if empl.employee_start_date > date_ref: #employee to start in the future
+                    empl.employee_status = 'future'
+                else:
+                    empl.employee_status = 'active'
+                    
+            else:
+                empl.employee_status = False #no dates = no status
+    
+        
+    @api.multi
+    def _get_car_info(self):
+        for empl in self:
+            wt = self.env['fleet.vehicle']
+            cars = wt.search([('driver_id','=',empl.user_id.partner_id.id),('active','=',True)])
+            
+            if len(cars)>0: #if a car has been found
+                car = wt.browse(cars[0].id)
+                empl.car_info = car.info
+            else:
+                empl.car_info = 'no car'
+    
+
     @api.multi
     def _get_bonuses(self):
         for empl in self:
@@ -249,23 +338,34 @@ class Employee(models.Model):
                 
             user = self.env['res.users'].browse(self._uid)
             
-            #if the user is hr_user, then he grants hr access only if the user is in the same company
-            #else, he gets 'lm' access
-            if user.has_group('hr.group_hr_user') and (rec.company_id in user.company_ids):
-                rec.access_level = 'hr' 
+            #if user is in support group
+            if user.has_group('base.group_erp_manager'):
+                rec.access_level = 'support'
                 continue
-            elif user.has_group('hr.group_hr_user'):
-                rec.access_level = 'lm'
-                continue
-                
+            
             #if user is an hr manager, then he sees all
-            if user.has_group('hr.group_hr_manager'):
+            if user.has_group('vcls-hr.vcls_group_HR_global'):
                 rec.access_level = 'hr'
                 continue
             
-            # for the management line
-            if user in rec.lm_ids:
+            #if the user is hr_user, then he grants hr access only if the user is in the same company
+            #else, he gets 'lm' access
+            if user.has_group('vcls-hr.vcls_group_HR_local') and (rec.company_id in user.company_ids):
+                rec.access_level = 'hr' 
+                continue
+                
+            elif user.has_group('vcls-hr.vcls_group_HR_local'):
+                rec.access_level = 'hl'
+                continue
+            
+            # grant extende lm access to head and N+1
+            if (user == rec.parent_id.user_id) or (user == rec.contract_id.job_profile_id.job1_head.user_id) or (user == rec.contract_id.job_profile_id.job2_head.user_id):
                 rec.access_level = 'lm'
+                continue
+                
+            # for the management line
+            elif user in rec.lm_ids:
+                rec.access_level = 'hl'
                 continue
             
             rec.access_level = 'base'
@@ -314,7 +414,8 @@ class Employee(models.Model):
     def _compute_trial_end_date(self):
         for rec in self:
             if rec.trial_start_date and rec.trial_period_id: #if enough info documented
-                rec.trial_end_date = rec._get_previous_working_day(rec.trial_start_date + relativedelta(months=rec.trial_period_id.duration))
+                #add a one day offset
+                rec.trial_end_date = rec._get_previous_working_day(rec.trial_start_date + relativedelta(months=rec.trial_period_id.duration,days=-1))
                 rec.trial_notification_date = rec._get_previous_working_day(rec.trial_end_date + relativedelta(days=-1*rec.trial_period_id.notification_delay))
                             
     #####################
@@ -360,3 +461,31 @@ class Employee(models.Model):
             else:
                 is_worked = False
                 target_date = target_date + timedelta(days=-1)
+        
+    ##########################
+    # Pop-up windows Methods #
+    ##########################
+    
+    def new_bonus_pop_up(self):
+        return {
+            'name': 'Create a new bonus',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': 'new',
+            'res_model': 'hr.bonus',
+            'type': 'ir.actions.act_window',
+            'context': "{'default_employee_id': %s}" % (str(self.id)),
+        }
+    
+    def new_contract_pop_up(self):
+        view_id = self.env.ref('vcls-hr.vcls_contract_form1').id
+        return {
+            'name': 'Create a new contract',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': view_id,
+            'target': 'new',
+            'res_model': 'hr.contract',
+            'type': 'ir.actions.act_window',
+            'context': "{'default_employee_id': %s}" % (str(self.id)),
+        }

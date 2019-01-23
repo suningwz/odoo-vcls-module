@@ -2,6 +2,7 @@
 
 #Odoo Imports
 from odoo import api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 class job_profile(models.Model):
     
@@ -78,8 +79,9 @@ class job_profile(models.Model):
     resource_calendar_id = fields.Many2one(
         'resource.calendar',
         string='Working Time',
+        required=True,
         )
-
+  
     ###################
     # Compute Methods #
     ###################
@@ -99,5 +101,15 @@ class job_profile(models.Model):
             rec.total_working_percentage = rec.job1_percentage + rec.job2_percentage
             rec.total_working_hours = rec.total_working_percentage*rec.employee_id.resource_calendar_id.hours_per_day*5 #averaged over 5 days a week
             rec.total_billable_target = (rec.job1_percentage*rec.job1_target+rec.job2_percentage*rec.job2_target)*rec.employee_id.resource_calendar_id.hours_per_day*5
+            
             #build the name for easier search and info
             rec._compute_name()
+    
+    
+    @api.constrains('job1_percentage','job2_percentage')
+    def check_working_percentage(self):
+        for jp in self:
+            if (jp.job1_percentage + jp.job2_percentage)>1.0:
+                raise ValidationError("Impossible to configure more than 100% working time.")
+    
+    

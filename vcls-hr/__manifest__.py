@@ -15,11 +15,12 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.6',
+    'version': '0.7',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
                 'contacts',
+                'fleet',
                 'hr',
                 'hr_contract',
                 'hr_holidays',
@@ -45,11 +46,13 @@
         'views/contract.xml',
         'views/job.xml',
         'views/job_profile.xml',
+        'views/working_times.xml',
       
         ###########
         # ACTIONS #
         ###########
         'actions/hr_employee_menu.xml',
+        'actions/hr_employee_cronjob.xml',
         #'actions/hr_job_menu.xml',
         
         #############

@@ -46,6 +46,7 @@
                             <group>
                                 <group name="duration_group" string="Contract Terms">
                                     <field name="company_id" string="VCLS Entity"/>
+                                    <field name="country_name" string="Country"/>
                                     <field name="date_start"/>
                                     <label for="date_end"/>
                                     <div class="o_row">
@@ -65,7 +66,7 @@
                                 <field name="currency_id" string="Currency"/>
                                 <field name="fulltime_salary" options="{'currency_field':'currency_id'}"/>
                                 <field name="prorated_salary" options="{'currency_field':'currency_id'}"/>
-                                <field name="charge_percentage"/>
+                                <field name="charge_percentage" widget='percentage'/>
                                 <field name="wage" invisible="1"/>
                             </group>
                             <group string="Comments">
@@ -73,11 +74,23 @@
                             </group>
                         </page>
                         
-                        <page string="French Specificities" name="france">
-                            <group>
+                        <page string="Local Specificities" name="locals">
+                            <group string='France' attrs="{'invisible': [('country_name', 'not in', ['France'])]}">
                                 <field name="contract_coefficient"/>
                                 <field name="contract_echelon"/>
                                 <field name="tax_rate_percentage"/>
+                            </group>
+                            <group string='Switzerland' attrs="{'invisible': [('country_name', 'not in', ['Switzerland'])]}">
+                                
+                            </group>
+                            <group string='United States' attrs="{'invisible': [('country_name', 'not in', ['United States'])]}">
+                                
+                            </group>
+                            <group string='United Kingdom' attrs="{'invisible': [('country_name', 'not in', ['United Kingdom'])]}">
+                                
+                            </group>
+                            <group string='India' attrs="{'invisible': [('country_name', 'not in', ['India'])]}">
+                                
                             </group>
                         </page>
                         
@@ -96,33 +109,47 @@
             
         </record>
       
+          <!-- Tree view -->
+        <record id="view_contact_tree_all" model="ir.ui.view">
+            <field name="name">view_contact_tree_all</field>
+            <field name="model">hr.contract</field>
+            <field name="priority">9</field>
+            <field name="arch" type="xml">
+                <tree string="Contracts">
+                    <field name="employee_id"/>
+                    <field name="name"/>
+                    
+                </tree>
+            </field>
+          </record>
+      
+       <!-- Search view -->
+        <record id="view_contract_search" model="ir.ui.view">
+            <field name="name">view_contract_search</field>
+            <field name="model">hr.contract</field>
+            <field name="priority">9</field>
+            <field name="arch" type="xml">
+                <search string="Contracts">
+                    <field name="name" string="Contracts"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <field name="job_profile_id"/>
+                    
+                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                    <separator/>
+                    
+                    <group expand="0" string="Group By">
+                        
+                        <filter string="Employee" name="employee" domain="[]" context="{'group_by':'employee_id'}"/>
+                        <filter string="Contract Type" name="contract_type" domain="[]" context="{'group_by':'type_id'}"/>
+                    </group>
+                    
+                </search>
+            </field>
+          </record>
+      
   </data>
 </odoo>
                 
-  <!--    
-           <group name="main_info">
-                                <group name="salary_and_advantages" string="Monthly Advantages in Cash">
-                                    <label for="wage"/>
-                                    <div class="o_row" name="wage">
-                                        <field name="wage" nolabel="1"/>
-                                        <span>/ month</span>
-                                    </div>
-                                    <field name="advantages" nolabel="1" placeholder="Advantages..." colspan="2" invisible="1"/>
-                                </group>
-                            </group>
-
-
-
-
-
-                    
-                    <group>
-                        
-                        <group>
-                            
-                            <field name="reported_to_secretariat" widget="toggle_button" options="{&quot;active&quot;: &quot;Reported to the social secretariat&quot;, &quot;inactive&quot;: &quot;To report to the social secretariat&quot;}"/>
-                        </group>
-                    </group>
-                    
-                    
-                -->

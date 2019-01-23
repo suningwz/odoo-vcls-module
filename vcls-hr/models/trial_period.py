@@ -49,6 +49,7 @@ class TrialPeriod(models.Model):
                 rec.name = "{} ({})".format(rec.name,rec.contract_type)
             if rec.is_prolonged:
                 rec.name = "{} - PROLONGED".format(rec.name)
+            rec.name = "{} - {} months".format(rec.name,rec.duration)
                 
     @api.model
     def _selection_contract(self):
