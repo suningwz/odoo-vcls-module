@@ -5,7 +5,7 @@
         <!-- Deactivate original non-used menus by removing the related action 
         <record id="hr_contract.hr_menu_contract" model="ir.ui.menu">
             <field name="active" eval="False"/>
-            <field name="action" ref=""/>
+            <field name="action" ref=""/> 
         </record>
         -->
         
@@ -15,6 +15,7 @@
             <field name="res_model">hr.employee</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref='view_employee_search'/>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('employee_view_tree_all')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('employee_view_form_all')}),
@@ -36,12 +37,21 @@
             parent="hr.menu_hr_root"
             sequence="6"
         />
-        
+        <!--
         <record id="hr_contract.action_hr_contract" model="ir.actions.act_window">
             <field name="search_view_id" ref='hr_contract.hr_contract_view_search'/>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('hr_contract.hr_contract_view_kanban')}),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('hr_contract.hr_contract_view_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_contract_form1')}),
+                
+            ]"/>
+        </record>-->
+        
+        <record id="hr_contract.action_hr_contract" model="ir.actions.act_window">
+            <field name="search_view_id" ref='view_contract_search'/>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_contact_tree_all')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_contract_form1')}),
                 
             ]"/>
@@ -75,7 +85,7 @@
         />
         
         <record id="action_hr_bonuses" model="ir.actions.act_window">
-            <field name="name">Bonuses</field>
+            <field name="name">Over Variable Salary</field>
             <field name="res_model">hr.bonus</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -86,10 +96,29 @@
         
         <menuitem
             id="menu_hr_bonuses"
-            name="Bonuses"
+            name="Over Variable Salary"
             parent="menu_hr_hr"
             action="action_hr_bonuses"
             sequence="9"
+        />
+        
+        <record id="action_hr_benefits" model="ir.actions.act_window">
+            <field name="name">Benefit Sets</field>
+            <field name="res_model">hr.benefit</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_benefit_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_benefit_form')}),
+            ]"/>
+        </record>
+        
+        <menuitem
+            id="menu_hr_benefits"
+            name="Benefit Sets"
+            parent="menu_hr_hr"
+            action="action_hr_benefits"
+            sequence="12"
         />
         
         <!-- Company Organization Actions & Menu -->
@@ -197,28 +226,23 @@
             sequence="21"
         />
         
-        
-        
-       <!--
-        <menuitem
-            id="menu_employee_legal"
-            name="Legal"
-            parent="hr.menu_hr_root"
-            sequence="6"
-        />
-        
-        <menuitem
-            id="menu_employee_legal"
-            name="Contracts"
-            parent="menu_employee_legal"
-            action="hr_contract.action_hr_contract"
-            sequence="6"
-        />
-        
-        <record id="menu_employee_legal" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4,ref('hr.group_hr_user'))]"/>
+        <record id="resource.action_resource_calendar_form" model="ir.actions.act_window">
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_tree_working_times')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_form_working_times')}),
+                
+            ]"/>
         </record>
-        -->
+        
+        <menuitem
+            id="menu_hr_employee_wt"
+            name="Working Times"
+            parent="menu_hr_company_org"
+            action="resource.action_resource_calendar_form"
+            sequence="24"
+        />
+        
+       
         
     </data>
 </odoo>

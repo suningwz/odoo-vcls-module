@@ -45,6 +45,14 @@ class Office(models.Model):
     _description = 'VCLS Office'
     
     name = fields.Char()
+    
+'''
+class WorkPermit(models.Model):
+    _name = 'hr.work_permit'
+    
+    name = fields.Char()
+    company_id = 
+
 
 class BenefitType(models.Model):
     _name = 'hr.benefit_type'
@@ -63,3 +71,4 @@ class BenefitType(models.Model):
             ('monthly','Monthly'),
             ('yearly','Yearly'),
         ]
+'''

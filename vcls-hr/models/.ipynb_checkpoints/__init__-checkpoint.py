@@ -6,6 +6,7 @@ from . import bonus
 from . import contract
 from . import employee
 from . import exceptional_leave
+from . import fleet
 from . import ir_model_data
 from . import job
 from . import job_profile
@@ -14,3 +15,4 @@ from . import leave_allocation
 from . import leave_type
 from . import multiselections
 from . import trial_period
+from . import working_times

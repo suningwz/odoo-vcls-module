@@ -7,9 +7,6 @@ class Contract(models.Model):
     
     _inherit = 'hr.contract'
     _order = 'date_start desc'
-    
-   
-    
    
     #################
     # Custom Fields #
@@ -24,13 +21,26 @@ class Contract(models.Model):
         string='Fulltime Gross Annual Salary',)
     
     prorated_salary = fields.Monetary(
-        string='Prorated Gross Annual Salary',)
+        string='Prorated Gross Annual Salary',
+        compute='_compute_prorated_salary',)
+    
+    wage = fields.Monetary(
+        compute='_compute_wage',)
     
     salary_comment = fields.Text(
         string='Salary Comment',)
     
     charge_percentage = fields.Float(
         string='Charge Percentage',)
+   
+    country_name = fields.Char(
+        related='company_id.country_id.name',)
+    
+    effective_percentage = fields.Float(
+        string = 'Effective working percentage',
+        related = 'job_profile_id.resource_calendar_id.effective_percentage',
+        readonly = True)
+        
     
     #For french employees only
     contract_coefficient = fields.Selection(
@@ -53,6 +63,34 @@ class Contract(models.Model):
         related='job_profile_id.resource_calendar_id',
         string='Working Schedule',
         readonly='1',)
+    
+    company_id = fields.Many2one(
+        related='employee_id.company_id',)
+    
+    date_start = fields.Date(
+        required=True,
+        default=False,)
+    
+    type_id = fields.Many2one(
+        required=True,
+        default=False,)
+    
+    #######################
+    # Calculation Methods #
+    #######################
+    
+    @api.depends('fulltime_salary','job_profile_id.resource_calendar_id.effective_percentage')
+    def _compute_prorated_salary(self):
+        for rec in self:
+            if rec.job_profile_id.resource_calendar_id.effective_percentage: #if this value is defined
+                rec.prorated_salary = rec.fulltime_salary*rec.job_profile_id.resource_calendar_id.effective_percentage
+            else:
+                rec.prorated_salary = rec.fulltime_salary
+    
+    @api.depends('fulltime_salary')
+    def _compute_wage(self):
+        for rec in self:
+            rec.wage = rec.prorated_salary/12.0
     
     #####################
     # Selection Methods #

@@ -2,6 +2,7 @@
 
 #Odoo Imports
 from odoo import api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 class job_profile(models.Model):
     
@@ -25,6 +26,10 @@ class job_profile(models.Model):
         string="Employee",
         required="True",)
     
+    employee_company_id = fields.Many2one(
+        'res.company',
+        related='employee_id.company_id',)
+    
     job1_id = fields.Many2one(
         'hr.job',
         string="Primary Position",
@@ -44,7 +49,12 @@ class job_profile(models.Model):
         'hr.employee',
         related='job1_id.vcls_activity_id.head_id',
         readonly='1',
-        string='Primary Head')
+        string='Primary Head of Activity')
+    
+    job1_dir = fields.Many2one(
+        'hr.employee',
+        related='job1_id.department_id.manager_id',
+        string='Primary Head of Department')
     
     job2_id = fields.Many2one(
         'hr.job',
@@ -63,6 +73,12 @@ class job_profile(models.Model):
         readonly='1',
         string='Secondary Head',)
     
+    job2_dir = fields.Many2one(
+        'hr.employee',
+        related='job2_id.department_id.manager_id',
+        string='Secondary Head of Department')
+    
+    '''
     total_working_percentage = fields.Float(
         string="Total Working %",
         compute='_compute_aggregations',)
@@ -74,6 +90,7 @@ class job_profile(models.Model):
     total_billable_target = fields.Float(
         string="Total Billable Target",
         compute='_compute_aggregations',)
+    '''
     
     resource_calendar_id = fields.Many2one(
         'resource.calendar',
@@ -93,12 +110,22 @@ class job_profile(models.Model):
                 rec.name = '{} at {:.0f}%'.format(rec.job1_id.name, 100*rec.job1_percentage)
             if rec.job2_id:
                 rec.name += ' | {} at {:.0f}%'.format(rec.job2_id.name, 100*rec.job2_percentage)
-              
+    '''         
     @api.depends('job1_id','job1_percentage','job1_target','job2_id','job2_percentage','job2_target','employee_id.resource_calendar_id')
     def _compute_aggregations(self):
         for rec in self:
             rec.total_working_percentage = rec.job1_percentage + rec.job2_percentage
             rec.total_working_hours = rec.total_working_percentage*rec.employee_id.resource_calendar_id.hours_per_day*5 #averaged over 5 days a week
             rec.total_billable_target = (rec.job1_percentage*rec.job1_target+rec.job2_percentage*rec.job2_target)*rec.employee_id.resource_calendar_id.hours_per_day*5
+            
             #build the name for easier search and info
             rec._compute_name()
+    ''' 
+    
+    @api.constrains('job1_percentage','job2_percentage')
+    def check_working_percentage(self):
+        for jp in self:
+            if (jp.job1_percentage + jp.job2_percentage)>1.0:
+                raise ValidationError("Impossible to configure more than 100% working time.")
+    
+    

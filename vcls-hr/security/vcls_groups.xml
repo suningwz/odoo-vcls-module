@@ -2,18 +2,55 @@
 <odoo>
     <data>
         
-        <!-- Create the group category 
-        <record model="ir.module.category" id="vcls_module">
-            <field name="name">VCLS Extra Roles</field>
-            <field name="description">Defines extra rights used in the VCLS module.</field>
-            <field name="sequence">3</field>
+        <!-- Create the VCLS HR group category -->
+        <record model="ir.module.category" id="group_category_vcls_hr">
+            <field name="name">VCLS HR</field>
+            <field name="description">Extra right to HR groups</field>
+            <field name="sequence">2</field>
         </record>
-        -->
+        
+        <!-- Create the VCLS Support group category -->
+        <record model="ir.module.category" id="group_category_vcls_support">
+            <field name="name">VCLS Support</field>
+            <field name="description">Extra right to support groups</field>
+            <field name="sequence">1</field>
+        </record>
+        
+        <!-- Create the superuser groups, which has almost all roles except HR ones to protect private data-->
+        <record id="vcls_group_superuser_lvl1" model="res.groups">
+            <field name="name">Superuser Lvl 1</field>
+            <field name="category_id" ref="group_category_vcls_support"/>
+            
+        </record>
+        
+        <record id="vcls_group_superuser_lvl2" model="res.groups">
+            <field name="name">Superuser Lvl 2</field>
+            <field name="category_id" ref="group_category_vcls_support"/>
+            <field name="implied_ids" eval="[(4,ref('vcls_group_superuser_lvl1'))]"/>
+        </record>
         
         <!-- Create the Line Manager group, which will be prompted as tickbox -->
         <record id="vcls_group_lm" model="res.groups">
             <field name="name">Line Manager</field>
             <field name="category_id"/>
+        </record>
+        
+        <!-- Create the Head group, which will be prompted as tickbox -->
+        <record id="vcls_group_head" model="res.groups">
+            <field name="name">Head</field>
+            <field name="category_id"/>
+        </record>
+        
+        <!-- Create the local HR group and global HR groups -->
+        <record id="vcls_group_HR_local" model="res.groups">
+            <field name="name">local HR</field>
+            <field name="category_id" ref="group_category_vcls_hr"/>
+        </record>
+        
+        <record id="vcls_group_HR_global" model="res.groups">
+            <field name="name">global HR</field>
+            <field name="category_id" ref="group_category_vcls_hr"/>
+            <field name="implied_ids" eval="[(4,ref('vcls_group_HR_local'))]"/>
         </record>
         
         

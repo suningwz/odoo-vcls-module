@@ -7,57 +7,50 @@ class Benefit(models.Model):
     
     _name = 'hr.benefit'
     _description = 'Benefits'
+    _order = 'date desc'
     
     #################
     # Custom Fields #
     #################
     
-    name = fields.Char()
+    employee_id = fields.Many2one(
+        'hr.employee',
+        required = True,
+        )
     
-    contract_id = fields.Many2one(
-        'hr.contract',)
+    date = fields.Date(
+        string='Date from',
+        required=True)
     
     currency_id = fields.Many2one(
-        'res.currency',
+        related = 'employee_id.company_id.currency_id',
         string="Currency",
-        required="True",)
+        readonly=True,)
     
-    amount = fields.Monetary(
-        string="Amount",
-        required="True",)
+    car_info = fields.Char(
+        string='Company car',
+        compute='_get_car_info',
+        )
     
-    start_date = fields.Date(
-        string="Start Date",
-        required="True",)
+    car_allowance = fields.Monetary(
+        string='Car allowance',)
     
-    end_date = fields.Date(
-        string="End Date",)
+    transport_allowance = fields.Monetary(
+        string='Transport allowance',)
     
-    comment = fields.Text(
-        string="Comment",)
+    phone = fields.Boolean()
     
-    recurrence = fields.Selection(
-        selection='_selection_recurrence',)
+    #################################
+    # Automated Calculation Methods #
+    #################################
     
-    type = fields.Selection(
-        selection='_selection_type',
-        required="True",)
-    
-    #####################
-    # Selection Methods #
-    #####################
-    
-    @api.model
-    def _selection_type(self):
-        return [
-            ('car','Car'),
-            ('public_transport','Public Transport'),
-            ('phone','Phone'),
-        ]
-    
-    @api.model
-    def _selection_recurrence(self):
-        return [
-            ('monthly','Monthly'),
-            ('yearly','Yearly'),
-        ]
+    @api.multi
+    def _get_car_info(self):
+        wt = self.env['fleet.vehicle']
+        for rec in self:
+            cars = wt.search([('driver_id','=',rec.employee_id.user_id.partner_id.id),('active','=',True)])
+            if len(cars)>0: #if a car has been found
+                car = wt.browse(cars[0].id)
+                rec.car_info = car.info
+            else:
+                rec.car_info = 'no car'

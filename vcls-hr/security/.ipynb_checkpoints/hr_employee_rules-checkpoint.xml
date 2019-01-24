@@ -9,7 +9,36 @@
             <field name="domain_force">[
                     (1,'=',1),
             ]</field>
-            <field name="groups" eval="[(4, ref('hr.group_hr_manager'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
+        </record>
+        
+        <!-- Global HR can't edit themselves -->
+        <record id="hr_employee_hr_global_rule" model="ir.rule">
+            <field name="name">hr_employee_hr_global_rule: can't edit themselves </field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="perm_read" eval="0"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                    (1, '=', 1),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
+        </record>
+        
+        <!-- Local HR (Officiers without multicompany) can only edit employee of their own company, but not themsleves -->
+        <record id="hr_employee_hr_local_rule" model="ir.rule">
+            <field name="name">hr_employee_hr_local_rule: own company but not themselves </field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="perm_read" eval="0"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                    ('company_id','in',[user.company_id.id]),
+                    
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>
         
         <!-- CONTRACT -->
@@ -24,6 +53,50 @@
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         </record>
         
+        <!-- Heads can see all contracts in their activity -->
+         <record id="hr_contract_head_rule" model="ir.rule">
+            <field name="name">hr_contract_head_rule: head see all activity </field>
+            <field name="model_id" ref="hr_contract.model_hr_contract"/>
+            <field name="domain_force">[
+                '|',
+                ('job_profile_id.job1_head.user_id', '=', user.id),
+                ('job_profile_id.job2_head.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_head'))]"/>
+        </record>
+        
+        <!-- LM can see N-1 contracts -->
+         <record id="hr_contract_lm_rule" model="ir.rule">
+            <field name="name">hr_contract_lm_rule: lm see N-1 contract </field>
+            <field name="model_id" ref="hr_contract.model_hr_contract"/>
+            <field name="domain_force">[
+                ('employee_id.parent_id.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls-hr.vcls_group_lm'))]"/>
+        </record>
+        
+        <!-- Heads can see all bonuses in their activity -->
+         <record id="hr_bonus_head_rule" model="ir.rule">
+            <field name="name">hr_bonus_head_rule: head see all activity </field>
+            <field name="model_id" ref="model_hr_bonus"/>
+            <field name="domain_force">[
+                '|',
+                ('employee_id.contract_id.job_profile_id.job1_head.user_id', '=', user.id),
+                ('employee_id.contract_id.job_profile_id.job2_head.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_head'))]"/>
+        </record>
+        
+        <!-- LM can see N-1 bonus -->
+         <record id="hr_bonus_lm_rule" model="ir.rule">
+            <field name="name">hr_bonus_lm_rule: head see all activity </field>
+            <field name="model_id" ref="model_hr_bonus"/>
+            <field name="domain_force">[
+                ('employee_id.parent_id.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_lm'))]"/>
+        </record>
+        
         <!-- Local HR (Officiers without multicompany) can only see contracts of their own company -->
         <record id="hr_contract_hr_user_rule" model="ir.rule">
             <field name="name">hr_contract_hr_user_rule: local sees all his company </field>
@@ -31,7 +104,7 @@
             <field name="domain_force">[
                     ('company_id','in',[user.company_id.id]),
             ]</field>
-            <field name="groups" eval="[(4, ref('hr.group_hr_user'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>
         
         <!-- Glabal HR (Managers) can see all contracts -->
@@ -41,7 +114,7 @@
             <field name="domain_force">[
                     (1,'=',1),
             ]</field>
-            <field name="groups" eval="[(4, ref('hr.group_hr_manager'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
         </record>
         
         <!-- BONUS -->
@@ -63,7 +136,7 @@
             <field name="domain_force">[
                     ('employee_id.company_id','in',[user.company_id.id]),
             ]</field>
-            <field name="groups" eval="[(4, ref('hr.group_hr_user'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>
         
         <!-- Glabal HR (Managers) can see all bonuses -->
@@ -73,7 +146,7 @@
             <field name="domain_force">[
                     (1,'=',1),
             ]</field>
-            <field name="groups" eval="[(4, ref('hr.group_hr_manager'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
         </record>
         
         <!-- BENEFITS -->
@@ -83,7 +156,7 @@
             <field name="name">hr_benefit_employee_rule: employee sees owns </field>
             <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
             <field name="domain_force">[
-                    ('contract_id.employee_id.user_id', '=', user.id),
+                    ('employee_id.user_id', '=', user.id),
             ]</field>
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         </record>
@@ -95,7 +168,7 @@
             <field name="domain_force">[
                     ('contract_id.company_id','in',[user.company_id.id]),
             ]</field>
-            <field name="groups" eval="[(4, ref('hr.group_hr_user'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>
         
         <!-- Glabal HR (Managers) can see all benefits -->
@@ -105,8 +178,32 @@
             <field name="domain_force">[
                     (1,'=',1),
             ]</field>
-            <field name="groups" eval="[(4, ref('hr.group_hr_manager'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
         </record>
+        
+        <!-- LM can see N-1 benefits -->
+         <record id="hr_benefit_lm_rule" model="ir.rule">
+            <field name="name">hr_benefit_lm_rule: head see all activity </field>
+            <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
+            <field name="domain_force">[
+                ('employee_id.parent_id.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_lm'))]"/>
+        </record>
+        
+        <!-- Heads can see all bonuses in their activity -->
+         <record id="hr_benefit_head_rule" model="ir.rule">
+            <field name="name">hr_benefit_head_rule: head see all activity </field>
+            <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
+            <field name="domain_force">[
+                '|',
+                ('employee_id.contract_id.job_profile_id.job1_head.user_id', '=', user.id),
+                ('employee_id.contract_id.job_profile_id.job2_head.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_head'))]"/>
+        </record>
+        
+        
         
     </data>
 </odoo>

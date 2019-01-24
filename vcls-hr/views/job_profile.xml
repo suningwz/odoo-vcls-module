@@ -18,13 +18,12 @@
                         <group>
                             <group string="">
                                 <field name="employee_id"/>
-                                <field name="total_working_percentage" widget="percentage"/>
-                                <field name="resource_calendar_id"/>
+                                <field name="employee_company_id" invisible='1'/>
+                                <field name="resource_calendar_id" domain="[('company_id','=',employee_company_id)]"/>
                             </group>
                             <group string="">
                                 
-                                <field name="total_working_hours"/>
-                                <field name="total_billable_target"/>
+                                
                             </group>
                             
                         </group>
@@ -34,6 +33,7 @@
                                 <field name="job1_percentage" readonly="0" widget="percentage"/>
                                 <field name="job1_target" widget="percentage"/>
                                 <field name="job1_head"/>
+                                <field name="job1_dir"/>
                             </group>
                        
                             <group string="Secondary Job Position">
@@ -41,6 +41,7 @@
                                 <field name="job2_percentage" readonly="0" widget="percentage"/>
                                 <field name="job2_target" widget="percentage"/>
                                 <field name="job2_head"/>
+                                <field name="job2_dir"/>
                             </group>
                             
                         </group>
@@ -64,7 +65,6 @@
                 <tree string="Job Profiles" create="true" delete="true" edit="true">
                     <field name="name"/>
                     <field name="employee_id"/>
-                    <field name="total_working_percentage"/>
                     
                 </tree>
             </field>
