@@ -280,7 +280,7 @@ class Employee(models.Model):
     #################################
     # Automated Calculation Methods #
     #################################
-    
+    '''
     #adds or remove from the lm group according to the subortinates count
     @api.model #to be called from CRON job
     def _check_lm_membership(self):
@@ -292,6 +292,7 @@ class Employee(models.Model):
             vals = {'groups_id': [(3, group.id)]}
                 
         user.write(vals)
+    '''
             
     
     
