@@ -25,9 +25,7 @@ access_hr_office_default,hr.office.default,model_hr_office,,1,0,0,0
 access_hr_department_admin,hr.department.admin,hr.model_hr_department,base.group_system,1,1,1,1
 access_hr_department_default,hr.department.default,hr.model_hr_department,,1,0,0,0
 access_hr_job_admin,hr.job.admin,hr.model_hr_job,vcls_group_HR_global,1,1,1,1
-access_hr_job_default,hr.job.default,hr.model_hr_job,,1,0,0,0
 access_hr_employee_category_admin,hr.employee.category.admin,hr.model_hr_employee_category,base.group_system,1,1,1,1
-access_hr_employee_category_default,hr.employee.category.default,hr.model_hr_employee_category,,1,0,0,0
 access_hr_office_employee,hr.office.employee,model_hr_office,base.group_user,1,0,0,0
 access_hr_project_role_admin,hr.project.role.admin,model_hr_project_role,base.group_system,1,1,1,1
 access_hr_project_role_employee,hr.project.role.employee,model_hr_project_role,base.group_user,1,0,0,0

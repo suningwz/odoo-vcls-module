@@ -35,6 +35,11 @@ class Contract(models.Model):
    
     country_name = fields.Char(
         related='company_id.country_id.name',)
+    
+    effective_percentage = fields.Float(
+        string = 'Effective working percentage',
+        related = 'job_profile_id.resource_calendar_id.effective_percentage',
+        readonly = True)
         
     
     #For french employees only

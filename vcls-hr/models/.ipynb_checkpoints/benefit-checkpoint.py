@@ -19,7 +19,7 @@ class Benefit(models.Model):
         )
     
     date = fields.Date(
-        string='Date',
+        string='Date from',
         required=True)
     
     currency_id = fields.Many2one(

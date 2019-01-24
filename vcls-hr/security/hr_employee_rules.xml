@@ -21,7 +21,7 @@
             <field name="perm_create" eval="1"/>
             <field name="perm_unlink" eval="1"/>
             <field name="domain_force">[
-                    ('user_id', '!=', user.id),
+                    (1, '=', 1),
             ]</field>
             <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
         </record>
@@ -36,7 +36,7 @@
             <field name="perm_unlink" eval="1"/>
             <field name="domain_force">[
                     ('company_id','in',[user.company_id.id]),
-                    ('user_id', '!=', user.id),
+                    
             ]</field>
             <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>
@@ -156,7 +156,7 @@
             <field name="name">hr_benefit_employee_rule: employee sees owns </field>
             <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
             <field name="domain_force">[
-                    ('contract_id.employee_id.user_id', '=', user.id),
+                    ('employee_id.user_id', '=', user.id),
             ]</field>
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         </record>
@@ -180,6 +180,30 @@
             ]</field>
             <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
         </record>
+        
+        <!-- LM can see N-1 benefits -->
+         <record id="hr_benefit_lm_rule" model="ir.rule">
+            <field name="name">hr_benefit_lm_rule: head see all activity </field>
+            <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
+            <field name="domain_force">[
+                ('employee_id.parent_id.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_lm'))]"/>
+        </record>
+        
+        <!-- Heads can see all bonuses in their activity -->
+         <record id="hr_benefit_head_rule" model="ir.rule">
+            <field name="name">hr_benefit_head_rule: head see all activity </field>
+            <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
+            <field name="domain_force">[
+                '|',
+                ('employee_id.contract_id.job_profile_id.job1_head.user_id', '=', user.id),
+                ('employee_id.contract_id.job_profile_id.job2_head.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_head'))]"/>
+        </record>
+        
+        
         
     </data>
 </odoo>

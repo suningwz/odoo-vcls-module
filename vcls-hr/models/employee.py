@@ -263,6 +263,7 @@ class Employee(models.Model):
             })
             
         empl=super().create(vals)
+        
         '''
         #create the related default contract
         contract = self.env['hr.contract'].create(
@@ -279,6 +280,19 @@ class Employee(models.Model):
     #################################
     # Automated Calculation Methods #
     #################################
+    
+    #adds or remove from the lm group according to the subortinates count
+    @api.model #to be called from CRON job
+    def _check_lm_membership(self):
+        group = self.env.ref('vcls-hr.vcls_group_lm')
+        user = self.user_id
+        if self.child_ids[0]: #if a child is found
+            vals = {'groups_id': [(4, group.id)]}
+        else:
+            vals = {'groups_id': [(3, group.id)]}
+                
+        user.write(vals)
+            
     
     
     @api.model #to be called from CRON job
@@ -357,8 +371,8 @@ class Employee(models.Model):
                 rec.access_level = 'hl'
                 continue
             
-            # grant extende lm access to head and N+1
-            if (user == rec.parent_id.user_id) or (user == rec.contract_id.job_profile_id.job1_head.user_id) or (user == rec.contract_id.job_profile_id.job2_head.user_id):
+            # grant extended lm access to head of activity, head of department, and N+1
+            if (user == rec.parent_id.user_id) or (user == rec.contract_id.job_profile_id.job1_head.user_id) or (user == rec.contract_id.job_profile_id.job2_head.user_id) or (user == rec.contract_id.job_profile_id.job1_dir.user_id) or (user == rec.contract_id.job_profile_id.job2_dir.user_id):
                 rec.access_level = 'lm'
                 continue
                 

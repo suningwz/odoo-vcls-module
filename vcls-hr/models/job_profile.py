@@ -26,6 +26,10 @@ class job_profile(models.Model):
         string="Employee",
         required="True",)
     
+    employee_company_id = fields.Many2one(
+        'res.company',
+        related='employee_id.company_id',)
+    
     job1_id = fields.Many2one(
         'hr.job',
         string="Primary Position",
@@ -45,7 +49,12 @@ class job_profile(models.Model):
         'hr.employee',
         related='job1_id.vcls_activity_id.head_id',
         readonly='1',
-        string='Primary Head')
+        string='Primary Head of Activity')
+    
+    job1_dir = fields.Many2one(
+        'hr.employee',
+        related='job1_id.department_id.manager_id',
+        string='Primary Head of Department')
     
     job2_id = fields.Many2one(
         'hr.job',
@@ -63,6 +72,11 @@ class job_profile(models.Model):
         related='job2_id.vcls_activity_id.head_id',
         readonly='1',
         string='Secondary Head',)
+    
+    job2_dir = fields.Many2one(
+        'hr.employee',
+        related='job2_id.department_id.manager_id',
+        string='Secondary Head of Department')
     
     '''
     total_working_percentage = fields.Float(
@@ -96,7 +110,7 @@ class job_profile(models.Model):
                 rec.name = '{} at {:.0f}%'.format(rec.job1_id.name, 100*rec.job1_percentage)
             if rec.job2_id:
                 rec.name += ' | {} at {:.0f}%'.format(rec.job2_id.name, 100*rec.job2_percentage)
-              
+    '''         
     @api.depends('job1_id','job1_percentage','job1_target','job2_id','job2_percentage','job2_target','employee_id.resource_calendar_id')
     def _compute_aggregations(self):
         for rec in self:
@@ -106,7 +120,7 @@ class job_profile(models.Model):
             
             #build the name for easier search and info
             rec._compute_name()
-    
+    ''' 
     
     @api.constrains('job1_percentage','job2_percentage')
     def check_working_percentage(self):

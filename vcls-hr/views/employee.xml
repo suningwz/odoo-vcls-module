@@ -138,7 +138,7 @@
                                         
                                     </group>
                                    
-                                    <group string="Job Position(s)">
+                                    <group>
                 
                                         <field name="job_profile_id"/> 
                                         
@@ -148,7 +148,7 @@
                                     
                             </page>
                             
-                            <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr','support','me']),('country_name', '=', 'United States')]}">
+                            <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr','support','me','lm']),('country_name', '=', 'United States')]}">
                                 <group>
                                     <group>
                                         <field name="trial_period_id" placeholder='Please select the period type.'/>
