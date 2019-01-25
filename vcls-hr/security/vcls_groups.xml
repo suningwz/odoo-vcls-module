@@ -53,6 +53,13 @@
             <field name="implied_ids" eval="[(4,ref('vcls_group_HR_local'))]"/>
         </record>
         
+        <!-- Extend admin group inheritance -->
+        <record id="base.group_system" model="res.groups">
+            <field name="implied_ids" eval="[(4,ref('vcls_group_HR_global')),(4,ref('vcls_group_superuser_lvl2'))]"/>
+        </record>
+        
+
+        
         
     </data>
 </odoo>
