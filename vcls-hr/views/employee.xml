@@ -58,6 +58,7 @@
                                     <group string="">
                                         <field name="office_id"/>
                                         <field name="work_email" widget="email"/>
+                                        <field name="access_level" invisible='0' string='View Scope'/>
                                         
                                     </group>
                                     <group string="">
@@ -222,7 +223,6 @@
                                 <group>
                                     <field name="user_id"/>
                                     <field name="employee_status"/>
-                                    <field name="access_level" invisible='0'/>
                                     <field name="country_name" invisible='0'/>
                                 </group>
                             </page>
