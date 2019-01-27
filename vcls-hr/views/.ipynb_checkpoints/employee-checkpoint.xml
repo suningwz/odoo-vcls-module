@@ -58,6 +58,7 @@
                                     <group string="">
                                         <field name="office_id"/>
                                         <field name="work_email" widget="email"/>
+                                        <field name="access_level" invisible='1' string='View Scope'/>
                                         
                                     </group>
                                     <group string="">
@@ -78,7 +79,7 @@
                         
                         <notebook>
                             
-                            <page name="personal_information" string="Personal Information" attrs="{'invisible': [('access_level', 'not in', ['hr','support','me'])]}">
+                            <page name="personal_information" string="Personal Information" attrs="{'invisible': [('access_level', 'not in', ['hr','me'])]}">
                                 <group>
                                     <group string="Administrative Information">
                                         <field name="employee_external_id"/>
@@ -89,7 +90,11 @@
                                         <field name="diploma_ids" widget="many2many_tags"/>
                                         <field name="family_name_at_birth"/>
                                         <field name="birthday" string="Date of Birth"/>
-                                        <field name="ssnid" string="Social Security Number"/>
+                                        
+                                        <field name="ssnid" string="Social Security No" attrs="{'invisible': [('country_name', 'not in', ['France','United States','United Kingdom'])]}"/>
+                                        <field name="ssnid" string="Pan No" attrs="{'invisible': [('country_name', 'not in', ['India'])]}"/>
+                                        <field name="ssnid" string="Avs No" attrs="{'invisible': [('country_name', 'not in', ['Switzerland'])]}"/>
+                                        
                                         <field name="country_id" string="Primary Citizenship"/>
                                         <field name="country2_id"/>
                                         <field name="permit_no" string="Work Permit"/>
@@ -148,7 +153,7 @@
                                     
                             </page>
                             
-                            <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr','support','me','lm']),('country_name', '=', 'United States')]}">
+                            <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr','me','lm']),('country_name', '=', 'United States')]}">
                                 <group>
                                     <group>
                                         <field name="trial_period_id" placeholder='Please select the period type.'/>
@@ -162,7 +167,7 @@
                             </page>
                             
                             
-                            <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','support','me'])]}">
+                            <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">
                                 <group string="Salaries">
                                     <field name="contract_ids" string="">
                                         <tree string="Employee Salaries">
@@ -186,7 +191,7 @@
                             </page>
                             
                             
-                            <page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','support','me'])]}">
+                            <page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">
                                 <group string="Benefits">
                                     <field name="benefit_ids" string="">
                                         <tree string="Employee Benefits">
@@ -202,7 +207,7 @@
                             </page>
 
                             
-                            <page name="health_care" string="Health Care" attrs="{'invisible': [('access_level', 'not in', ['hr','support','me'])]}">
+                            <page name="health_care" string="Health Care" attrs="{'invisible': [('access_level', 'not in', ['hr','me'])]}">
                                 <group>
                                     <group attrs="{'invisible': [('country_name', 'not in', ['France'])]}">
                                         <field name="last_medical_checkup"/>
@@ -222,7 +227,6 @@
                                 <group>
                                     <field name="user_id"/>
                                     <field name="employee_status"/>
-                                    <field name="access_level" invisible='0'/>
                                     <field name="country_name" invisible='0'/>
                                 </group>
                             </page>

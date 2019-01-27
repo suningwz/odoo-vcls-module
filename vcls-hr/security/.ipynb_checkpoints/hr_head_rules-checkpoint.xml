@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Heads can see all bonuses in their management line -->
+         <record id="hr_bonus_head_rule" model="ir.rule">
+            <field name="name">hr_bonus_head_rule: head see all activity </field>
+            <field name="model_id" ref="model_hr_bonus"/>
+            <field name="domain_force">[
+                '|',
+                ('employee_id.contract_id.job_profile_id.job1_head.user_id', '=', user.id),
+                ('employee_id.contract_id.job_profile_id.job2_head.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_head'))]"/>
+        </record>
+        
+        <!-- Heads can see all contracts in their management line -->
+         <record id="hr_contract_head_rule" model="ir.rule">
+            <field name="name">hr_contract_head_rule: head see all activity </field>
+            <field name="model_id" ref="hr_contract.model_hr_contract"/>
+            <field name="domain_force">[
+                '|',
+                ('job_profile_id.job1_head.user_id', '=', user.id),
+                ('job_profile_id.job2_head.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_head'))]"/>
+        </record>
+        
+        <!-- Heads can see all benefits in their management line -->
+         <record id="hr_benefit_head_rule" model="ir.rule">
+            <field name="name">hr_benefit_head_rule: head see all activity </field>
+            <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
+            <field name="domain_force">[
+                '|',
+                ('employee_id.contract_id.job_profile_id.job1_head.user_id', '=', user.id),
+                ('employee_id.contract_id.job_profile_id.job2_head.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_head'))]"/>
+        </record>
+        
+        
+        
+    </data>
+</odoo>

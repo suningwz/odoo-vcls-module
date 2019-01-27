@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+       <!-- Local HR (Officiers without multicompany) can only edit employee of their own company, but not themsleves -->
+        <record id="hr_employee_hr_local_rule" model="ir.rule">
+            <field name="name">hr_employee_hr_local_rule: own company but not themselves </field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="perm_read" eval="0"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                
+                    ('company_id','in',[user.company_id.id]),
+                    
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
+        </record>
+        
+        <!-- Local HR (Officiers without multicompany) can only see contracts of their own company -->
+        <record id="hr_contract_hr_user_rule" model="ir.rule">
+            <field name="name">hr_contract_hr_user_rule: local sees all his company </field>
+            <field name="model_id" ref="hr_contract.model_hr_contract"/>
+            <field name="domain_force">[
+                    ('company_id','in',[user.company_id.id]),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
+        </record>
+        
+        <!-- Local HR (Officiers without multicompany) can only see bonuses of their own company -->
+        <record id="hr_bonus_hr_user_rule" model="ir.rule">
+            <field name="name">hr_bonus_hr_user_rule: local sees all his company </field>
+            <field name="model_id" ref="vcls-hr.model_hr_bonus"/>
+            <field name="domain_force">[
+                    ('employee_id.company_id','in',[user.company_id.id]),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
+        </record>
+        
+        <!-- Local HR (Officiers without multicompany) can only see benefits of their own company -->
+        <record id="hr_benefit_hr_user_rule" model="ir.rule">
+            <field name="name">hr_benefit_hr_user_rule: local sees all his company </field>
+            <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
+            <field name="domain_force">[
+                    ('employee_id.company_id','in',[user.company_id.id]),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
+        </record>
+        
+    </data>
+</odoo>	
