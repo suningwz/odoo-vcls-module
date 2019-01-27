@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- LM can see N-1 contracts -->
+         <record id="hr_contract_lm_rule" model="ir.rule">
+            <field name="name">hr_contract_lm_rule: lm see N-1 contract </field>
+            <field name="model_id" ref="hr_contract.model_hr_contract"/>
+            <field name="domain_force">[
+                ('employee_id.parent_id.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls-hr.vcls_group_lm'))]"/>
+        </record>
+       
+        <!-- LM can see N-1 bonus -->
+         <record id="hr_bonus_lm_rule" model="ir.rule">
+            <field name="name">hr_bonus_lm_rule: head see all activity </field>
+            <field name="model_id" ref="model_hr_bonus"/>
+            <field name="domain_force">[
+                ('employee_id.parent_id.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_lm'))]"/>
+        </record>
+        
+        <!-- LM can see N-1 benefits -->
+         <record id="hr_benefit_lm_rule" model="ir.rule">
+            <field name="name">hr_benefit_lm_rule: head see all activity </field>
+            <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
+            <field name="domain_force">[
+                ('employee_id.parent_id.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_lm'))]"/>
+        </record>
+        
+    </data>
+</odoo>

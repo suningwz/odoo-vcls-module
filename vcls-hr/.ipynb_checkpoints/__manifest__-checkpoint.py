@@ -36,6 +36,10 @@
         'security/vcls_groups.xml',
         'security/ir.model.access.csv',
         'security/hr_employee_rules.xml',
+        'security/hr_lm_rules.xml',
+        'security/hr_head_rules.xml',
+        'security/hr_hrglobal_rules.xml',
+        'security/hr_hrlocal_rules.xml',
         
         #########
         # VIEWS #

@@ -12,5 +12,25 @@
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         </record>
         
+        <!-- Employees can only see their own bonuses -->
+         <record id="hr_bonus_employee_rule" model="ir.rule">
+            <field name="name">hr_bonus_employee_rule: employee sees owns </field>
+            <field name="model_id" ref="vcls-hr.model_hr_bonus"/>
+            <field name="domain_force">[
+                    ('employee_id.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- Employees can only see their own benefits -->
+         <record id="hr_benefit_employee_rule" model="ir.rule">
+            <field name="name">hr_benefit_employee_rule: employee sees owns </field>
+            <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
+            <field name="domain_force">[
+                    ('employee_id.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
     </data>
 </odoo>

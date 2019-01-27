@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- HR manager sees all companies -->
+        <record id="hr_company_manager_rule" model="ir.rule">
+            <field name="name">hr_company_manager_rule: global managers sees all companies </field>
+            <field name="model_id" ref="base.model_res_company"/>
+            <field name="domain_force">[
+                    (1,'=',1),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global')),(4, ref('hr.group_hr_manager'))]"/>
+        </record>
+        
+        <!-- Glabal HR (Managers) can see all contracts -->
+        <record id="hr_contract_hr_manager_rule" model="ir.rule">
+            <field name="name">hr_contract_hr_manager_rule: global sees all </field>
+            <field name="model_id" ref="hr_contract.model_hr_contract"/>
+            <field name="domain_force">[
+                    (1,'=',1),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
+        </record>
+        
+        <!-- Glabal HR (Managers) can see all bonuses -->
+        <record id="hr_bonus_hr_manager_rule" model="ir.rule">
+            <field name="name">hr_bonus_hr_manager_rule: global sees all </field>
+            <field name="model_id" ref="vcls-hr.model_hr_bonus"/>
+            <field name="domain_force">[
+                    (1,'=',1),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
+        </record>
+        
+        <!-- Global HR (Managers) can see all benefits -->
+        <record id="hr_benefit_hr_manager_rule" model="ir.rule">
+            <field name="name">hr_benefit_hr_manager_rule: global sees all </field>
+            <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
+            <field name="domain_force">[
+                    (1,'=',1),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
+        </record>
+        
+    </data>
+</odoo>	
