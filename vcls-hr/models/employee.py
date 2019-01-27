@@ -346,43 +346,37 @@ class Employee(models.Model):
     @api.multi
     def _get_access_level(self):
         for rec in self:
-            if rec.user_id.id == self._uid: #for the employee himself
-                rec.access_level = 'me'
-                continue
-                
+            
             user = self.env['res.users'].browse(self._uid)
             
+            #default access right
+            rec.access_level = 'base'
+            
             #if user is in support group
-            if user.has_group('base.group_erp_manager'):
+            if user.has_group('vcls-hr.vcls_group_superuser_lvl1'):
                 rec.access_level = 'support'
-                continue
-            
-            #if user is an hr manager, then he sees all
-            if user.has_group('vcls-hr.vcls_group_HR_global'):
-                rec.access_level = 'hr'
-                continue
-            
-            #if the user is hr_user, then he grants hr access only if the user is in the same company
-            #else, he gets 'lm' access
-            if user.has_group('vcls-hr.vcls_group_HR_local') and (rec.company_id in user.company_ids):
-                rec.access_level = 'hr' 
-                continue
                 
-            elif user.has_group('vcls-hr.vcls_group_HR_local'):
+            
+            # deafult access for local HR or for the management line
+            if user in rec.lm_ids or user.has_group('vcls-hr.vcls_group_HR_local'):
                 rec.access_level = 'hl'
-                continue
+                
             
             # grant extended lm access to head of activity, head of department, and N+1
             if (user == rec.parent_id.user_id) or (user == rec.contract_id.job_profile_id.job1_head.user_id) or (user == rec.contract_id.job_profile_id.job2_head.user_id) or (user == rec.contract_id.job_profile_id.job1_dir.user_id) or (user == rec.contract_id.job_profile_id.job2_dir.user_id):
                 rec.access_level = 'lm'
-                continue
                 
-            # for the management line
-            elif user in rec.lm_ids:
-                rec.access_level = 'hl'
-                continue
             
-            rec.access_level = 'base'
+            #if user is an hr manager, then he sees all
+            #or a local HR with the proper company
+            if user.has_group('vcls-hr.vcls_group_HR_global') or (user.has_group('vcls-hr.vcls_group_HR_local') and (rec.company_id in user.company_ids)):
+                rec.access_level = 'hr'
+                
+            
+            if rec.user_id.id == self._uid: #for the employee himself
+                rec.access_level = 'me'
+                
+                        
 
     #Automatically update the job_info string if one of the component is changed
     @api.depends('job_title','diploma_ids')

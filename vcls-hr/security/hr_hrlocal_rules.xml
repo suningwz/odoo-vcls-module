@@ -43,7 +43,7 @@
             <field name="name">hr_benefit_hr_user_rule: local sees all his company </field>
             <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
             <field name="domain_force">[
-                    ('contract_id.company_id','in',[user.company_id.id]),
+                    ('employee_id.company_id','in',[user.company_id.id]),
             ]</field>
             <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>
