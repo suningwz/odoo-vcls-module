@@ -52,7 +52,7 @@
                                 </div>
                     
                                 
-                                <field name="job_info"/>
+                                <field name="job_info" invisible='1'/>
         
                                 <group>
                                     <group string="">
@@ -126,7 +126,8 @@
                                 <field name="notes" placeholder="Other Information ..." colspan="4"/>
                             </page>
                             
-                            <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['lm', 'hr','hl','support','me'])]}">
+                            <!--<page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['lm', 'hr','hl','support','me'])]}">-->
+                            <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
                                 <group>
                                     <group string="General Information">
                         
@@ -153,7 +154,8 @@
                                     
                             </page>
                             
-                            <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr','me','lm']),('country_name', '=', 'United States')]}">
+                            <!--<page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr','me','lm']),('country_name', '=', 'United States')]}">-->
+                            <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr']),('country_name', '=', 'United States')]}">
                                 <group>
                                     <group>
                                         <field name="trial_period_id" placeholder='Please select the period type.'/>
@@ -167,7 +169,8 @@
                             </page>
                             
                             
-                            <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">
+                            <!--<page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">-->
+                            <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
                                 <group string="Salaries">
                                     <field name="contract_ids" string="">
                                         <tree string="Employee Salaries">
@@ -191,7 +194,8 @@
                             </page>
                             
                             
-                            <page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">
+                            <!--<page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">-->
+                            <page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
                                 <group string="Benefits">
                                     <field name="benefit_ids" string="">
                                         <tree string="Employee Benefits">
@@ -207,7 +211,8 @@
                             </page>
 
                             
-                            <page name="health_care" string="Health Care" attrs="{'invisible': [('access_level', 'not in', ['hr','me'])]}">
+                            <page name="health_care" string="Health Care" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
+                            <!--<page name="health_care" string="Health Care" attrs="{'invisible': [('access_level', 'not in', ['hr','me'])]}">-->
                                 <group>
                                     <group attrs="{'invisible': [('country_name', 'not in', ['France'])]}">
                                         <field name="last_medical_checkup"/>
@@ -257,7 +262,7 @@
                     <field name="work_email"/>
                     <field name="office_id"/>
                     <field name="department_id"/>
-                    <field name="job_info"/>
+                    <field name="job_info" invisible='1'/>
                     <field name="parent_id"/>
                     <field name="message_needaction" invisible="1"/>
                 </tree>
