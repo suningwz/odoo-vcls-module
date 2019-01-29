@@ -1,7 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 
 access_hr_employee_local_hr,hr.employee.local.hr,hr.model_hr_employee,vcls_group_HR_local,1,1,1,1
-hr.access_hr_employee_user,hr.employee user,hr.model_hr_employee,hr.group_hr_user,1,0,0,0
+hr.access_hr_employee_user,hr.employee user,hr.model_hr_employee,hr.group_hr_user,1,1,1,1
 
 access_hr_employee_category_sup1,hr.employee.category.sup1,hr.model_hr_employee_category,vcls-hr.vcls_group_superuser_lvl1,1,1,1,1
 hr.access_hr_employee_category_user,hr.employee.category.user,hr.model_hr_employee_category,hr.group_hr_user,1,0,0,0
@@ -55,6 +55,7 @@ access_hr_office_employee,hr.office.employee,model_hr_office,base.group_user,1,0
 
 
 access_hr_bank_holiday_hr,hr.bank.holiday.hr,model_hr_bank_holiday,vcls_group_HR_local,1,0,1,1
+access_hr_bank_holiday_sup1,hr.bank.holiday.sup1,model_hr_bank_holiday,vcls-hr.vcls_group_superuser_lvl1,1,0,1,1
 
 access_hr_exceptional_leave_case_admin,hr.exceptional.leave.case.admin,model_hr_exceptional_leave_case,base.group_system,1,1,1,1
 access_hr_exceptional_leave_case_employee,hr.exceptional.leave.case.employee,model_hr_exceptional_leave_case,base.group_user,1,0,0,0
