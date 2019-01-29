@@ -231,7 +231,8 @@ class Employee(models.Model):
     employee_status = fields.Selection([
         ('future','Future'),
         ('active','Active'),
-        ('departed','Departed')],
+        ('departed','Departed'),
+        ('undef','Undefined')],
         default = 'future',
         )
     
@@ -261,39 +262,26 @@ class Employee(models.Model):
                 'middle_name':names[1],
                 'family_name':names[2],
             })
-            
+        
+        #employee is created
         empl=super().create(vals)
         
-        '''
-        #create the related default contract
-        contract = self.env['hr.contract'].create(
-            {
-                'name':"{} | 01".format(empl.name),
-                'employee_id':empl.id,
-                'wage':0,
-            }
-        )
-        '''
-
+        #we update employee statuses
+        empl._check_employee_status
+        
+       
         return empl
         
     #################################
     # Automated Calculation Methods #
     #################################
-    '''
+    
     #adds or remove from the lm group according to the subortinates count
     @api.model #to be called from CRON job
     def _check_lm_membership(self):
         group = self.env.ref('vcls-hr.vcls_group_lm')
-        user = self.user_id
-        if self.child_ids[0]: #if a child is found
-            vals = {'groups_id': [(4, group.id)]}
-        else:
-            vals = {'groups_id': [(3, group.id)]}
-                
-        user.write(vals)
-    '''
-            
+        self.search([('child_ids', '!=', False)]).mapped('user_id').write({'groups_id': [(4, group.id)]}) #if a child is found, then we add the LM group to the related user
+        self.search([('child_ids', '=', False)]).mapped('user_id').write({'groups_id': [(3, group.id)]}) #if no child found, then we suppress the LM group from the user
     
     
     @api.model #to be called from CRON job
@@ -316,7 +304,8 @@ class Employee(models.Model):
                     empl.employee_status = 'active'
                     
             else:
-                empl.employee_status = False #no dates = no status
+                empl.employee_status = 'future' #no dates
+        
     
     @api.multi
     def _get_benefits(self):
@@ -358,7 +347,7 @@ class Employee(models.Model):
                 
             
             # deafult access for local HR or for the management line
-            if user in rec.lm_ids or user.has_group('vcls-hr.vcls_group_HR_local'):
+            if (user in rec.lm_ids) or user.has_group('vcls-hr.vcls_group_HR_local'):
                 rec.access_level = 'hl'
                 
             
