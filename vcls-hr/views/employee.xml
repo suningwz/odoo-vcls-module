@@ -140,6 +140,7 @@
                                         <field name="company_id" string="Legal Entity"/>
                                         <field name="resource_calendar_id" string="Work Schedule" domain="[('company_id','=',company_id)]"/>
                                         <field name="contract_id" string="Current Contract" context="{'form_view_ref':'vcls-hr.vcls_contract_form1'}"/> 
+                                        <field name="user_id"/>
                                         
                                     </group>
                                    
@@ -229,7 +230,7 @@
                              
                             <page name="technical" string="Technical Fields" attrs="{'invisible': [('access_level', 'not in', ['support'])]}">
                                 <group>
-                                    <field name="user_id"/>
+                                    
                                     <field name="employee_status"/>
                                     <field name="country_name" invisible='0'/>
                                 </group>
