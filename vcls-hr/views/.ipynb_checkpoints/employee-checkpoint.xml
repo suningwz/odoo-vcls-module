@@ -281,6 +281,7 @@
                     <field name="employee_status"/>
                     <field name="employee_start_date"/>
                     <field name="employee_end_date"/>
+                    <field name="company_id"/>
                     <field name="office_id"/>
                     <field name="department_id"/>
                     <field name="job_info" invisible='1'/>

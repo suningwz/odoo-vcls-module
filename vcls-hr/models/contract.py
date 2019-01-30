@@ -25,7 +25,8 @@ class Contract(models.Model):
         compute='_compute_prorated_salary',)
     
     wage = fields.Monetary(
-        compute='_compute_wage',)
+        compute='_compute_wage',
+        track_visibility=False,)
     
     salary_comment = fields.Text(
         string='Salary Comment',)
@@ -64,8 +65,13 @@ class Contract(models.Model):
         string='Working Schedule',
         readonly='1',)
     
+    employee_id = fields.Many2one(
+        required=True,)
+    '''
     company_id = fields.Many2one(
-        related='employee_id.company_id',)
+        default='employee_id.company_id',
+    )
+    '''
     
     date_start = fields.Date(
         required=True,
@@ -74,6 +80,45 @@ class Contract(models.Model):
     type_id = fields.Many2one(
         required=True,
         default=False,)
+    
+    #######################
+    # CRUD Methods #
+    #######################
+    
+    #Create 
+    @api.model
+    def create(self,vals):
+        rec=super().create(vals)
+        
+        emp = self.env['hr.employee'].search([('id','=',rec.employee_id.id)])
+        if emp.contract_id.id == rec.id:
+            emp.write(
+                {
+                    
+                    'resource_calendar_id':rec.resource_calendar_id.id,
+                    'job_profile_id':rec.job_profile_id.id,
+                    
+                })
+        
+        return rec
+    
+    #Write also, to cover the change in the application date or job profile
+    @api.multi
+    def write(self,vals):
+        rec=super().write(vals)
+        
+        for contract in self:
+            emp = contract.env['hr.employee'].search([('id','=',contract.employee_id.id)])
+        if emp.contract_id.id == contract.id:
+            emp.write(
+                {
+                    
+                    'resource_calendar_id':contract.resource_calendar_id.id,
+                    'job_profile_id':contract.job_profile_id.id,
+                    
+                })
+        
+        return contract
     
     #######################
     # Calculation Methods #
@@ -91,6 +136,11 @@ class Contract(models.Model):
     def _compute_wage(self):
         for rec in self:
             rec.wage = rec.prorated_salary/12.0
+    
+    @api.onchange('employee_id')
+    def _set_company(self):
+        for rec in self:
+            rec.company_id = rec.employee_id.company_id
     
     #####################
     # Selection Methods #

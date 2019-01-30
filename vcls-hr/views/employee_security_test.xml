@@ -126,7 +126,7 @@
                             </page>
                             
                             <!--<page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['lm', 'hr','hl','support','me'])]}">-->
-                            <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
+                            <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['hr','base','me'])]}">
                                 <group>
                                     <group string="General Information">
                         
@@ -170,7 +170,7 @@
                             
                             
                             <!--<page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">-->
-                            <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
+                            <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr','base','me'])]}">
                                 <group string="Salaries">
                                     <field name="contract_ids" string="">
                                         <tree string="Employee Salaries">
@@ -195,7 +195,7 @@
                             
                             
                             <!--<page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">-->
-                            <page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
+                            <page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr','base','me'])]}">
                                 <group string="Benefits">
                                     <field name="benefit_ids" string="">
                                         <tree string="Employee Benefits">

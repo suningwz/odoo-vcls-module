@@ -2,7 +2,10 @@
 <odoo>
     <data>
         
-       <!-- Local HR (Officiers without multicompany) can only edit employee of their own company, but not themsleves -->
+        <!-- EMPLOYEES & RESOURCE-->
+       <!-- Local HR (Officiers without multicompany) can only edit employee of their own company, but not themsleves 
+
+            If user_id not documented OR not equal to the connected user, then can edit-->
         <record id="hr_employee_hr_local_rule" model="ir.rule">
             <field name="name">hr_employee_hr_local_rule: own company but not themselves </field>
             <field name="model_id" ref="hr.model_hr_employee"/>
@@ -13,40 +16,127 @@
             <field name="domain_force">[
                 
                     ('company_id','in',[user.company_id.id]),
+                    '|',
+                    ('user_id','!=',user.id),
+                    ('user_id','=',False),
                     
             ]</field>
-            <field name="groups" eval="[(4, ref('vcls_group_HR_local')),(4, ref('hr.group_hr_user'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>
         
-        <!-- Local HR (Officiers without multicompany) can only see contracts of their own company -->
+        <!-- Local HR can only edit resources of their own company -->
+        <record id="resources_hr_local_rule" model="ir.rule">
+            <field name="name">resources_hr_local_rule: own company but not themselves </field>
+            <field name="model_id" ref="resource.model_resource_resource"/>
+            <field name="perm_read" eval="0"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                
+                    ('company_id','in',[user.company_id.id]),
+                    
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
+        </record>
+
+        <!-- CONTRACT-->
+        <!-- Local HR can read all contract in their company -->
         <record id="hr_contract_hr_user_rule" model="ir.rule">
             <field name="name">hr_contract_hr_user_rule: local sees all his company </field>
             <field name="model_id" ref="hr_contract.model_hr_contract"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
             <field name="domain_force">[
                     ('company_id','in',[user.company_id.id]),
             ]</field>
-            <field name="groups" eval="[(4, ref('vcls_group_HR_local')),(4, ref('hr.group_hr_user'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>
         
-        <!-- Local HR (Officiers without multicompany) can only see bonuses of their own company -->
+        <!-- Local HR can only edit contract in their company but not themselves -->
+        <record id="hr_contract_hr_local_write_rule" model="ir.rule">
+            <field name="name">hr_contract_hr_local_write_rule: can't create/edit his own contract </field>
+            <field name="model_id" ref="hr_contract.model_hr_contract"/>
+            <field name="perm_read" eval="0"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                    ('company_id','in',[user.company_id.id]),
+                    '|',
+                    ('employee_id.user_id','!=',user.id),
+                    ('employee_id','=',False),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
+        </record>
+        
+        
+        <!-- BONUS-->
+        <!-- Local HR can read all bonuses in their company -->
         <record id="hr_bonus_hr_user_rule" model="ir.rule">
             <field name="name">hr_bonus_hr_user_rule: local sees all his company </field>
             <field name="model_id" ref="vcls-hr.model_hr_bonus"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
             <field name="domain_force">[
                     ('employee_id.company_id','in',[user.company_id.id]),
             ]</field>
-            <field name="groups" eval="[(4, ref('vcls_group_HR_local')),(4, ref('hr.group_hr_user'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>
         
-        <!-- Local HR (Officiers without multicompany) can only see benefits of their own company -->
-        <record id="hr_benefit_hr_user_rule" model="ir.rule">
-            <field name="name">hr_benefit_hr_user_rule: local sees all his company </field>
+        <!-- Local HR can only edit bonus in their company but not themselves -->
+        <record id="hr_bonus_hr_local_write_rule" model="ir.rule">
+            <field name="name">hr_bonus_hr_local_write_rule: can't create/edit his own </field>
+            <field name="model_id" ref="vcls-hr.model_hr_bonus"/>
+            <field name="perm_read" eval="0"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                    ('employee_id.company_id','in',[user.company_id.id]),
+                    '|',
+                    ('employee_id.user_id','!=',user.id),
+                    ('employee_id','=',False),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
+        </record>
+        
+        <!-- BENEFITS-->
+        <!-- Local HR can read all benefits in their company -->
+        <record id="hr_benefits_hr_user_rule" model="ir.rule">
+            <field name="name">hr_benefits_hr_user_rule: local sees all his company </field>
             <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
             <field name="domain_force">[
                     ('employee_id.company_id','in',[user.company_id.id]),
             ]</field>
-            <field name="groups" eval="[(4, ref('vcls_group_HR_local')),(4, ref('hr.group_hr_user'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>
+        
+        <!-- Local HR can only edit benefits in their company but not themselves -->
+        <record id="hr_benefits_hr_local_write_rule" model="ir.rule">
+            <field name="name">hr_benefits_hr_local_write_rule: can't create/edit his own </field>
+            <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
+            <field name="perm_read" eval="0"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                    ('employee_id.company_id','in',[user.company_id.id]),
+                    '|',
+                    ('employee_id.user_id','!=',user.id),
+                    ('employee_id','=',False),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
+        </record>
+        
         
     </data>
 </odoo>	
