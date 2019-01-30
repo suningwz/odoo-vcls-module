@@ -5,6 +5,7 @@ from . import benefit
 from . import bonus
 from . import contract
 from . import employee
+from . import employee_confidential
 from . import exceptional_leave
 from . import fleet
 from . import ir_model_data

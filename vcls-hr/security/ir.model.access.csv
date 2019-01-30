@@ -6,6 +6,11 @@ hr.access_hr_employee_user,hr.employee user,hr.model_hr_employee,hr.group_hr_use
 access_hr_employee_category_sup1,hr.employee.category.sup1,hr.model_hr_employee_category,vcls-hr.vcls_group_superuser_lvl1,1,1,1,1
 hr.access_hr_employee_category_user,hr.employee.category.user,hr.model_hr_employee_category,hr.group_hr_user,1,0,0,0
 
+access_hr_employee_confidential_employee,hr.employee.confidential.employee,model_hr_employee_confidential,base.group_user,1,0,0,0
+access_hr_employee_confidential_local,hr.employee.confidential.local,model_hr_employee_confidential,vcls_group_HR_local,1,1,1,1
+
+access_resource_local_hr,resource.local.hr,resource.model_resource_resource,vcls_group_HR_local,1,1,1,1
+
 access_hr_benefit_employee,hr.benefit.employee,model_hr_benefit,base.group_user,1,0,0,0
 access_hr_benefit_local,hr.benefit.local,model_hr_benefit,vcls_group_HR_local,1,1,1,1
 
@@ -14,6 +19,7 @@ access_hr_bonus_local,hr.bonus.local,model_hr_bonus,vcls_group_HR_local,1,1,1,1
 
 access_hr_contract_employee,hr.contract.employee,hr_contract.model_hr_contract,base.group_user,1,0,0,0
 access_hr_contract_local,hr.contract.local,hr_contract.model_hr_contract,vcls_group_HR_local,1,1,1,1
+
 access_hr_contract_type_employee,hr.contract.type.employee,hr_contract.model_hr_contract_type,base.group_user,1,0,0,0
 access_hr_contract_type_sup1,hr.contract.type.sup1,hr_contract.model_hr_contract_type,vcls-hr.vcls_group_superuser_lvl1,1,1,1,1
 

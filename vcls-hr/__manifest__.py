@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.9',
+    'version': '0.10',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -36,8 +36,8 @@
         'security/vcls_groups.xml',
         'security/ir.model.access.csv',
         'security/hr_employee_rules.xml',
-        'security/hr_lm_rules.xml',
-        'security/hr_head_rules.xml',
+        #'security/hr_lm_rules.xml',
+        #'security/hr_head_rules.xml',
         'security/hr_hrglobal_rules.xml',
         'security/hr_hrlocal_rules.xml',
         
@@ -45,6 +45,7 @@
         # VIEWS #
         #########
         'views/employee.xml',
+        #'views/employee_security_test.xml',
         'views/bonuses.xml',
         'views/benefits.xml',
         'views/company_org.xml',

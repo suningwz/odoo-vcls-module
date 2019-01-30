@@ -119,7 +119,8 @@
                 <tree string="Contracts">
                     <field name="employee_id"/>
                     <field name="name"/>
-                    
+                    <field name="date_start"/>
+                    <field name="job_profile_id"/>
                 </tree>
             </field>
           </record>

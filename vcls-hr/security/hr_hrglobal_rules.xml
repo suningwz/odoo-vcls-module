@@ -9,38 +9,146 @@
             <field name="domain_force">[
                     (1,'=',1),
             ]</field>
-            <field name="groups" eval="[(4, ref('vcls_group_HR_global')),(4, ref('hr.group_hr_manager'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
         </record>
         
-        <!-- Glabal HR (Managers) can see all contracts -->
-        <record id="hr_contract_hr_manager_rule" model="ir.rule">
-            <field name="name">hr_contract_hr_manager_rule: global sees all </field>
+        <!-- EMPLOYEES & RESOURCE-->
+       <!-- Global HR can do everything except for themsleves 
+
+            If user_id not documented OR not equal to the connected user, then can edit-->
+        <record id="hr_employee_hr_global_rule" model="ir.rule">
+            <field name="name">hr_employee_hr_global_rule: not themselves </field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="perm_read" eval="0"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                    '|',
+                    ('user_id','!=',user.id),
+                    ('user_id','=',False),   
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
+        </record>
+        
+        <!-- Global HR can read and edit all confidential  -->
+        <record id="hr_confidential_hr_global_rule" model="ir.rule">
+            <field name="name">hr_confidential_hr_global_rule: global sees/edit all  </field>
+            <field name="model_id" ref="vcls-hr.model_hr_employee_confidential"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                    (1,'=',1),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
+        </record>
+        
+        <!-- Global HR all access -->
+        <record id="resources_hr_global_rule" model="ir.rule">
+            <field name="name">resources_hr_global_rule: all </field>
+            <field name="model_id" ref="resource.model_resource_resource"/>
+            
+            <field name="domain_force">[
+                    (1,'=',1),     
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
+        </record>
+        
+        <!-- CONTRACTS-->
+        <!-- Global HR can see all contracts -->
+        <record id="hr_contract_hr_manager_read_rule" model="ir.rule">
+            <field name="name">hr_contract_hr_manager_read_rule: global sees all </field>
             <field name="model_id" ref="hr_contract.model_hr_contract"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
             <field name="domain_force">[
                     (1,'=',1),
             ]</field>
-            <field name="groups" eval="[(4, ref('vcls_group_HR_global')),(4, ref('hr.group_hr_manager'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
         </record>
         
-        <!-- Glabal HR (Managers) can see all bonuses -->
-        <record id="hr_bonus_hr_manager_rule" model="ir.rule">
-            <field name="name">hr_bonus_hr_manager_rule: global sees all </field>
-            <field name="model_id" ref="vcls-hr.model_hr_bonus"/>
+        <!-- Global HR can't edit themselves -->
+        <record id="hr_contract_hr_manager_write_rule" model="ir.rule">
+            <field name="name">hr_contract_hr_manager_write_rule: not themself </field>
+            <field name="model_id" ref="hr_contract.model_hr_contract"/>
+             <field name="perm_read" eval="0"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
             <field name="domain_force">[
-                    (1,'=',1),
+                    '|',
+                    ('employee_id.user_id','!=',user.id),
+                    ('employee_id','=',False),
             ]</field>
-            <field name="groups" eval="[(4, ref('vcls_group_HR_global')),(4, ref('hr.group_hr_manager'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
         </record>
         
-        <!-- Global HR (Managers) can see all benefits -->
-        <record id="hr_benefit_hr_manager_rule" model="ir.rule">
-            <field name="name">hr_benefit_hr_manager_rule: global sees all </field>
-            <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
+        <!-- BONUS-->
+        <!-- Global HR can see all bonus -->
+        <record id="hr_bonus_hr_manager_read_rule" model="ir.rule">
+            <field name="name">hr_bonus_hr_manager_read_rule: global sees all </field>
+            <field name="model_id" ref="model_hr_bonus"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
             <field name="domain_force">[
                     (1,'=',1),
             ]</field>
-            <field name="groups" eval="[(4, ref('vcls_group_HR_global')),(4, ref('hr.group_hr_manager'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
         </record>
+        
+        <!-- Global HR can't edit themselves -->
+        <record id="hr_bonus_hr_manager_write_rule" model="ir.rule">
+            <field name="name">hr_bonus_hr_manager_write_rule: not themself </field>
+            <field name="model_id" ref="model_hr_bonus"/>
+             <field name="perm_read" eval="0"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                    '|',
+                    ('employee_id.user_id','!=',user.id),
+                    ('employee_id','=',False),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
+        </record>
+        
+        <!-- BENEFIT-->
+        <!-- Global HR can see all  -->
+        <record id="hr_benefit_hr_manager_read_rule" model="ir.rule">
+            <field name="name">hr_benefit_hr_manager_read_rule: global sees all </field>
+            <field name="model_id" ref="model_hr_benefit"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
+            <field name="domain_force">[
+                    (1,'=',1),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
+        </record>
+        
+        <!-- Global HR can't edit themselves -->
+        <record id="hr_benefit_hr_manager_write_rule" model="ir.rule">
+            <field name="name">hr_benefit_hr_manager_write_rule: not themself </field>
+            <field name="model_id" ref="model_hr_benefit"/>
+             <field name="perm_read" eval="0"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                    '|',
+                    ('employee_id.user_id','!=',user.id),
+                    ('employee_id','=',False),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
+        </record>
+        
         
     </data>
 </odoo>	
