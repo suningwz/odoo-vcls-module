@@ -31,6 +31,20 @@
             <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>
         
+        <!-- Global HR can read and edit all confidential  -->
+        <record id="hr_confidential_hr_global_rule" model="ir.rule">
+            <field name="name">hr_confidential_hr_global_rule: global sees/edit all  </field>
+            <field name="model_id" ref="vcls-hr.model_hr_employee_confidential"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                    (1,'=',1),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
+        </record>
+        
         <!-- Global HR all access -->
         <record id="resources_hr_global_rule" model="ir.rule">
             <field name="name">resources_hr_global_rule: all </field>

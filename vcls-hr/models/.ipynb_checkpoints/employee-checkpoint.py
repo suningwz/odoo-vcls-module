@@ -41,6 +41,18 @@ class Employee(models.Model):
         default = False,
         readonly=True,)
     
+    #######################
+    # CONFIDENTIAL FIELDS #
+    #######################
+    confidential_id = fields.One2many('hr.employee.confidential','employee_id')
+    
+    # Those fields are deported in an external object 
+    '''
+    birthday = fields.Date(String='Date of Birth',
+                          compute='_compute_birthday',
+                          inverse='_set_birthday')
+    '''
+    
     # Administrative informations
     first_name = fields.Char(
         string='First Name',
@@ -496,3 +508,22 @@ class Employee(models.Model):
             'type': 'ir.actions.act_window',
             'context': "{{'default_employee_id': {}}}".format(self.id),
         }
+    
+    ###############################
+    # CONFIDENTIAL ACCESS METHODS #
+    ###############################
+    ### birthday
+    @api.depends('confidential_id.birthday')
+    def _compute_birthday(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.birthday = rec.confidential_id[0]['birthday']
+            else:
+                rec.birthday = False
+    
+    def _set_birthday(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'birthday': self.birthday})
+            else:
+                rec.confidential_id[0].write({'birthday': self.birthday})
