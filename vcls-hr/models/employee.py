@@ -41,6 +41,18 @@ class Employee(models.Model):
         default = False,
         readonly=True,)
     
+    #########################################
+    # OVERRIDEN FIELDS FOR GROUP VISIBILITY #
+    #########################################
+    
+    gender = fields.Selection(groups=False)
+    birthday = fields.Date(groups=False)
+    ssnid = fields.Char(groups=False)
+    country_id = fields.Many2one(groups=False)
+    permit_no = fields.Char(groups=False)
+    emergency_contact = fields.Char(groups=False)
+    emergency_phone = fields.Char(groups=False)
+                                  
     #######################
     # CONFIDENTIAL FIELDS #
     #######################
