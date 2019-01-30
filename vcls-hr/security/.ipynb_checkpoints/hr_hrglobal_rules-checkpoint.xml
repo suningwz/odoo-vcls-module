@@ -28,7 +28,7 @@
                     ('user_id','!=',user.id),
                     ('user_id','=',False),   
             ]</field>
-            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
         </record>
         
         <!-- Global HR can read and edit all confidential  -->
@@ -42,7 +42,7 @@
             <field name="domain_force">[
                     (1,'=',1),
             ]</field>
-            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_global'))]"/>
         </record>
         
         <!-- Global HR all access -->
