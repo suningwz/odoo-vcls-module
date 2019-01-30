@@ -38,8 +38,20 @@ class Employee(models.Model):
         default=False,)
      
     resource_calendar_id = fields.Many2one(
-        related = 'contract_id.resource_calendar_id',
+        default = False,
         readonly=True,)
+    
+    #######################
+    # CONFIDENTIAL FIELDS #
+    #######################
+    confidential_id = fields.One2many('hr.employee.confidential','employee_id')
+    
+    # Those fields are deported in an external object 
+    '''
+    birthday = fields.Date(String='Date of Birth',
+                          compute='_compute_birthday',
+                          inverse='_set_birthday')
+    '''
     
     # Administrative informations
     first_name = fields.Char(
@@ -154,9 +166,10 @@ class Employee(models.Model):
     #Related to job position(s)
     
     job_profile_id = fields.Many2one(
-        related='contract_id.job_profile_id',
+        'hr.job_profile',
         string="Current Job Profile",
-        track_visibility='always',)
+        readonly=True,
+        )
     
     bonus_ids = fields.Many2many(
         'hr.bonus',
@@ -166,21 +179,14 @@ class Employee(models.Model):
     contract_ids = fields.Many2many(
         'hr.contract',
         string="Contract(s)",
-        compute = "_get_contracts",)
+        compute = "_get_contracts",
+    )
     
     #Benefit related
     benefit_ids = fields.Many2many(
         'hr.benefit',
         string = "Benefits",
         compute = '_get_benefits',)
-    
-    '''
-    #Benefits
-    car_info = fields.Char(
-        string='Company car',
-        compute='_get_car_info',
-        )
-    '''
    
     #Health Care Management
     last_medical_checkup = fields.Date(
@@ -320,7 +326,7 @@ class Employee(models.Model):
     @api.multi
     def _get_contracts(self):
         for empl in self:
-            empl.contract_ids = self.env['hr.contract'].search([('employee_id','=',empl.id)])
+            empl.contract_ids = self.env['hr.contract'].search(['&',('employee_id','=',empl.id),('company_id','=',empl.company_id.id)])
     
     @api.depends('parent_id','parent_id.parent_id')
     def _get_lm_ids(self):
@@ -502,3 +508,22 @@ class Employee(models.Model):
             'type': 'ir.actions.act_window',
             'context': "{{'default_employee_id': {}}}".format(self.id),
         }
+    
+    ###############################
+    # CONFIDENTIAL ACCESS METHODS #
+    ###############################
+    ### birthday
+    @api.depends('confidential_id.birthday')
+    def _compute_birthday(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.birthday = rec.confidential_id[0]['birthday']
+            else:
+                rec.birthday = False
+    
+    def _set_birthday(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'birthday': self.birthday})
+            else:
+                rec.confidential_id[0].write({'birthday': self.birthday})

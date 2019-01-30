@@ -6,6 +6,24 @@
          <record id="hr_contract_employee_rule" model="ir.rule">
             <field name="name">hr_contract_employee_rule: employee sees owns </field>
             <field name="model_id" ref="hr_contract.model_hr_contract"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
+            <field name="domain_force">[
+                    ('employee_id.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+        
+        <!-- Employees can only see their own confidential -->
+         <record id="hr_confidential_employee_rule" model="ir.rule">
+            <field name="name">hr_confidential_employee_rule: employee sees owns </field>
+            <field name="model_id" ref="vcls-hr.model_hr_employee_confidential"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
             <field name="domain_force">[
                     ('employee_id.user_id', '=', user.id),
             ]</field>
@@ -16,6 +34,10 @@
          <record id="hr_bonus_employee_rule" model="ir.rule">
             <field name="name">hr_bonus_employee_rule: employee sees owns </field>
             <field name="model_id" ref="vcls-hr.model_hr_bonus"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
             <field name="domain_force">[
                     ('employee_id.user_id', '=', user.id),
             ]</field>
@@ -26,6 +48,10 @@
          <record id="hr_benefit_employee_rule" model="ir.rule">
             <field name="name">hr_benefit_employee_rule: employee sees owns </field>
             <field name="model_id" ref="vcls-hr.model_hr_benefit"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
             <field name="domain_force">[
                     ('employee_id.user_id', '=', user.id),
             ]</field>
