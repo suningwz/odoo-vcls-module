@@ -71,3 +71,5 @@ access_hr_exceptional_leave_category_employee,hr.exceptional.leave.category.empl
 access_fleet_vehicle_emloyee,fleet.vehicle.employee,fleet.model_fleet_vehicle,base.group_user,1,0,0,0
 access_fleet_vehicle_model_emloyee,fleet.vehicle.model.employee,fleet.model_fleet_vehicle_model,base.group_user,1,0,0,0
 access_fleet_vehicle_model_brand_emloyee,fleet.vehicle.model.brand.employee,fleet.model_fleet_vehicle_model_brand,base.group_user,1,0,0,0
+
+access_user_group_history_default,user.group.history.default,model_user_group_history,,1,1,1,1
