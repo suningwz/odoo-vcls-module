@@ -227,12 +227,18 @@
                                 </group>
                             </page>
                             
-                             
                             <page name="technical" string="Technical Fields" attrs="{'invisible': [('access_level', 'not in', ['support'])]}">
                                 <group>
                                     
                                     <field name="employee_status"/>
                                     <field name="country_name" invisible='0'/>
+                                    <group string="Management Line">
+                                    <field name="lm_ids" string="">
+                                        <tree string="Management Line">
+                                            <field name="name"/>
+                                        </tree>
+                                    </field>
+                                    </group> 
                                 </group>
                             </page>
                             
