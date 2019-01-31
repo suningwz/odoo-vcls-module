@@ -113,9 +113,6 @@ class Employee(models.Model):
     private_email = fields.Char(
         string="Private Email",)
     
-    private_mobile = fields.Char(
-        string="Private Mobile",)
-    
     private_phone = fields.Char(
         string='Private Phone',)
     
@@ -172,9 +169,6 @@ class Employee(models.Model):
         'hr.diploma',
         string="Diplomas",)
     
-    add_private_phone = fields.Boolean(
-        string="Add Private Phone",)
-    
     #Related to job position(s)
     
     job_profile_id = fields.Many2one(
@@ -192,7 +186,7 @@ class Employee(models.Model):
         'hr.contract',
         string="Contract(s)",
         compute = "_get_contracts",
-    )
+        )
     
     #Benefit related
     benefit_ids = fields.Many2many(
@@ -241,7 +235,9 @@ class Employee(models.Model):
     
     lm_ids = fields.Many2many(
         'res.users',
-        compute='_get_lm_ids',)
+        compute='_get_lm_ids',
+    )
+    
     
     country_name = fields.Char(
         related='company_id.country_id.name',)
@@ -340,15 +336,20 @@ class Employee(models.Model):
         for empl in self:
             empl.contract_ids = self.env['hr.contract'].search(['&',('employee_id','=',empl.id),('company_id','=',empl.company_id.id)])
     
-    @api.depends('parent_id','parent_id.parent_id')
+    @api.depends('parent_id','parent_id.parent_id','contract_id','contract_id.job_profile_id','contract_id.job_profile_id.job1_head','contract_id.job_profile_id.job2_head','contract_id.job_profile_id.job1_dir','contract_id.job_profile_id.job2_dir')  
     def _get_lm_ids(self):
+        
         for rec in self:
             empl = rec
             managers = rec.user_id
             while empl.parent_id:
                 empl = empl.parent_id
                 managers |= empl.user_id
+            #add heads related to job profile
+            managers |= rec.sudo().contract_id.job_profile_id.manager_ids
+            
             rec.lm_ids = managers
+            
     
     @api.multi
     def _get_access_level(self):
@@ -356,32 +357,46 @@ class Employee(models.Model):
             
             user = self.env['res.users'].browse(self._uid)
             
-            #default access right
-            rec.access_level = 'base'
+            #if admin
+            if user.has_group('base.group_system'):
+                rec.access_level = 'hr'
+                continue
+                
+            #for the employee himself 
+            if rec.user_id.id == self._uid: 
+                rec.access_level = 'me'
+                continue
             
+            #globalHR
+            if user.has_group('vcls-hr.vcls_group_HR_global'):
+                rec.access_level = 'hr'
+                continue
+            
+            #localHR
+            if user.has_group('vcls-hr.vcls_group_HR_local'):
+                if rec.company_id in user.company_ids: #if authorized company
+                    rec.access_level = 'hr'
+                else:
+                    rec.access_level = 'hl'
+                continue
+            
+            #management line
+            if (user in rec.lm_ids):
+                if user.has_group('vcls-hr.vcls_group_head'): #if he's a head
+                    rec.access_level = 'lm'
+                elif (user == rec.parent_id.user_id): #if this is the lm
+                    rec.access_level = 'lm'
+                else:
+                    rec.access_level = 'hl'
+                continue
+                
             #if user is in support group
             if user.has_group('vcls-hr.vcls_group_superuser_lvl1'):
                 rec.access_level = 'support'
-                
+                continue
             
-            # deafult access for local HR or for the management line
-            if (user in rec.lm_ids) or user.has_group('vcls-hr.vcls_group_HR_local'):
-                rec.access_level = 'hl'
-                
-            
-            # grant extended lm access to head of activity, head of department, and N+1
-            if (user == rec.parent_id.user_id) or (user == rec.contract_id.job_profile_id.job1_head.user_id) or (user == rec.contract_id.job_profile_id.job2_head.user_id) or (user == rec.contract_id.job_profile_id.job1_dir.user_id) or (user == rec.contract_id.job_profile_id.job2_dir.user_id):
-                rec.access_level = 'lm'
-                
-            
-            #if user is an hr manager, then he sees all
-            #or a local HR with the proper company
-            if user.has_group('vcls-hr.vcls_group_HR_global') or (user.has_group('vcls-hr.vcls_group_HR_local') and (rec.company_id in user.company_ids)):
-                rec.access_level = 'hr'
-                
-            
-            if rec.user_id.id == self._uid: #for the employee himself
-                rec.access_level = 'me'
+            #default access right
+            rec.access_level = 'base'
                 
                         
 

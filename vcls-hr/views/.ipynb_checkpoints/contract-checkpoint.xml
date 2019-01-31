@@ -79,7 +79,7 @@
                             <group string='France' attrs="{'invisible': [('country_name', 'not in', ['France'])]}">
                                 <field name="contract_coefficient"/>
                                 <field name="contract_echelon"/>
-                                <field name="tax_rate_percentage"/>
+                                <field name="tax_rate_percentage" invisible='1'/>
                             </group>
                             <group string='Switzerland' attrs="{'invisible': [('country_name', 'not in', ['Switzerland'])]}">
                                 

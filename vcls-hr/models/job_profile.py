@@ -78,6 +78,10 @@ class job_profile(models.Model):
         related='job2_id.department_id.manager_id',
         string='Secondary Head of Department')
     
+    manager_ids = fields.Many2many(
+        'res.users',
+        compute = '_get_managers')
+    
     '''
     total_working_percentage = fields.Float(
         string="Total Working %",
@@ -101,6 +105,15 @@ class job_profile(models.Model):
     ###################
     # Compute Methods #
     ###################
+    
+    @api.depends('job1_head','job2_head','job1_dir','job2_dir')
+    def _get_managers(self):
+        for rec in self:
+            rec.manager_ids = False
+            rec.manager_ids |= rec.job1_head.user_id
+            rec.manager_ids |= rec.job2_head.user_id
+            rec.manager_ids |= rec.job1_dir.user_id
+            rec.manager_ids |= rec.job2_dir.user_id
     
     @api.depends('job1_id','job1_percentage','job2_id','job2_percentage')
     def _compute_name(self):
