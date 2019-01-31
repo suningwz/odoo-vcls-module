@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.10.2',
+    'version': '0.10.3',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -24,6 +24,7 @@
                 'hr',
                 'hr_contract',
                 'hr_holidays',
+                'mail',
                 'snailmail',
                ],
 
@@ -65,6 +66,11 @@
         # SEQUENCES #
         #############
         'sequences/hr_sequences.xml',
+        
+        ####################
+        # EMAILS TEMPLATES #
+        ####################
+        'data/user_group_history.xml',
         
         ###################
         # DEFAULT RECORDS #
