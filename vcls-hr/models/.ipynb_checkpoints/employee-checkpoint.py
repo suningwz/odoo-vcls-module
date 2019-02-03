@@ -26,11 +26,6 @@ class Employee(models.Model):
         string='Employee ID',
         default="/",)
     
-    link_employee_folder = fields.Char(
-        string='Employee Folder',
-        help='Paste folder url',
-        track_visibility='always',)
-    
     # Overriden fields
     name = fields.Char()
     
@@ -41,31 +36,7 @@ class Employee(models.Model):
         default = False,
         readonly=True,)
     
-    #########################################
-    # OVERRIDEN FIELDS FOR GROUP VISIBILITY #
-    #########################################
-    
-    gender = fields.Selection(groups=False)
-    birthday = fields.Date(groups=False)
-    ssnid = fields.Char(groups=False)
-    country_id = fields.Many2one(groups=False)
-    permit_no = fields.Char(groups=False)
-    emergency_contact = fields.Char(groups=False)
-    emergency_phone = fields.Char(groups=False)
-                                  
-    #######################
-    # CONFIDENTIAL FIELDS #
-    #######################
-    confidential_id = fields.One2many('hr.employee.confidential','employee_id')
-    
-    # Those fields are deported in an external object 
-    '''
-    birthday = fields.Date(String='Date of Birth',
-                          compute='_compute_birthday',
-                          inverse='_set_birthday')
-    '''
-    
-    # Administrative informations
+     # Administrative informations
     first_name = fields.Char(
         string='First Name',
         track_visibility='always',)
@@ -78,47 +49,202 @@ class Employee(models.Model):
         string='Family Name',
         track_visibility='always',)
     
-    # private info, to be overriden in the read function according to the read access
+    #########################################
+    # OVERRIDEN FIELDS FOR GROUP VISIBILITY #
+    #########################################
     
+    gender = fields.Selection(groups=False)
+                                  
+    #######################
+    # CONFIDENTIAL FIELDS #
+    #######################
+    confidential_id = fields.One2many('hr.employee.confidential','employee_id')
+    
+    # Those fields are deported in an external object 
+    
+    ### /!\ Confidential information
+    link_employee_folder = fields.Char(
+        string='Employee Folder',
+        help='Paste folder url',
+        compute='_compute_link_employee_folder',
+        inverse='_set_link_employee_folder')
+    
+    ### /!\ Confidential information
+    birthday = fields.Date(String='Date of Birth',
+                          compute='_compute_birthday',
+                          inverse='_set_birthday',
+                          groups=False)
+    
+    ### /!\ Confidential information
     family_name_at_birth = fields.Char(
         string='Family Name at Birth',
-        track_visibility='always',)
+        compute='_compute_family_name_at_birth',
+        inverse='_set_family_name_at_birth')
     
+    ### /!\ Confidential information
+    #### /!\ Overwritten field
+    ssnid = fields.Char(String='Social Security Number',
+                       compute='_compute_ssnid',
+                       inverse='_set_ssnid',
+                       groups=False)
+    
+    ### /!\ Confidential information
+    #### /!\ Overwritten field
+    country_id = fields.Many2one(
+        'res.country',
+        String='Primary Citizenship',
+        compute='_compute_country_id',
+        inverse='_set_country_id',
+        groups=False)
+    
+    ### /!\ Confidential information
     country2_id = fields.Many2one(
         'res.country',
-        string='Secondary Citizenship',)
+        String='Secondary Citizenship',
+        compute='_compute_country2_id',
+        inverse='_set_country2_id')
     
+    ### /!\ Confidential information
+    #### /!\ Overwritten field
+    permit_no = fields.Char(String='Work Permit',
+                           track_visibility='always',
+                           compute='_compute_permit_no',
+                           inverse='_set_permit_no',
+                           groups=False)
+    
+    ### /!\ Confidential information
     work_permit_expire = fields.Date(
-        string='Work Permit Expiring Date',)
+        string='Work Permit Expiring Date',
+        compute='_compute_work_permit_expire',
+        inverse='_set_work_permit_expire',
+        groups=False)
     
+    ## Contact informations
+    ### /!\ Confidential information
     street = fields.Char(
-        string='Street',)
+        string='Street',
+        compute='_compute_street',
+        inverse='_set_street')
     
+    ### /!\ Confidential information
     street2 = fields.Char(
-        string='Street 2',)
+        string='Street 2',
+        compute='_compute_street2',
+        inverse='_set_street2')
     
-    city = fields.Char()
+    ### /!\ Confidential information
+    city = fields.Char(
+        compute='_compute_city',
+        inverse='_set_city')
     
+    ### /!\ Confidential information
     state_id = fields.Many2one(
         'res.country.state',
-        string = 'State')
+        string = 'State',
+        compute='_compute_state_id',
+        inverse='_set_state_id')
     
+    ### /!\ Confidential information
     zip = fields.Char(
-        string='ZIP',)
+        string='ZIP',
+        compute='_compute_zip',
+        inverse='_set_zip')
     
+    ### /!\ Confidential information
     address_country_id = fields.Many2one(
         'res.country',
-        string="Country",)
+        string="Country",
+        compute='_compute_address_country_id',
+        inverse='_set_address_country_id')
     
+     ### /!\ Confidential information
+    #### /!\ Overwritten field
     private_email = fields.Char(
-        string="Private Email",)
-    
+        string="Private Email",
+        compute='_compute_private_email',
+        inverse='_set_private_email',
+        groups=False)
+   
+    ### /!\ Confidential information
     private_phone = fields.Char(
-        string='Private Phone',)
+        string='Private Phone',
+        compute='_compute_private_phone',
+        inverse='_set_private_phone')
     
+    ### /!\ Confidential information
+    #### /!\ Overwritten field
+    emergency_contact = fields.Char(String = 'Emergency Contact',
+                                   compute='_compute_emergency_contact',
+                                   inverse='_set_emergency_contact',
+                                   groups=False)
+    
+    ### /!\ Confidential information
+    #### /!\ Overwritten field
+    emergency_phone = fields.Char(String = 'Emergency Phone',
+                                 compute='_compute_emergency_phone',
+                                 inverse='_set_emergency_phone',
+                                 groups=False)
+    
+    ### /!\ Confidential information
+    #### Casted as Char in employee_confidential
     ice_contact_relationship = fields.Selection(
         string='Emergency Contact Relationship',
-        selection='_selection_relationship',)
+        selection='_selection_relationship',
+        compute='_compute_ice_contact_relationship',
+        inverse='_set_ice_contact_relationship')
+    
+    ### /!\ Confidential information
+    notes = fields.Text(
+        compute='_compute_notes',
+        inverse='_set_notes') # Don't have label
+    
+    #Health Care Management
+    ### /!\ Confidential information
+    last_medical_checkup = fields.Date(
+        string="Last Medical Check-up",
+        track_visibility='always',
+        compute='_compute_last_medical_checkup',
+        inverse='_set_last_medical_checkup')
+    
+    ### /!\ Confidential information
+    specific_next_medical_checkup = fields.Date(
+        compute='_compute_specific_next_medical_checkup',
+        inverse='_set_specific_next_medical_checkup') #used to store manually entered value in the below inverse case
+    
+    ### /!\ Confidential information
+    #### Computed field
+    ##### onchange -> modify specific_next_medical_checkup -> employee_confidential
+    next_medical_checkup = fields.Date(
+        string="Next Medical Check-up",
+        compute='_compute_next_medical_checkup',
+        inverse='_set_next_medical_checkup',
+        track_visibility='always',)
+    
+    ### /!\ Confidential information
+    need_specific_medical = fields.Boolean(
+        string="Need Specific Medical Follow-up",
+        track_visibility='always',
+        compute='_compute_need_specific_medical',
+        inverse='_set_need_specific_medical')
+    
+    ## Health insurance
+    ### /!\ Confidential information
+    affiliation_date = fields.Date(
+        string='Affiliation Date',
+        compute='_compute_affiliation_date',
+        inverse='_set_affiliation_date')
+    
+    ### /!\ Confidential information
+    affiliated_company = fields.Char(
+        string='Affiliated Company',
+        compute='_compute_affiliated_company',
+        inverse='_set_affiliated_company')
+    
+    ### /!\ Confidential information
+    medical_policy_number = fields.Char(
+        string='Medical Policy Number',
+        compute='_compute_medical_policy_number',
+        inverse='_set_medical_policy_number')
     
     #Generic job info (i.e. not linked to the job position object nor the employee contract)
     employee_seniority_date = fields.Date(
@@ -193,32 +319,6 @@ class Employee(models.Model):
         'hr.benefit',
         string = "Benefits",
         compute = '_get_benefits',)
-   
-    #Health Care Management
-    last_medical_checkup = fields.Date(
-        string="Last Medical Check-up",
-        track_visibility='always',)
-    
-    specific_next_medical_checkup = fields.Date() #used to store manually entered value in the below inverse case
-    
-    next_medical_checkup = fields.Date(
-        string="Next Medical Check-up",
-        compute='_get_next_medical_checkup',
-        inverse='_set_next_medical_checkup',
-        track_visibility='always',)
-    
-    need_specific_medical = fields.Boolean(
-        string="Need Specific Medical Follow-up",
-        track_visibility='always',)
-    
-    affiliation_date = fields.Date(
-        string='Affiliation Date',)
-    
-    affiliated_company = fields.Char(
-        string='Affiliated Company')
-    
-    medical_policy_number = fields.Char(
-        string='Medical Policy Number',)
     
     #technical fields
     #used to grant access in employee view
@@ -554,3 +654,411 @@ class Employee(models.Model):
                 self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'birthday': self.birthday})
             else:
                 rec.confidential_id[0].write({'birthday': self.birthday})
+                
+    ### family_name_at_birth
+    @api.depends('confidential_id.family_name_at_birth')
+    def _compute_family_name_at_birth(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.family_name_at_birth = rec.confidential_id[0]['family_name_at_birth']
+            else:
+                rec.family_name_at_birth = False
+    
+    def _set_family_name_at_birth(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'family_name_at_birth': self.family_name_at_birth})
+            else:
+                rec.confidential_id[0].write({'family_name_at_birth': self.family_name_at_birth})
+                
+           
+    ### country_id
+    #### Many2one field
+    @api.depends('confidential_id.country_id')
+    def _compute_country_id(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.country_id = rec.confidential_id[0]['country_id']
+            else:
+                rec.country_id = False
+    
+    def _set_country_id(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'country_id': self.country_id.id})
+            else:
+                rec.confidential_id[0].write({'country_id': self.country_id.id})
+    
+    ### country2_id
+    #### Many2one field
+    @api.depends('confidential_id.country2_id')
+    def _compute_country2_id(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.country2_id = rec.confidential_id[0]['country2_id']
+            else:
+                rec.country2_id = False
+    
+    def _set_country2_id(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'country2_id': self.country2_id.id})
+            else:
+                rec.confidential_id[0].write({'country2_id': self.country2_id.id})
+    
+    ### ssnid
+    @api.depends('confidential_id.ssnid')
+    def _compute_ssnid(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.ssnid = rec.confidential_id[0]['ssnid']
+            else:
+                rec.ssnid = False
+    
+    def _set_ssnid(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'ssnid': self.ssnid})
+            else:
+                rec.confidential_id[0].write({'ssnid': self.ssnid})
+    
+    ### permit_no
+    @api.depends('confidential_id.permit_no')
+    def _compute_permit_no(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.permit_no = rec.confidential_id[0]['permit_no']
+            else:
+                rec.permit_no = False
+    
+    def _set_permit_no(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'permit_no': self.permit_no})
+            else:
+                rec.confidential_id[0].write({'permit_no': self.permit_no})
+    
+    ### work_permit_expire
+    @api.depends('confidential_id.work_permit_expire')
+    def _compute_work_permit_expire(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.work_permit_expire = rec.confidential_id[0]['work_permit_expire']
+            else:
+                rec.work_permit_expire = False
+    
+    def _set_work_permit_expire(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'work_permit_expire': self.work_permit_expire})
+            else:
+                rec.confidential_id[0].write({'work_permit_expire': self.work_permit_expire})
+    
+    ### link_employee_folder
+    @api.depends('confidential_id.link_employee_folder')
+    def _compute_link_employee_folder(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.link_employee_folder = rec.confidential_id[0]['link_employee_folder']
+            else:
+                rec.link_employee_folder = False
+    
+    def _set_link_employee_folder(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'link_employee_folder': self.link_employee_folder})
+            else:
+                rec.confidential_id[0].write({'link_employee_folder': self.link_employee_folder})
+    
+    
+    ## Contact information
+    ### street
+    @api.depends('confidential_id.street')
+    def _compute_street(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.street = rec.confidential_id[0]['street']
+            else:
+                rec.street = False
+    
+    def _set_street(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'street': self.street})
+            else:
+                rec.confidential_id[0].write({'street': self.street})
+    
+    ### street2
+    @api.depends('confidential_id.street2')
+    def _compute_street2(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.street2 = rec.confidential_id[0]['street2']
+            else:
+                rec.street2 = False
+    
+    def _set_street2(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'street2': self.street2})
+            else:
+                rec.confidential_id[0].write({'street2': self.street2})
+    
+    ### city
+    @api.depends('confidential_id.city')
+    def _compute_city(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.city = rec.confidential_id[0]['city']
+            else:
+                rec.city = False
+    
+    def _set_city(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'city': self.city})
+            else:
+                rec.confidential_id[0].write({'city': self.city})
+    
+    ### state_id
+    #### Many2one field
+    @api.depends('confidential_id.state_id')
+    def _compute_state_id(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.state_id = rec.confidential_id[0]['state_id']
+            else:
+                rec.state_id = False
+    
+    def _set_state_id(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'state_id': self.state_id.id})
+            else:
+                rec.confidential_id[0].write({'state_id': self.state_id.id})
+    
+    ### zip
+    @api.depends('confidential_id.zip')
+    def _compute_zip(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.zip = rec.confidential_id[0]['zip']
+            else:
+                rec.zip = False
+    
+    def _set_zip(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'zip': self.zip})
+            else:
+                rec.confidential_id[0].write({'zip': self.zip})
+    
+    ### address_country_id
+    #### Many2one field
+    @api.depends('confidential_id.address_country_id')
+    def _compute_address_country_id(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.address_country_id = rec.confidential_id[0]['address_country_id']
+            else:
+                rec.address_country_id = False
+    
+    def _set_address_country_id(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'address_country_id': self.address_country_id.id})
+            else:
+                rec.confidential_id[0].write({'address_country_id': self.address_country_id.id})
+    
+    ### private_email
+    @api.depends('confidential_id.private_email')
+    def _compute_private_email(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.private_email = rec.confidential_id[0]['private_email']
+            else:
+                rec.private_email = False
+    
+    def _set_private_email(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'private_email': self.private_email})
+            else:
+                rec.confidential_id[0].write({'private_email': self.private_email})
+    
+    ### private_phone
+    @api.depends('confidential_id.private_phone')
+    def _compute_private_phone(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.private_phone = rec.confidential_id[0]['private_phone']
+            else:
+                rec.private_phone = False
+    
+    def _set_private_phone(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'private_phone': self.private_phone})
+            else:
+                rec.confidential_id[0].write({'private_phone': self.private_phone})
+    
+    ### emergency_contact
+    @api.depends('confidential_id.emergency_contact')
+    def _compute_emergency_contact(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.emergency_contact = rec.confidential_id[0]['emergency_contact']
+            else:
+                rec.emergency_contact = False
+    
+    def _set_emergency_contact(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'emergency_contact': self.emergency_contact})
+            else:
+                rec.confidential_id[0].write({'emergency_contact': self.emergency_contact})
+    
+    ### emergency_phone
+    @api.depends('confidential_id.emergency_phone')
+    def _compute_emergency_phone(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.emergency_phone = rec.confidential_id[0]['emergency_phone']
+            else:
+                rec.emergency_phone = False
+    
+    def _set_emergency_phone(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'emergency_phone': self.emergency_phone})
+            else:
+                rec.confidential_id[0].write({'emergency_phone': self.emergency_phone})
+    
+    ### ice_contact_relationship
+    #### Selection field casted as Char in employee_confidential
+    @api.depends('confidential_id.ice_contact_relationship')
+    def _compute_ice_contact_relationship(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.ice_contact_relationship = rec.confidential_id[0]['ice_contact_relationship']
+            else:
+                rec.ice_contact_relationship = False
+    
+    def _set_ice_contact_relationship(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'ice_contact_relationship': self.ice_contact_relationship})
+            else:
+                rec.confidential_id[0].write({'ice_contact_relationship': self.ice_contact_relationship})
+    
+    ### notes
+    @api.depends('confidential_id.notes')
+    def _compute_notes(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.notes = rec.confidential_id[0]['notes']
+            else:
+                rec.notes = False
+    
+    def _set_notes(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'notes': self.notes})
+            else:
+                rec.confidential_id[0].write({'notes': self.notes})
+    
+    # End of Personal information
+    
+    # Job information
+    # *EMPTY*
+    # End of Job information
+    
+    ### last_medical_checkup
+    @api.depends('confidential_id.last_medical_checkup')
+    def _compute_last_medical_checkup(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.last_medical_checkup = rec.confidential_id[0]['last_medical_checkup']
+            else:
+                rec.last_medical_checkup = False
+    
+    def _set_last_medical_checkup(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'last_medical_checkup': self.last_medical_checkup})
+            else:
+                rec.confidential_id[0].write({'last_medical_checkup': self.last_medical_checkup})
+    
+    ### next_medical_checkup
+    @api.depends('confidential_id.next_medical_checkup')
+    def _compute_next_medical_checkup(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.next_medical_checkup = rec.confidential_id[0]['next_medical_checkup']
+            else:
+                rec.next_medical_checkup = False
+    
+    
+    ### need_specific_medical
+    @api.depends('confidential_id.need_specific_medical')
+    def _compute_need_specific_medical(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.need_specific_medical = rec.confidential_id[0]['need_specific_medical']
+            else:
+                rec.need_specific_medical = False
+    
+    def _set_need_specific_medical(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'need_specific_medical': self.need_specific_medical})
+            else:
+                rec.confidential_id[0].write({'need_specific_medical': self.need_specific_medical})
+    
+    ### affiliation_date
+    @api.depends('confidential_id.affiliation_date')
+    def _compute_affiliation_date(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.affiliation_date = rec.confidential_id[0]['affiliation_date']
+            else:
+                rec.affiliation_date = False
+    
+    def _set_affiliation_date(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'affiliation_date': self.affiliation_date})
+            else:
+                rec.confidential_id[0].write({'affiliation_date': self.affiliation_date})
+    
+    ### affiliated_company
+    @api.depends('confidential_id.affiliated_company')
+    def _compute_affiliated_company(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.affiliated_company = rec.confidential_id[0]['affiliated_company']
+            else:
+                rec.affiliated_company = False
+    
+    def _set_affiliated_company(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'affiliated_company': self.affiliated_company})
+            else:
+                rec.confidential_id[0].write({'affiliated_company': self.affiliated_company})
+    
+    ### medical_policy_number
+    @api.depends('confidential_id.medical_policy_number')
+    def _compute_medical_policy_number(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.medical_policy_number = rec.confidential_id[0]['medical_policy_number']
+            else:
+                rec.medical_policy_number = False
+    
+    def _set_medical_policy_number(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'medical_policy_number': self.medical_policy_number})
+            else:
+                rec.confidential_id[0].write({'medical_policy_number': self.medical_policy_number})
