@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.10.3',
+    'version': '0.10.4',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -45,8 +45,8 @@
         #########
         # VIEWS #
         #########
-        #'views/employee.xml',
-        'views/employee_security_test.xml',
+        'views/employee.xml',
+        #'views/employee_security_test.xml',
         'views/bonuses.xml',
         'views/benefits.xml',
         'views/company_org.xml',
