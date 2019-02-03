@@ -23,11 +23,13 @@ class EmployeeConfidential(models.Model):
     
     # CONFIDENTIAL PERSONAL INFORMATIONS #
     ## Administrative informations
-    family_name_at_birth = fields.Char(
-        String='Family Name at Birth',
-        track_visibility='always',)
     
     birthday = fields.Date(String='Date of Birth')
+    
+    family_name_at_birth = fields.Char(
+        String='Family Name at Birth',)
+    
+    
     
     ssnid = fields.Char(String='Social Security Number')
     
@@ -89,27 +91,6 @@ class EmployeeConfidential(models.Model):
     # CONFIDENTIAL JOB INFORMATION #
     ## Declare here sensitive attributes about the employee's job
     # END OF CONFIDENTIAL JOB INFORMATION #
-    
-    # CONFIDENTIAL TRIAL PERIOD INFORMATION #
-    ### NOT HANDELD IN employee_confidential
-    #### domain="[('company_id', '=', company_id)]" in employee
-    '''
-    trial_period_id = fields.Many2one(
-        'hr.trial.period',
-        string='Trial Period')
-    
-    trial_start_date = fields.Date(
-        string='Trial Period Start Date',)
-
-    trial_end_date = fields.Date(
-        string='Trial Period End Date',
-        compute='_compute_trial_end_date',)
-    
-    trial_notification_date = fields.Date(
-        string='Trial Period Notification Date',
-        compute='_compute_trial_end_date',)
-    '''
-    # END OF CONFIDENTIAL TRIAL PERIOD INFORMATION #
     
     # CONFIDENTIAL HEALTH CARE INFORMATION #
     
