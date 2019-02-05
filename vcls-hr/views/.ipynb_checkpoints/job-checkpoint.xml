@@ -25,7 +25,7 @@
                         </group>
                         <group>
                             <!-- <field name="vcls_activity_id"/> -->
-                            <field name="project_role_id"/>
+                            <field name="project_role_id" string="Job Title"/>
                             <field name="billable_target_percentage" widget="percentage"/>
                         </group>
                         

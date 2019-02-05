@@ -33,8 +33,24 @@ class Employee(models.Model):
         default=False,)
      
     resource_calendar_id = fields.Many2one(
-        default = False,
-        readonly=True,)
+        related='contract_id.resource_calendar_id',
+        readonly = True,
+        store=True,)
+    
+    job_id = fields.Many2one(
+        related='contract_id.job_id',
+        readonly = True,
+        store = True)
+    
+    department_id = fields.Many2one(
+        related='contract_id.job_id.department_id',
+        readonly = True,
+        store = True)
+    
+    job_title = fields.Char(
+        related='contract_id.job_id.project_role_id.name',
+        readonly = True,
+        store = True)
     
      # Administrative informations
     first_name = fields.Char(
@@ -67,7 +83,8 @@ class Employee(models.Model):
         string='Employee Folder',
         help='Paste folder url',
         compute='_compute_link_employee_folder',
-        inverse='_set_link_employee_folder')
+        #inverse='_set_link_employee_folder'
+        )
     
     ### /!\ Confidential information
     birthday = fields.Date(String='Date of Birth',
@@ -436,7 +453,7 @@ class Employee(models.Model):
         for empl in self:
             empl.contract_ids = self.env['hr.contract'].search(['&',('employee_id','=',empl.id),('company_id','=',empl.company_id.id)])
     
-    @api.depends('parent_id','parent_id.parent_id','contract_id','contract_id.job_profile_id','contract_id.job_profile_id.job1_head','contract_id.job_profile_id.job2_head','contract_id.job_profile_id.job1_dir','contract_id.job_profile_id.job2_dir')  
+    @api.depends('parent_id','parent_id.parent_id','contract_id','contract_id.job_id','contract_id.job_id.department_id','contract_id.job_id.department_id.manager_id')  
     def _get_lm_ids(self):
         
         for rec in self:
@@ -446,7 +463,7 @@ class Employee(models.Model):
                 empl = empl.parent_id
                 managers |= empl.user_id
             #add heads related to job profile
-            managers |= rec.sudo().contract_id.job_profile_id.manager_ids
+            managers |= rec.sudo().contract_id.job_id.department_id.manager_id.user_id
             
             rec.lm_ids = managers
             
