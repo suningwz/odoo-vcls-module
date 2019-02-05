@@ -1,14 +1,25 @@
-id,name,company_id:id,parent_id:id
+id,name,parent_id:id,company_id:id
 department_admin,Administration,,
 department_BD,Business Development,,
 department_finance,Finance,,
-department_accounting,Accounting,,department_finance
-department_controlling,Controlling,,department_finance
+department_accounting,Accounting,department_finance,
+department_controlling,Controlling,department_finance,
 department_HR,Human Resources,,
 department_IT,IT,,
 department_legal,Legal,,
 department_marketing,Marketing,,
 department_operations,Operations,,
 department_QA,Quality,,
-department_RM,Resource Management,,department_operations
+department_RM,Resource Management,department_operations,
 department_neighborhood,Neighborhood,,
+department_reg,Regulatory,department_operations,
+department_CTSO,CTSO,department_operations,
+department_CMC,CMC,department_operations,
+department_regNCC,Regulatory Non-Clinical/Clinical,department_operations,
+department_pub,Publishing,department_operations,
+department_MW,Medical Writing,department_operations,
+department_MA,Market Access,department_operations,
+department_vig,Vigilance Reg & Ops,department_operations,
+department_compbio,Complex Biologics,department_operations,
+department_AHT,AHT,department_operations,
+department_digital,Digital Life Sciences,department_operations,
