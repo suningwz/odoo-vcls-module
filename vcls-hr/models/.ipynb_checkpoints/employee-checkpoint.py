@@ -33,24 +33,28 @@ class Employee(models.Model):
         default=False,)
      
     resource_calendar_id = fields.Many2one(
-        related='contract_id.resource_calendar_id',
-        readonly = True,
-        store=True,)
+        #related='contract_id.resource_calendar_id',
+        #readonly = True,
+        #store=True,
+        )
     
     job_id = fields.Many2one(
-        related='contract_id.job_id',
-        readonly = True,
-        store = True)
+        #related='contract_id.job_id',
+        #readonly = True,
+        #store = True
+        )
     
     department_id = fields.Many2one(
-        related='contract_id.job_id.department_id',
-        readonly = True,
-        store = True)
+        #related='contract_id.job_id.department_id',
+        #readonly = True,
+        #store = True
+        )
     
     job_title = fields.Char(
-        related='contract_id.job_id.project_role_id.name',
-        readonly = True,
-        store = True)
+        #related='contract_id.job_id.project_role_id.name',
+        #readonly = True,
+        #store = True
+        )
     
      # Administrative informations
     first_name = fields.Char(

@@ -315,7 +315,7 @@
                         <filter name="group_company" string="Company" domain="[]" context="{'group_by':'company_id'}" />
                         <filter name="group_office" string="Office" domain="[]" context="{'group_by':'office_id'}" />
                         <filter name="group_manager" string="Manager" domain="[]" context="{'group_by':'parent_id'}"/>
-                        <!--<filter name="group_department" string="Department" domain="[]" context="{'group_by':'department_id'}"/>-->
+                        <filter name="group_department" string="Department" domain="[]" context="{'group_by':'department_id'}"/>
                     </group>
                 </search>
                 
