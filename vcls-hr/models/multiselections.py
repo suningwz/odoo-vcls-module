@@ -24,7 +24,7 @@ class BusinessFct(models.Model):
 #The list of role will be used on invoices, this is the client oriented side of our internal organisation
 class ProjectRole(models.Model):
     _name = 'hr.project_role'
-    _description = 'Project Roles'
+    _description = 'Job Titles'
     
     name = fields.Char(
         required=True,)
