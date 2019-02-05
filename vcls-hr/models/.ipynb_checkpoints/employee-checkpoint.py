@@ -31,29 +31,31 @@ class Employee(models.Model):
     
     gender = fields.Selection(
         default=False,)
+    
+    contract_id = fields.Many2one(store=True)
      
     resource_calendar_id = fields.Many2one(
-        #related='contract_id.resource_calendar_id',
-        #readonly = True,
-        #store=True,
+        related='contract_id.resource_calendar_id',
+        readonly = True,
+        store=True,
         )
     
     job_id = fields.Many2one(
-        #related='contract_id.job_id',
-        #readonly = True,
-        #store = True
+        related='contract_id.job_id',
+        readonly = True,
+        store = True
         )
     
     department_id = fields.Many2one(
-        #related='contract_id.job_id.department_id',
-        #readonly = True,
-        #store = True
+        related='contract_id.job_id.department_id',
+        readonly = True,
+        store = True
         )
     
     job_title = fields.Char(
-        #related='contract_id.job_id.project_role_id.name',
-        #readonly = True,
-        #store = True
+        related='contract_id.job_id.project_role_id.name',
+        readonly = True,
+        store = True
         )
     
      # Administrative informations
@@ -410,6 +412,11 @@ class Employee(models.Model):
     #################################
     # Automated Calculation Methods #
     #################################
+    
+    #Overrides the contract_id calculation to be replaced by a depends and allow the storage of contract_id
+    @api.depends('contract_ids.date_start')
+    def _compute_contract_id(self):
+        super(Employee, self)._compute_contract_id()
     
     #adds or remove from the lm group according to the subortinates count
     @api.model #to be called from CRON job
