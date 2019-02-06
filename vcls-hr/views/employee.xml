@@ -91,6 +91,7 @@
                                         <field name="diploma_ids" widget="many2many_tags"/>
                                         <field name="family_name_at_birth"/>
                                         <field name="birthday" string="Date of Birth"/>
+                                        <field name="children" attrs="{'invisible': [('country_name', 'not in', ['Switzerland'])]}"/>
                                         
                                         <field name="ssnid" string="Social Security No" attrs="{'invisible': [('country_name', 'not in', ['France','United States','United Kingdom'])]}"/>
                                         <field name="ssnid" string="Pan No" attrs="{'invisible': [('country_name', 'not in', ['India'])]}"/>
@@ -126,8 +127,8 @@
                                 <field name="notes" placeholder="Other Information ..." colspan="4"/>
                             </page>
                             
-                           <!-- <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['lm', 'hr','hl','support','me'])]}">-->
-                            <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
+                            <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['lm', 'hr','hl','support','me'])]}">
+                            <!-- <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">-->
                                 <group>
                                     <group string="General Information">
                         
@@ -157,8 +158,8 @@
                                     
                             </page>
                             
-                           <!-- <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr','me','lm']),('country_name', '=', 'United States')]}">-->
-                            <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr']),('country_name', '=', 'United States')]}">
+                            <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr','me','lm']),('country_name', '=', 'United States')]}">
+                            <!-- <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr']),('country_name', '=', 'United States')]}">-->
                                 <group>
                                     <group>
                                         <field name="trial_period_id" placeholder='Please select the period type.'/>
@@ -172,15 +173,17 @@
                             </page>
                             
                             
-                           <!-- <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">-->
-                            <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
+                            <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">
+                            <!--<page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">-->
                                 <group string="Salaries">
                                     <field name="contract_ids" string="">
                                         <tree string="Employee Salaries">
                                             <field name="currency_id" invisible='1'/>
-                                            <field name="date_start"/>
-                                            <field name="date_end"/>
+                                            <!-- <field name="date_start"/>
+                                            <field name="date_end"/> -->
                                             <field name="prorated_salary"/>
+                                            <field name="fulltime_salary"/>
+                                            <field name="effective_percentage" widget='percentage'/>
                                         </tree>
                                     </field>
                                 </group>
@@ -197,8 +200,8 @@
                             </page>
                             
                             
-                           <!-- <page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">-->
-                            <page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
+                            <page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">
+                            <!--<page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">-->
                                 <group string="Benefits">
                                     <field name="benefit_ids" string="">
                                         <tree string="Employee Benefits">

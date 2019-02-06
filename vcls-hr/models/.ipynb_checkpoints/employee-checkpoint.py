@@ -107,6 +107,11 @@ class Employee(models.Model):
         inverse='_set_family_name_at_birth')
     
     ### /!\ Confidential information
+    children = fields.Integer(
+        compute='_compute_children',
+        inverse='_set_children')
+    
+    ### /!\ Confidential information
     #### /!\ Overwritten field
     ssnid = fields.Char(String='Social Security Number',
                        compute='_compute_ssnid',
@@ -700,6 +705,22 @@ class Employee(models.Model):
                 self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'family_name_at_birth': self.family_name_at_birth})
             else:
                 rec.confidential_id[0].write({'family_name_at_birth': self.family_name_at_birth})
+                
+    ### children
+    @api.depends('confidential_id.children')
+    def _compute_children(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.children = rec.confidential_id[0]['children']
+            else:
+                rec.children = False
+    
+    def _set_children(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'children': self.children})
+            else:
+                rec.confidential_id[0].write({'children': self.children})
                 
            
     ### country_id

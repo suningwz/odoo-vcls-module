@@ -29,7 +29,8 @@ class EmployeeConfidential(models.Model):
     family_name_at_birth = fields.Char(
         String='Family Name at Birth',)
     
-    
+    children = fields.Integer(
+        String='Number of Children',)
     
     ssnid = fields.Char(String='Social Security Number')
     
