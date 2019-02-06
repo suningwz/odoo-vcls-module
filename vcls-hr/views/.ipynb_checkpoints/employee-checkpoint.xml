@@ -10,7 +10,7 @@
             <field name="arch" type="xml">
                 
                 <form string="Employee">
-                    <header attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"> <!-- UNDER TEST -->
+                    <header attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"> 
                         <!-- Header containing action buttons only visible by HR -->
                         
                         <!-- Button pop up new contract -->
@@ -52,8 +52,9 @@
                                 </div>
                     
                                 
-                                <field name="job_info" invisible='1'/>
-        
+                                <field name="job_info" invisible='0'/>
+                                
+                                <!-- the header is accessible to everyone -->
                                 <group>
                                     <group string="">
                                         <field name="office_id"/>
@@ -78,7 +79,7 @@
                         </div>
                         
                         <notebook>
-                            
+                            <!-- personnal info just accessible to the employee and the hr -->
                             <page name="personal_information" string="Personal Information" attrs="{'invisible': [('access_level', 'not in', ['hr','me'])]}">
                                 <group>
                                     <group string="Administrative Information">
@@ -125,7 +126,7 @@
                                 <field name="notes" placeholder="Other Information ..." colspan="4"/>
                             </page>
                             
-                            <!--<page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['lm', 'hr','hl','support','me'])]}">-->
+                           <!-- <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['lm', 'hr','hl','support','me'])]}">-->
                             <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
                                 <group>
                                     <group string="General Information">
@@ -156,7 +157,7 @@
                                     
                             </page>
                             
-                            <!--<page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr','me','lm']),('country_name', '=', 'United States')]}">-->
+                           <!-- <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr','me','lm']),('country_name', '=', 'United States')]}">-->
                             <page name="trial_period" string="Trial Period" attrs="{'invisible': ['|',('access_level', 'not in', ['hr']),('country_name', '=', 'United States')]}">
                                 <group>
                                     <group>
@@ -171,7 +172,7 @@
                             </page>
                             
                             
-                            <!--<page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">-->
+                           <!-- <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">-->
                             <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
                                 <group string="Salaries">
                                     <field name="contract_ids" string="">
@@ -196,7 +197,7 @@
                             </page>
                             
                             
-                            <!--<page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">-->
+                           <!-- <page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">-->
                             <page name="benefits" string="Benefits" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
                                 <group string="Benefits">
                                     <field name="benefit_ids" string="">
@@ -214,7 +215,7 @@
 
                             
                             <page name="health_care" string="Health Care" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">
-                            <!--<page name="health_care" string="Health Care" attrs="{'invisible': [('access_level', 'not in', ['hr','me'])]}">-->
+                           <!-- <page name="health_care" string="Health Care" attrs="{'invisible': [('access_level', 'not in', ['hr','me'])]}">-->
                                 <group>
                                     <group attrs="{'invisible': [('country_name', 'not in', ['France'])]}">
                                         <field name="last_medical_checkup"/>

@@ -33,7 +33,8 @@ class Employee(models.Model):
         default=False,)
     
     contract_id = fields.Many2one(store=True)
-     
+    
+    
     resource_calendar_id = fields.Many2one(
         related='contract_id.resource_calendar_id',
         readonly = True,
@@ -57,6 +58,7 @@ class Employee(models.Model):
         readonly = True,
         store = True
         )
+    
     
      # Administrative informations
     first_name = fields.Char(
