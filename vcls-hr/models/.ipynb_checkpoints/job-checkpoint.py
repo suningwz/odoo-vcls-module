@@ -56,7 +56,10 @@ class Job(models.Model):
     def _compute_name(self):
         for rec in self:
             if rec.department_id and rec.project_role_id:
-                rec.name = "{} - {}".format(rec.department_id.name,rec.project_role_id.name)
+                if rec.department_id.name == rec.project_role_id.name:
+                    rec.name = "{}".format(rec.department_id.name)
+                else:
+                    rec.name = "{} - {}".format(rec.department_id.name,rec.project_role_id.name)
             elif rec.department_id:
                 rec.name = "{}".format(rec.department_id.name)
             elif rec.project_role_id:

@@ -33,7 +33,8 @@ class Employee(models.Model):
         default=False,)
     
     contract_id = fields.Many2one(store=True)
-     
+    
+    
     resource_calendar_id = fields.Many2one(
         related='contract_id.resource_calendar_id',
         readonly = True,
@@ -57,6 +58,7 @@ class Employee(models.Model):
         readonly = True,
         store = True
         )
+    
     
      # Administrative informations
     first_name = fields.Char(
@@ -103,6 +105,11 @@ class Employee(models.Model):
         string='Family Name at Birth',
         compute='_compute_family_name_at_birth',
         inverse='_set_family_name_at_birth')
+    
+    ### /!\ Confidential information
+    children = fields.Integer(
+        compute='_compute_children',
+        inverse='_set_children')
     
     ### /!\ Confidential information
     #### /!\ Overwritten field
@@ -698,6 +705,22 @@ class Employee(models.Model):
                 self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'family_name_at_birth': self.family_name_at_birth})
             else:
                 rec.confidential_id[0].write({'family_name_at_birth': self.family_name_at_birth})
+                
+    ### children
+    @api.depends('confidential_id.children')
+    def _compute_children(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.children = rec.confidential_id[0]['children']
+            else:
+                rec.children = False
+    
+    def _set_children(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'children': self.children})
+            else:
+                rec.confidential_id[0].write({'children': self.children})
                 
            
     ### country_id
