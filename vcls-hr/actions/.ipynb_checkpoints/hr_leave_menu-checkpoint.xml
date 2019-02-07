@@ -2,7 +2,89 @@
 <odoo>
     <data>
         
+        <!-- deactivate allocations menus because we don't use it for now -->
+        <record id="hr_holidays.menu_open_allocation" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>   
         
+        <!-- deactivate all managers menu to reorganise them -->
+        <record id="hr_holidays.menu_hr_holidays_approvals" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+        
+        <record id="hr_holidays.hr_holidays_menu_manager_approve" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+        <record id="hr_holidays.menu_open_department_leave_approve" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+        <record id="hr_holidays.hr_holidays_menu_manager_approve_allocations" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+        
+        <record id="hr_holidays.hr_holidays_menu_manager_all" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+        <record id="hr_holidays.menu_open_employee_leave" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+        <record id="hr_holidays.hr_holidays_menu_manager_all_allocations" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+        
+        <record id="hr_holidays.hr_holidays_menu_manager_payroll" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+        <record id="hr_holidays.hr_holidays_menu_manager_payroll_to_report" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+        
+        <!-- Rename the misleading 'New Request' in 'Calendar Overview' -->
+        <record id="hr_holidays.hr_leave_menu_new_request" model="ir.ui.menu">
+            <field name="name">Calendar Overview</field>
+        </record>
+        
+        <!-- Create new menu hierarchy for leave management -->
+        
+        <!-- head menu -->
+        <menuitem
+            id="menu_leaves_management"
+            name="Leaves Management"
+            parent="hr_holidays.menu_hr_holidays_root"
+            sequence="4"
+        />
+        <!-- Configure groups to access leaves management: LM and HR teams -->
+        <record id="hr.menu_open_view_employee_non_active" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local')),(4,ref('vcls-hr.vcls_group_lm'))]"/>
+        </record>
+        
+        <!-- Leaves to approve, using the existing default action -->
+        <menuitem
+            id="menu_leaves_to_approve"
+            name="Leaves To Approve"
+            parent="menu_leaves_management"
+            sequence="5"
+            action="hr_holidays.hr_leave_action_action_approve_department"
+        />
+        
+        <!-- All leaves, using the existing default action -->
+        <menuitem
+            id="menu_all_leaves"
+            name="All Leaves"
+            parent="menu_leaves_management"
+            sequence="10"
+            action="hr_holidays.hr_leave_action_all"
+        />
+        
+        <!-- Add groups to the Dashboard menu -->
+        <record id="hr_holidays.menu_hr_holidays_dashboard" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local')),(4,ref('vcls-hr.vcls_group_lm'))]"/>
+        </record>
+        
+        <!-- Add groups to the Leave reporting menu -->
+        <record id="hr_holidays.menu_hr_holidays_report" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local')),(4,ref('vcls-hr.vcls_group_lm'))]"/>
+        </record>
         
     </data>
 </odoo>

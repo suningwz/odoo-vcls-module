@@ -60,7 +60,7 @@
         ###########
         'actions/hr_employee_menu.xml',
         'actions/hr_employee_cronjob.xml',
-        #'actions/hr_job_menu.xml',
+        'actions/hr_leave_menu.xml',
         
         #############
         # SEQUENCES #

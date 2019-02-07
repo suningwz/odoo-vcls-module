@@ -59,13 +59,12 @@ access_hr_office_employee,hr.office.employee,model_hr_office,base.group_user,1,0
 
 
 
-
 access_hr_bank_holiday_hr,hr.bank.holiday.hr,model_hr_bank_holiday,vcls_group_HR_local,1,0,1,1
 access_hr_bank_holiday_sup1,hr.bank.holiday.sup1,model_hr_bank_holiday,vcls-hr.vcls_group_superuser_lvl1,1,0,1,1
 
-access_hr_exceptional_leave_case_admin,hr.exceptional.leave.case.admin,model_hr_exceptional_leave_case,base.group_system,1,1,1,1
+access_hr_exceptional_leave_case_admin,hr.exceptional.leave.case.admin,model_hr_exceptional_leave_case,vcls-hr.vcls_group_superuser_lvl1,1,1,1,1
 access_hr_exceptional_leave_case_employee,hr.exceptional.leave.case.employee,model_hr_exceptional_leave_case,base.group_user,1,0,0,0
-access_hr_exceptional_leave_category_admin,hr.exceptional.leave.category.admin,model_hr_exceptional_leave_category,base.group_system,1,1,1,1
+access_hr_exceptional_leave_category_admin,hr.exceptional.leave.category.admin,model_hr_exceptional_leave_category,vcls-hr.vcls_group_superuser_lvl1,1,1,1,1
 access_hr_exceptional_leave_category_employee,hr.exceptional.leave.category.employee,model_hr_exceptional_leave_category,base.group_user,1,0,0,0
 
 access_fleet_vehicle_emloyee,fleet.vehicle.employee,fleet.model_fleet_vehicle,base.group_user,1,0,0,0
