@@ -47,6 +47,7 @@
         #########
         'views/employee.xml',
         #'views/employee_security_test.xml',
+        'views/bank_holiday.xml',
         'views/bonuses.xml',
         'views/benefits.xml',
         'views/company_org.xml',

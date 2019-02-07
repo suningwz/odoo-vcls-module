@@ -87,7 +87,7 @@
             action="hr_holidays.hr_leave_action_all"
         />
         
-        <!-- menu for HR -->
+        <!-- menu for HR allocation -->
         <menuitem
             id="menu_leaves_allocation"
             name="Leaves Allocations (HR)"
@@ -97,6 +97,30 @@
         />
         <!-- Configure groups to access leaves management: LM and HR teams -->
         <record id="menu_leaves_allocation" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
+        </record>
+        
+        <!-- action for bank holidays -->
+        <record id="action_hr_bank_holiday" model="ir.actions.act_window">
+            <field name="name">Bank Holiday</field>
+            <field name="res_model">hr.bank.holiday</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-hr.view_bank_holiday_tree_1')}),
+            ]"/>
+        </record>
+        
+        <!-- menu for bank holidays -->
+        <menuitem
+            id="menu_bank_holidays"
+            name="Bank Holiday"
+            parent="hr_holidays.menu_hr_holidays_configuration"
+            sequence="15"
+            action="vcls-hr.action_hr_bank_holiday"
+        />
+        <!-- Configure groups to access leaves management: LM and HR teams -->
+        <record id="menu_bank_holidays" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
         </record>
         
