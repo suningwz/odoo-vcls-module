@@ -58,5 +58,15 @@
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         </record>
         
+        <!-- LEAVES RULES -->
+        <!-- Deactivate the multicompany rules -->
+        <record id="hr_holidays.hr_leave_rule_multicompany" model="ir.rule">
+            <field name="active" eval="False"/>
+        </record>
+        <record id="hr_holidays.hr_holidays_status_rule_multi_company" model="ir.rule">
+            <field name="active" eval="False"/>
+        </record>
+        
+        
     </data>
 </odoo>
