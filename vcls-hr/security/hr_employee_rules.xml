@@ -86,5 +86,10 @@
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         </record>
         
+        <!-- Deactivate rights for employee to create and edit non-validated own allocations -->
+        <record id="hr_holidays.hr_leave_allocation_rule_employee_update" model="ir.rule">
+            <field name="active" eval="False"/>
+        </record>
+        
     </data>
 </odoo>

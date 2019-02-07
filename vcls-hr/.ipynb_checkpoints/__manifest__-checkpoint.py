@@ -41,6 +41,7 @@
         #'security/hr_head_rules.xml',
         'security/hr_hrglobal_rules.xml',
         'security/hr_hrlocal_rules.xml',
+        'security/hr_leave_officer_rules.xml',
         
         #########
         # VIEWS #
