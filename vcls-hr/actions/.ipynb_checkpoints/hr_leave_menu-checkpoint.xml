@@ -54,7 +54,7 @@
             sequence="4"
         />
         <!-- Configure groups to access leaves management: LM and HR teams -->
-        <record id="hr.menu_open_view_employee_non_active" model="ir.ui.menu">
+        <record id="menu_leaves_management" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local')),(4,ref('vcls-hr.vcls_group_lm'))]"/>
         </record>
         
