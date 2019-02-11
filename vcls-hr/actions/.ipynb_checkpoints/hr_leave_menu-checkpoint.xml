@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Force the main overview to create for employee only 
+        <!-- Force the main overview to create for employee only -->
         <record id="hr_holidays.action_hr_holidays_dashboard" model="ir.ui.menu">
             <field name="res_model">hr.leave</field>
             <field name="view_type">form</field>
@@ -9,11 +9,15 @@
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-hr.view_leave_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-hr.vcls_leave_form1')}),
                 
             ]"/>
         </record>
-        -->
         
+        <!-- Add groups to the Dashboard menu -->
+        <record id="hr_holidays.menu_hr_holidays_dashboard" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('hr_holidays.group_hr_holidays_user'))]"/>
+        </record>
         
         <!-- LINK NEW VIEWS TO EXISITNG 'MY LEAVES' ACTIONS -->
         <!-- Calendar Overview -->
@@ -25,30 +29,28 @@
             <field name="view_mode">calendar,tree,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-hr.view_leave_tree')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-hr.vcls_leave_form1')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1')}),
             ]"/>
         </record>
         
-        <!--
         <record id="hr_holidays.hr_leave_action_my" model="ir.ui.menu">
             <field name="res_model">hr.leave</field>
             <field name="view_type">form</field>
             <field name="view_mode">calendar,tree,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-hr.view_leave_tree')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-hr.vcls_leave_form1')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1')}),
             ]"/>
         </record>
--->
-        
         
         <!-- deactivate allocations menus because we don't use it for now -->
         <record id="hr_holidays.menu_open_allocation" model="ir.ui.menu">
             <field name="active" eval="False"/>
         </record>   
         
+        <!-- MANAGEES LEAVES -->
         <!-- deactivate all managers menu to reorganise them -->
         <record id="hr_holidays.menu_hr_holidays_approvals" model="ir.ui.menu">
             <field name="active" eval="False"/>
@@ -87,21 +89,27 @@
         <!-- head menu -->
         <menuitem
             id="menu_leaves_management"
-            name="Leaves Management"
+            name="Leaves for LM"
             parent="hr_holidays.menu_hr_holidays_root"
             sequence="4"
         />
         <!-- Configure groups to access leaves management: LM and HR teams -->
         <record id="menu_leaves_management" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local')),(4,ref('vcls-hr.vcls_group_lm'))]"/>
+            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_lm'))]"/>
         </record>
         
         <!-- Leaves to approve, using the existing action slightly customized -->
-        <record id="hr_leave_action_action_approve_department" model="ir.actions.act_window">
+        <record id="hr_holidays.hr_leave_action_action_approve_department" model="ir.actions.act_window">
             <field name="name">Leaves To Approve</field>
             <field name="res_model">hr.leave</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,kanban,form,calendar,activity</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree_multi')}),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('hr_holidays.hr_leave_view_kanban')}),                         
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1')}),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
+            ]"/>
             <field name="context">{
                 'search_default_approve':1}
             </field>
@@ -116,7 +124,21 @@
             action="hr_holidays.hr_leave_action_action_approve_department"
         />
         
-        <!-- All leaves, using the existing default action -->
+        <record id="hr_holidays.hr_leave_action_all" model="ir.actions.act_window">
+            <field name="name">All Leaves</field>
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,calendar,activity</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree_multi')}),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('hr_holidays.hr_leave_view_kanban')}),                         
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1')}),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
+            ]"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+        
         <menuitem
             id="menu_all_leaves"
             name="All Leaves"
@@ -125,16 +147,85 @@
             action="hr_holidays.hr_leave_action_all"
         />
         
+        <!-- HR Leaves -->
+        <!-- head menu -->
+        <menuitem
+            id="menu_leaves_management_hr"
+            name="Leaves for HR"
+            parent="hr_holidays.menu_hr_holidays_root"
+            sequence="5"
+        />
+        <record id="menu_leaves_management_hr" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
+        </record>
+        
+        <!-- Leaves to approve, using the existing action slightly customized -->
+        <record id="hr_leave_action_action_approve_department_hr" model="ir.actions.act_window">
+            <field name="name">Leaves To Approve</field>
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,calendar,activity</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree_multi')}),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('hr_holidays.hr_leave_view_kanban')}),                         
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1_manager')}),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
+            ]"/>
+            <field name="context">{
+                'search_default_approve':1}
+            </field>
+            <field name="domain">[]</field>
+        </record>
+        
+        <menuitem
+            id="menu_leaves_to_approve_hr"
+            name="Leaves To Approve"
+            parent="menu_leaves_management_hr"
+            sequence="5"
+            action="hr_leave_action_action_approve_department_hr"
+        />
+        
+        <record id="hr_leave_action_all_hr" model="ir.actions.act_window">
+            <field name="name">All Leaves</field>
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,calendar,activity</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree_multi')}),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('hr_holidays.hr_leave_view_kanban')}),                         
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1_manager')}),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
+            ]"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+        
+        <menuitem
+            id="menu_all_leaves_hr"
+            name="All Leaves"
+            parent="menu_leaves_management_hr"
+            sequence="10"
+            action="hr_leave_action_all_hr"
+        />
+        
         <!-- menu for HR allocation -->
         <menuitem
             id="menu_leaves_allocation"
             name="Leaves Allocations (HR)"
-            parent="menu_leaves_management"
+            parent="menu_leaves_management_hr"
             sequence="15"
             action="hr_holidays.hr_leave_allocation_action_all"
         />
         <!-- Configure groups to access leaves management: LM and HR teams -->
         <record id="menu_leaves_allocation" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
+        </record>
+        
+        
+        
+        <!-- CONFIGURATION -->
+        <!-- Configuration only accessible for specific groups -->
+        <record id="hr_holidays.menu_hr_holidays_configuration" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
         </record>
         
@@ -149,11 +240,6 @@
             ]"/>
         </record>
         
-        <!-- Configuration only accessible for specific groups -->
-        <record id="hr_holidays.menu_hr_holidays_configuration" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
-        </record>
-        
         <!-- menu for bank holidays -->
         <menuitem
             id="menu_bank_holidays"
@@ -162,19 +248,15 @@
             sequence="15"
             action="vcls-hr.action_hr_bank_holiday"
         />
-        <!-- Configure groups to access leaves management: LM and HR teams -->
+       
         <record id="menu_bank_holidays" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
         </record>
-        
-        <!-- Add groups to the Dashboard menu -->
-        <record id="hr_holidays.menu_hr_holidays_dashboard" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local')),(4,ref('vcls-hr.vcls_group_lm'))]"/>
-        </record>
+
         
         <!-- Add groups to the Leave reporting menu -->
         <record id="hr_holidays.menu_hr_holidays_report" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local')),(4,ref('vcls-hr.vcls_group_lm'))]"/>
+            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
         </record>
         
     </data>
