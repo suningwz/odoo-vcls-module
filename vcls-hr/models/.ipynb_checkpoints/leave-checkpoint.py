@@ -141,7 +141,6 @@ class Leave(models.Model):
             if (rec.holiday_type=='By Employee') and (rec.employee_company_id != rec.holiday_status_id.company_id): #only if it's a request by employee
                 raise ValidationError("The selected leave type is not related to the same company that the selected employee.")
     
-    """
     # Overriding the initial number of days constrains to match with future days
     @api.constrains('state', 'number_of_days', 'holiday_status_id')
     def _check_holidays(self):
@@ -153,4 +152,3 @@ class Leave(models.Model):
             if rec.future_number_of_days < rec.number_of_days:
                 raise ValidationError(_('The number of remaining leaves is not sufficient for this leave type.\n'
                                         'Please also check the leaves waiting for validation.'))
-    """
