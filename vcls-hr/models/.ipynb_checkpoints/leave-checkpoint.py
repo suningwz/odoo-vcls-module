@@ -9,7 +9,13 @@ from odoo.tools import float_compare
 
 class Leave(models.Model):
     _inherit = 'hr.leave'
-
+    
+    
+    ####################
+    # Overriden Fields #
+    ####################
+    #holiday_status_id = fields.Many2one(
+    #    default=False)
    
     #################
     # Custom Fields #
@@ -45,6 +51,10 @@ class Leave(models.Model):
         string="Info",
         compute='_compute_future_days',)
     
+    is_accrual = fields.Boolean(
+        default=False)
+    
+    
     #######################
     # Calculation Methods #
     #######################
@@ -59,32 +69,43 @@ class Leave(models.Model):
                 rec.exceptional_allocation = rec.exceptional_category_id.default_max_allocated_days
     
     # Compute an expected number of days at request start date according to ongoing allocations
-    
     @api.depends('request_date_from','holiday_status_id')
     def _compute_future_days(self):
         for rec in self:
-            base = 0.0
-            monthly_add = 0.0
+            
+            #get remaining days
+            leave_days = rec.holiday_status_id.get_days(rec.employee_id.id)[rec.holiday_status_id.id]['virtual_remaining_leaves']
             
             #get all the active leave allocations for the corresponding leave type and user
-            allocs =  rec.env['hr.leave.allocation'].search([('employee_id','=',rec.employee_id.id),('holiday_status_id','=',rec.holiday_status_id.id)])
+            allocs =  rec.env['hr.leave.allocation'].search([('employee_id','=',rec.employee_id.id),('holiday_status_id','=',rec.holiday_status_id.id),('accrual','=',True),('state','=','validate'),('interval_unit','=','months')])
+            #allocs =  rec.env['hr.leave.allocation'].search([('employee_id','=',rec.employee_id.id),('holiday_status_id','=',rec.holiday_status_id.id),('date_to', '>', fields.Datetime.now()),('interval_unit','=','months'),('interval_number','=',1),('unit_per_interval','=','days')])
             
-            #get remaining days and future allocations
-            for alloc in allocs: 
-                base += alloc.number_of_days
-                if alloc.accrual: monthly_add += alloc.number_per_interval
+            #sum exisiting allocations
+            monthly_add = 0.0
+            end_alloc = rec.date_from
+            rec.is_accrual = False
+            for alloc in allocs:  
+                monthly_add += alloc.number_per_interval
+                rec.is_accrual = True
+                if alloc.date_to:
+                    end_alloc = alloc.date_to
             
-            #Compute the number of intervals between today() and the leave start date
+            #Compute the number of intervals between today() and the leave start date.
+            # If the en d of the accrual 
             start_ord = date.today().toordinal()
-            end_ord = rec.date_from.toordinal()
+            end_ord = min(rec.date_from.toordinal(),end_alloc.toordinal())
             cnt = 0
             
             for d_ord in range(start_ord,end_ord+1): #1 is added to ensure the last day of the range to be taken in account
-                d = date.fromordinal(d_ord)
+                d = date.fromordinal(d_ord+1) #we check if the day after is the 1st of the month, in order to count the last days of the previous month
                 if (d.day==1): cnt = cnt + 1 #if it is the 1t day of the month, we increment the counter    
             
-            rec.future_number_of_days = base + cnt*monthly_add
-            rec.future_number_of_days_info="{} days available today + {} x {} days to be earned before {} = {} total days".format(base,cnt,monthly_add,rec.date_from.date(),rec.future_number_of_days)
+            #turn on the is_accrual to prompt complementary info in view
+            #if monthly_add>0.0:
+                
+            
+            rec.future_number_of_days = round(leave_days + cnt*monthly_add,2)
+            rec.future_number_of_days_info="{} days available today + {} x {} days to be earned before {} = {} total days".format(len(allocs),cnt,monthly_add,min(rec.date_from.date(),end_alloc.date()),rec.future_number_of_days)
 
             
     #clear the case id when the category changes
@@ -109,7 +130,7 @@ class Leave(models.Model):
     @api.constrains('date_from')
     def _check_role_restriction(self):
         for rec in self:
-            if not self.env.user.has_group('base.group_leave_officer'): #to be udated to match the proper group
+            if not self.env.user.has_group('base.group_leave_manager'): #to be udated to match the proper group
                 if rec.date_from.date() <= date.today():
                     raise ValidationError("You can't create a request for today or an earlier date. Please contact HR.")
                     

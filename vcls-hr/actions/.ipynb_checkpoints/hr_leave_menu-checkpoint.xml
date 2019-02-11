@@ -1,6 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!-- Force the main overview to create for employee only 
+        <record id="hr_holidays.action_hr_holidays_dashboard" model="ir.ui.menu">
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">calendar,tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-hr.view_leave_tree')}),
+                
+            ]"/>
+        </record>
+        -->
+        
+        
+        <!-- LINK NEW VIEWS TO EXISITNG 'MY LEAVES' ACTIONS -->
+        <!-- Calendar Overview -->
+        <!-- Rename the misleading 'New Request' in 'Calendar Overview' -->
+        <record id="hr_holidays.hr_leave_menu_new_request" model="ir.ui.menu">
+            <field name="name">Calendar Overview</field>
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">calendar,tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-hr.view_leave_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-hr.vcls_leave_form1')}),
+            ]"/>
+        </record>
+        
+        <!--
+        <record id="hr_holidays.hr_leave_action_my" model="ir.ui.menu">
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">calendar,tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-hr.view_leave_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-hr.vcls_leave_form1')}),
+            ]"/>
+        </record>
+-->
+        
         
         <!-- deactivate allocations menus because we don't use it for now -->
         <record id="hr_holidays.menu_open_allocation" model="ir.ui.menu">
@@ -39,10 +81,6 @@
             <field name="active" eval="False"/>
         </record>
         
-        <!-- Rename the misleading 'New Request' in 'Calendar Overview' -->
-        <record id="hr_holidays.hr_leave_menu_new_request" model="ir.ui.menu">
-            <field name="name">Calendar Overview</field>
-        </record>
         
         <!-- Create new menu hierarchy for leave management -->
         

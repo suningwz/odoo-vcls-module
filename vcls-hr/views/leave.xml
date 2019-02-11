@@ -5,7 +5,7 @@
         <record id="vcls_leave_form1" model="ir.ui.view">
             <field name="name">vcls_leave_form1</field>
             <field name="model">hr.leave</field>
-            
+            <field name="priority">4</field>
             <field name="arch" type="xml">
                 <form string="Leave Request">
                     <field name="can_reset" invisible="1"/>
@@ -20,6 +20,7 @@
                     </header>
                     <sheet>
                         <field name="leave_type_request_unit" invisible="1"/>
+                        <field name="is_accrual" invisible="1"/>
                         <group>
                             <group>
                                 <field name="employee_company_id" string="Legal Entity"/>
@@ -75,14 +76,16 @@
                                 <field name="exceptional_allocation" string="Exceptional Allocation" /> <!--attrs="{'readonly': [('1','=','1')]}"/>-->
                             </group>
                             
+                            <group attrs="{'invisible':[('is_accrual','=',False)]}">
+                                <field name="future_number_of_days_info" string="To be earned"/>
+                            </group>
+                            
                             <group name="col_right">
                                 <field name="employee_id" invisible="1"/>
                                 <field name="department_id" groups="hr_holidays.group_hr_holidays_user" invisible="1"/>
-                                <field name="employee_id" invisible="1"/>
                             </group>
                         </group>
                         
-                        <field name="future_number_of_days_info"/>
 
                     </sheet>
                     <div class="oe_chatter">
@@ -95,18 +98,40 @@
             </field>
         </record>
       
-        <!-- Add fields for managers in order to change the employee -->
+        <!-- Add fields for managers in order to change the employee 
        <record id="vcls_leave_form1_manager" model="ir.ui.view">
             <field name="name">vcls_leave_form1_manager</field>
             <field name="model">hr.leave</field>
             <field name="priority">400</field>
-            <field name="inherit_id" ref="vcls-module.vcls_leave_form1"/>
+            <field name="inherit_id" ref="vcls-hr.vcls_leave_form1"/>
             
             <field name="arch" type="xml">
                 
                 <xpath expr="//field[@name='employee_company_id']" position="before">
-                   <!-- <field name="employee_id"/>  -->
+                     <field name="employee_company_id" string="Legal Entity"/>  
                 </xpath>  
+                
+            </field>
+        </record>
+-->
+      
+      <!-- Default tree view -->
+       <record id="view_leave_tree" model="ir.ui.view">
+            <field name="name">view_leave_tree</field>
+            <field name="model">hr.leave</field>
+            <field name="priority">400</field>
+            <field name="arch" type="xml">
+                
+                
+                <tree string="Leaves">
+                    <field name="employee_id" invisible="1"/>
+                    <field name="date_from" widget='date'/>
+                    <field name="date_to" widget='date'/>
+                    <field name="number_of_days"/>
+                    <field name="holiday_status_id"/>
+                    <field name="name"/>
+                    <field name="state"/>
+                </tree>
                 
             </field>
         </record>

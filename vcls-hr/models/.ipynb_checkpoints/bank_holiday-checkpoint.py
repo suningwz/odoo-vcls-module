@@ -48,13 +48,14 @@ class BankHoliday(models.Model):
         
         #loop results to create related global leaves
         for wt in wts:
+            date_from = datetime.combine(rec.date, time(0, 0, 0))
             wt.env['resource.calendar.leaves'].create(
                 {
                     'name':rec.name,
                     'company_id':rec.company_id.id,
                     'calendar_id':wt.id,
-                    'date_from':rec.date,
-                    'date_to':rec.date + relativedelta(days=1),
+                    'date_from':date_from,
+                    'date_to':date_from + relativedelta(days=1),
                 }
             )
 

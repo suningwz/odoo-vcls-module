@@ -454,6 +454,14 @@ class Employee(models.Model):
                     
             else:
                 empl.employee_status = 'future' #no dates
+    
+    #Ensure the resource.resource calendar is the same than the one configured at the employee level
+    @api.model #to be called from CRON job
+    def _set_resource_calendar(self):
+        employees = self.env['hr.employee'].search([])
+        for empl in employees:
+            if empl.resource_calendar_id: #if a working time has been configured
+                empl.resource_id.calendar_id = empl.resource_calendar_id
         
     
     @api.multi

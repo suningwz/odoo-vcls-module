@@ -42,6 +42,7 @@
         'security/hr_hrglobal_rules.xml',
         'security/hr_hrlocal_rules.xml',
         'security/hr_leave_officer_rules.xml',
+        'security/hr_leave_manager_rules.xml',
         
         #########
         # VIEWS #
@@ -54,6 +55,7 @@
         'views/company_org.xml',
         'views/contract.xml',
         'views/job.xml',
+        'views/leave.xml',
         #'views/job_profile.xml',
         'views/working_times.xml',
       
