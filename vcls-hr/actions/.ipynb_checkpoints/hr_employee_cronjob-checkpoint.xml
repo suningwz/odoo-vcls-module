@@ -16,7 +16,7 @@
             
         </record>
         
-         <record id="cron_employee_lm_membership" model="ir.cron">
+        <record id="cron_employee_lm_membership" model="ir.cron">
             <field name="name">Update Employee LM group membership</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_root" />
@@ -28,6 +28,21 @@
             <field name="model_id" ref="hr.model_hr_employee" />
             <field name="state">code</field>
             <field name="code">model._check_lm_membership()</field>
+            
+        </record>
+        
+        <record id="cron_employee_calendar_id" model="ir.cron">
+            <field name="name">Update the resource calendar_id according to the employee one</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall">1</field>
+            <!--<field name="nextcall" >2016-12-31 23:59:59</field>-->
+            <field name="model_id" ref="hr.model_hr_employee" />
+            <field name="state">code</field>
+            <field name="code">model._set_resource_calendar()</field>
             
         </record>
         

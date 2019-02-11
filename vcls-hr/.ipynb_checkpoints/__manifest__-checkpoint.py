@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.10.9',
+    'version': '0.10.11',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -41,17 +41,21 @@
         #'security/hr_head_rules.xml',
         'security/hr_hrglobal_rules.xml',
         'security/hr_hrlocal_rules.xml',
+        'security/hr_leave_officer_rules.xml',
+        'security/hr_leave_manager_rules.xml',
         
         #########
         # VIEWS #
         #########
         'views/employee.xml',
         #'views/employee_security_test.xml',
+        'views/bank_holiday.xml',
         'views/bonuses.xml',
         'views/benefits.xml',
         'views/company_org.xml',
         'views/contract.xml',
         'views/job.xml',
+        'views/leave.xml',
         #'views/job_profile.xml',
         'views/working_times.xml',
       
@@ -60,7 +64,7 @@
         ###########
         'actions/hr_employee_menu.xml',
         'actions/hr_employee_cronjob.xml',
-        #'actions/hr_job_menu.xml',
+        'actions/hr_leave_menu.xml',
         
         #############
         # SEQUENCES #
