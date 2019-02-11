@@ -23,9 +23,9 @@
                         <group>
                             <group>
                                 <field name="type_request_unit" invisible="1"/>
-                                <field name="employee_company_id" invisible="1"/>
+                                <field name="company_id" invisible="0"/>
                                 <field name="name" attrs="{'readonly': [('state', 'not in', ('draft', 'confirm'))]}"/>
-                                <field name="holiday_status_id" context="{'employee_id':employee_id}" domain="[('valid', '=', True),('allocation_type', 'in', ['fixed_allocation']),('company_id','=',employee_company_id)]"/>
+                                <field name="holiday_status_id" context="{'employee_id':employee_id}" domain="[('valid', '=', True),('allocation_type', 'in', ['fixed_allocation']),('company_id','=',company_id)]"/>
 
                                 <field name="number_of_days" invisible="1"/>
                                 <label for="number_of_days" string="Duration"/>
@@ -39,7 +39,7 @@
                                 <field name="accrual" invisible="1"/>
                             </group>
                             <group name="alloc_right_col">
-                                <field name="employee_id" invisible="1" groups="hr_holidays.group_hr_holidays_user"/>
+                                <field name="employee_id" invisible="1" groups="hr_holidays.group_hr_holidays_manager"/>
                                 <field name="department_id" invisible="1"/>
                             </group>
                         </group>
@@ -54,7 +54,7 @@
              </field>
         </record>
     
-      <!-- View Form related to the existing employees -->
+      <!-- View Form related to the existing employees 
         <record id="vcls_leave_allocation_request_form1_manager" model="ir.ui.view">
             <field name="name">vcls_leave_allocation_request_form1_manager</field>
             <field name="model">hr.leave.allocation</field>
@@ -69,6 +69,6 @@
                 
             </field>
         </record>
-      
+      -->
   </data>
 </odoo>
