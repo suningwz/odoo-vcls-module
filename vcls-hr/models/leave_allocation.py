@@ -125,6 +125,16 @@ class LeaveAllocation(models.Model):
     #we don't want LM approval for allocations
     def _get_responsible_for_approval(self):
         return self.env.user
+    
+    #we don't want the employee to be notified
+    @api.multi
+    def add_follower(self, employee_id):
+        '''
+        employee = self.env['hr.employee'].browse(employee_id)
+        if employee.user_id:
+            self.message_subscribe(partner_ids=employee.user_id.partner_id.ids)
+        '''
+        
     #we suppress every related notifications
     def activity_update(self):
         pass

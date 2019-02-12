@@ -7,7 +7,7 @@ from odoo.tools import pycompat
 COMPANY_NAME = 'Voisin WW SAS'
 
 # Fix email problem
-class MailTemplate(models.Model): 
+class MailTemplate(models.Model):
     "Templates for sending email"
     _name = "mail.template"
 
