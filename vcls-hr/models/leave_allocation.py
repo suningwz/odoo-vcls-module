@@ -122,3 +122,43 @@ class LeaveAllocation(models.Model):
 
             holiday.write(values)
     
+    #we don't want LM approval for allocations
+    def _get_responsible_for_approval(self):
+        return self.env.user
+    
+    #we don't want the employee to be notified
+    @api.multi
+    def add_follower(self, employee_id):
+        '''
+        employee = self.env['hr.employee'].browse(employee_id)
+        if employee.user_id:
+            self.message_subscribe(partner_ids=employee.user_id.partner_id.ids)
+        '''
+        
+    #we suppress every related notifications
+    def activity_update(self):
+        pass
+        '''
+        to_clean, to_do = self.env['hr.leave.allocation'], self.env['hr.leave.allocation']
+        for allocation in self:
+            if allocation.state == 'draft':
+                to_clean |= allocation
+            elif allocation.state == 'confirm':
+                allocation.activity_schedule(
+                    'hr_holidays.mail_act_leave_allocation_approval',
+                    user_id=allocation.sudo()._get_responsible_for_approval().id)
+            elif allocation.state == 'validate1':
+                allocation.activity_feedback(['hr_holidays.mail_act_leave_allocation_approval'])
+                allocation.activity_schedule(
+                    'hr_holidays.mail_act_leave_allocation_second_approval',
+                    user_id=allocation.sudo()._get_responsible_for_approval().id)
+            elif allocation.state == 'validate':
+                to_do |= allocation
+            elif allocation.state == 'refuse':
+                to_clean |= allocation
+        if to_clean:
+            to_clean.activity_unlink(['hr_holidays.mail_act_leave_allocation_approval', 'hr_holidays.mail_act_leave_allocation_second_approval'])
+        if to_do:
+            to_do.activity_feedback(['hr_holidays.mail_act_leave_allocation_approval', 'hr_holidays.mail_act_leave_allocation_second_approval'])
+        '''
+    

@@ -54,6 +54,42 @@ class Leave(models.Model):
     is_accrual = fields.Boolean(
         default=False)
     
+    #####################
+    # Overriden Methods #
+    #####################
+    #We simplify this method to force the number of days to be based on dates and not on any working calendar.
+    def _get_number_of_days(self, date_from, date_to, employee_id):
+        """ Returns a float equals to the timedelta between two dates given as string.
+        if employee_id:
+            employee = self.env['hr.employee'].browse(employee_id)
+            return employee.get_work_days_data(date_from, date_to)['days']
+
+        today_hours = self.env.user.company_id.resource_calendar_id.get_work_hours_count(
+            datetime.combine(date_from.date(), time.min),
+            datetime.combine(date_from.date(), time.max),
+            False)
+
+        return self.env.user.company_id.resource_calendar_id.get_work_hours_count(date_from, date_to) / (today_hours or HOURS_PER_DAY)
+        """
+        delta = date_to.date()-date_from.date()
+        if self.request_unit_half:
+            in_days = 0.5 #half a day is half a day
+        else:
+            in_days = delta.days + 1 #we add one to cover the current day (i.e. if start = end date)
+        
+        return in_days
+    
+    #we call the parent one and clean the holiday_status_id
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        super()._onchange_employee_id
+        self.holiday_status_id = False
+        '''
+        self.manager_id = self.employee_id.parent_id.id
+        if self.employee_id:
+            self.department_id = self.employee_id.department_id
+        '''
+
     
     #######################
     # Calculation Methods #
@@ -73,6 +109,8 @@ class Leave(models.Model):
     def _compute_future_days(self):
         for rec in self:
             
+            if not rec.holiday_status_id: #i.e. if no type defined, then continue
+                continue
             #get remaining days
             leave_days = rec.holiday_status_id.get_days(rec.employee_id.id)[rec.holiday_status_id.id]['virtual_remaining_leaves']
             
@@ -105,7 +143,7 @@ class Leave(models.Model):
                 
             
             rec.future_number_of_days = round(leave_days + cnt*monthly_add,2)
-            rec.future_number_of_days_info="{} days available today + {} x {} days to be earned before {} = {} total days".format(len(allocs),cnt,monthly_add,min(rec.date_from.date(),end_alloc.date()),rec.future_number_of_days)
+            rec.future_number_of_days_info="{} days will be available on {}.".format(rec.future_number_of_days,rec.date_from.date())
 
             
     #clear the case id when the category changes
