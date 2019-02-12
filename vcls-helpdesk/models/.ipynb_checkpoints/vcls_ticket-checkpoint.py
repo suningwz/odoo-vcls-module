@@ -32,7 +32,7 @@ class Ticket(models.Model):
     
     @api.model
     def _get_type_id(self):
-        return self.env.ref('vcls-module.ticket_type_incident').id
+        return self.env.ref('vcls-helpdesk.ticket_type_incident').id
     
     #################
     # Custom Fields #

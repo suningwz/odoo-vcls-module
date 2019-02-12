@@ -14,6 +14,7 @@ from . import job_profile
 from . import leave
 from . import leave_allocation
 from . import leave_type
+from . import mail_template
 from . import multiselections
 from . import trial_period
 from . import user_group_history
