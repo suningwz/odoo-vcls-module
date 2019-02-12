@@ -17,12 +17,13 @@ class LeaveAllocation(models.Model):
         string = 'Company to Allocate'
         )
     
-    '''
+    
     #used to customise selection domain according to the selected employee company
     employee_company_id = fields.Many2one(
         related='employee_id.company_id',
         String='Employee Company',)
     
+    '''
     @api.depends('company_id')
     def _compute_mode_company_id(self):
         for rec in self:
