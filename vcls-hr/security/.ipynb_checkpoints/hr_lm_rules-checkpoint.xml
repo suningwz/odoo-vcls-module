@@ -44,5 +44,19 @@
             <field name="groups" eval="[(4, ref('vcls_group_lm'))]"/>
         </record>
         
+        <!-- LM can read leaves allocations of their managees -->
+         <record id="leave_allocation_lm_rule" model="ir.rule">
+            <field name="name">leave_allocation_lm_rule </field>
+            <field name="model_id" ref="hr_holidays.model_hr_leave_allocation"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
+            <field name="domain_force">[
+                ('employee_id.parent_id.user_id', '=', user.id),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_lm'))]"/>
+        </record>
+        
     </data>
 </odoo>
