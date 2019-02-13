@@ -200,5 +200,5 @@ class Leave(models.Model):
                 continue
                 
             if rec.future_number_of_days < rec.number_of_days:
-                raise ValidationError(_('The number of remaining leaves is not sufficient for this leave type.\n'
+                raise ValidationError(('The number of remaining leaves is not sufficient for this leave type.\n'
                                         'Please also check the leaves waiting for validation.'))
