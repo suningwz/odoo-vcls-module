@@ -209,6 +209,25 @@
         />
         
         <!-- menu for HR allocation -->
+        <record id="hr_holidays.hr_leave_allocation_action_all" model="ir.actions.act_window">
+            <field name="name">All Allocations</field>
+            <field name="res_model">hr.leave.allocation</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,activity</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('hr_holidays.hr_leave_allocation_view_tree')}),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('hr_holidays.hr_leave_allocation_view_kanban')}),                         
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_allocation_request_form_manager')}),
+            ]"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new leave allocation request
+                </p>
+            </field>
+        </record>
+        
         <menuitem
             id="menu_leaves_allocation"
             name="Leaves Allocations (HR)"
@@ -216,7 +235,7 @@
             sequence="15"
             action="hr_holidays.hr_leave_allocation_action_all"
         />
-        <!-- Configure groups to access leaves management: LM and HR teams -->
+        <!-- Configure groups to access leaves management -->
         <record id="menu_leaves_allocation" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
         </record>

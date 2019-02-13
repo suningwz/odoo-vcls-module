@@ -1,5 +1,5 @@
 #Odoo Imports
-from odoo import api, fields, models
+from odoo import api, fields, models, tools
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import pycompat
 
@@ -9,7 +9,7 @@ COMPANY_NAME = 'Voisin WW SAS'
 # Fix email problem
 class MailTemplate(models.Model):
     "Templates for sending email"
-    _name = "mail.template"
+    _inherit = "mail.template"
 
     @api.multi
     def generate_recipients(self, results, res_ids):
@@ -28,7 +28,7 @@ class MailTemplate(models.Model):
         for res_id, values in results.items():
             partner_ids = values.get('partner_ids', list())
             if self._context.get('tpl_partners_only'):
-                mails = super.tools.email_split(values.pop('email_to', '')) + super.tools.email_split(values.pop('email_cc', ''))
+                mails = tools.email_split(values.pop('email_to', '')) + tools.email_split(values.pop('email_cc', ''))
 
                 for mail in mails:
                     partner_id = False
