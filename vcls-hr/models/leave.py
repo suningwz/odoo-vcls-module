@@ -199,6 +199,6 @@ class Leave(models.Model):
             if rec.holiday_type != 'employee' or not rec.employee_id or rec.holiday_status_id.allocation_type == 'no':
                 continue
                 
-            if rec.future_number_of_days < rec.number_of_days:
-                raise ValidationError(('The number of remaining leaves is not sufficient for this leave type.\n'
-                                        'Please also check the leaves waiting for validation.'))
+            if (rec.future_number_of_days + rec.number_of_days) < rec.number_of_days: #we add number_of_days becaus the virtual remaining leaves is already updated when we test this part of the code
+                raise ValidationError('The number of remaining leaves ({} days) is not sufficient for this leave type.\n'
+                                        'Please also check the leaves waiting for validation ({} days).'.format(rec.future_number_of_days + rec.number_of_days,rec.number_of_days))
