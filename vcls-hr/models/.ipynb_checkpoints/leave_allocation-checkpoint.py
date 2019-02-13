@@ -11,7 +11,8 @@ class LeaveAllocation(models.Model):
     
     _inherit = 'hr.leave.allocation'
    
-    #used to configure domains 
+    #used to configure domains
+    '''
     company_id = fields.Many2one(
         'res.company',
         string = 'Company to Allocate'
@@ -23,7 +24,7 @@ class LeaveAllocation(models.Model):
         related='employee_id.company_id',
         String='Employee Company',)
     
-    '''
+    
     @api.depends('company_id')
     def _compute_mode_company_id(self):
         for rec in self:
@@ -35,8 +36,8 @@ class LeaveAllocation(models.Model):
     def _check_company(self):
         for rec in self:  
             #Ensure the company_id is matching between the employee and the leave type
-            if (rec.holiday_type=='employee') and (rec.employee_company_id != rec.holiday_status_id.company_id):
-                raise ValidationError("The selected leave type is not related to the same company that the selected employee.")
+            if (rec.holiday_type=='employee') and (rec.mode_company_id != rec.holiday_status_id.company_id):
+                raise ValidationError("The selected leave type is not related to the same company that the selected company.")
     
     
     

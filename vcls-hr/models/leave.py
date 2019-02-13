@@ -54,6 +54,10 @@ class Leave(models.Model):
     is_accrual = fields.Boolean(
         default=False)
     
+    start_date = fields.Date(
+        compute='_compute_dates',
+        readonly=True,)
+    
     #####################
     # Overriden Methods #
     #####################
@@ -96,6 +100,12 @@ class Leave(models.Model):
     #######################
     # Calculation Methods #
     #######################
+    
+    #update the date fields to be used n kanban views to hide time value
+    @api.depends('date_from','date_to')
+    def _compute_dates(self):
+        for rec in self:
+            rec.start_date = rec.date_from.date()
     
     # Update the available case list according to the selected category
     @api.depends('exceptional_category_id','exceptional_case_id')
