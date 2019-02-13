@@ -63,17 +63,22 @@ class Leave(models.Model):
     #####################
     #We simplify this method to force the number of days to be based on dates and not on any working calendar.
     def _get_number_of_days(self, date_from, date_to, employee_id):
-        """ Returns a float equals to the timedelta between two dates given as string.
+        # Returns a float equals to the timedelta between two dates given as string.
         if employee_id:
             employee = self.env['hr.employee'].browse(employee_id)
-            return employee.get_work_days_data(date_from, date_to)['days']
-
+            
+            start = datetime.combine(date_from.date(), time.min)
+            stop = datetime.combine(date_to.date(), time.max)
+            #return employee.get_work_days_data(date_from, date_to)['days']
+            return employee.get_work_days_data(start, stop)['days']
+        
         today_hours = self.env.user.company_id.resource_calendar_id.get_work_hours_count(
             datetime.combine(date_from.date(), time.min),
             datetime.combine(date_from.date(), time.max),
             False)
 
         return self.env.user.company_id.resource_calendar_id.get_work_hours_count(date_from, date_to) / (today_hours or HOURS_PER_DAY)
+        
         """
         delta = date_to.date()-date_from.date()
         if self.request_unit_half:
@@ -82,6 +87,7 @@ class Leave(models.Model):
             in_days = delta.days + 1 #we add one to cover the current day (i.e. if start = end date)
         
         return in_days
+        """
     
     '''
     #we call the parent one and clean the holiday_status_id
