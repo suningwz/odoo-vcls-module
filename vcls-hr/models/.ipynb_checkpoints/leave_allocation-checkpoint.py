@@ -134,7 +134,8 @@ class LeaveAllocation(models.Model):
         if employee.user_id:
             self.message_subscribe(partner_ids=employee.user_id.partner_id.ids)
         '''
-        
+    
+    
     #we suppress every related notifications
     def activity_update(self):
         pass
@@ -160,5 +161,5 @@ class LeaveAllocation(models.Model):
             to_clean.activity_unlink(['hr_holidays.mail_act_leave_allocation_approval', 'hr_holidays.mail_act_leave_allocation_second_approval'])
         if to_do:
             to_do.activity_feedback(['hr_holidays.mail_act_leave_allocation_approval', 'hr_holidays.mail_act_leave_allocation_second_approval'])
+        
         '''
-    
