@@ -79,12 +79,14 @@ class Leave(models.Model):
         
         return in_days
     
+    '''
     #we call the parent one and clean the holiday_status_id
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
         super()._onchange_employee_id
         self.holiday_status_id = False
-        '''
+        raise ValidationError("No holiday status id.")
+        
         self.manager_id = self.employee_id.parent_id.id
         if self.employee_id:
             self.department_id = self.employee_id.department_id
