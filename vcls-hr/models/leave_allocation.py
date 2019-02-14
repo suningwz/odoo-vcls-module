@@ -11,25 +11,6 @@ class LeaveAllocation(models.Model):
     
     _inherit = 'hr.leave.allocation'
    
-    #used to configure domains
-    '''
-    company_id = fields.Many2one(
-        'res.company',
-        string = 'Company to Allocate'
-        )
-    
-    
-    #used to customise selection domain according to the selected employee company
-    employee_company_id = fields.Many2one(
-        related='employee_id.company_id',
-        String='Employee Company',)
-    
-    
-    @api.depends('company_id')
-    def _compute_mode_company_id(self):
-        for rec in self:
-            rec.mode_company_id = rec.company_id
-    '''
     
     #As we removed some record rules, let's ensure there's no crosstalk between companies
     @api.constrains('number_of_days')

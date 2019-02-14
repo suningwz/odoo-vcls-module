@@ -107,7 +107,7 @@
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree_multi_nocreate')}),
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('hr_holidays.hr_leave_view_kanban')}),                         
-                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1_nocreate')}),
                 (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
             ]"/>
             <field name="context">{
@@ -132,7 +132,7 @@
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree_multi_nocreate')}),
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('hr_holidays.hr_leave_view_kanban')}),                         
-                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1_nocreate')}),
                 (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
             ]"/>
             <field name="context">{}</field>

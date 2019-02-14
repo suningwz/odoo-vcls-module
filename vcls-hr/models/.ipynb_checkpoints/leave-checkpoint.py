@@ -2,6 +2,7 @@
 
 #Python Imports
 from datetime import date, datetime, time
+from dateutil.relativedelta import relativedelta
 #Odoo Imports
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
@@ -11,11 +12,20 @@ class Leave(models.Model):
     _inherit = 'hr.leave'
     
     
-    ####################
-    # Overriden Fields #
-    ####################
-    #holiday_status_id = fields.Many2one(
-    #    default=False)
+    ############################
+    # Overriden Default Methos #
+    ############################
+    @api.model
+    def default_get(self, fields_list):
+        defaults = super(Leave, self).default_get(fields_list)
+        defaults = self._default_get_request_parameters(defaults)
+
+        LeaveType = self.env['hr.leave.type'].with_context(employee_id=defaults.get('employee_id'), default_date_from=defaults.get('date_from', fields.Datetime.now().date()))
+        lt = LeaveType.search([('valid', '=', True)])
+
+        #defaults['holiday_status_id'] = lt[0].id if len(lt) > 0 else defaults.get('holiday_status_id')
+        defaults['holiday_status_id'] = False
+        return defaults
    
     #################
     # Custom Fields #
@@ -70,7 +80,11 @@ class Leave(models.Model):
             start = datetime.combine(date_from.date(), time.min)
             stop = datetime.combine(date_to.date(), time.max)
             #return employee.get_work_days_data(date_from, date_to)['days']
-            return employee.get_work_days_data(start, stop)['days']
+            
+            # cover the case of half a day on days  OFF
+            delta = max(0,employee.get_work_days_data(start, stop)['days'] - (0.5 if self.request_unit_half else 0.0)) 
+            return delta
+            #return employee.get_work_days_data(start, stop)['days']
         
         today_hours = self.env.user.company_id.resource_calendar_id.get_work_hours_count(
             datetime.combine(date_from.date(), time.min),
