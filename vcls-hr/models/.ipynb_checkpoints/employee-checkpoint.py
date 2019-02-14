@@ -441,6 +441,7 @@ class Employee(models.Model):
             if empl.employee_end_date: #if end date configured
                 if empl.employee_end_date <= date_ref:
                     empl.employee_status = 'departed'
+                    empl.active=False
                     continue
                 else: #end date is documented but in the fulture
                     empl.employee_status = 'active'

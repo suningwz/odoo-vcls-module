@@ -103,18 +103,13 @@ class Leave(models.Model):
         return in_days
         """
     
-    '''
+    
     #we call the parent one and clean the holiday_status_id
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
         super()._onchange_employee_id
-        self.holiday_status_id = False
-        raise ValidationError("No holiday status id.")
-        
-        self.manager_id = self.employee_id.parent_id.id
         if self.employee_id:
-            self.department_id = self.employee_id.department_id
-        '''
+            self.mode_company_id = self.employee_id.company_id
 
     
     #######################
@@ -200,7 +195,7 @@ class Leave(models.Model):
     @api.constrains('date_from')
     def _check_role_restriction(self):
         for rec in self:
-            if not self.env.user.has_group('base.group_leave_manager'): #to be udated to match the proper group
+            if not self.env.user.has_group('vcls-hr.vcls_group_HR_local'): #to be udated to match the proper group
                 if rec.date_from.date() <= date.today():
                     raise ValidationError("You can't create a request for today or an earlier date. Please contact HR.")
                     

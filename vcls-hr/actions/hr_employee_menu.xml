@@ -26,7 +26,7 @@
         <!-- Employee retired -->
         <record id="action_hr_employee_non_active" model="ir.actions.act_window">
             <field name="name">Non-active Employees</field>
-            <field name="domain">[('employee_status','=','departed')]</field>
+            <field name="domain">['|',('employee_status','=','departed'),('active','=',False)]</field>
             <field name="res_model">hr.employee</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
