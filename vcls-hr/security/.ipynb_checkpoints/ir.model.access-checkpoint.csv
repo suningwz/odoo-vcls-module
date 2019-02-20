@@ -57,8 +57,6 @@ access_hr_vcls_activities_employee,hr.vcls.activities.employee,model_hr_vcls_act
 access_hr_office_sup1,hr.office.sup1,model_hr_office,vcls-hr.vcls_group_superuser_lvl1,1,1,1,1
 access_hr_office_employee,hr.office.employee,model_hr_office,base.group_user,1,0,0,0
 
-
-
 hr_holidays.access_hr_holidays_employee_allocation,hr.holidays.employee.allocation,vcls-hr.model_hr_leave_allocation,base.group_user,1,0,0,0
 hr_holidays.access_hr_holidays_user_allocation,hr.holidays.user.allocation,vcls-hr.model_hr_leave_allocation,hr_holidays.group_hr_holidays_user,1,0,0,0
 

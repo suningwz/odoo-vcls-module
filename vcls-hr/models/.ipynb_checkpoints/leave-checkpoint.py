@@ -13,7 +13,7 @@ class Leave(models.Model):
     
     
     ############################
-    # Overriden Default Methos #
+    # Overriden Default Methods #
     ############################
     @api.model
     def default_get(self, fields_list):
@@ -52,6 +52,10 @@ class Leave(models.Model):
     employee_company_id = fields.Many2one(
         related='employee_id.company_id',
         String='Employee Company',)
+    
+    lm_user_id = fields.Many2one(
+        'res.user',
+        related='manager_id.user_id',)
     
     future_number_of_days = fields.Float(
         string="Projected Days",
