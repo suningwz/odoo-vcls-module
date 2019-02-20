@@ -106,7 +106,33 @@ class Leave(models.Model):
         
         return in_days
         """
-    
+        
+    def activity_update(self):
+        default_deadline = datetime.today() + relativedelta(weeks=1)
+        to_clean, to_do = self.env['hr.leave'], self.env['hr.leave']
+        for holiday in self:
+            if holiday.state == 'draft':
+                to_clean |= holiday
+            elif holiday.state == 'confirm':
+                holiday.activity_schedule(
+                    'hr_holidays.mail_act_leave_approval',
+                    user_id=holiday.sudo()._get_responsible_for_approval().id,
+                    date_deadline=default_deadline)
+            elif holiday.state == 'validate1':
+                holiday.activity_feedback(['hr_holidays.mail_act_leave_approval'])
+                holiday.activity_schedule(
+                    'hr_holidays.mail_act_leave_second_approval',
+                    user_id=holiday.sudo()._get_responsible_for_approval().id,
+                     date_deadline=default_deadline)
+            elif holiday.state == 'validate':
+                to_do |= holiday
+            elif holiday.state == 'refuse':
+                to_clean |= holiday
+        if to_clean:
+            to_clean.activity_unlink(['hr_holidays.mail_act_leave_approval', 'hr_holidays.mail_act_leave_second_approval'])
+        if to_do:
+            to_do.activity_feedback(['hr_holidays.mail_act_leave_approval', 'hr_holidays.mail_act_leave_second_approval'])
+            
     
     #we call the parent one and clean the holiday_status_id
     @api.onchange('employee_id')
