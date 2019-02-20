@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.10.20',
+    'version': '0.10.21',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -76,6 +76,7 @@
         # EMAILS TEMPLATES #
         ####################
         'data/user_group_history.xml',
+        'data/mail_data.xml',
         
         ###################
         # DEFAULT RECORDS #
