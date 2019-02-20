@@ -16,13 +16,13 @@
                 <p>The HR Team.</p>]]></field>
         </record>
         
-        <!--!
+        
         <template id="message_activity_leave">
             <div style="margin: 0px; padding: 0px; font-size: 13px;">
-            <span t-field="activity.create_user_id.name"/> has submitted a leave request <span t-field="activity.activity_type_id.name"/>
+            <span t-field="activity.activity_type_id.name"/>
         <t t-if="activity.summary">(<span t-field="activity.summary"/>)</t>
-    on <span t-field="activity.res_name"/>
-    to be approved by <span t-field="activity.date_deadline"/>.<br />
+    for <span t-field="activity.res_name"/>
+    is ready to be reviewed.<br />Please approve or reject this request by <span t-field="activity.date_deadline"/>.<br />
     <p style="margin: 16px 0px 16px 0px;">
         <a t-att-href="'/mail/view?model=%s&amp;res_id=%s' % (activity.res_model, activity.res_id)"
             style="background-color:#875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px;">
@@ -32,7 +32,7 @@
     <div t-if="activity.note" style="margin-top: 8px;" t-field="activity.note"/>
 </div>
         </template>
--->
+
 
     </data>
 </odoo>
