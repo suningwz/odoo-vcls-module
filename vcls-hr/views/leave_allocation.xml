@@ -54,7 +54,7 @@
                         </group>
                         <group name="alloc_right_col">
                             <field name="holiday_type" string="Mode" groups="hr_holidays.group_hr_holidays_manager" context="{'employee_id':employee_id}"/>
-                            <field name="mode_company_id" groups="hr_holidays.group_hr_holidays_manager" required="1"/>
+                            <field name="mode_company_id" groups="hr_holidays.group_hr_holidays_manager" required="0"/>
                             <!--<field name="company_id" required="1"/> -->
                             <field name="employee_id" groups="hr_holidays.group_hr_holidays_manager" attrs="{'required': [('holiday_type', '=', 'employee')], 'invisible': [('holiday_type', '!=', 'employee')]}" domain="[('company_id', '=', mode_company_id)]"/>
                             <field name="category_id" attrs="{'required': [('holiday_type', '=', 'category')], 'invisible': [('holiday_type', '!=', 'category')]}"/>
@@ -63,6 +63,7 @@
                         </group>
                     </group>
                     <field name="notes" nolabel="1" placeholder="Add a reason..."/>
+                    <field name="linked_request_ids" attrs="{'invisible': [('holiday_type', '=', 'employee')]}"/>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>

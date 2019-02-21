@@ -455,6 +455,14 @@ class Employee(models.Model):
                     
             else:
                 empl.employee_status = 'future' #no dates
+    """
+    @api.model #to be called from CRON
+    def _check_tag_allocations(self):
+        #get tags
+        #search related tag allocation allocations
+        #create employee allocation if not exists
+    """
+         
     
     #Ensure the resource.resource calendar is the same than the one configured at the employee level
     @api.model #to be called from CRON job

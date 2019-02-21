@@ -70,11 +70,6 @@ class Contract(models.Model):
     job_id = fields.Many2one(
         string = 'Job Title',)
     
-    '''
-    company_id = fields.Many2one(
-        default='employee_id.company_id',
-    )
-    '''
     
     date_start = fields.Date(
         required=True,
@@ -92,7 +87,8 @@ class Contract(models.Model):
     #Create 
     @api.model
     def create(self,vals):
-        rec=super().create(vals)
+        rec=super().sudo().create(vals)
+        
         
         emp = self.env['hr.employee'].search([('id','=',rec.employee_id.id)])
         if emp.contract_id.id == rec.id:

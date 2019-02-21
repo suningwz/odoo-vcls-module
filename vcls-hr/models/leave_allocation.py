@@ -17,18 +17,97 @@ class LeaveAllocation(models.Model):
     def _check_company(self):
         for rec in self:  
             #Ensure the company_id is matching between the employee and the leave type
-            if (rec.holiday_type=='employee') and (rec.mode_company_id != rec.holiday_status_id.company_id):
-                raise ValidationError("The selected leave type is not related to the same company that the selected company.")
+            if (rec.holiday_type=='employee') and (rec.employee_id.company_id != rec.holiday_status_id.company_id):
+                raise ValidationError("The selected leave type for {} - {}.{} is not related to the same company that the selected one ({}).".format(rec.employee_id.name,rec.holiday_status_id.name,rec.holiday_status_id.company_id.name,rec.mode_company_id.name))
+                
+    ############################
+    # OVERRIDE BUSINESS METHOD #
+    ############################
+    
+    """ The below methods are overriden in order to improve the management of child allocation requests.
+    - If the parent is turned back to draft, then linked requests aren't unlinked anymore.
+    - We test employees to see if a child already exists. If not we create, if yes we keep it without overwriting, except in draft.
+    """
+    
+    #we just comment the unlink line of code
+    @api.multi
+    def action_draft(self):
+        for holiday in self:
+            if holiday.state not in ['confirm', 'refuse']:
+                raise UserError(_('Leave request state must be "Refused" or "To Approve" in order to reset to Draft.'))
+            holiday.write({
+                'state': 'draft',
+                'first_approver_id': False,
+                'second_approver_id': False,
+            })
+            linked_requests = holiday.mapped('linked_request_ids')
+            for linked_request in linked_requests:
+                linked_request.action_draft()
+            #linked_requests.unlink()
+        self.activity_update()
+        return True
+    
+    def _action_validate_create_childs(self):
+        
+        """ This method is modified in order to be called not only when the parent is validated,
+        but also from a CRON related method to ensure that new employee receiving a tag or changing department will receive the proper allocations
+        without disturbing the exisitng ones """
+        
+        childs = self.env['hr.leave.allocation']
+        if self.state == 'validate' and self.holiday_type in ['category', 'department', 'company']:
+            if self.holiday_type == 'category':
+                employees = self.category_id.employee_ids
+            elif self.holiday_type == 'department':
+                employees = self.department_id.member_ids
+            else:
+                employees = self.env['hr.employee'].search([('company_id', '=', self.mode_company_id.id)])
+
+            for employee in employees:
+                # we test if the employee already has a related child
+                existing_child = self.env['hr.leave.allocation'].search([('employee_id', '=', employee.id),('id', 'in', self.linked_request_ids.ids)], limit=1)
+                # If there is a child, we edit it if the child is in draft, but we ensure to maintain the already accumulated number of days
+                if existing_child:
+                    if existing_child.state == 'draft': #if in draft, it means that we want to update it because we turned the parent back to draft
+                        values = self._prepare_holiday_values(employee)
+                        values.update({
+                            'number_of_days': existing_child.number_of_days,
+                            'state': 'confirm',
+                        })
+                        existing_child.write(values)
+                        childs += existing_child
+                
+                else: #we need to create a new one
+                    childs += self.with_context(
+                        mail_notify_force_send=False,
+                        mail_activity_automation_skip=True
+                    ).create(self._prepare_holiday_values(employee))
+                
+            # TODO is it necessary to interleave the calls?
+            childs.action_approve()
+            if childs and self.holiday_status_id.validation_type == 'both':
+                childs.action_validate()
+        return childs
     
     
+    ################
+    # CRON METHODS #
+    ################
     
-    ########################
-    # OVERRIDE CRON METHOD #
-    ########################
+    @api.model
+    def _update_child_allocations(self):
+        """
+        Methods called by CRON task in order to ensure that employees with new category/department/company
+        is granted with the proper leave allocations 
+        """
+        #we search for the proper allocations (i.e. possibly having childs)
+        allocs = self.search([('state', '=', 'validate'),('holiday_type', 'in', ['category', 'department', 'company'])])
+        
+        for alloc in allocs:
+            alloc._action_validate_create_childs()
+        
     
     #the original method is overriden in order to synchronize the nexcalls to the last day of the month and use the employee start date.
     # We want to execute only the last day of the month in order to synchronise all holidays
-    
     @api.model
     def _update_accrual(self):
         """

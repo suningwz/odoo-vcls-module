@@ -14,7 +14,8 @@ class Job(models.Model):
     
     #in oder to enforce naming convention
     name = fields.Char(
-        compute='_compute_name',)
+        compute='_compute_name',
+        )
       
     #################
     # Custom Fields #
