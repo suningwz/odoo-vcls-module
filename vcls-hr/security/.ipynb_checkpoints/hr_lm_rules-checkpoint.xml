@@ -27,7 +27,7 @@
             <field name="domain_force">[
                 ('employee_id.parent_id.user_id', '=', user.id),
             ]</field>
-            <field name="groups" eval="[(4, ref('vcls_group_lm'))]"/>
+            <field name="groups" eval="[(4, ref('vcls-hr.vcls_group_lm'))]"/>
         </record>
         
         <!-- LM can see N-1 benefits -->
@@ -41,7 +41,7 @@
             <field name="domain_force">[
                 ('employee_id.parent_id.user_id', '=', user.id),
             ]</field>
-            <field name="groups" eval="[(4, ref('vcls_group_lm'))]"/>
+            <field name="groups" eval="[(4, ref('vcls-hr.vcls_group_lm'))]"/>
         </record>
         
         <!-- LM can read leaves allocations of their managees -->
@@ -55,7 +55,7 @@
             <field name="domain_force">[
                 ('employee_id.parent_id.user_id', '=', user.id),
             ]</field>
-            <field name="groups" eval="[(4, ref('vcls_group_lm'))]"/>
+            <field name="groups" eval="[(4, ref('vcls-hr.vcls_group_lm'))]"/>
         </record>
         
     </data>

@@ -111,6 +111,7 @@ class LeaveAllocation(models.Model):
     #we don't want the employee to be notified
     @api.multi
     def add_follower(self, employee_id):
+        pass
         '''
         employee = self.env['hr.employee'].browse(employee_id)
         if employee.user_id:
