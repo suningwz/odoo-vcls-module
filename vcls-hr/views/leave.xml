@@ -122,7 +122,7 @@
                                 
                                 <field name="mode_company_id" string="Legal Entity" attrs="{'invisible': [('holiday_type', 'not in', ['company'])]}" options="{'no_create': True, 'no_open': True}"/>
                                 
-                                <field name="employee_id" attrs="{'invisible': [('holiday_type', 'not in', ['employee'])]}"/>
+                                <field name="employee_id" attrs="{'invisible': [('holiday_type', 'not in', ['employee'])]}" options="{'no_create': True, 'no_open': True}"/>
                                 <field name="employee_company_id" string="Legal Entity" invisible="1"/>
                                 
                                 <field name="holiday_status_id" context="{'employee_id':employee_id, 'default_date_from':date_from}" options="{'no_create': True, 'no_open': True}" domain="[('company_id','=',mode_company_id)]"/>

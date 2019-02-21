@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.10.21',
+    'version': '0.10.22',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -66,6 +66,7 @@
         'actions/hr_employee_menu.xml',
         'actions/hr_employee_cronjob.xml',
         'actions/hr_leave_menu.xml',
+        'actions/hr_leave_cronjob.xml',
         
         #############
         # SEQUENCES #
