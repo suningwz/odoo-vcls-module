@@ -338,11 +338,11 @@ class Employee(models.Model):
         string="Over Variable Salary",
         compute = "_get_bonuses",)
     
-    contract_ids = fields.Many2many(
-        'hr.contract',
-        string="Contract(s)",
-        compute = "_get_contracts",
-        )
+#    contract_ids = fields.Many2many(
+#        'hr.contract',
+#        string="Contract(s)",
+#        compute = "_get_contracts",
+#        )
     
     #Benefit related
     benefit_ids = fields.Many2many(
@@ -483,10 +483,10 @@ class Employee(models.Model):
         for empl in self:
             empl.bonus_ids = self.env['hr.bonus'].search([('employee_id','=',empl.id)])
     
-    @api.multi
-    def _get_contracts(self):
-        for empl in self:
-            empl.contract_ids = self.env['hr.contract'].search(['&',('employee_id','=',empl.id),('company_id','=',empl.company_id.id)])
+#    @api.multi
+#    def _get_contracts(self):
+#        for empl in self:
+#            empl.contract_ids = self.env['hr.contract'].search(['&',('employee_id','=',empl.id),('company_id','=',empl.company_id.id)])
     
     @api.depends('parent_id','parent_id.parent_id','contract_id','contract_id.job_id','contract_id.job_id.department_id','contract_id.job_id.department_id.manager_id')  
     def _get_lm_ids(self):

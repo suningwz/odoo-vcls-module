@@ -54,8 +54,12 @@ class Leave(models.Model):
         String='Employee Company',)
     
     lm_user_id = fields.Many2one(
-        'res.user',
-        related='manager_id.user_id',)
+        'res.users',
+        related='employee_id.parent_id.user_id',)
+    
+    head_user_id = fields.Many2one(
+        'res.users',
+        related='department_id.manager_id.user_id')
     
     future_number_of_days = fields.Float(
         string="Projected Days",
