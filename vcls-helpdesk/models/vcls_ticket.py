@@ -76,6 +76,8 @@ class Ticket(models.Model):
         default='http://frb-sp-01/sites/IT/VCLS%20Software/Odoo/OdooTickets_QuickGuide_v1.pdf',
         )
     
+    dynamic_description = fields.Html()
+    
     #used for dynamic views
     access_level = fields.Selection([ 
         ('base', 'Base'),
