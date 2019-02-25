@@ -12,6 +12,7 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-hr.vcls_leave_form1')}),
                 
             ]"/>
+            <field name="context">{'search_default_group_employee': 1}</field>
         </record>
         
         <!-- Add groups to the Dashboard menu -->
