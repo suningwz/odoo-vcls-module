@@ -3,13 +3,12 @@
     <data noupdate="1">
         <record id="cron_employee_status" model="ir.cron">
             <field name="name">Update Employee Status</field>
-            <field name="active" eval="True" />
+            <field name="active" eval="False" />
             <field name="user_id" ref="base.user_root" />
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
             <field name="numbercall">-1</field>
             <field name="doall">1</field>
-            <!--<field name="nextcall" >2016-12-31 23:59:59</field>-->
             <field name="model_id" ref="hr.model_hr_employee" />
             <field name="state">code</field>
             <field name="code">model._check_employee_status()</field>
@@ -24,7 +23,6 @@
             <field name="interval_type">days</field>
             <field name="numbercall">-1</field>
             <field name="doall">1</field>
-            <!--<field name="nextcall" >2016-12-31 23:59:59</field>-->
             <field name="model_id" ref="hr.model_hr_employee" />
             <field name="state">code</field>
             <field name="code">model._check_lm_membership()</field>
@@ -39,10 +37,23 @@
             <field name="interval_type">days</field>
             <field name="numbercall">-1</field>
             <field name="doall">1</field>
-            <!--<field name="nextcall" >2016-12-31 23:59:59</field>-->
             <field name="model_id" ref="hr.model_hr_employee" />
             <field name="state">code</field>
             <field name="code">model._set_resource_calendar()</field>
+            
+        </record>
+        
+        <record id="cron_employee_update_situation" model="ir.cron">
+            <field name="name">Update employee situation (Status, Tag, Allocation etc.) </field>
+            <field name="active" eval="True" />
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall">1</field>
+            <field name="model_id" ref="hr.model_hr_employee" />
+            <field name="state">code</field>
+            <field name="code">model._update_employee_situation()</field>
             
         </record>
         
