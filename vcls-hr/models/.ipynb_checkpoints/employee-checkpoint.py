@@ -6,6 +6,7 @@ from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 #Odoo Imports
 from odoo import api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 class Employee(models.Model):
     
@@ -424,6 +425,17 @@ class Employee(models.Model):
     @api.depends('contract_ids.date_start')
     def _compute_contract_id(self):
         super(Employee, self)._compute_contract_id()
+        
+    @api.model
+    def _update_employee_situation(self):
+        
+        """ This methos regroups several sub-methods initially called by CRON in order to consolidate the employee situation:
+        > status
+        > lm group membership
+        > resource calendar adjustment (bug work around)
+        > automated tag allocation based on wt
+        """
+        self._wt_to_tag()
     
     #adds or remove from the lm group according to the subortinates count
     @api.model #to be called from CRON job
@@ -455,13 +467,62 @@ class Employee(models.Model):
                     
             else:
                 empl.employee_status = 'future' #no dates
-    """
+    
     @api.model #to be called from CRON
-    def _check_tag_allocations(self):
-        #get tags
+    def _wt_to_tag(self):
+        
+        """ We use tags for proper allocation of holidays according to the company and the contractual situation.
+        THis info is already present in the working time of the employee, so we automate the creation of the tag according to the defined wt."""
+        partner_ids=self.env.ref('base.user_admin').partner_id.ids
+        
+        #get existing wts and loop in
+        wts = self.env['resource.calendar'].search([])
+        for wt in wts:
+            #search the related tag
+            specif = wt.name.find(' (')
+            if specif < 0:
+                tag_search_name = wt.name
+            else:
+                tag_search_name = wt.name[:specif]
+            
+            tag=self.env['hr.employee.category'].search([('name','=',tag_search_name)], limit=1)
+            tag_id=tag.id
+            
+            #if the tag exists, then look for employee having a mismatch between the tag and the wt
+            if tag_id:
+                
+                #get employees with the working time but no corresponding tags
+                emp_missing = self.env['hr.employee'].search([('resource_calendar_id.id','=',wt.id),('category_ids','not in',tag_id)])
+                body = 'Employee updated: '
+                for emp in emp_missing: #employees having the wt without the tag >> we update them
+                    emp.category_ids |= tag
+                    body += '{} '.format(emp.name)
+                
+                if emp_missing:
+                    subject='Kalpa | Employees updated'
+                    body += 'added tag {} '.format(tag_search_name)
+                    self.env['mail.thread'].message_notify(
+                        partner_ids=partner_ids,
+                        body=body,
+                        subject = subject,
+                        record_name=wt.name,
+                        notif_layout='mail.mail_notification_light'
+                        )
+
+            #tag is missing or mistyped... notify admin
+            else:
+                subject='Kalpa | Employee tag to create'
+                body='Please create tag for the working time {}'.format(wt.name)
+                self.env['mail.thread'].message_notify(
+                        partner_ids=partner_ids,
+                        body=body,
+                        subject = subject,
+                        record_name=wt.name,
+                        notif_layout='mail.mail_notification_light'
+                        )
+            
         #search related tag allocation allocations
         #create employee allocation if not exists
-    """
          
     
     #Ensure the resource.resource calendar is the same than the one configured at the employee level
