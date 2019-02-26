@@ -14,7 +14,8 @@ class Job(models.Model):
     
     #in oder to enforce naming convention
     name = fields.Char(
-        compute='_compute_name',)
+        compute='_compute_name',
+        )
       
     #################
     # Custom Fields #
@@ -24,6 +25,13 @@ class Job(models.Model):
     billable_target_percentage = fields.Float(
         string='Billable Target Percentage',)
     
+    vcls_activity_id = fields.Many2one(
+        'hr.vcls_activities',)
+    
+    project_role_id = fields.Many2one(
+        'hr.project_role',)
+    
+    
     support_fct = fields.Char(
         string='Support Function',)
     
@@ -32,13 +40,6 @@ class Job(models.Model):
     project_fct_id = fields.Many2one(
         'hr.project_business_fct',)
     
-    
-    vcls_activity_id = fields.Many2one(
-        'hr.vcls_activities',)
-    
-    project_role_id = fields.Many2one(
-        'hr.project_role',)
-    
     view_mode = fields.Selection([
         ('operation', 'Operation'),
         ('support', 'Support'),
@@ -46,10 +47,26 @@ class Job(models.Model):
         compute='_get_view_mode',
         store=False,)
     
+    
+    
     #######################
     # Calculation Methods #
     #######################
     
+    @api.depends('department_id','project_role_id')
+    def _compute_name(self):
+        for rec in self:
+            if rec.department_id and rec.project_role_id:
+                if rec.department_id.name == rec.project_role_id.name:
+                    rec.name = "{}".format(rec.department_id.name)
+                else:
+                    rec.name = "{} - {}".format(rec.department_id.name,rec.project_role_id.name)
+            elif rec.department_id:
+                rec.name = "{}".format(rec.department_id.name)
+            elif rec.project_role_id:
+                rec.name = "{}".format(rec.project_role_id.name)
+                    
+    '''
     @api.depends('department_id','support_fct','vcls_activity_id','project_role_id')
     def _compute_name(self):
         for rec in self:
@@ -73,6 +90,7 @@ class Job(models.Model):
                 rec.view_mode = 'support'
             else:
                 rec.view_mode = 'undef'
+    '''
     
     #######################
     # Constrains Methods #

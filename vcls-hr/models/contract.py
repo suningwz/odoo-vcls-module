@@ -39,7 +39,7 @@ class Contract(models.Model):
     
     effective_percentage = fields.Float(
         string = 'Effective working percentage',
-        related = 'job_profile_id.resource_calendar_id.effective_percentage',
+        related = 'resource_calendar_id.effective_percentage',
         readonly = True)
         
     
@@ -61,17 +61,15 @@ class Contract(models.Model):
     
     resource_calendar_id = fields.Many2one(
         'resource.calendar',
-        related='job_profile_id.resource_calendar_id',
         string='Working Schedule',
-        readonly='1',)
+        )
     
     employee_id = fields.Many2one(
         required=True,)
-    '''
-    company_id = fields.Many2one(
-        default='employee_id.company_id',
-    )
-    '''
+    
+    job_id = fields.Many2one(
+        string = 'Job Title',)
+    
     
     date_start = fields.Date(
         required=True,
@@ -81,14 +79,16 @@ class Contract(models.Model):
         required=True,
         default=False,)
     
-    #######################
+    ################
     # CRUD Methods #
-    #######################
+    ################
     
+    '''
     #Create 
     @api.model
     def create(self,vals):
-        rec=super().create(vals)
+        rec=super().sudo().create(vals)
+        
         
         emp = self.env['hr.employee'].search([('id','=',rec.employee_id.id)])
         if emp.contract_id.id == rec.id:
@@ -96,7 +96,7 @@ class Contract(models.Model):
                 {
                     
                     'resource_calendar_id':rec.resource_calendar_id.id,
-                    'job_profile_id':rec.job_profile_id.id,
+                    #'job_profile_id':rec.job_id.id,
                     
                 })
         
@@ -114,21 +114,22 @@ class Contract(models.Model):
                 {
                     
                     'resource_calendar_id':contract.resource_calendar_id.id,
-                    'job_profile_id':contract.job_profile_id.id,
+                    #'job_profile_id':contract.job_profile_id.id,
                     
                 })
         
         return contract
+    '''
     
     #######################
     # Calculation Methods #
     #######################
     
-    @api.depends('fulltime_salary','job_profile_id.resource_calendar_id.effective_percentage')
+    @api.depends('fulltime_salary','resource_calendar_id.effective_percentage')
     def _compute_prorated_salary(self):
         for rec in self:
-            if rec.job_profile_id.resource_calendar_id.effective_percentage: #if this value is defined
-                rec.prorated_salary = rec.fulltime_salary*rec.job_profile_id.resource_calendar_id.effective_percentage
+            if rec.resource_calendar_id.effective_percentage: #if this value is defined
+                rec.prorated_salary = rec.fulltime_salary*rec.resource_calendar_id.effective_percentage
             else:
                 rec.prorated_salary = rec.fulltime_salary
     
@@ -141,6 +142,7 @@ class Contract(models.Model):
     def _set_company(self):
         for rec in self:
             rec.company_id = rec.employee_id.company_id
+            rec.resource_calendar_id = False
     
     #####################
     # Selection Methods #

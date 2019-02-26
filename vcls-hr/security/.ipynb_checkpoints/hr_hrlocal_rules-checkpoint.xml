@@ -79,9 +79,10 @@
             <field name="perm_unlink" eval="1"/>
             <field name="domain_force">[
                     ('company_id','in',[user.company_id.id]),
-                    '|',
+                    '|','|',
                     ('employee_id.user_id','!=',user.id),
                     ('employee_id','=',False),
+                    ('employee_id.user_id','=',False),
             ]</field>
             <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>
@@ -112,9 +113,10 @@
             <field name="perm_unlink" eval="1"/>
             <field name="domain_force">[
                     ('employee_id.company_id','in',[user.company_id.id]),
-                    '|',
+                    '|','|',
                     ('employee_id.user_id','!=',user.id),
                     ('employee_id','=',False),
+                    ('employee_id.user_id','=',False),
             ]</field>
             <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>
@@ -144,9 +146,10 @@
             <field name="perm_unlink" eval="1"/>
             <field name="domain_force">[
                     ('employee_id.company_id','in',[user.company_id.id]),
-                    '|',
+                    '|','|',
                     ('employee_id.user_id','!=',user.id),
                     ('employee_id','=',False),
+                    ('employee_id.user_id','=',False),
             ]</field>
             <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>

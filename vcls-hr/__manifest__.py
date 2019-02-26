@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.10.4',
+    'version': '0.10.23',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -41,18 +41,23 @@
         #'security/hr_head_rules.xml',
         'security/hr_hrglobal_rules.xml',
         'security/hr_hrlocal_rules.xml',
+        'security/hr_leave_officer_rules.xml',
+        'security/hr_leave_manager_rules.xml',
         
         #########
         # VIEWS #
         #########
         'views/employee.xml',
         #'views/employee_security_test.xml',
+        'views/bank_holiday.xml',
         'views/bonuses.xml',
         'views/benefits.xml',
         'views/company_org.xml',
         'views/contract.xml',
         'views/job.xml',
-        'views/job_profile.xml',
+        'views/leave.xml',
+        'views/leave_allocation.xml',
+        #'views/job_profile.xml',
         'views/working_times.xml',
       
         ###########
@@ -60,7 +65,8 @@
         ###########
         'actions/hr_employee_menu.xml',
         'actions/hr_employee_cronjob.xml',
-        #'actions/hr_job_menu.xml',
+        'actions/hr_leave_menu.xml',
+        'actions/hr_leave_cronjob.xml',
         
         #############
         # SEQUENCES #
@@ -71,6 +77,7 @@
         # EMAILS TEMPLATES #
         ####################
         'data/user_group_history.xml',
+        'data/mail_data.xml',
         
         ###################
         # DEFAULT RECORDS #
@@ -82,7 +89,7 @@
         'data/hr.vcls_activities.csv',
         'data/hr.diploma.csv',
         'data/hr.project_business_fct.csv',
-        'data/hr.project_role.csv',
+        #'data/hr.project_role.csv',
         'data/hr.office.csv',
         'data/hr.employee.category.csv',
         

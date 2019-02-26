@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- FOR LEAVES -->
+        <!-- Deactivate the default leave rules, giving access to everything -->
+        <record id="hr_holidays.hr_leave_rule_manager" model="ir.rule">
+            <field name="active" eval="False"/>
+        </record>
+          
+        <!-- Leaves Managers can work with all leaves in their authorized companies-->
+        <record id="hr_leave_rule_manager" model="ir.rule">
+            <field name="name">As leave manager, can do everything in authorized companies</field>
+            <field name="model_id" ref="hr_holidays.model_hr_leave"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                       ('employee_id.company_id','in',[user.company_id.id]),
+            ]</field>
+            <field name="groups" eval="[(4, ref('hr_holidays.group_hr_holidays_manager'))]"/>
+        </record>
+        
+        <!-- FOR ALLOCATIONS -->
+        <!-- Deactivate the default rules, LM's have nothing to do with allocations in our organisation-->
+       <record id="hr_holidays.hr_leave_allocation_rule_manager" model="ir.rule">
+            <field name="active" eval="False"/>
+        </record>
+        <!-- Leaves Managers can work with all allocations in their authorized companies-->
+        <record id="hr_allocation_rule_manager" model="ir.rule">
+            <field name="name">As leave manager, can do everything in authorized companies</field>
+            <field name="model_id" ref="hr_holidays.model_hr_leave_allocation"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                       ('employee_id.company_id','in',[user.company_id.id]),
+            ]</field>
+            <field name="groups" eval="[(4, ref('hr_holidays.group_hr_holidays_manager'))]"/>
+        </record>
+        
+    </data>
+</odoo>

@@ -31,10 +31,34 @@ class Employee(models.Model):
     
     gender = fields.Selection(
         default=False,)
-     
+    
+    contract_id = fields.Many2one(store=True)
+    
+    
     resource_calendar_id = fields.Many2one(
-        default = False,
-        readonly=True,)
+        related='contract_id.resource_calendar_id',
+        readonly = True,
+        store=True,
+        )
+    
+    job_id = fields.Many2one(
+        related='contract_id.job_id',
+        readonly = True,
+        store = True
+        )
+    
+    department_id = fields.Many2one(
+        related='contract_id.job_id.department_id',
+        readonly = True,
+        store = True
+        )
+    
+    job_title = fields.Char(
+        related='contract_id.job_id.project_role_id.name',
+        readonly = True,
+        store = True
+        )
+    
     
      # Administrative informations
     first_name = fields.Char(
@@ -67,7 +91,8 @@ class Employee(models.Model):
         string='Employee Folder',
         help='Paste folder url',
         compute='_compute_link_employee_folder',
-        inverse='_set_link_employee_folder')
+        #inverse='_set_link_employee_folder'
+        )
     
     ### /!\ Confidential information
     birthday = fields.Date(String='Date of Birth',
@@ -80,6 +105,11 @@ class Employee(models.Model):
         string='Family Name at Birth',
         compute='_compute_family_name_at_birth',
         inverse='_set_family_name_at_birth')
+    
+    ### /!\ Confidential information
+    children = fields.Integer(
+        compute='_compute_children',
+        inverse='_set_children')
     
     ### /!\ Confidential information
     #### /!\ Overwritten field
@@ -308,11 +338,11 @@ class Employee(models.Model):
         string="Over Variable Salary",
         compute = "_get_bonuses",)
     
-    contract_ids = fields.Many2many(
-        'hr.contract',
-        string="Contract(s)",
-        compute = "_get_contracts",
-        )
+#    contract_ids = fields.Many2many(
+#        'hr.contract',
+#        string="Contract(s)",
+#        compute = "_get_contracts",
+#        )
     
     #Benefit related
     benefit_ids = fields.Many2many(
@@ -390,6 +420,11 @@ class Employee(models.Model):
     # Automated Calculation Methods #
     #################################
     
+    #Overrides the contract_id calculation to be replaced by a depends and allow the storage of contract_id
+    @api.depends('contract_ids.date_start')
+    def _compute_contract_id(self):
+        super(Employee, self)._compute_contract_id()
+    
     #adds or remove from the lm group according to the subortinates count
     @api.model #to be called from CRON job
     def _check_lm_membership(self):
@@ -406,6 +441,7 @@ class Employee(models.Model):
             if empl.employee_end_date: #if end date configured
                 if empl.employee_end_date <= date_ref:
                     empl.employee_status = 'departed'
+                    empl.active=False
                     continue
                 else: #end date is documented but in the fulture
                     empl.employee_status = 'active'
@@ -419,6 +455,22 @@ class Employee(models.Model):
                     
             else:
                 empl.employee_status = 'future' #no dates
+    """
+    @api.model #to be called from CRON
+    def _check_tag_allocations(self):
+        #get tags
+        #search related tag allocation allocations
+        #create employee allocation if not exists
+    """
+         
+    
+    #Ensure the resource.resource calendar is the same than the one configured at the employee level
+    @api.model #to be called from CRON job
+    def _set_resource_calendar(self):
+        employees = self.env['hr.employee'].search([])
+        for empl in employees:
+            if empl.resource_calendar_id: #if a working time has been configured
+                empl.resource_id.calendar_id = empl.resource_calendar_id
         
     
     @api.multi
@@ -431,12 +483,12 @@ class Employee(models.Model):
         for empl in self:
             empl.bonus_ids = self.env['hr.bonus'].search([('employee_id','=',empl.id)])
     
-    @api.multi
-    def _get_contracts(self):
-        for empl in self:
-            empl.contract_ids = self.env['hr.contract'].search(['&',('employee_id','=',empl.id),('company_id','=',empl.company_id.id)])
+#    @api.multi
+#    def _get_contracts(self):
+#        for empl in self:
+#            empl.contract_ids = self.env['hr.contract'].search(['&',('employee_id','=',empl.id),('company_id','=',empl.company_id.id)])
     
-    @api.depends('parent_id','parent_id.parent_id','contract_id','contract_id.job_profile_id','contract_id.job_profile_id.job1_head','contract_id.job_profile_id.job2_head','contract_id.job_profile_id.job1_dir','contract_id.job_profile_id.job2_dir')  
+    @api.depends('parent_id','parent_id.parent_id','contract_id','contract_id.job_id','contract_id.job_id.department_id','contract_id.job_id.department_id.manager_id')  
     def _get_lm_ids(self):
         
         for rec in self:
@@ -446,7 +498,7 @@ class Employee(models.Model):
                 empl = empl.parent_id
                 managers |= empl.user_id
             #add heads related to job profile
-            managers |= rec.sudo().contract_id.job_profile_id.manager_ids
+            managers |= rec.sudo().contract_id.job_id.department_id.manager_id.user_id
             
             rec.lm_ids = managers
             
@@ -670,6 +722,22 @@ class Employee(models.Model):
                 self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'family_name_at_birth': self.family_name_at_birth})
             else:
                 rec.confidential_id[0].write({'family_name_at_birth': self.family_name_at_birth})
+                
+    ### children
+    @api.depends('confidential_id.children')
+    def _compute_children(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.children = rec.confidential_id[0]['children']
+            else:
+                rec.children = False
+    
+    def _set_children(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'children': self.children})
+            else:
+                rec.confidential_id[0].write({'children': self.children})
                 
            
     ### country_id

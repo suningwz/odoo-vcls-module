@@ -21,16 +21,14 @@
                         </div>
                         <group>
                             <field name="department_id"/>
-                            <field name="view_mode" invisible='1'/>
+                            <!--<field name="view_mode" invisible='1'/>-->
                         </group>
-                        <group attrs="{'invisible': [('view_mode', 'not in', ['operation'])]}">
-                            <field name="vcls_activity_id"/>
-                            <field name="project_role_id"/>
+                        <group>
+                            <!-- <field name="vcls_activity_id"/> -->
+                            <field name="project_role_id" string="Job Title"/>
                             <field name="billable_target_percentage" widget="percentage"/>
                         </group>
-                        <group attrs="{'invisible': [('view_mode', 'not in', ['support'])]}">
-                            <field name="support_fct"/>
-                        </group>
+                        
                         <div>
                             <label for="description"/>
                             <field name="description"/>
@@ -50,7 +48,7 @@
                   <tree string="Job Position">
                     <field name="name"/>
                     <field name="department_id"/>
-                    <field name="vcls_activity_id"/>
+                    <!-- <field name="vcls_activity_id"/> -->
                     <field name="project_role_id"/>
                 </tree>
             </field>

@@ -26,7 +26,7 @@
         <!-- Employee retired -->
         <record id="action_hr_employee_non_active" model="ir.actions.act_window">
             <field name="name">Non-active Employees</field>
-            <field name="domain">[('employee_status','=','departed')]</field>
+            <field name="domain">['|',('employee_status','=','departed'),('active','=',False)]</field>
             <field name="res_model">hr.employee</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -118,6 +118,7 @@
             sequence="3"
         />
         
+        <!--
         <record id="action_hr_job_profiles" model="ir.actions.act_window">
             <field name="name">Job Profiles</field>
             <field name="res_model">hr.job_profile</field>
@@ -136,6 +137,7 @@
             action="action_hr_job_profiles"
             sequence="6"
         />
+    -->
         
         <record id="action_hr_bonuses" model="ir.actions.act_window">
             <field name="name">Over Variable Salary</field>
@@ -208,6 +210,7 @@
             sequence="6"
         />
         
+        <!--
         <record id="action_hr_vcls_activities" model="ir.actions.act_window">
             <field name="name">VCLS Activities</field>
             <field name="res_model">hr.vcls_activities</field>
@@ -225,9 +228,10 @@
             action="action_hr_vcls_activities"
             sequence="9"
         />
-        
+        -->
+
         <record id="action_hr_job_base" model="ir.actions.act_window">
-            <field name="name">Job Position</field>
+            <field name="name">Jobs</field>
             <field name="res_model">hr.job</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -239,14 +243,14 @@
         
         <menuitem
             id="menu_hr_job"
-            name="Job Positions"
+            name="Jobs"
             parent="menu_hr_company_org"
             action="action_hr_job_base"
             sequence="12"
         />
         
         <record id="action_hr_project_role" model="ir.actions.act_window">
-            <field name="name">Project Roles</field>
+            <field name="name">Job Titles</field>
             <field name="res_model">hr.project_role</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -257,7 +261,7 @@
         
         <menuitem
             id="menu_hr_project_role"
-            name="Project Roles"
+            name="Job Titles"
             parent="menu_hr_company_org"
             action="action_hr_project_role"
             sequence="15"

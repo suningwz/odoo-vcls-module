@@ -32,7 +32,7 @@ class Ticket(models.Model):
     
     @api.model
     def _get_type_id(self):
-        return self.env.ref('vcls-module.ticket_type_incident').id
+        return self.env.ref('vcls-helpdesk.ticket_type_incident').id
     
     #################
     # Custom Fields #
@@ -75,6 +75,8 @@ class Ticket(models.Model):
         string='Click for Help',
         default='http://frb-sp-01/sites/IT/VCLS%20Software/Odoo/OdooTickets_QuickGuide_v1.pdf',
         )
+    
+    #dynamic_description = fields.Html()
     
     #used for dynamic views
     access_level = fields.Selection([ 
