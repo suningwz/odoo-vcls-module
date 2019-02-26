@@ -433,9 +433,12 @@ class Employee(models.Model):
         > status
         > lm group membership
         > resource calendar adjustment (bug work around)
-        > automated tag allocation based on wt
+        > automated tag based on wt
         """
+        self._check_employee_status()
+        self._set_resource_calendar()
         self._wt_to_tag()
+        self._check_lm_membership()
     
     #adds or remove from the lm group according to the subortinates count
     @api.model #to be called from CRON job
@@ -463,11 +466,11 @@ class Employee(models.Model):
                 if empl.employee_start_date > date_ref: #employee to start in the future
                     empl.employee_status = 'future'
                 else:
-                    empl.employee_status = 'active'
-                    
+                    empl.employee_status = 'active' 
             else:
                 empl.employee_status = 'future' #no dates
     
+        
     @api.model #to be called from CRON
     def _wt_to_tag(self):
         
@@ -491,9 +494,30 @@ class Employee(models.Model):
             #if the tag exists, then look for employee having a mismatch between the tag and the wt
             if tag_id:
                 
-                #get employees with the working time but no corresponding tags
-                emp_missing = self.env['hr.employee'].search([('resource_calendar_id.id','=',wt.id),('category_ids','not in',tag_id)])
                 body = 'Employee updated: '
+                
+                # we look for all wt that can be relatag to this tag in order to identify existing tags to be rmoved
+                tag_related_wts=self.env['resource.calendar'].search([('name','like',tag.name)]).ids
+                
+                #get employees with a tag not having one of the corresponding wt >> we remove the tag
+                emp_having = self.env['hr.employee'].search([('resource_calendar_id.id','not in',tag_related_wts),('category_ids','in',tag_id)])
+                for emp in emp_having:
+                    emp.category_ids -= tag
+                    body += '{} '.format(emp.name)
+                if emp_having:
+                    subject='Kalpa | Employees updated'
+                    body += 'removed tag {} '.format(tag_search_name)
+                    self.env['mail.thread'].message_notify(
+                        partner_ids=partner_ids,
+                        body=body,
+                        subject = subject,
+                        record_name=wt.name,
+                        notif_layout='mail.mail_notification_light'
+                        )
+                
+                #get employees with the working time but no corresponding tags
+                body = 'Employee updated: '
+                emp_missing = self.env['hr.employee'].search([('resource_calendar_id.id','=',wt.id),('category_ids','not in',tag_id)])
                 for emp in emp_missing: #employees having the wt without the tag >> we update them
                     emp.category_ids |= tag
                     body += '{} '.format(emp.name)
@@ -520,9 +544,6 @@ class Employee(models.Model):
                         record_name=wt.name,
                         notif_layout='mail.mail_notification_light'
                         )
-            
-        #search related tag allocation allocations
-        #create employee allocation if not exists
          
     
     #Ensure the resource.resource calendar is the same than the one configured at the employee level
