@@ -23,6 +23,20 @@
             ]"/>
         </record>
         
+         <!-- Employee Absnet Today -->
+        <record id="action_hr_employee_absent" model="ir.actions.act_window">
+            <field name="name">Absent Today</field>
+            <field name="domain">[('is_absent_totay','=',True)]</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref='view_employee_search'/>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('employee_view_tree_all')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('employee_view_form_all')}),
+            ]"/>
+        </record>
+        
         <!-- Employee retired -->
         <record id="action_hr_employee_non_active" model="ir.actions.act_window">
             <field name="name">Non-active Employees</field>
@@ -60,26 +74,34 @@
         />
         
         <menuitem
-            id="hr.menu_open_view_employee_non_active"
-            name="Non-Active Employees"
+            id="hr.menu_open_view_employee_absent"
+            name="Absent Today"
             parent="hr.menu_hr_root"
-            action="action_hr_employee_non_active"
-            sequence="4"
+            action="action_hr_employee_absent"
+            sequence="3"
         />
-        <!-- Configure groups to access non active employees -->
-        <record id="hr.menu_open_view_employee_non_active" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
-        </record>
         
         <menuitem
             id="hr.menu_open_view_employee_newcomer"
             name="New Comers"
             parent="hr.menu_hr_root"
             action="action_hr_employee_newcomer"
-            sequence="3"
+            sequence="4"
         />
         <!-- Configure groups to access non active employees -->
         <record id="hr.menu_open_view_employee_newcomer" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
+        </record>
+        
+        <menuitem
+            id="hr.menu_open_view_employee_non_active"
+            name="Non-Active Employees"
+            parent="hr.menu_hr_root"
+            action="action_hr_employee_non_active"
+            sequence="5"
+        />
+        <!-- Configure groups to access non active employees -->
+        <record id="hr.menu_open_view_employee_non_active" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
         </record>
         
