@@ -79,7 +79,8 @@ class LeaveAllocation(models.Model):
                 else: #we need to create a new one
                     childs += self.with_context(
                         mail_notify_force_send=False,
-                        mail_activity_automation_skip=True
+                        mail_activity_automation_skip=True,
+                        mail_create_nosubscribe=True
                     ).create(self._prepare_holiday_values(employee))
                 
             # TODO is it necessary to interleave the calls?
@@ -186,6 +187,7 @@ class LeaveAllocation(models.Model):
     #we don't want LM approval for allocations
     def _get_responsible_for_approval(self):
         return self.env.user
+   
     
     #we don't want the employee to be notified
     @api.multi
