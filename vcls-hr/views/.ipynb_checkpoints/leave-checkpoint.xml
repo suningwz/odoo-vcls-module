@@ -25,6 +25,7 @@
                             <group>
                                 <field name="employee_company_id" string="Legal Entity" invisible="1"/>
                                 <field name="holiday_status_id" context="{'employee_id':employee_id, 'default_date_from':date_from}" options="{'no_create': True, 'no_open': True}" domain="[('company_id','=',employee_company_id),('is_managed_by_hr','=',False)]"/>
+                                <!--<field name="holiday_status_id" context="{'employee_id':employee_id, 'default_date_from':date_from}" options="{'no_create': True, 'no_open': True}" domain="[('company_id','=',employee_company_id),('is_managed_by_hr','=',False)]"/>-->
 
                                 <field name="number_of_days" invisible="1"/>
                                 <label for="number_of_days_display" string="Duration"/>
