@@ -338,12 +338,13 @@ class Employee(models.Model):
         'hr.bonus',
         string="Over Variable Salary",
         compute = "_get_bonuses",)
-    
-#    contract_ids = fields.Many2many(
-#        'hr.contract',
-#        string="Contract(s)",
-#        compute = "_get_contracts",
-#        )
+    """
+    contract_ids = fields.Many2many(
+        'hr.contract',
+        'employee_id',
+        readonly = True,
+        )
+    """
     
     #Benefit related
     benefit_ids = fields.Many2many(
