@@ -25,10 +25,15 @@ class LeaveType(models.Model):
     
     is_managed_by_hr = fields.Boolean(
         string='Is Managed by HR',
-        default='FALSE',)
+        default=False,)
     
     validity_start_ord = fields.Integer(
         compute='_compute_validity_start_ord',
+        )
+    
+    authorize_negative = fields.Boolean(
+        string = 'Authorize Negative',
+        default = False,
         )
     
     ##################
