@@ -50,6 +50,7 @@ access_hr_business_fct_employee,hr.business.fct.employee,model_hr_project_busine
 
 access_hr_project_role_sup1,hr.project.role.sup1,model_hr_project_role,vcls-hr.vcls_group_superuser_lvl1,1,1,1,1
 access_hr_project_role_employee,hr.project.role.employee,model_hr_project_role,base.group_user,1,0,0,0
+access_hr_project_role_default,hr.project.role.default,model_hr_project_role,,1,0,0,0
 
 access_hr_vcls_activities_sup1,hr.vcls.activities.sup1,model_hr_vcls_activities,vcls-hr.vcls_group_superuser_lvl1,1,1,1,1
 access_hr_vcls_activities_employee,hr.vcls.activities.employee,model_hr_vcls_activities,base.group_user,1,0,0,0

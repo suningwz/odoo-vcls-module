@@ -176,7 +176,7 @@
                             <page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">
                             <!--<page name="salary_info" string="Salary Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">-->
                                 <group string="Salaries">
-                                    <field name="contract_ids" string="">
+                                    <field name="contract_ids" string="" readonly='1'>
                                         <tree string="Employee Salaries">
                                             <field name="currency_id" invisible='1'/>
                                             <!-- <field name="date_start"/>

@@ -46,6 +46,18 @@
             ]"/>
         </record>
         
+        <!-- We change the default filtering of the summary action -->
+        <record id="hr_holidays.open_company_allocation" model="ir.actions.act_window">
+            <field name="context">{
+                'search_default_group_type': 1,
+                'search_default_my_leaves': 1,
+                'search_default_validated': 1,
+                'search_default_approve': 1,
+                'search_default_active_types': 1,
+                }
+            </field>
+        </record>
+        
         <!-- deactivate allocations menus because we don't use it for now -->
         <record id="hr_holidays.menu_open_allocation" model="ir.ui.menu">
             <field name="active" eval="False"/>
