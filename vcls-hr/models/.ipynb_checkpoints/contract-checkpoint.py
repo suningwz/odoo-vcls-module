@@ -83,43 +83,16 @@ class Contract(models.Model):
     # CRUD Methods #
     ################
     
-    '''
-    #Create 
     @api.model
     def create(self,vals):
-        rec=super().sudo().create(vals)
+        rec = super().create(vals)
         
-        
-        emp = self.env['hr.employee'].search([('id','=',rec.employee_id.id)])
-        if emp.contract_id.id == rec.id:
-            emp.write(
-                {
-                    
-                    'resource_calendar_id':rec.resource_calendar_id.id,
-                    #'job_profile_id':rec.job_id.id,
-                    
-                })
+        if len(rec.employee_id.contract_ids)==1:
+            rec.employee_id.create_IT_ticket('join') #if 1st contract, trigger the join ticket
+        else:
+            rec.employee_id.create_IT_ticket('modify')
         
         return rec
-    
-    #Write also, to cover the change in the application date or job profile
-    @api.multi
-    def write(self,vals):
-        rec=super().write(vals)
-        
-        for contract in self:
-            emp = contract.env['hr.employee'].search([('id','=',contract.employee_id.id)])
-        if emp.contract_id.id == contract.id:
-            emp.write(
-                {
-                    
-                    'resource_calendar_id':contract.resource_calendar_id.id,
-                    #'job_profile_id':contract.job_profile_id.id,
-                    
-                })
-        
-        return contract
-    '''
     
     #######################
     # Calculation Methods #
@@ -143,6 +116,13 @@ class Contract(models.Model):
         for rec in self:
             rec.company_id = rec.employee_id.company_id
             rec.resource_calendar_id = False
+    
+    """
+    @api.onchange('job_id','company_id')
+    def _onchange_IT_ticket(self):
+        for rec in self:
+            rec.employee_id.create_IT_ticket('modify')
+    """
     
     #####################
     # Selection Methods #

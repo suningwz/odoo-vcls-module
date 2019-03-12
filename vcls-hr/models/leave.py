@@ -72,6 +72,10 @@ class Leave(models.Model):
     is_accrual = fields.Boolean(
         default=False)
     
+    max_credit = fields.Float(
+        compute='_compute_future_days',
+        )
+    
     start_date = fields.Date(
         compute='_compute_dates',
         readonly=True,)
@@ -79,7 +83,7 @@ class Leave(models.Model):
     #####################
     # Overriden Methods #
     #####################
-    #We simplify this method to force the number of days to be based on dates and not on any working calendar.
+    #We simplify this method to force the number of days to be based on days and not hours.
     def _get_number_of_days(self, date_from, date_to, employee_id):
         # Returns a float equals to the timedelta between two dates given as string.
         if employee_id:
@@ -198,14 +202,20 @@ class Leave(models.Model):
             for d_ord in range(start_ord,end_ord+1): #1 is added to ensure the last day of the range to be taken in account
                 d = date.fromordinal(d_ord+1) #we check if the day after is the 1st of the month, in order to count the last days of the previous month
                 if (d.day==1): cnt = cnt + 1 #if it is the 1t day of the month, we increment the counter    
-            
+                    
+            #if negative is authorized, this means we compute the future number of days for the last day of the planned accrual
+            cnt2 = 0
+            if rec.holiday_status_id.authorize_negative:
+                end_ord = end_alloc.toordinal()
+                for d_ord in range(start_ord,end_ord+1): #1 is added to ensure the last day of the range to be taken in account
+                    d = date.fromordinal(d_ord+1) #we check if the day after is the 1st of the month, in order to count the last days of the previous month
+                    if (d.day==1): cnt2 = cnt2 + 1 #if it is the 1t day of the month, we increment the counter
+                        
             #turn on the is_accrual to prompt complementary info in view
             #if monthly_add>0.0:
-                
-            
             rec.future_number_of_days = round(leave_days + cnt*monthly_add,2)
+            rec.max_credit = round(leave_days + cnt2*monthly_add,2)
             rec.future_number_of_days_info="{} days will be available on {}.".format(rec.future_number_of_days,rec.date_from.date())
-
             
     #clear the case id when the category changes
     @api.onchange('exceptional_category_id')
@@ -247,7 +257,13 @@ class Leave(models.Model):
         for rec in self:
             if rec.holiday_type != 'employee' or not rec.employee_id or rec.holiday_status_id.allocation_type == 'no':
                 continue
+            
+            #if the holiday type authorizes to take credit, then the limit is the calculated max credit
+            if rec.holiday_status_id.authorize_negative:
+                limit = rec.max_credit
+            else: #else this is the future number of days
+                limit = rec.future_number_of_days
                 
-            if (rec.future_number_of_days + rec.number_of_days) < rec.number_of_days: #we add number_of_days becaus the virtual remaining leaves is already updated when we test this part of the code
+            if  (limit + rec.number_of_days) < rec.number_of_days: #we add number_of_days becaus the virtual remaining leaves is already updated when we test this part of the code
                 raise ValidationError('The number of remaining leaves ({} days) is not sufficient for this leave type.\n'
-                                        'Please also check the leaves waiting for validation ({} days).'.format(rec.future_number_of_days + rec.number_of_days,rec.number_of_days))
+                                        'Please also check the leaves waiting for validation ({} days).'.format(round(limit + rec.number_of_days,2),rec.number_of_days))

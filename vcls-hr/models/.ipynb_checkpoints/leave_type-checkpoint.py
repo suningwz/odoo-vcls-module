@@ -2,6 +2,7 @@
 
 #Odoo Imports
 from odoo import api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 class LeaveType(models.Model):
     
@@ -24,10 +25,15 @@ class LeaveType(models.Model):
     
     is_managed_by_hr = fields.Boolean(
         string='Is Managed by HR',
-        default='FALSE',)
+        default=False,)
     
     validity_start_ord = fields.Integer(
         compute='_compute_validity_start_ord',
+        )
+    
+    authorize_negative = fields.Boolean(
+        string = 'Authorize Negative',
+        default = False,
         )
     
     ##################
@@ -56,12 +62,22 @@ class LeaveType(models.Model):
         employee_id = self._get_contextual_employee_id()
         leave_ids = super(LeaveType, self)._search(args, offset=offset, limit=limit, order=order, count=count, access_rights_uid=access_rights_uid)
         if not count and not order and employee_id:
+            
             leaves = self.browse(leave_ids)
+           
             #we remove the leaves types based on allocations but with a counter == 0
             for item in leaves:
                 if (item.allocation_type  in ['fixed','fixed_allocation']) and item.virtual_remaining_leaves == 0:
                     leaves -= item
+            
             #oldest counter 1st
-            sort_key = lambda l: (l.allocation_type == 'fixed', l.allocation_type == 'fixed_allocation', l.virtual_remaining_leaves>0, 1/l.validity_start_ord)
+            sort_key = lambda l: (l.allocation_type == 'fixed', l.allocation_type == 'fixed_allocation', l.virtual_remaining_leaves>0, 1/l.validity_start_ord, l.allocation_type == 'no')
+            
+            
+            #test = leaves.sorted(key=sort_key, reverse=True)
+            #names = test.mapped('id')
+            #raise ValidationError('{}'.format(names))
+            
             return leaves.sorted(key=sort_key, reverse=True).ids
+        
         return leave_ids
