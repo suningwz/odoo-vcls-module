@@ -26,6 +26,7 @@
                 'hr_holidays',
                 'mail',
                 'snailmail',
+                'vcls-helpdesk',
                ],
 
     # always loaded

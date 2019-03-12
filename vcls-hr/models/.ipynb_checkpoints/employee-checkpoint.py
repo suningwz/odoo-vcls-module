@@ -458,6 +458,8 @@ class Employee(models.Model):
                 if empl.employee_end_date <= date_ref:
                     empl.employee_status = 'departed'
                     empl.active=False
+                    #trigger a new departure ticket
+                    empl.create_IT_ticket('departed')
                     continue
                 else: #end date is documented but in the fulture
                     empl.employee_status = 'active'
@@ -682,7 +684,84 @@ class Employee(models.Model):
                 #add a one day offset
                 rec.trial_end_date = rec._get_previous_working_day(rec.trial_start_date + relativedelta(months=rec.trial_period_id.duration,days=-1))
                 rec.trial_notification_date = rec._get_previous_working_day(rec.trial_end_date + relativedelta(days=-1*rec.trial_period_id.notification_delay))
-                            
+    
+    ########################
+    # CREATE TICKET METHOD #
+    ########################
+
+    # GENERAL VARIABLES
+    IT_TEAM_NAME = 'IT General Support'
+    SUB_CAT = 'Onboard / Offboard'
+    TYPE = 'Service Request'
+    ODOO_ADDRESS = 'https://vcls.odoo.com'
+    
+    @api.multi
+    def create_IT_ticket(self, type_of_ticket):
+        #raise ValidationError('{}'.format(type_of_ticket))
+        for employee in self:
+            self.env['helpdesk.ticket'].create({
+                'team_id' : self.env['helpdesk.team'].search([('name', '=', self.IT_TEAM_NAME)], limit=1).id,
+                'subcategory_id' : self.env['helpdesk.ticket.subcategory'].search([('name', '=', self.SUB_CAT)], limit=1).id,
+                'ticket_type_id' : self.env['helpdesk.ticket.type'].search([('name', '=', self.TYPE)], limit=1).id,
+                'dynamic_description' : self.generate_ticket_description(type_of_ticket),
+            })
+    
+    @api.onchange('first_name', 'middle_name', 'family_name')
+    def _ticket_onchange_employee(self):
+        ''' trigger in order to send ticket when an existing employee is modified
+        When:
+            used when first_name, middle_name, family_name, company_id or parent_id is changed
+        Args:
+            self: only current employee is needed
+        Raises:
+            Nothing
+        Returns:
+            Nothing
+        '''
+        for employee in self:
+            #we create a modif only if a contract already exists
+            if employee.contract_id:
+                employee.create_IT_ticket('modify')
+    
+    def generate_ticket_description(self, typeOfTicket):
+        
+        ''' Generate ticket dynamic_description
+        When:
+            called in create_IT_ticket
+        Args:
+            self: current employee
+            typeOfTicket: string type of ticket (in order to generate description)
+                type = 'join'   : Joining employee
+                type = 'departure' : Leaving employee
+                else : Modified employee
+        Raises:
+            Nothing
+        Returns:
+            description: string description (html)
+        '''
+        self.ensure_one()
+        
+        if typeOfTicket == 'join':
+            description = '<h2>New employee : {} </h2><h3>Date of arrival : {}'.format(self.name,self.employee_start_date)
+            
+        elif typeOfTicket == 'departed':
+            description = '<h2>Leaving employee : {} </h2><h3>Date of departure : {}'.format(self.name,self.employee_end_date)
+            
+        elif typeOfTicket == 'modify':
+            description = '<h2>Modified employee : {}'.format(self.name)
+           
+        else:
+            raise ValidationError("{}: Unknow type of ticket".format(typeOfTicket))
+            
+        # Button to employee
+        description += '</h3><p style="text-align: left; margin-left: 1.5em;"><a href="'
+        description += self.ODOO_ADDRESS + '/web?debug#id='
+        description += str(self.id)
+        description += '&model=hr.employee'
+        description += '" class="btn btn-alpha btn-lg" target="_blank" title=""><font style="color: rgb(255, 255, 255);">Employee</font></a><br></p><div style="        display: flex;        flex-direction: column;        "> </div>'
+        
+        return description
+                         
     #####################
     # Selection Methods #
     #####################
