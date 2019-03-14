@@ -1,0 +1,59 @@
+<odoo>
+  <data>
+    <!-- Default tree view -->
+    
+    <record model="ir.ui.view" id="view_payroll_export_line_tree">
+        <field name="name">view_payroll_export_line_tree</field>
+        <field name="model">export.payroll.line</field>
+        <field name="arch" type="xml">
+            <tree create='0' editable='bottom'>
+                <field name="name"/>
+                <field name="employee_external_id" string='ID'/>
+                <field name="employee_id"/>
+                <field name="status"/>
+                <field name="location"/>
+                <field name="first_name"/>
+                <field name="middle_name"/>
+                <field name="family_name"/>
+                <field name="contract_type"/>
+                <field name="working_percentage" widget='percentage'/>
+                
+                <field name="currency_id" invisible="1"/>
+                <field name="fulltime_salary"/>
+                <field name="prorated_salary"/>
+                <field name="total_bonus"/>
+                <field name="car_allowance"/>
+                <field name="transport_allowance"/>
+                <field name="lunch_ticket"/>
+                <field name="extra_amount"/>
+                <field name="comments"/>
+                
+                <field name="rtt_paid_days"/>
+                <field name="rtt_paid_info"/>
+                <field name="cp_paid_days"/>
+                <field name="cp_paid_info"/>
+                <field name="cp_unpaid_days"/>
+                <field name="cp_unpaid_info"/>
+                <field name="sick_days"/>
+                <field name="sick_info"/>
+                <field name="other_paid_days"/>
+                <field name="other_paid_info"/>
+                
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Export Lines -->
+    <record id="vcls-interfaces.action_export_payroll_line_sb" model="ir.actions.act_window">
+        <field name="name">Payroll Export Lines</field>
+        <field name="res_model">export.payroll.line</field>
+        <field name="view_type">form</field>
+        <field name="domain">[('export_id','=',active_id)]</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-interfaces.view_payroll_export_line_tree')}), 
+        ]"/>
+    </record>
+      
+  </data>
+</odoo>
