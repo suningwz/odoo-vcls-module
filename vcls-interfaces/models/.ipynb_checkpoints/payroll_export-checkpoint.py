@@ -59,6 +59,11 @@ class PayrollExport(models.Model):
         readonly = True,
         )
     
+    is_generated = fields.Boolean(
+        readonly = True,
+        default = False,
+        )
+    
     #internal/external partner to share the info with
     partner_ids = fields.Many2many(
         'res.partner',
@@ -258,6 +263,7 @@ class PayrollExport(models.Model):
                             'datas': encoded,
                         }
                 export.attachment_id = self.env['ir.attachment'].create(attachment_data)
+                export.is_generated = True
     
     def get_excel(self):
         return {

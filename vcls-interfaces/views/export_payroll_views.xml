@@ -29,12 +29,12 @@
                 <sheet>
                     
                     <div class="oe_button_box" name="button_box">
-                        <button name = "generate_excel" string = "Generate excel" type = "object" 
+                        <button name = "generate_excel" string = "Generate Excel" type = "object" 
                             icon="fa-file-excel-o" confirm="You will not be able to edit this export anymore. Are you sure you want to do this ?" 
                             attrs="{'invisible': [('attachment_id', '>', 0)]}"
                         />
 
-                        <button name = "get_excel" string = "Download excel" type = "object"
+                        <button name = "get_excel" string = "Download Excel" type = "object"
                             icon="fa-file-excel-o"
                             attrs="{'invisible': [('attachment_id', '=', False)]}"
                         />

@@ -27,6 +27,11 @@ class PayrollLine(models.Model):
         readonly = True,
         )
     
+    is_locked = fields.Boolean(
+        readonly=True,
+        related='export_id.is_generated',
+        )
+    
     employee_id = fields.Many2one(
         'hr.employee',
         string = 'Employee',
@@ -102,7 +107,7 @@ class PayrollLine(models.Model):
         return line
     
     @api.multi
-    def get_employee_info(self,):
+    def get_employee_info(self):
         for l in self:
             #employee
             l.employee_external_id = l.employee_id.employee_external_id
