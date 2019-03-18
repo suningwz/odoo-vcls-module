@@ -156,11 +156,10 @@ class PayrollLine(models.Model):
             for leave in leaves:
                 leave.trunc_start = max(leave.date_from.date(),l.export_id.start_date)
                 leave.trunc_end = min(leave.date_to.date(),l.export_id.end_date)
-                leave.trunc_duration = leave.employee_id.get_leaves_distribution(leave.trunc_start, leave.trunc_end)['leave']
-                """
-                if leave.employee_id.first_name == 'Coralie':
-                    raise ValidationError("from {} to {} | {}".format(leave.trunc_start, leave.trunc_end,leave.employee_id.get_leaves_distribution(leave.trunc_start, leave.trunc_end)))
-                """
+                if leave.request_unit_half :
+                    leave.trunc_duration = 0.5
+                else:
+                    leave.trunc_duration = leave.employee_id.get_leaves_distribution(leave.trunc_start, leave.trunc_end)['leave']
                 
                 leave.export_string = "From {} to {} | {} {} ".format(leave.trunc_start, leave.trunc_end,leave.trunc_duration,leave.holiday_status_id.name)
                 #Add Info for exceptional leaves
