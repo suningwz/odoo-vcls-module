@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_payroll_export_local_hr,interfaces.payroll.export.local,vcls-interfaces.model_export_payroll,vcls-hr.vcls_group_HR_local,1,1,1,1
+access_payroll_line_local_hr,interfaces.payroll.line.local,vcls-interfaces.model_export_payroll_line,vcls-hr.vcls_group_HR_local,1,1,1,1
+
+access_payroll_export_local_hr,interfaces.payroll.export.local,vcls-interfaces.model_export_payroll,base.group_system,1,1,1,1
+access_payroll_line_local_hr,interfaces.payroll.line.local,vcls-interfaces.model_export_payroll_line,base.group_system,1,1,1,1
