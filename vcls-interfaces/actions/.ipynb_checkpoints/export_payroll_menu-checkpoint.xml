@@ -18,11 +18,13 @@
             name="Payroll Exports"
             parent="hr_holidays.menu_hr_holidays_root"
             sequence="10"
+            action="action_export_payroll"
         />
         <record id="menu_payroll" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
         </record>
         
+        <!--
         <menuitem
             id="menu_payroll_export"
             name="Payroll Exports"
@@ -30,6 +32,7 @@
             sequence="3"
             action="action_export_payroll"
         />   
+        -->
         
         <!-- Payroll Exports -->
         <record id="action_export_payroll_line" model="ir.actions.act_window">
@@ -42,6 +45,7 @@
             ]"/>
         </record>
         
+        <!--
         <menuitem
             id="menu_payroll_export_line"
             name="Payroll Export Lines"
@@ -49,6 +53,7 @@
             sequence="6"
             action="action_export_payroll_line"
         /> 
+        -->
         
         <!-- SMART BUTTONS ACTIONS WITH DOMAIN -->
         
