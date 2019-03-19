@@ -77,6 +77,7 @@ class PayrollLine(models.Model):
     ###LEAVE FIELDS
     rtt_paid_days = fields.Float(readonly=True, default=0) # Changed to float because 0.5 day
     rtt_paid_info = fields.Char(readonly=True, default='-') #text from/to + leave type name + total days
+    rtt_paid_balance = fields.Float(readonly=True, default=0)
 
     cp_paid_days = fields.Float(readonly=True, default=0)
     cp_paid_info = fields.Char(readonly=True, default='-')
@@ -117,7 +118,10 @@ class PayrollLine(models.Model):
             l.family_name = l.employee_id.family_name
             
             #relevant contract is maybe not the one active today, it depends on the date_start of the contract
-            contract = self.env['hr.contract'].search([('employee_id','=',l.employee_id.id),('date_start','<=',l.export_id.end_date)],order='date_start desc')[0]
+            try:
+                contract = self.env['hr.contract'].search([('employee_id','=',l.employee_id.id),('date_start','<=',l.export_id.end_date)],order='date_start desc')[0]
+            except:
+                raise ValidationError(' No Valid Contract Found for {}'.format(l.employee_id.name))
             l.contract_type =  contract.type_id.name
             l.working_percentage = contract.resource_calendar_id.effective_percentage
             l.fulltime_salary = contract.fulltime_salary
@@ -156,11 +160,10 @@ class PayrollLine(models.Model):
             for leave in leaves:
                 leave.trunc_start = max(leave.date_from.date(),l.export_id.start_date)
                 leave.trunc_end = min(leave.date_to.date(),l.export_id.end_date)
-                leave.trunc_duration = leave.employee_id.get_leaves_distribution(leave.trunc_start, leave.trunc_end)['leave']
-                """
-                if leave.employee_id.first_name == 'Coralie':
-                    raise ValidationError("from {} to {} | {}".format(leave.trunc_start, leave.trunc_end,leave.employee_id.get_leaves_distribution(leave.trunc_start, leave.trunc_end)))
-                """
+                if leave.request_unit_half :
+                    leave.trunc_duration = 0.5
+                else:
+                    leave.trunc_duration = leave.employee_id.get_leaves_distribution(leave.trunc_start, leave.trunc_end)['leave']
                 
                 leave.export_string = "From {} to {} | {} {} ".format(leave.trunc_start, leave.trunc_end,leave.trunc_duration,leave.holiday_status_id.name)
                 #Add Info for exceptional leaves
@@ -173,32 +176,45 @@ class PayrollLine(models.Model):
     def get_leaves_info(self):
         for l in self:
             
-            """
-            if l.first_name == 'Cansu':
-                raise ValidationError('{}'.format(l.leave_ids.mapped('export_string')))
-            """
+            aggregate = l.aggregate_payroll_type('rtt')
+            l.rtt_paid_days = aggregate['days']
+            l.rtt_paid_info = aggregate['info']
             
-            leaves = l.leave_ids.filtered(lambda r: r.holiday_status_id.payroll_type == 'rtt')
-            if leaves:
-                l.rtt_paid_days = sum(leaves.mapped('trunc_duration'))
-                l.rtt_paid_info = '\n'.join(leaves.mapped('export_string'))
+            aggregate = l.aggregate_payroll_type('cp_paid')
+            l.cp_paid_days = aggregate['days']
+            l.cp_paid_info = aggregate['info']
             
-            leaves = l.leave_ids.filtered(lambda r: r.holiday_status_id.payroll_type == 'cp_paid')
-            if leaves:
-                l.cp_paid_days = sum(leaves.mapped('trunc_duration'))
-                l.cp_paid_info = '\n'.join(leaves.mapped('export_string'))
+            aggregate = l.aggregate_payroll_type('cp_unpaid')
+            l.cp_unpaid_days = aggregate['days']
+            l.cp_unpaid_info = aggregate['info']
             
-            leaves = l.leave_ids.filtered(lambda r: r.holiday_status_id.payroll_type == 'cp_unpaid')
-            if leaves:
-                l.cp_unpaid_days = sum(leaves.mapped('trunc_duration'))
-                l.cp_unpaid_info = '\n'.join(leaves.mapped('export_string'))
-                
-            leaves = l.leave_ids.filtered(lambda r: r.holiday_status_id.payroll_type == 'sick')
-            if leaves:
-                l.sick_days = sum(leaves.mapped('trunc_duration'))
-                l.sick_info = '\n'.join(leaves.mapped('export_string'))
-                
-            leaves = l.leave_ids.filtered(lambda r: r.holiday_status_id.payroll_type == 'other_paid')
-            if leaves:
-                l.other_paid_days = sum(leaves.mapped('trunc_duration'))
-                l.other_paid_info = '\n'.join(leaves.mapped('export_string'))
+            aggregate = l.aggregate_payroll_type('sick')
+            l.sick_days = aggregate['days']
+            l.sick_info = aggregate['info']
+            
+            aggregate = l.aggregate_payroll_type('other_paid')
+            l.other_paid_days = aggregate['days']
+            l.other_paid_info = aggregate['info']
+            
+    
+    def aggregate_payroll_type(self,payroll_type,get_balance = False):
+        self.ensure_one()
+        leaves = self.leave_ids.filtered(lambda r: r.holiday_status_id.payroll_type == payroll_type)
+        
+        """
+        if get_balance:
+            #we get past leaves that have not been truncated
+            past_leaves = self.env['hr.leave'].search([('employee_id','=',self.employee_id.id)]) - leaves
+        """
+        
+        if leaves:
+            return {
+                'days': sum(leaves.mapped('trunc_duration')),
+                'info': '\n'.join(leaves.mapped('export_string')),
+            }
+        
+        else:
+            return {
+                'days': 0,
+                'info': '',
+            }

@@ -51,6 +51,8 @@ class PayrollExport(models.Model):
         compute = '_compute_year',
         )
     
+    notes = fields.Char()
+    
     ### GENERATED FILE FIELDS
     #attachment
     attachment_id = fields.Many2one(
