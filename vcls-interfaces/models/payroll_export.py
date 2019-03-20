@@ -5,7 +5,7 @@ import xlsxwriter
 import base64
 
 #Odoo Imports
-from . import constants
+from . import payroll_constants
 from odoo import models, fields, api
 from odoo.exceptions import UserError, ValidationError
 
@@ -318,8 +318,8 @@ class PayrollExport(models.Model):
     def  get_header(self):
         # Voisin WW
         if self.company_id == self.env.ref('base.main_company'):
-            return constants.PAYROLL_FR_V1
+            return payroll_constants.PAYROLL_FR_V1
         if self.company_id == self.env.ref('vcls-hr.company_VCFR'):
-            return constants.PAYROLL_FR_V1
+            return payroll_constants.PAYROLL_FR_V1
         else:
-            return constants.PAYROLL_FR_V1
+            return payroll_constants.PAYROLL_FR_V1

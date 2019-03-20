@@ -168,9 +168,9 @@ class PayrollLine(models.Model):
                 leave.export_string = "From {} to {} | {} {} ".format(leave.trunc_start, leave.trunc_end,leave.trunc_duration,leave.holiday_status_id.name)
                 #Add Info for exceptional leaves
                 if leave.exceptional_case_id: #if it is an exceptional case
-                    leave.export_string += "({} - {})".format(leave.exceptional_category_id,leave.exceptional_case_id)
+                    leave.export_string += "({} - {})".format(leave.exceptional_category_id.name,leave.exceptional_case_id.name)
                 elif leave.exceptional_category_id: #if exceptional category only
-                    leave.export_string += "({})".format(leave.exceptional_category_id)
+                    leave.export_string += "({})".format(leave.exceptional_category_id.name)
                     
     @api.multi
     def get_leaves_info(self):

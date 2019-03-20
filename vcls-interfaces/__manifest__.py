@@ -17,7 +17,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.1.2',
+    'version': '0.1.3',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -35,16 +35,16 @@
         #########
         # VIEWS #
         #########
+        'views/export_billability_views.xml',
         'views/export_payroll_line_views.xml',
         'views/export_payroll_views.xml',
-        'views/overriden_views.xml',
+        'views/export_payroll_overriden_views.xml',
         
         #########
         # MENUS #
         #########
         'actions/export_payroll_menu.xml', 
-        
-        
+        'actions/export_billability_menu.xml',
        
     ],
     
