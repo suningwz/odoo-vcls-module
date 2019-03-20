@@ -1,0 +1,61 @@
+<odoo>
+  <data>
+      
+    
+      
+    <!-- Default tree view -->
+    <record model="ir.ui.view" id="view_billability_export_tree">
+        <field name="name">view_billability_export_tree</field>
+        <field name="model">export.billability</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="attachment_id"/>
+            </tree>
+        </field>
+    </record>
+      
+    <!-- Default form view -->
+    <record model="ir.ui.view" id="view_billability_export_form">
+        <field name="name">view_billability_export_form</field>
+        <field name="model">export.billability</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    
+                    <div class="oe_button_box" name="button_box">
+                        <button name = "get_excel" string = "Download Excel" type = "object"
+                            icon="fa-file-excel-o"
+                            attrs="{'invisible': [('attachment_id', '=', False)]}"
+                        />
+                    </div>
+                    
+                    <div>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                                <h1>
+                                    <field name="name"/>
+                                </h1>
+                        </div>
+                        
+                        <!-- Mandatory to generate the export -->
+                        <group string="">
+                            <field name="id" invisible="1"/>
+                            <field name="attachment_id" invisible="1"/>
+                            <group string="">
+                                <field name="start_date" attrs="{'readonly': [('id','>',0)]}"/>
+                                <field name="end_date" attrs="{'readonly': [('id','>',0)]}"/>
+                            </group>
+                        </group>
+                        
+                    </div>
+                    
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    </data>
+</odoo>

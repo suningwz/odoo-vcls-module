@@ -2,6 +2,7 @@
 
 #Odoo Imports
 from odoo import api, fields, models
+import xlrd
 
 class bonus(models.Model):
     
@@ -12,9 +13,6 @@ class bonus(models.Model):
     #################
     # Custom Fields #
     #################
-    
-    name = fields.Char(
-        required="True",)
     
     employee_id = fields.Many2one(
         'hr.employee',
@@ -36,3 +34,13 @@ class bonus(models.Model):
     
     comment = fields.Text(
         string="Comment",)
+    
+    bonus_type = fields.Selection(
+        string = 'Type',
+        selection = [
+            ('performance','Annual Performance Bonus'),
+            ('cooptation','Cooptation Bonus'),
+            ('welcome','Welcome Bonus'),
+            ('other','Other Bonus'),
+        ]
+    )

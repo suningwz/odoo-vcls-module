@@ -1,8 +1,6 @@
 <odoo>
   <data>
-      
-        
-      
+          
         <!-- View Form related to the existing employees -->
         <record id="leave_report_tree_view" model="ir.ui.view">
             <field name="name">leave_report_tree_view</field>
@@ -11,8 +9,8 @@
                 <tree string="Leave Summary" create="0" edit="0" delete="0">
                     <field name="employee_id"/>
                     <field name="number_of_days" string="Number of Days" sum="Remaining Days"/>
-                    <field name="date_from"/>
-                    <field name="date_to"/>
+                    <field name="date_from" widget="date"/>
+                    <field name="date_to" widget="date"/>
                     <field name="state"/>
                     <field name="type"/>
                     <field name="name"/>
@@ -26,6 +24,7 @@
         <field name="arch" type="xml">
             <search string="Search Leave">
                 <field name="name"/>
+                <!-- FILTER MENU -->
                 <filter domain="[('state','in',('confirm','validate1'))]" string="To Approve" name="approve"/>
                 <filter string="Approved Requests" domain="[('state', '=', 'validate')]" name="validated"/>
                 <separator/>
@@ -45,9 +44,18 @@
                 <separator/>
                 <filter string="My Requests" name="my_leaves" domain="[('employee_id.user_id', '=', uid)]"/>
                 <separator/>
+                    <filter string="Past Leaves" name="past_leaves" 
+                        domain="['|',('date_from', '&lt;=',  (context_today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('type','=','allocation')]" />
+                    <filter string="Futur Leaves" name="futur_leaves" 
+                        domain="['|',('date_from', '&gt;',  (context_today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('type','=','allocation')]" />
+                <separator/>
+                <!-- END OF LEAVE MENU-->
+
                 <field name="employee_id"/>
                 <field name="department_id"/>
                 <field name="holiday_status_id"/>
+
+                <!-- GROUP BY MENU -->
                 <group expand="0" string="Group By">
                     <filter name="group_name" string="Description" context="{'group_by':'name'}"/>
                     <filter name="group_employee" string="Employee" context="{'group_by':'employee_id'}"/>
@@ -56,12 +64,15 @@
                     <separator/>
                     <filter name="group_date_from" string="Start Date" context="{'group_by':'date_from'}"/>
                 </group>
+                <!-- END OF GROUP BY MENU -->
+
             </search>
         </field>
     </record>
       
+        <!-- LM LEAVE SUMMARY MENU ACTION -->
         <record id="lm_leave_summary_action" model="ir.actions.act_window">
-            <field name="name">Leaves Balance</field>
+            <field name="name">Today's Balance</field>
             <field name="res_model">hr.leave.report</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree</field>
@@ -70,10 +81,18 @@
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('leave_report_tree_view')}),
             ]"/>
-            <field name="context">{'search_default_group_employee': 1,'search_default_group_type': 1,'search_default_validated': 1,'search_default_allocation_types': 1,}</field>
+            <field name="context">{
+                'search_default_group_employee': 1,
+                'search_default_group_type': 1,
+                'search_default_validated': 1,
+                'search_default_allocation_types': 1,
+                'search_default_past_leaves': 1,
+                    
+            }</field>
             <field name="domain">[('lm_user_id','=',uid),('holiday_type','=','employee')]</field>
         </record>
       
+        <!-- LM LEAVE SUMMARY MENU ITEM -->
         <menuitem
             id="menu_lm_leave_summary"
             name="Leaves Summary"
@@ -82,8 +101,9 @@
             action="lm_leave_summary_action"
         />
         
+        <!-- HR SUMMARY MENU ACTION -->
         <record id="hr_leave_summary_action" model="ir.actions.act_window">
-            <field name="name">Leaves Balance</field>
+            <field name="name">Today's Balance</field>
             <field name="res_model">hr.leave.report</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree</field>
@@ -92,10 +112,17 @@
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('leave_report_tree_view')}),
             ]"/>
-            <field name="context">{'search_default_group_employee': 1,'search_default_group_type': 1,'search_default_validated': 1,'search_default_allocation_types': 1,}</field>
+            <field name="context">{
+                'search_default_group_employee': 1,
+                'search_default_group_type': 1,
+                'search_default_validated': 1,
+                'search_default_allocation_types': 1,
+                'search_default_past_leaves': 1,
+            }</field>
             <field name="domain">[('holiday_type','=','employee')]</field>
         </record>
       
+        <!-- HR SUMMARY MENU ITEM -->
         <menuitem
             id="menu_hr_leave_summary"
             name="Leaves Summary"

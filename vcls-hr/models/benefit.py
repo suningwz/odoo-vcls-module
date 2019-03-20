@@ -38,6 +38,9 @@ class Benefit(models.Model):
     transport_allowance = fields.Monetary(
         string='Transport allowance',)
     
+    lunch_allowance = fields.Monetary(
+        string='Lunch allowance',)
+    
     phone = fields.Boolean()
     
     #################################
