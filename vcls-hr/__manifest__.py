@@ -58,7 +58,7 @@
         'views/job.xml',
         'views/leave.xml',
         'views/leave_allocation.xml',
-        #'views/leave_report.xml',
+        'views/leave_report.xml',
         #'views/job_profile.xml',
         'views/working_times.xml',
       

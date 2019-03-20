@@ -11,11 +11,11 @@ from odoo.exceptions import UserError, ValidationError
 
 class PayrollExport(models.Model):
     _name = 'export.payroll'
+    _inherit = 'export.excel.mixin'
         
     """ This model represents a monthly payroll export per company. It contains the employee related export lines, the header info (inc. aggregated control values) as well as the methods to generate the related excel file """
 
     name = fields.Char(readonly = True)
-    active = fields.Boolean(default=True)
     
     ### IDENTIFICATION FIELDS 
     
@@ -49,27 +49,6 @@ class PayrollExport(models.Model):
     year = fields.Char(
         required = True,
         compute = '_compute_year',
-        )
-    
-    notes = fields.Char()
-    
-    ### GENERATED FILE FIELDS
-    #attachment
-    attachment_id = fields.Many2one(
-        'ir.attachment',
-        string = 'Excel File',
-        readonly = True,
-        )
-    
-    is_generated = fields.Boolean(
-        readonly = True,
-        default = False,
-        )
-    
-    #internal/external partner to share the info with
-    partner_ids = fields.Many2many(
-        'res.partner',
-        string = 'Audience',
         )
     
     employee_ids = fields.Many2many(
@@ -173,7 +152,7 @@ class PayrollExport(models.Model):
     def _compute_financial_stats(self):
         for export in self:
             export.total_wage = sum(export.line_ids.mapped('prorated_salary'))/12
-            export.total_benefit = sum(export.line_ids.mapped(lambda r: r.transport_allowance + r.car_allowance))
+            export.total_benefit = sum(export.line_ids.mapped(lambda r: r.transport_allowance + r.car_allowance + r.lunch_allowance))
             export.total_bonus = sum(export.line_ids.mapped('total_bonus'))
 
     
@@ -219,6 +198,29 @@ class PayrollExport(models.Model):
         export._compute_financial_stats()
         
         return export
+    
+    ##################
+    # BUTTON METHODS #
+    ##################
+    def get_lines_action(self):
+        for export in self:
+            if export.company_id == export.env.ref('base.main_company'):
+                return self.env.ref('vcls-interfaces.action_export_payroll_line_FR').read()[0]
+            elif self.company_id == self.env.ref('vcls-hr.company_VCFR'):
+                return self.env.ref('vcls-interfaces.action_export_payroll_line_FR').read()[0]
+            elif self.company_id == self.env.ref('vcls-hr.company_VCCH'):
+                return self.env.ref('vcls-interfaces.action_export_payroll_line_CH').read()[0]
+            elif self.company_id == self.env.ref('vcls-hr.company_VCINC'):
+                return self.env.ref('vcls-interfaces.action_export_payroll_line_INC').read()[0]
+            elif self.company_id == self.env.ref('vcls-hr.company_VCPVT'):
+                return self.env.ref('vcls-interfaces.action_export_payroll_line_PVT').read()[0]
+            elif self.company_id == self.env.ref('vcls-hr.company_RRG'):
+                return self.env.ref('vcls-interfaces.action_export_payroll_line_UK').read()[0]
+            elif self.company_id == self.env.ref('vcls-hr.company_CWLS'):
+                return self.env.ref('vcls-interfaces.action_export_payroll_line_UK').read()[0]
+            else:
+                return self.env.ref('vcls-interfaces.action_export_payroll_line_FR').read()[0]
+
             
     #####################
     # SELECTION METHODS #
@@ -266,15 +268,7 @@ class PayrollExport(models.Model):
                         }
                 export.attachment_id = self.env['ir.attachment'].create(attachment_data)
                 export.is_generated = True
-    
-    def get_excel(self):
-        return {
-            'type': 'ir.actions.act_url',
-            'name': 'export_payroll',
-            'url': '/web/content/%s/%s' % (self.attachment_id.id, self.attachment_id.name),
-            }
 
-    
     def build_worksheet(self, workbook):
         
         worksheet = workbook.add_worksheet()
@@ -312,8 +306,6 @@ class PayrollExport(models.Model):
                     worksheet.write(row + 1, col, values[row],format)
                     
             col += 1
-                
-            
             
     def  get_header(self):
         # Voisin WW
@@ -321,5 +313,15 @@ class PayrollExport(models.Model):
             return payroll_constants.PAYROLL_FR_V1
         if self.company_id == self.env.ref('vcls-hr.company_VCFR'):
             return payroll_constants.PAYROLL_FR_V1
+        if self.company_id == self.env.ref('vcls-hr.company_VCCH'):
+            return payroll_constants.PAYROLL_CH_V1
+        if self.company_id == self.env.ref('vcls-hr.company_RRG'):
+            return payroll_constants.PAYROLL_UK_V1
+        if self.company_id == self.env.ref('vcls-hr.company_CWLS'):
+            return payroll_constants.PAYROLL_UK_V1
+        if self.company_id == self.env.ref('vcls-hr.company_VCPVT'):
+            return payroll_constants.PAYROLL_PVT_V1
+        if self.company_id == self.env.ref('vcls-hr.company_VCINC'):
+            return payroll_constants.PAYROLL_INC_V1
         else:
             return payroll_constants.PAYROLL_FR_V1

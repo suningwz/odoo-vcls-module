@@ -41,7 +41,7 @@
                         </div>
                         
                         <!-- Mandatory to generate the export -->
-                        <group string="Export Identification">
+                        <group string="">
                             <field name="id" invisible="1"/>
                             <field name="attachment_id" invisible="1"/>
                             <group string="">

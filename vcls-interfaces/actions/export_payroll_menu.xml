@@ -34,7 +34,7 @@
         />   
         -->
         
-        <!-- Payroll Exports -->
+        <!-- Payroll Exports 
         <record id="action_export_payroll_line" model="ir.actions.act_window">
             <field name="name">Payroll Export Lines</field>
             <field name="res_model">export.payroll.line</field>
@@ -44,6 +44,7 @@
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-interfaces.view_payroll_export_line_tree')}), 
             ]"/>
         </record>
+        -->
         
         <!--
         <menuitem

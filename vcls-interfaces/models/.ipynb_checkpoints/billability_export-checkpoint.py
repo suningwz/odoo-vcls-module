@@ -41,6 +41,7 @@ class BillabilityExport(models.Model):
     ################
     # CRUD METHODS #
     ################
+    
     #At export creation, we generate the uid, and call the line create methods
     @api.model
     def create(self,vals):
@@ -49,4 +50,13 @@ class BillabilityExport(models.Model):
         export=super().create(vals)
         
         #Build name
-        export.name = "{:{dfmt}}_{:{dfmt}}_BillabilityExport".format(start_date,end_date,dfmt='%Y%m%d')
+        count = len(self.env['export.billability'].search([('start_date','=',export.start_date),('end_date','=',export.end_date)]))
+        export.name = "{:{dfmt}}_{:{dfmt}}_BillabilityExport_{:02}".format(export.start_date,export.end_date,count,dfmt='%Y%m%d')
+        
+        self.generate_excel(self.build_data)
+        
+        return export
+    
+    def build_data(self):
+        pass
+           
