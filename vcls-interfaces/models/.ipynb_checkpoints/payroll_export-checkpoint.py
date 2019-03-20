@@ -187,7 +187,7 @@ class PayrollExport(models.Model):
         
         export.line_ids = False
         for emp in export.employee_ids:
-            export.line_ids += self.env['export.payroll.line'].create({
+            export.line_ids += self.env['export.payroll.line'].sudo().create({
                     'export_id':export.id,
                     'employee_id':emp.id,
                 })
@@ -247,9 +247,9 @@ class PayrollExport(models.Model):
         for export in self:
             
             #build file in memory
-            filename = self.name + '.xlsx'
+            filename = export.name + '.xlsx'
             workbook = xlsxwriter.Workbook(filename)
-            
+            #raise ValidationError('{}'.format(filename))
             self.build_worksheet(workbook)
             workbook.close()
             
@@ -261,7 +261,7 @@ class PayrollExport(models.Model):
                             'res_id': export.id,
                             'res_model': 'export.payroll',
                             'company_id': export.company_id.id,
-                            'name': self.name,
+                            'name': filename,
                             'type': 'binary',
                             'datas_fname': filename,
                             'datas': encoded,

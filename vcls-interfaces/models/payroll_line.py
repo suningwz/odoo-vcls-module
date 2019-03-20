@@ -193,6 +193,10 @@ class PayrollLine(models.Model):
             l.rtt_paid_info = aggregate['info']
             
             aggregate = l.aggregate_payroll_type('cp_paid',True)
+            """
+            if l.employee_id.first_name == "Jagadiswara":
+                raise ValidationError('{}'.format(aggregate))
+            """
             l.cp_paid_days = aggregate['days']
             l.cp_paid_info = aggregate['info']
             l.cp_paid_balance = aggregate['balance']
