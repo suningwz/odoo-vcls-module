@@ -63,6 +63,7 @@ hr_holidays.access_hr_holidays_user_allocation,hr.holidays.user.allocation,vcls-
 
 access_hr_bank_holiday_hr,hr.bank.holiday.hr,model_hr_bank_holiday,vcls_group_HR_local,1,0,1,1
 access_hr_bank_holiday_sup1,hr.bank.holiday.sup1,model_hr_bank_holiday,vcls-hr.vcls_group_superuser_lvl1,1,0,1,1
+access_hr_bank_holiday_employee,hr.bank.holiday.employee,model_hr_bank_holiday,base.group_user,1,0,0,0
 
 hr_holidays.access_hr_holidays_status_manager,hr.holidays.status manager,vcls-hr.model_hr_leave_type,hr_holidays.group_hr_holidays_manager,1,0,0,0
 access_hr_holidays_status_global,hr.holidays.status.global,vcls-hr.model_hr_leave_type,vcls-hr.vcls_group_HR_global,1,1,1,1

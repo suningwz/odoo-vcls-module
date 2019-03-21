@@ -440,6 +440,23 @@ class Employee(models.Model):
         self._set_resource_calendar()
         self._wt_to_tag()
         self._check_lm_membership()
+        self._end_contracts()
+    
+    #if multiple open contracts exists, then we set the end date of the old ones the day before the start of the new ones
+    @api.model
+    def _end_contracts(self):
+        employees = self.env['hr.employee'].search([])
+        for empl in employees:
+            #we match the eventual employee end_date on the current contract end date
+            """
+            if empl.employee_end_date: 
+                empl.contract_id.date_end = empl.employee_end_date
+            """    
+            contracts = self.env['hr.contract'].search([('employee_id.id','=',empl.id)]).sorted(key=lambda s: s.date_start)
+            if len(contracts)>1:
+                for i in range(len(contracts)-1):
+                    contracts[i].date_end = contracts[i+1].date_start - timedelta(days=1)
+                    
     
     #adds or remove from the lm group according to the subortinates count
     @api.model #to be called from CRON job
