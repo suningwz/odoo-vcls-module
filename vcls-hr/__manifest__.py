@@ -69,6 +69,7 @@
         'actions/hr_employee_cronjob.xml',
         'actions/hr_leave_menu.xml',
         'actions/hr_leave_cronjob.xml',
+        'actions/leave_report_menu.xml',
         
         #############
         # SEQUENCES #
