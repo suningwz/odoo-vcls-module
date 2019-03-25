@@ -1,8 +1,6 @@
 <odoo>
   <data>
-      
-        
-      
+          
         <!-- View Form related to the existing employees -->
         <record id="leave_report_tree_view" model="ir.ui.view">
             <field name="name">leave_report_tree_view</field>
@@ -11,8 +9,8 @@
                 <tree string="Leave Summary" create="0" edit="0" delete="0">
                     <field name="employee_id"/>
                     <field name="number_of_days" string="Number of Days" sum="Remaining Days"/>
-                    <field name="date_from"/>
-                    <field name="date_to"/>
+                    <field name="date_from" widget="date"/>
+                    <field name="date_to" widget="date"/>
                     <field name="state"/>
                     <field name="type"/>
                     <field name="name"/>
@@ -46,8 +44,10 @@
                 <separator/>
                 <filter string="My Requests" name="my_leaves" domain="[('employee_id.user_id', '=', uid)]"/>
                 <separator/>
-                    <filter string="Past Leaves" name="past_leaves" domain="[('date_to','&lt;=',(context_today()).strftime('%Y-%m-%d'))])"/>
-                    <filter string="Futur Leaves" name="futur_leaves" domain="[('date_from','&gt;',(context_today()).strftime('%Y-%m-%d'))])"/>
+                    <filter string="Past Leaves" name="past_leaves" 
+                        domain="['|',('date_from', '&lt;=',  (context_today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('type','=','allocation')]" />
+                    <filter string="Futur Leaves" name="futur_leaves" 
+                        domain="['|',('date_from', '&gt;',  (context_today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('type','=','allocation')]" />
                 <separator/>
                 <!-- END OF LEAVE MENU-->
 
@@ -87,7 +87,6 @@
                 'search_default_validated': 1,
                 'search_default_allocation_types': 1,
                 'search_default_past_leaves': 1,
-                'search_default_year': 1,
                     
             }</field>
             <field name="domain">[('lm_user_id','=',uid),('holiday_type','=','employee')]</field>
@@ -119,7 +118,6 @@
                 'search_default_validated': 1,
                 'search_default_allocation_types': 1,
                 'search_default_past_leaves': 1,
-                'search_default_year': 1,
             }</field>
             <field name="domain">[('holiday_type','=','employee')]</field>
         </record>

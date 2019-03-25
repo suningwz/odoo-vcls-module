@@ -191,7 +191,7 @@
                                     <field name="bonus_ids" string="">
                                         <tree string="Employee Bonus">
                                             <field name="currency_id" invisible='1'/>
-                                            <field name="name"/>
+                                            <field name="bonus_type"/>
                                             <field name="date"/>
                                             <field name="amount"/>
                                         </tree>
@@ -210,6 +210,7 @@
                                             <field name="car_info"/>
                                             <field name="car_allowance"/>
                                             <field name="transport_allowance"/>
+                                            <field name="lunch_allowance"/>
                                             <field name="phone"/>
                                         </tree>
                                     </field>
