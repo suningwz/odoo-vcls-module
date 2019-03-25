@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '1.2.0',
+    'version': '1.3.0',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -49,7 +49,6 @@
         # VIEWS #
         #########
         'views/employee.xml',
-        #'views/employee_security_test.xml',
         'views/bank_holiday.xml',
         'views/bonuses.xml',
         'views/benefits.xml',
@@ -59,7 +58,6 @@
         'views/leave.xml',
         'views/leave_allocation.xml',
         'views/leave_report.xml',
-        #'views/job_profile.xml',
         'views/working_times.xml',
       
         ###########
