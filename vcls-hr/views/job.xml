@@ -53,6 +53,21 @@
                 </tree>
             </field>
         </record>
+
+        <!-- hr.job Search view -->
+        <!-- 
+            - Add search by project_role support
+        -->
+        <record id="view_job_search" model="ir.ui.view">
+            <field name="name">hr.job.search</field>
+            <field name="model">hr.job</field>
+            <field name="inherit_id" ref="hr.view_job_filter"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="project_role_id" string="Project role" />
+                </field>
+            </field>
+        </record>
       
   </data>
 </odoo>
