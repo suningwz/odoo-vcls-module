@@ -52,10 +52,10 @@ class ExcelExportMixin(models.AbstractModel):
         return {
             'type': 'ir.actions.act_url',
             'name': 'get_export_file',
-            'url': '/web/content/%s/%s' % (self.attachment_id.id, self.attachment_id.name),
+            'url': '/web/content/%s/%s?download=true' % (self.attachment_id.id, self.attachment_id.name),
             }
     
-    def generate_excel(self,data=[{'col1_name':'er','col2name':'cd'}]):
+    def generate_excel(self,data=[{'col1_name':'','col2name':''}]):
         self.ensure_one()
         #build book and sheet
         filename = self.name + '.xlsx'

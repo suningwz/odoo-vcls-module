@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <record id="vcls_server_action_helpdesk_set_closed" model="ir.actions.server">
+            <field name="name">Set to Closed</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="vcls-helpdesk.model_helpdesk_ticket"/>
+            <field name="binding_model_id" ref="vcls-helpdesk.model_helpdesk_ticket"/>
+            <field name="state">code</field>
+            <field name="code">model.set_to_closed()</field>
+        </record> 
+        
+    </data>
+</odoo>

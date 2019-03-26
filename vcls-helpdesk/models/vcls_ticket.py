@@ -135,12 +135,25 @@ class Ticket(models.Model):
     
     @api.onchange('name')
     def _set_name(self):
-        for ticket in self: pass
+        for ticket in self: 
+            pass
              
     @api.onchange('team_id')
     def _onchange_team_id(self):
         for ticket in self:
             ticket.subcategory_id = False
+
+    @api.multi
+    def set_to_closed(self):
+        context = self.env.context
+        ticket_ids = context.get('active_ids',[])
+        for id in ticket_ids:
+            ticket = self.env['helpdesk.ticket'].browse(id)
+            if (ticket.stage_id == self.env.ref('helpdesk.stage_solved')):
+                ticket.stage_id = self.env.ref('__export__.helpdesk_stage_10_30a17dee')
+            else:
+                raise ValidationError("{} can't be closed. Please solve it before.".format(ticket.name))
+
             
  #   @api.onchange('partner_id')
  #   def _onchange_partner_id(self):
