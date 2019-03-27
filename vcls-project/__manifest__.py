@@ -23,6 +23,7 @@
     # always loaded
     'data': [
         'views/project_kanban.xml',
+        'views/views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
