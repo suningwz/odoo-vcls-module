@@ -55,7 +55,7 @@ class BillabilityExport(models.Model):
         distribution = {
             'Days [d]': 0,
             'Weekends [d]': 0,
-            'Banks [d]': 0,
+            'Bank Holiday [d]': 0,
             'Out of Contract [d]': 0, 
             'Day Duration [h]': 8,
             'Offs [d]': 0,
@@ -73,15 +73,13 @@ class BillabilityExport(models.Model):
         distribution['Weekends [d]'] = distribution['Days [d]']-len(gen_worked_days)
         
         #loop companies to access bank holidays
-        banks = 0
         companies = self.env['res.company'].search([])
         for company in companies:
             bank_days = set(self.env['hr.bank.holiday'].search([('company_id.id','=',company.id),('date','>=',self.start_date),('date','<=',self.end_date)]).mapped('date'))
-            distribution['Banks [d]'] = len(bank_days)
+            distribution['Bank Holiday [d]'] = len(bank_days)
             comp_worked_days = gen_worked_days - bank_days
             
             #we now look into contracts valid over the defined period (i.e. starterd before the export end, end after export start, no end planned)
-            offs = 0
             contracts = self.env['hr.contract'].search([('company_id.id','=',company.id),('date_start','<=',self.end_date),
                                                         '|',('date_end','>=',self.start_date),('date_end','=',False),
                                                         '|',('employee_id.employee_end_date','>=',self.start_date),('employee_id.employee_end_date','=',False)])
@@ -130,7 +128,7 @@ class BillabilityExport(models.Model):
                     
                     #KPI's
                     distribution['Effective Capacity [h]'] = distribution['Worked [d]']*distribution['Day Duration [h]']
-                    distribution['Control [d]'] = distribution['Days [d]'] - (distribution['Weekends [d]'] + distribution['Banks [d]'] + distribution['Out of Contract [d]'] + distribution['Offs [d]'] + distribution['Leaves [d]'] + distribution['Worked [d]'])
+                    distribution['Control [d]'] = distribution['Days [d]'] - (distribution['Weekends [d]'] + distribution['Bank Holiday [d]'] + distribution['Out of Contract [d]'] + distribution['Offs [d]'] + distribution['Leaves [d]'] + distribution['Worked [d]'])
                     
                          
                 data.append(self.build_row(contract,distribution))   
