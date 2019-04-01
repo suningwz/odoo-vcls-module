@@ -128,7 +128,7 @@ class BillabilityExport(models.Model):
                     
                     #KPI's
                     distribution['Effective Capacity [h]'] = distribution['Worked [d]']*distribution['Day Duration [h]']
-                    distribution['Control [d]'] = distribution['Days [d]'] - (distribution['Weekends [d]'] + distribution['Banks [d]'] + distribution['Out of Contract [d]'] + distribution['Offs [d]'] + distribution['Leaves [d]'] + distribution['Worked [d]'])
+                    distribution['Control [d]'] = distribution['Days [d]'] - (distribution['Weekends [d]'] + distribution['Bank Holiday [d]'] + distribution['Out of Contract [d]'] + distribution['Offs [d]'] + distribution['Leaves [d]'] + distribution['Worked [d]'])
                     
                          
                 data.append(self.build_row(contract,distribution))   
