@@ -210,5 +210,50 @@
         <field name="parent_id" ref="employee_LM_04" />
     </record>
 
+    <!-- Global HR -->
+    <record model="hr.employee" id="employee_global_hr_01">
+        <field name="name">Jean_FR_HR Global</field>
+        <field name="company_id" ref="base.main_company" />
+        <field name="office_id" ref="office_boulogne" />
+        <field name="work_email">jean.fr.hr.global@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">15</field>
+        <field name="gender">male</field>
+        <field name="first_name">Jean_FR_HR</field>
+        <field name="last_name">Global</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="parent_id" ref="employee_ceo" />
+    </record>
+
+    <!-- Local HR -->
+    <record model="hr.employee" id="employee_local_hr_01">
+        <field name="name">Jeanne_CH_HR Local</field>
+        <field name="company_id" ref="company_VCCH" />
+        <field name="office_id" ref="office_lausanne" />
+        <field name="work_email">jeanne.ch.hr.local@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">16</field>
+        <field name="gender">female</field>
+        <field name="first_name">Jeanne_CH_HR</field>
+        <field name="last_name">Local</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="parent_id" ref="employee_global_hr_01" />
+    </record>
+
+    <!-- Local HR -->
+    <record model="hr.employee" id="employee_local_hr_02">
+        <field name="name">Jean_INC_HR Local</field>
+        <field name="company_id" ref="company_VCINC" />
+        <field name="office_id" ref="office_bangalore" />
+        <field name="work_email">jean.inc.hr.local@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">17</field>
+        <field name="gender">male</field>
+        <field name="first_name">Jean_INC_HR</field>
+        <field name="last_name">Local</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="parent_id" ref="employee_global_hr_01" />
+    </record>
+
     </data>
 </odoo>

@@ -109,6 +109,8 @@
     
     # only loaded in demonstration mode
     'demo': [
-        'demo/demo.xml',
+        'demo/project_role.xml',
+        'demo/job.xml',
+        'demo/employee.xml',
     ],
 }

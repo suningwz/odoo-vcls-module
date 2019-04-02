@@ -59,6 +59,8 @@
     
     # only loaded in demonstration mode
     'demo': [
-        'demo/demo.xml',
+        #'demo/stage.xml',
+        'demo/team.xml',
+        'demo/subcategory.xml',
     ],
 }
