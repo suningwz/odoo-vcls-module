@@ -179,11 +179,11 @@
                                     <field name="contract_ids" string="" readonly='1'>
                                         <tree string="Employee Salaries">
                                             <field name="currency_id" invisible='1'/>
-                                            <!-- <field name="date_start"/>
-                                            <field name="date_end"/> -->
-                                            <field name="prorated_salary"/>
+                                            <field name="date_start" string="From"/>
+                                            <!-- <field name="date_end"/> 
+                                            <field name="prorated_salary"/> -->
                                             <field name="fulltime_salary"/>
-                                            <field name="effective_percentage" widget='percentage'/>
+                                            <!-- <field name="effective_percentage" widget='percentage'/> -->
                                         </tree>
                                     </field>
                                 </group>
