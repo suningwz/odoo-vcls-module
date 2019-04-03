@@ -1,0 +1,59 @@
+<odoo>
+    <data>
+
+        <!-- CEO -->
+        <record model="hr.job" id="job_ceo">
+            <field name="project_role_id" ref="job_title_ceo"/>
+        </record>
+
+        <!-- IT -->
+        <record model="hr.job" id="job_it_apprentice">
+            <field name="department_id" ref="vcls-hr.department_IT"/>
+            <field name="project_role_id" ref="job_title_apprentice"/>
+        </record>
+
+        <record model="hr.job" id="job_it_manager">
+            <field name="department_id" ref="vcls-hr.department_IT"/>
+            <field name="project_role_id" ref="job_title_manager"/>
+        </record>
+
+        <record model="hr.job" id="job_it_supporttechnician">
+            <field name="department_id" ref="vcls-hr.department_IT"/>
+            <field name="project_role_id" ref="job_title_supporttechnician"/>
+        </record>
+
+        <record model="hr.job" id="job_it_director">
+            <field name="department_id" ref="vcls-hr.department_IT"/>
+            <field name="project_role_id" ref="job_title_director"/>
+        </record>
+
+        <!-- QA -->
+        <record model="hr.job" id="job_quality_trainee">
+            <field name="department_id" ref="vcls-hr.department_QA"/>
+            <field name="project_role_id" ref="job_title_trainee"/>
+        </record>
+
+        <record model="hr.job" id="job_quality_manager">
+            <field name="department_id" ref="vcls-hr.department_QA"/>
+            <field name="project_role_id" ref="job_title_manager"/>
+        </record>
+
+        <record model="hr.job" id="job_quality_director">
+            <field name="department_id" ref="vcls-hr.department_QA"/>
+            <field name="project_role_id" ref="job_title_director"/>
+        </record>
+
+        <!-- HR -->
+        <record model="hr.job" id="job_humanresources_associate">
+            <field name="department_id" ref="vcls-hr.department_HR"/>
+            <field name="project_role_id" ref="job_title_associate"/>
+        </record>
+
+        <record model="hr.job" id="job_humanresources_manager">
+            <field name="department_id" ref="vcls-hr.department_HR"/>
+            <field name="project_role_id" ref="job_title_manager"/>
+        </record>
+
+        
+    </data>
+</odoo>
