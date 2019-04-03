@@ -13,6 +13,7 @@
         <field name="first_name">Jeanne_FR</field>
         <field name="last_name">CEO</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
     </record>
 
     <!-- HEAD -->
@@ -27,6 +28,7 @@
         <field name="first_name">Jean_FR_IT</field>
         <field name="last_name">Head</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_ceo" />
     </record>
 
@@ -42,6 +44,7 @@
         <field name="first_name">Jeanne_CH_QA</field>
         <field name="last_name">Head</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_ceo" />
     </record>
 
@@ -57,6 +60,7 @@
         <field name="first_name">Jean_INC_IT</field>
         <field name="last_name">LM2</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_head_01" />
     </record>
 
@@ -72,6 +76,7 @@
         <field name="first_name">Jeanne_CH_QA</field>
         <field name="last_name">LM2</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_head_02" />
     </record>
 
@@ -87,6 +92,7 @@
         <field name="first_name">Jean_FR_IT</field>
         <field name="last_name">LM</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_head_01" />
     </record>
 
@@ -102,6 +108,7 @@
         <field name="first_name">Jeanne_CH_IT</field>
         <field name="last_name">LM</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_LM2_01" />
     </record>
 
@@ -117,6 +124,7 @@
         <field name="first_name">Jean_CH_QA</field>
         <field name="last_name">LM</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_LM2_02" />
     </record>
 
@@ -132,6 +140,7 @@
         <field name="first_name">Jeanne_CH_QA</field>
         <field name="last_name">LM</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_LM2_02" />
     </record>
 
@@ -147,6 +156,7 @@
         <field name="first_name">Jean_INC_IT</field>
         <field name="last_name">Base</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_LM_01" />
     </record>
 
@@ -162,6 +172,7 @@
         <field name="first_name">Jeanne_INC_IT</field>
         <field name="last_name">Base</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_LM_01" />
     </record>
 
@@ -177,6 +188,7 @@
         <field name="first_name">Jin_FR_IT</field>
         <field name="last_name">Base</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_LM_02" />
     </record>
 
@@ -192,6 +204,7 @@
         <field name="first_name">Jean_CH_QA</field>
         <field name="last_name">Base</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_LM_03" />
     </record>
 
@@ -207,6 +220,7 @@
         <field name="first_name">Jeanne_CH_QA</field>
         <field name="last_name">Base</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_LM_04" />
     </record>
 
@@ -222,6 +236,7 @@
         <field name="first_name">Jean_FR_HR</field>
         <field name="last_name">Global</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_ceo" />
     </record>
 
@@ -237,6 +252,7 @@
         <field name="first_name">Jeanne_CH_HR</field>
         <field name="last_name">Local</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_global_hr_01" />
     </record>
 
@@ -252,6 +268,7 @@
         <field name="first_name">Jean_INC_HR</field>
         <field name="last_name">Local</field>
         <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
         <field name="parent_id" ref="employee_global_hr_01" />
     </record>
 
