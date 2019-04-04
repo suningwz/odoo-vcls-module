@@ -1,0 +1,185 @@
+<odoo>
+    <data>
+
+        <record model="hr.contract" id="contract_ceo">
+            <field name="resource_calendar_id" ref="wt_FR_Cadre_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="base.main_company" />
+            <field name="employee_id" ref="employee_ceo" />
+            <field name="name">Contract CEO</field>
+            <field name="job_id" ref="job_ceo" />
+        </record>
+
+        <record model="hr.contract" id="contract_head_01">
+            <field name="resource_calendar_id" ref="wt_FR_Cadre_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="base.main_company" />
+            <field name="employee_id" ref="employee_head_01" />
+            <field name="name">Contract Head 01</field>
+            <field name="job_id" ref="job_it_director" />
+        </record>
+
+        <record model="hr.contract" id="contract_head_02">
+            <field name="resource_calendar_id" ref="wt_CH_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="company_VCCH" />
+            <field name="employee_id" ref="employee_head_02" />
+            <field name="name">Contract Head 02</field>
+            <field name="job_id" ref="job_quality_director" />
+        </record>
+
+        <record model="hr.contract" id="contract_head_02">
+            <field name="resource_calendar_id" ref="wt_CH_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="company_VCCH" />
+            <field name="employee_id" ref="employee_head_02" />
+            <field name="name">Contract Head 02</field>
+            <field name="job_id" ref="job_quality_director" />
+        </record>
+
+        <record model="hr.contract" id="contract_LM2_01">
+            <field name="resource_calendar_id" ref="wt_IND_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="company_VCINC" />
+            <field name="employee_id" ref="employee_LM2_01" />
+            <field name="name">Contract LM2 01</field>
+            <field name="job_id" ref="job_it_manager" />
+        </record>
+
+        <record model="hr.contract" id="contract_LM_02">
+            <field name="resource_calendar_id" ref="wt_CH_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="company_VCCH" />
+            <field name="employee_id" ref="employee_LM_02" />
+            <field name="name">Contract LM 02</field>
+            <field name="job_id" ref="job_it_supporttechnician" />
+        </record>
+
+        <record model="hr.contract" id="contract_base_03">
+            <field name="resource_calendar_id" ref="wt_FR_Cadre_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="base.main_company" />
+            <field name="employee_id" ref="employee_base_03" />
+            <field name="name">Contract base 03</field>
+            <field name="job_id" ref="job_it_apprentice" />
+        </record>
+
+        <record model="hr.contract" id="contract_LM_01">
+            <field name="resource_calendar_id" ref="wt_FR_Cadre_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="base.main_company" />
+            <field name="employee_id" ref="employee_LM_01" />
+            <field name="name">Contract LM 01</field>
+            <field name="job_id" ref="job_it_manager" />
+        </record>
+
+        <record model="hr.contract" id="contract_base_01">
+            <field name="resource_calendar_id" ref="wt_IND_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="company_VCINC" />
+            <field name="employee_id" ref="employee_base_01" />
+            <field name="name">Contract base 01</field>
+            <field name="job_id" ref="job_it_supporttechnician" />
+        </record>
+
+        <record model="hr.contract" id="contract_base_02">
+            <field name="resource_calendar_id" ref="wt_IND_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="company_VCINC" />
+            <field name="employee_id" ref="employee_base_02" />
+            <field name="name">Contract base 02</field>
+            <field name="job_id" ref="job_it_supporttechnician" />
+        </record>
+
+        <record model="hr.contract" id="contract_LM2_02">
+            <field name="resource_calendar_id" ref="wt_CH_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="company_VCCH" />
+            <field name="employee_id" ref="employee_LM2_02" />
+            <field name="name">Contract LM2 02</field>
+            <field name="job_id" ref="job_quality_manager" />
+        </record>
+
+        <record model="hr.contract" id="contract_LM_03">
+            <field name="resource_calendar_id" ref="wt_CH_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="company_VCCH" />
+            <field name="employee_id" ref="employee_LM_03" />
+            <field name="name">Contract LM 03</field>
+            <field name="job_id" ref="job_quality_trainee" />
+        </record>
+
+        <record model="hr.contract" id="contract_LM_04">
+            <field name="resource_calendar_id" ref="wt_CH_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="company_VCCH" />
+            <field name="employee_id" ref="employee_LM_04" />
+            <field name="name">Contract LM 04</field>
+            <field name="job_id" ref="job_quality_trainee" />
+        </record>
+
+        <record model="hr.contract" id="contract_base_04">
+            <field name="resource_calendar_id" ref="wt_CH_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="company_VCCH" />
+            <field name="employee_id" ref="employee_base_04" />
+            <field name="name">Contract base 04</field>
+            <field name="job_id" ref="job_quality_trainee" />
+        </record>
+
+        <record model="hr.contract" id="contract_base_05">
+            <field name="resource_calendar_id" ref="wt_CH_100" />
+            <field name="prorated_salary">120000</field>
+            <field name="wage">10000</field>
+            <field name="date_start">2010-01-01</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp" />
+            <field name="company_id" ref="company_VCCH" />
+            <field name="employee_id" ref="employee_base_05" />
+            <field name="name">Contract base 05</field>
+            <field name="job_id" ref="job_quality_trainee" />
+        </record>
+
+    </data>
+</odoo>

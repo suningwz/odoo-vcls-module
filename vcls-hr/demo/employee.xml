@@ -1,0 +1,276 @@
+<odoo>
+    <data>
+
+    <!-- CEO -->
+    <record model="hr.employee" id="employee_ceo">
+        <field name="name">Jeanne_FR CEO</field>
+        <field name="company_id" ref="base.main_company" />
+        <field name="office_id" ref="office_boulogne" />
+        <field name="work_email">jeanne.fr.ceo@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">1</field>
+        <field name="gender">female</field>
+        <field name="first_name">Jeanne_FR</field>
+        <field name="last_name">CEO</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+    </record>
+
+    <!-- HEAD -->
+    <record model="hr.employee" id="employee_head_01">
+        <field name="name">Jean_FR_IT Head</field>
+        <field name="company_id" ref="base.main_company" />
+        <field name="office_id" ref="office_boulogne" />
+        <field name="work_email">jean.fr.it.head@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">2</field>
+        <field name="gender">male</field>
+        <field name="first_name">Jean_FR_IT</field>
+        <field name="last_name">Head</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_ceo" />
+    </record>
+
+    <!-- HEAD -->
+    <record model="hr.employee" id="employee_head_02">
+        <field name="name">Jeanne_CH_QA Head</field>
+        <field name="company_id" ref="company_VCCH" />
+        <field name="office_id" ref="office_lausanne" />
+        <field name="work_email">jeanne.ch.qa.head@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">3</field>
+        <field name="gender">female</field>
+        <field name="first_name">Jeanne_CH_QA</field>
+        <field name="last_name">Head</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_ceo" />
+    </record>
+
+    <!-- Line Manager of Manager -->
+    <record model="hr.employee" id="employee_LM2_01">
+        <field name="name">Jean_INC_IT LM2</field>
+        <field name="company_id" ref="company_VCINC" />
+        <field name="office_id" ref="office_bangalore" />
+        <field name="work_email">jean.inc.it.lm2@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">4</field>
+        <field name="gender">male</field>
+        <field name="first_name">Jean_INC_IT</field>
+        <field name="last_name">LM2</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_head_01" />
+    </record>
+
+    <!-- Line Manager of Manager -->
+    <record model="hr.employee" id="employee_LM2_02">
+        <field name="name">Jeanne_CH_QA LM2</field>
+        <field name="company_id" ref="company_VCCH" />
+        <field name="office_id" ref="office_lausanne" />
+        <field name="work_email">jeanne.ch.qa.lm2@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">5</field>
+        <field name="gender">female</field>
+        <field name="first_name">Jeanne_CH_QA</field>
+        <field name="last_name">LM2</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_head_02" />
+    </record>
+
+    <!-- Line Manager -->
+    <record model="hr.employee" id="employee_LM_01">
+        <field name="name">Jean_FR_IT LM</field>
+        <field name="company_id" ref="base.main_company" />
+        <field name="office_id" ref="office_boulogne" />
+        <field name="work_email">jean.fr.it.lm@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">6</field>
+        <field name="gender">male</field>
+        <field name="first_name">Jean_FR_IT</field>
+        <field name="last_name">LM</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_head_01" />
+    </record>
+
+    <!-- Line Manager -->
+    <record model="hr.employee" id="employee_LM_02">
+        <field name="name">Jeanne_CH_IT LM</field>
+        <field name="company_id" ref="company_VCCH" />
+        <field name="office_id" ref="office_lausanne" />
+        <field name="work_email">jeanne.ch.it.lm@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">7</field>
+        <field name="gender">female</field>
+        <field name="first_name">Jeanne_CH_IT</field>
+        <field name="last_name">LM</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_LM2_01" />
+    </record>
+
+    <!-- Line Manager -->
+    <record model="hr.employee" id="employee_LM_03">
+        <field name="name">Jean_CH_QA LM</field>
+        <field name="company_id" ref="company_VCCH" />
+        <field name="office_id" ref="office_lausanne" />
+        <field name="work_email">jean.ch.qa.lm@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">8</field>
+        <field name="gender">male</field>
+        <field name="first_name">Jean_CH_QA</field>
+        <field name="last_name">LM</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_LM2_02" />
+    </record>
+
+    <!-- Line Manager -->
+    <record model="hr.employee" id="employee_LM_04">
+        <field name="name">Jeanne_CH_QA LM</field>
+        <field name="company_id" ref="company_VCCH" />
+        <field name="office_id" ref="office_lausanne" />
+        <field name="work_email">jeanne.ch.qa.lm@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">9</field>
+        <field name="gender">female</field>
+        <field name="first_name">Jeanne_CH_QA</field>
+        <field name="last_name">LM</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_LM2_02" />
+    </record>
+
+    <!-- Base employee -->
+    <record model="hr.employee" id="employee_base_01">
+        <field name="name">Jean_INC_IT Base</field>
+        <field name="company_id" ref="company_VCINC" />
+        <field name="office_id" ref="office_bangalore" />
+        <field name="work_email">jean.inc.it.base@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">10</field>
+        <field name="gender">male</field>
+        <field name="first_name">Jean_INC_IT</field>
+        <field name="last_name">Base</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_LM_01" />
+    </record>
+
+    <!-- Base employee -->
+    <record model="hr.employee" id="employee_base_02">
+        <field name="name">Jeanne_INC_IT Base</field>
+        <field name="company_id" ref="company_VCINC" />
+        <field name="office_id" ref="office_bangalore" />
+        <field name="work_email">jeanne.inc.it.base@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">11</field>
+        <field name="gender">female</field>
+        <field name="first_name">Jeanne_INC_IT</field>
+        <field name="last_name">Base</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_LM_01" />
+    </record>
+
+    <!-- Base employee -->
+    <record model="hr.employee" id="employee_base_03">
+        <field name="name">Jin_FR_IT Base</field>
+        <field name="company_id" ref="base.main_company" />
+        <field name="office_id" ref="office_boulogne" />
+        <field name="work_email">jin.fr.it.base@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">12</field>
+        <field name="gender">male</field>
+        <field name="first_name">Jin_FR_IT</field>
+        <field name="last_name">Base</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_LM_02" />
+    </record>
+
+    <!-- Base employee -->
+    <record model="hr.employee" id="employee_base_04">
+        <field name="name">Jean_CH_QA Base</field>
+        <field name="company_id" ref="company_VCCH" />
+        <field name="office_id" ref="office_lausanne" />
+        <field name="work_email">jean.ch.qa.base@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">13</field>
+        <field name="gender">male</field>
+        <field name="first_name">Jean_CH_QA</field>
+        <field name="last_name">Base</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_LM_03" />
+    </record>
+
+    <!-- Base employee -->
+    <record model="hr.employee" id="employee_base_05">
+        <field name="name">Jeanne_CH_QA Base</field>
+        <field name="company_id" ref="company_VCCH" />
+        <field name="office_id" ref="office_lausanne" />
+        <field name="work_email">jeanne.ch.qa.base@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">14</field>
+        <field name="gender">female</field>
+        <field name="first_name">Jeanne_CH_QA</field>
+        <field name="last_name">Base</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_LM_04" />
+    </record>
+
+    <!-- Global HR -->
+    <record model="hr.employee" id="employee_global_hr_01">
+        <field name="name">Jean_FR_HR Global</field>
+        <field name="company_id" ref="base.main_company" />
+        <field name="office_id" ref="office_boulogne" />
+        <field name="work_email">jean.fr.hr.global@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">15</field>
+        <field name="gender">male</field>
+        <field name="first_name">Jean_FR_HR</field>
+        <field name="last_name">Global</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_ceo" />
+    </record>
+
+    <!-- Local HR -->
+    <record model="hr.employee" id="employee_local_hr_01">
+        <field name="name">Jeanne_CH_HR Local</field>
+        <field name="company_id" ref="company_VCCH" />
+        <field name="office_id" ref="office_lausanne" />
+        <field name="work_email">jeanne.ch.hr.local@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">16</field>
+        <field name="gender">female</field>
+        <field name="first_name">Jeanne_CH_HR</field>
+        <field name="last_name">Local</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_global_hr_01" />
+    </record>
+
+    <!-- Local HR -->
+    <record model="hr.employee" id="employee_local_hr_02">
+        <field name="name">Jean_INC_HR Local</field>
+        <field name="company_id" ref="company_VCINC" />
+        <field name="office_id" ref="office_bangalore" />
+        <field name="work_email">jean.inc.hr.local@voisinconsulting.com</field>
+        <field name="work_phone">0000000000</field>
+        <field name="employee_external_id">17</field>
+        <field name="gender">male</field>
+        <field name="first_name">Jean_INC_HR</field>
+        <field name="last_name">Local</field>
+        <field name="birthday">1990-01-01</field>
+        <field name="employee_status">active</field>
+        <field name="parent_id" ref="employee_global_hr_01" />
+    </record>
+
+    </data>
+</odoo>

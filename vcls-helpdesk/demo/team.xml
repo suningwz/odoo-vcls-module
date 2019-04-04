@@ -1,0 +1,15 @@
+<odoo>
+    <data>
+        <record model="helpdesk.team" id="team_it_general_support">
+            <field name="name">IT General Support</field>
+        </record>
+
+        <record model="helpdesk.team" id="team_it_applications_support">
+            <field name="name">IT Applications Support</field>
+        </record>
+
+        <record model="helpdesk.team" id="team_office_management">
+            <field name="name">Office Management</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,36 @@
+id,name,dayofweek,hour_from,hour_to,day_period,calendar_id:id
+rac_CH_100,CH - 100%,"0",9,17,"morning",wt_CH_100
+rac_CH_50_C_Reymond,CH - 50% (C. Reymond),"0",9,17,"morning",wt_CH_50_C_Reymond
+rac_CH_70_C_Gouget,CH - 70% (C. Gouget),"0",9,17,"morning",wt_CH_70_C_Gouget
+rac_CH_80_Fri_OFF,CH - 80% (Fri. OFF),"0",9,17,"morning",wt_CH_80_Fri_OFF
+rac_CH_80_Thu_Aft__Fri_Aft_OFF,CH - 80% (Thu. Aft. & Fri. Aft. OFF),"0",9,17,"morning",wt_CH_80_Thu_Aft__Fri_Aft_OFF
+rac_CH_80_Thu_OFF,CH - 80% (Thu. OFF),"0",9,17,"morning",wt_CH_80_Thu_OFF
+rac_CH_80_Wed_OFF,CH - 80% (Wed. OFF),"0",9,17,"morning",wt_CH_80_Wed_OFF
+rac_CH_90,CH - 90%,"0",9,17,"morning",wt_CH_90
+rac_CWLS_100,CWLS - 100%,"0",9,17,"morning",wt_CWLS_100
+rac_CWLS_69_9_C_Brown,CWLS - 69.9% (C. Brown),"0",9,17,"morning",wt_CWLS_69_9_C_Brown
+rac_FR_Cadre_100,FR.Cadre - 100%,"0",9,17,"morning",wt_FR_Cadre_100
+rac_FR_Cadre_80_Wed_OFF,FR.Cadre - 80% (Wed. OFF),"0",9,17,"morning",wt_FR_Cadre_80_Wed_OFF
+rac_FR_Cadre_90,FR.Cadre - 90%,"0",9,17,"morning",wt_FR_Cadre_90
+rac_FR_Cadre_90_Wed_Morn_OFF,FR.Cadre - 90% (Wed. Morn. OFF),"0",9,17,"morning",wt_FR_Cadre_90_Wed_Morn_OFF
+rac_FR_ETAM_10,FR.ETAM - 10%,"0",9,17,"morning",wt_FR_ETAM_10
+rac_FR_ETAM_100,FR.ETAM - 100%,"0",9,17,"morning",wt_FR_ETAM_100
+rac_FR_ETAM_80_Fri_OFF,FR.ETAM - 80% (Fri. OFF),"0",9,17,"morning",wt_FR_ETAM_80_Fri_OFF
+rac_IND_100,IND - 100%,"0",9,17,"morning",wt_IND_100
+rac_RRG_100,RRG - 100%,"0",9,17,"morning",wt_RRG_100
+rac_RRG_66_64_I_McCormack,RRG - 66.64% (I. McCormack),"0",9,17,"morning",wt_RRG_66_64_I_McCormack
+rac_RRG_79_4_D_Laycock,RRG - 79.4% (D. Laycock),"0",9,17,"morning",wt_RRG_79_4_D_Laycock
+rac_US_100,US - 100%,"0",9,17,"morning",wt_US_100
+rac_WW_Cadre_100,WW.Cadre - 100%,"0",9,17,"morning",wt_WW_Cadre_100
+rac_WW_Cadre_80_Wed_OFF,WW.Cadre - 80% (Wed. OFF),"0",9,17,"morning",wt_WW_Cadre_80_Wed_OFF
+rac_WW_Cadre_90,WW.Cadre - 90%,"0",9,17,"morning",wt_WW_Cadre_90
+rac_WW_ETAM_100,WW.ETAM - 100%,"0",9,17,"morning",wt_WW_ETAM_100
+rac_WW_Cadre_50_Morn_OFF,WW.Cadre - 50% (Morn. OFF),"0",9,17,"morning",wt_WW_Cadre_50_Morn_OFF
+rac_CWLS_75_Narayanan,CWLS - 75% (Narayanan),"0",9,17,"morning",wt_CWLS_75_Narayanan
+rac_FR_Trainee_100,FR.Trainee - 100%,"0",9,17,"morning",wt_FR_Trainee_100
+rac_FR_Apprentice_100,FR.Apprentice - 100%,"0",9,17,"morning",wt_FR_Apprentice_100
+rac_WW_Apprentice_100,WW.Apprentice - 100%,"0",9,17,"morning",wt_WW_Apprentice_100
+rac_FR_ETAM_50,FR.ETAM - 50%,"0",9,17,"morning",wt_FR_ETAM_50
+rac_CH_100_Trainee,CH - 100% - Trainee,"0",9,17,"morning",wt_CH_100_Trainee
+rac_WW_Trainee_100,WW.Trainee - 100%,"0",9,17,"morning",wt_WW_Trainee_100
+rac_FR_Cadre_80_Fri_OFF,FR.Cadre - 80% (Fri. OFF),"0",9,17,"morning",wt_FR_Cadre_80_Fri_OFF

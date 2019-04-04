@@ -109,6 +109,14 @@
     
     # only loaded in demonstration mode
     'demo': [
-        'demo/demo.xml',
+        'demo/project_role.xml',
+        'demo/job.xml',
+        'demo/resource.calendar.csv',
+        'demo/resource.calendar.attendance.csv',
+        'demo/employee.xml',
+        'demo/contract.xml',
+        'demo/hr.leave.type.csv',
+        # Not working
+        # 'demo/leave_allocation.xml',
     ],
 }

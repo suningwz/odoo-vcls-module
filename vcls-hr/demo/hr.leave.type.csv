@@ -1,0 +1,31 @@
+id,name,company_id:id,allocation_type
+LVT_WW_VACATION_02,Vacation Days 2019,base.main_company,fixed_allocation
+hr_leave_type_138_e5193eb7,Maternity/Paternity Leave,base.main_company,fixed_allocation
+hr_leave_type_139_60cd3519,Maternity/Paternity Leave,vcls-hr.company_VCFR,fixed_allocation
+hr_leave_type_140_67f188b0,Maternity/Paternity Leave,vcls-hr.company_VCCH,fixed_allocation
+hr_leave_type_141_0b814867,Military Leave,vcls-hr.company_VCCH,fixed_allocation
+hr_leave_type_142_318d8a7a,Parental Leave,vcls-hr.company_VCFR,fixed_allocation
+hr_leave_type_143_e0844188,Parental Leave,base.main_company,fixed_allocation
+LVT_CH_SICK_01,Sick Days,vcls-hr.company_VCCH,fixed_allocation
+LVT_WW_SICK_01,Sick Days,base.main_company,fixed_allocation
+LVT_FR_SICK_01,Sick Days,vcls-hr.company_VCFR,fixed_allocation
+hr_leave_type_125_34345138,Sick Days,vcls-hr.company_CWLS,fixed_allocation
+hr_leave_type_126_9a7fe2e9,Sick Days,vcls-hr.company_RRG,fixed_allocation
+LVT_US_EXCEPTIONAL_01,Exceptional Leave,vcls-hr.company_VCINC,fixed_allocation
+LVT_IND_EXCEPTIONAL_01,Exceptional Leave,vcls-hr.company_VCPVT,fixed_allocation
+LVT_WW_EXCEPTIONAL_01,Exceptional Leave,base.main_company,fixed_allocation
+LVT_FR_EXCEPTIONAL_01,Exceptional Leave,vcls-hr.company_VCFR,fixed_allocation
+LVT_CH_EXCEPTIONAL_01,Exceptional Leave,vcls-hr.company_VCCH,fixed_allocation
+LVT_RRG_EXCEPTIONAL_01,Exceptional Leave,vcls-hr.company_RRG,fixed_allocation
+LVT_CWLS_EXCEPTIONAL_01,Exceptional Leave,vcls-hr.company_CWLS,fixed_allocation
+LVT_WW_UNPAID_01,Unpaid Days,base.main_company,fixed_allocation
+LVT_FR_UNPAID_01,Unpaid Days,vcls-hr.company_VCFR,fixed_allocation
+LVT_CH_UNPAID_01,Unpaid Days,vcls-hr.company_VCCH,fixed_allocation
+hr_leave_type_131_335a14f1,Unpaid Days,vcls-hr.company_CWLS,fixed_allocation
+hr_leave_type_132_c16ad8ed,Unpaid Days,vcls-hr.company_RRG,fixed_allocation
+LVT_US_EMERGENCY_01,Time Off for Emergency Service Policies,vcls-hr.company_VCINC,fixed_allocation
+LVT_US_MILITARY_01,Military Leave,vcls-hr.company_VCINC,fixed_allocation
+LVT_US_PARENTAL_01,Parental Leave,vcls-hr.company_VCINC,fixed_allocation
+LVT_US_UNPAID_01,Unpaid Days,vcls-hr.company_VCINC,fixed_allocation
+LVT_US_VICTIMS_01,Time Off for Victims of Crime,vcls-hr.company_VCINC,fixed_allocation
+LVT_IND_MATERNITY_01,Maternity Leave,vcls-hr.company_VCPVT,fixed_allocation
