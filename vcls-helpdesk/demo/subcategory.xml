@@ -1,0 +1,19 @@
+<odoo>
+    <data>
+        <record model="helpdesk.ticket.subcategory" id="subcategory_onboard_offboard">
+            <field name="name">Onboard / Offboard</field>
+            <field name="team_id" ref="team_it_general_support" />
+        </record>
+
+        <record model="helpdesk.ticket.subcategory" id="subcategory_agency_applications">
+            <field name="name">Agency Applications</field>
+            <field name="team_id" ref="team_it_applications_support" />
+        </record>
+
+        <record model="helpdesk.ticket.subcategory" id="subcategory_events">
+            <field name="name">Events</field>
+            <field name="team_id" ref="team_office_management" />
+        </record>
+
+    </data>
+</odoo>

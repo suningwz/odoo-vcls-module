@@ -624,7 +624,7 @@ class Employee(models.Model):
             #globalHR
             if user.has_group('vcls-hr.vcls_group_HR_global'):
                 rec.access_level = 'hr'
-                continue
+                continue        
             
             #localHR
             if user.has_group('vcls-hr.vcls_group_HR_local'):
@@ -647,6 +647,11 @@ class Employee(models.Model):
             #if user is in support group
             if user.has_group('vcls-hr.vcls_group_superuser_lvl1'):
                 rec.access_level = 'support'
+                continue
+            
+            #controlling
+            if user.has_group('vcls-hr.vcls_group_controlling'):
+                rec.access_level = 'hl'
                 continue
             
             #default access right

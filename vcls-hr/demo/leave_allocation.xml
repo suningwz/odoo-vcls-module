@@ -1,0 +1,20 @@
+<odoo>
+    <data>
+        <!-- Not working -->
+        <record model="hr.leave.allocation" id="leave_fr_paid_2019">
+            <field name="request_unit">day</field>
+            <field name="time_type">leave</field>
+            <field name="allocation_type">fixed_allocation</field>
+            <field name="holiday_type">employee</field>
+            <field name="payroll_type">cp_paid</field>
+            <field name="color_name">blue</field>
+            <field name="validation_type">hr</field>
+            <field name="validity_start">2019-01-01</field>
+            <field name="validity_start">2020-01-01</field>
+            <field name="state">validate</field>
+            <field name="holiday_status_id" ref="LVT_WW_VACATION_02" />
+            <field name="company_id" ref="base.main_company" />
+        </record>
+
+    </data>
+</odoo>

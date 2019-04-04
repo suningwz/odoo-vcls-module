@@ -1,0 +1,44 @@
+<odoo>
+    <data>
+        <record model="helpdesk.stage" id="helpdesk.stage_new">
+            <field name="name">New</field>
+            <field name="sequence">0</field>
+        </record>
+
+        <record model="helpdesk.stage" id="__export__.helpdesk_stage_11_69bea720">
+            <field name="name">New</field>
+            <field name="sequence">0</field>
+        </record>
+
+        <record model="helpdesk.stage" id="__export__.helpdesk_stage_8_c3cb4444">
+            <field name="name">Assigned</field>
+            <field name="sequence">1</field>
+        </record>
+
+        <record model="helpdesk.stage" id="helpdesk.stage_in_progress">
+            <field name="name">In Progress</field>
+            <field name="sequence">2</field>
+        </record>
+
+        <record model="helpdesk.stage" id="__export__.helpdesk_stage_9_1ddd697e">
+            <field name="name">Awaiting Reply</field>
+            <field name="sequence">3</field>
+        </record>
+
+        <record model="helpdesk.stage" id="helpdesk.stage_solved">
+            <field name="name">Solved</field>
+            <field name="sequence">4</field>
+        </record>
+
+        <record model="helpdesk.stage" id="helpdesk.stage_cancelled">
+            <field name="name">Cancelled</field>
+            <field name="sequence">5</field>
+        </record>
+
+        <record model="helpdesk.stage" id="__export__.helpdesk_stage_10_30a17dee">
+            <field name="name">Closed</field>
+            <field name="sequence">6</field>
+        </record>
+
+    </data>
+</odoo>

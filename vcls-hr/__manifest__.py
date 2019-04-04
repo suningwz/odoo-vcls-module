@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '1.3.0',
+    'version': '1.3.2',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -109,6 +109,14 @@
     
     # only loaded in demonstration mode
     'demo': [
-        'demo/demo.xml',
+        'demo/project_role.xml',
+        'demo/job.xml',
+        'demo/resource.calendar.csv',
+        'demo/resource.calendar.attendance.csv',
+        'demo/employee.xml',
+        'demo/contract.xml',
+        'demo/hr.leave.type.csv',
+        # Not working
+        # 'demo/leave_allocation.xml',
     ],
 }

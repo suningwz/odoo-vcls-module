@@ -1,0 +1,265 @@
+<odoo>
+    <data>
+
+        <record model="hr.project_role" id="job_title_accountant">
+            <field name="name">Accountant</field>
+            <field name="display_name">Accountant</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_apprentice">
+            <field name="name">Apprentice</field>
+            <field name="display_name">Apprentice</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_assistant">
+            <field name="name">Assistant</field>
+            <field name="display_name">Assistant</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_associate">
+            <field name="name">Associate</field>
+            <field name="display_name">Associate</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_associatedirecton">
+            <field name="name">Associate Director</field>
+            <field name="display_name">Associate Director</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_businessapplicationsupportmanager">
+            <field name="name">Business Application Support Manager</field>
+            <field name="display_name">Business Application Support Manager</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_businessdeveloper">
+            <field name="name">Business Developer</field>
+            <field name="display_name">Business Developer</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_ceo">
+            <field name="name">CEO</field>
+            <field name="display_name">CEO</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_cfo">
+            <field name="name">CFO</field>
+            <field name="display_name">CFO</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_cleaninglady">
+            <field name="name">Cleaning Lady</field>
+            <field name="display_name">Cleaning Lady</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_clinicalprojectassistant">
+            <field name="name">Clinical Project Assistant</field>
+            <field name="display_name">Clinical Project Assistant</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_clinicalprojectmanager">
+            <field name="name">Clinical Project Manager</field>
+            <field name="display_name">Clinical Project Manager</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_clinicaltrialcoordinator">
+            <field name="name">Clinical Trial Coordinator</field>
+            <field name="display_name">Clinical Trial Coordinator</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_crmandcommercialeventsmanager">
+            <field name="name">CRM and Commercial Events Manager</field>
+            <field name="display_name">CRM and Commercial Events Manager</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_digitalinternalcommunication">
+            <field name="name">Digital and Internal Communication</field>
+            <field name="display_name">Digital and Internal Communication</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_director">
+            <field name="name">Director</field>
+            <field name="display_name">Director</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_operationalexcellencedirector">
+            <field name="name">Operational Excellence Director</field>
+            <field name="display_name">Operationam Excellence Director</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_ectdspecialist">
+            <field name="name">eCTD Specialist</field>
+            <field name="display_name">eCTD Specialist</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_erpfinancialcoordinator">
+            <field name="name">ERP Financial Coordinator</field>
+            <field name="display_name">ERP Financial Coordinator</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_executiveassistant">
+            <field name="name">Executive Assistant</field>
+            <field name="display_name">Executive Assistant</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_generalmanager">
+            <field name="name">General Manager</field>
+            <field name="display_name">General Manager</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_hrofficeadministrator">
+            <field name="name">HR and Office Administrator</field>
+            <field name="display_name">HR and Office Administrator</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_invoiceadministrator">
+            <field name="name">Invoice Administrator</field>
+            <field name="display_name">Invoice Administrator</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_invoicingapprentice">
+            <field name="name">Invoicing Apprentice</field>
+            <field name="display_name">Invoicing Apprentice</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_manager">
+            <field name="name">Manager</field>
+            <field name="display_name">Manager</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_medicaldirector">
+            <field name="name">Medical Director</field>
+            <field name="display_name">Medical Director</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_hrofficeadministratorandbdassistant">
+            <field name="name">HR/Office Administrator and BD assistant</field>
+            <field name="display_name">HR/Office Administrator and BD assistant</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_projectdevelopmentmanager">
+            <field name="name">Project and Development Manager</field>
+            <field name="display_name">Project and Development Manager</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_projectassistant">
+            <field name="name">Project Assistant</field>
+            <field name="display_name">Project Assistant</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_projectcontroller">
+            <field name="name">Project Controller</field>
+            <field name="display_name">Project Controller</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_proposalwriter">
+            <field name="name">Proposal Writer</field>
+            <field name="display_name">Proposal Writer</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_regulatoryscientist">
+            <field name="name">Regulatory Scientist</field>
+            <field name="display_name">Regulatory Scientist</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_seniorassociate">
+            <field name="name">Senior Associate</field>
+            <field name="display_name">Senior Associate</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_seniorbusinessintegrator">
+            <field name="name">Senior Business Integrator</field>
+            <field name="display_name">Senior Business Integrator</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_seniordirector">
+            <field name="name">Senior Director</field>
+            <field name="display_name">Senior Director</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_seniorectdspecialist">
+            <field name="name">Senior eCTD Specialist</field>
+            <field name="display_name">Senior eCTD Specialist</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_seniorhrandofficemanager">
+            <field name="name">Senior HR and Office Manager</field>
+            <field name="display_name">Senior HR and Office Manager</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_seniormanager">
+            <field name="name">Senior Manager</field>
+            <field name="display_name">Senior Manager</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_seniorproposalwriter">
+            <field name="name">Senior Proposal Writer</field>
+            <field name="display_name">Senior Proposal Writer</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_seniorregulatoryscientist">
+            <field name="name">Senior Regulatory Scientist</field>
+            <field name="display_name">Senior Regulatory Scientist</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_seniorvigilancescientist">
+            <field name="name">Senior Vigilance Scientist</field>
+            <field name="display_name">Senior Vigilance Scientist</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_support">
+            <field name="name">Support</field>
+            <field name="display_name">Support</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_supporttechnician">
+            <field name="name">Support Technician</field>
+            <field name="display_name">Support Technician</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_trainee">
+            <field name="name">Trainee</field>
+            <field name="display_name">Trainee</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_trialcoordinator">
+            <field name="name">Trial Coordinator</field>
+            <field name="display_name">Trial Coordinator</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_vp">
+            <field name="name">VP</field>
+            <field name="display_name">VP</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_resourcemanager">
+            <field name="name">Resource Manager</field>
+            <field name="display_name">Resource Manager</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_systemsandnetworkadministrator">
+            <field name="name">Systems and Network Administrator</field>
+            <field name="display_name">Systems and Network Administrator</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_supportspecialist">
+            <field name="name">Support Specialist</field>
+            <field name="display_name">Support Specialist</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_scientist">
+            <field name="name">Scientist</field>
+            <field name="display_name">Scientist</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_executivedirector">
+            <field name="name">Executive Director</field>
+            <field name="display_name">Executive Director</field>
+        </record>
+
+        <record model="hr.project_role" id="job_title_executiveassistantofficemanager">
+            <field name="name">Executive Assistant – Office Manager</field>
+            <field name="display_name">Executive Assistant – Office Manager</field>
+        </record>
+
+    </data>
+</odoo>
