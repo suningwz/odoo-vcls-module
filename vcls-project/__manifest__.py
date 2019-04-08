@@ -29,10 +29,11 @@
 
         ### VIEWS ###
         'views/dev_project_views.xml',
-        #'views/project_version_views.xml',
+        'views/dev_task_views.xml',
 
         ### MENUS ###
         'views/dev_project_menu.xml',
+        'views/dev_task_menu.xml',
 
     ],
 
