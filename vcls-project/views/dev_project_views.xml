@@ -1,0 +1,32 @@
+<odoo>
+    <data>
+        <record id="view_task_kanban_vcls" model="ir.ui.view">
+            <field name="name">project.task.kanban.vcls</field>
+            <field name="model">project.task</field>
+            
+            <field name="inherit_id" ref="project.view_task_kanban"/>
+            <field name="arch" type="xml">
+                <templates position="before">
+                    <field name="id" />
+                </templates>
+                <div class="o_kanban_record_bottom" position="after">
+                    <span class='fa fa-info-circle'></span>
+                    <field name="id" />
+                </div>
+            </field>
+        </record>
+
+        <!-- EXTENDING ACTUAL PROJECT.TASK VIEW TO INCLUDE THINGS -->
+        <record model="ir.ui.view" id="vcls_view_project_task_form">
+        <field name="name">project.task.form</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <field name="project_id" position="before">
+            <field name="id"/>
+            </field>
+        </field>
+        </record>
+
+    </data>
+</odoo>

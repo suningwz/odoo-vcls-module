@@ -22,9 +22,18 @@
 
     # always loaded
     'data': [
-        'views/project_kanban.xml',
-        'views/views.xml',
+
+        ### SECURITY ###
+        'security/vcls_groups.xml',
+
+        ### VIEWS ###
+        'views/dev_project_views.xml',
+
+        ### MENUS & ACTIONS ###
+        'actions/dev_project_menu.xml',
+
     ],
+
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',

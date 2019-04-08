@@ -10,3 +10,14 @@ class Project(models.Model):
         ('client', 'Client')],
         string = 'Project Type',
     )
+
+    version_ids = fields.One2many(
+        'project.version',
+        'project_id',
+        string='All Versions',
+        )
+
+    version_id = fields.Many2one('project.version',
+        string='Current Version',
+        help='Currently Developed Version',
+        )
