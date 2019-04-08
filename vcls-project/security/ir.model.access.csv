@@ -1,2 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_vcls-project_vcls-project,vcls-project.vcls-project,model_vcls-project_vcls-project,,1,0,0,0
+
+access_dev_project_user,dev.project.user,vcls-project.model_project_project,vcls-project.vcls_group_dev_user,1,0,0,0
+access_dev_project_manager,dev.project.manager,vcls-project.model_project_project,vcls-project.vcls_group_dev_manager,1,1,1,1
+
+access_project_version_user,project.version.user,vcls-project.model_project_version,vcls-project.vcls_group_dev_user,1,0,0,0
+access_project_version_manager,project.version.manager,vcls-project.model_project_version,vcls-project.vcls_group_dev_manager,1,1,1,1

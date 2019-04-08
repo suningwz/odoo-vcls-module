@@ -15,9 +15,25 @@ class Project(models.Model):
         'project.version',
         'project_id',
         string='All Versions',
+        compute = '_get_versions',
         )
 
     version_id = fields.Many2one('project.version',
         string='Current Version',
         help='Currently Developed Version',
         )
+    
+    version_count = fields.Integer(
+        compute = '_get_versions',
+        string = 'Version Count',
+    )
+
+    ###################
+    # COMPUTE METHODS #
+    ###################
+
+    @api.multi
+    def _get_versions(self):
+        for proj in self:
+            proj.version_ids = self.env['project.version'].search([('project_id','=',proj.id)])
+            proj.version_count = len(proj.version_ids)

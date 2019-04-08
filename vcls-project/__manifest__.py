@@ -25,12 +25,13 @@
 
         ### SECURITY ###
         'security/vcls_groups.xml',
+        'security/ir.model.access.csv',
 
         ### VIEWS ###
         'views/dev_project_views.xml',
 
-        ### MENUS & ACTIONS ###
-        'actions/dev_project_menu.xml',
+        ### MENUS ###
+        'views/dev_project_menu.xml',
 
     ],
 
