@@ -1,0 +1,63 @@
+<odoo>
+    <data>
+        <record model="hr.leave" id="leave_to_approve_LM2_01">
+            <field name="holiday_type">employee</field>
+            <field name="employee_id" ref="employee_LM2_01" />
+            <field name="holiday_status_id" ref="LVT_WW_VACATION_02" />
+            <field name="request_date_from">2019-05-01</field>
+            <field name="request_date_to">2019-05-05</field>
+            <field name="request_unit_half">false</field>
+            <field name="state">confirm</field>
+        </record>
+
+        <record model="hr.leave" id="leave_approved_LM2_01">
+            <field name="holiday_type">employee</field>
+            <field name="employee_id" ref="employee_LM2_01" />
+            <field name="holiday_status_id" ref="LVT_WW_VACATION_02" />
+            <field name="request_date_from">2019-04-01</field>
+            <field name="request_date_to">2019-04-05</field>
+            <field name="request_unit_half">false</field>
+            <field name="state">validate</field>
+        </record>
+
+        <record model="hr.leave" id="leave_approved_base_04">
+            <field name="holiday_type">employee</field>
+            <field name="employee_id" ref="employee_base_04" />
+            <field name="holiday_status_id" ref="LVT_WW_VACATION_02" />
+            <field name="request_date_from">2019-04-05</field>
+            <field name="request_date_to">2019-04-10</field>
+            <field name="request_unit_half">false</field>
+            <field name="state">validate</field>
+        </record>
+
+        <record model="hr.leave" id="leave_approved_local_hr_01">
+            <field name="holiday_type">employee</field>
+            <field name="employee_id" ref="employee_local_hr_01" />
+            <field name="holiday_status_id" ref="LVT_WW_VACATION_02" />
+            <field name="request_date_from">2019-04-10</field>
+            <field name="request_date_to">2019-04-15</field>
+            <field name="request_unit_half">false</field>
+            <field name="state">validate</field>
+        </record>
+
+        <record model="hr.leave" id="leave_to_approve_LM2_02">
+            <field name="holiday_type">employee</field>
+            <field name="employee_id" ref="employee_LM2_02" />
+            <field name="holiday_status_id" ref="LVT_WW_VACATION_02" />
+            <field name="request_date_from">2019-05-02</field>
+            <field name="request_date_to">2019-05-04</field>
+            <field name="request_unit_half">false</field>
+            <field name="state">confirm</field>
+        </record>
+
+        <record model="hr.leave" id="leave_to_approve_head_01">
+            <field name="holiday_type">employee</field>
+            <field name="employee_id" ref="employee_head_01" />
+            <field name="holiday_status_id" ref="LVT_WW_VACATION_02" />
+            <field name="request_date_from">2019-05-31</field>
+            <field name="request_date_to">2019-06-02</field>
+            <field name="request_unit_half">false</field>
+            <field name="state">confirm</field>
+        </record>
+    </data>
+</odoo>

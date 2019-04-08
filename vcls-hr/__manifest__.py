@@ -118,5 +118,6 @@
         'demo/hr.leave.type.csv',
         # Not working
         # 'demo/leave_allocation.xml',
+        'demo/hr.leave.xml'
     ],
 }
