@@ -1,0 +1,92 @@
+<odoo>
+    <data>
+
+        <record id="view_project_version_tree" model="ir.ui.view">
+            <field name="name">view_project_version_tree</field>
+            <field name="model">project.version</field>
+            <field name="arch" type="xml">
+                <tree string="Versions per Project">
+                    <field name="name"/>
+                    <field name="project_id"/>
+                    <field name="status"/>
+                    <field name="target_date" widget="date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_project_version_form" model="ir.ui.view">
+            <field name="name">view_project_version_tree</field>
+            <field name="model">project.version</field>
+            <field name="arch" type="xml">
+                <form string="Versions of Project">
+                    <sheet string="Versions">
+                        <div class="oe_button_box" name="button_box" groups="base.group_user">
+                            <button class="oe_stat_button" type="action" name="514" icon="fa-tasks">
+                                <field string="Tasks" name="task_count" widget="statinfo" options="{'label_field': 'label_tasks'}"/>
+                            </button>
+                            <button name="toggle_active" type="object" confirm="(Un)archiving a version automatically (un)archives its tasks. Do you want to proceed?" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="project_id"/>
+                            <field name="version_number"/>
+                            <field name="version_name"/>
+                            <field name="status"/>
+                            <field name="target_date" widget="date"/>
+                            <field name="description"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_project_version_search" model="ir.ui.view">
+            <field name="name">view_project_version_search</field>
+            <field name="model">project.version</field>
+            <field name="arch" type="xml">
+                <search string="Search Leave">
+
+                    <field name="name"/>
+                    <field name="project_id"/>
+
+                    <!-- GROUP BY MENU -->
+                    <group expand="0" string="Group By">
+                        <filter name="group_project" string="Project" context="{'group_by':'project_id'}"/>
+                        <filter name="group_status" string="Status" context="{'group_by':'status'}"/>
+                    </group>
+                    <!-- END OF GROUP BY MENU -->
+
+                    <!-- FILTER MENU -->
+                    <filter string="In Development" domain="[('status', '=', 'dev')]" name="development"/>
+                    <separator/>
+                    <!-- END OF FILTER MENU -->
+
+                </search>
+            </field>
+        </record>
+
+        <!-- Main Version Actions -->
+        <record id="vcls-project.action_main_version" model="ir.actions.act_window">
+            <field name="name">Versions per Project</field>
+            <field name="res_model">project.version</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="vcls-project.view_project_version_search"/>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-project.view_project_version_tree')}), 
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.view_project_version_form')}),
+            ]"/>
+            <field name="context">{
+                'search_default_group_project': 1,
+                'search_default_group_status': 1, 
+            }</field>
+        </record>
+        
+    </data>
+</odoo>

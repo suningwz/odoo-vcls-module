@@ -22,5 +22,15 @@
             action="vcls-project.action_main_project"
         />
 
+        <!--
+        <menuitem
+            id="menu_project_version"
+            name="Project Versions"
+            parent="menu_dev_project"
+            sequence="6"
+            action="vcls-project.action_main_version"
+        />
+        -->
+
     </data>
 </odoo>

@@ -11,6 +11,7 @@ class Project(models.Model):
         string = 'Project Type',
     )
 
+    """
     version_ids = fields.One2many(
         'project.version',
         'project_id',
@@ -24,8 +25,8 @@ class Project(models.Model):
         )
     
     version_count = fields.Integer(
-        compute = '_get_versions',
         string = 'Version Count',
+        compute = '_get_versions',
     )
 
     ###################
@@ -37,3 +38,4 @@ class Project(models.Model):
         for proj in self:
             proj.version_ids = self.env['project.version'].search([('project_id','=',proj.id)])
             proj.version_count = len(proj.version_ids)
+    """

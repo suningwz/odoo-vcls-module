@@ -42,11 +42,6 @@
                     </header>
                 <sheet string="Project">
                     <div class="oe_button_box" name="button_box" groups="base.group_user">
-                        <!--
-                        <button class="oe_stat_button" type="action" name="514" icon="fa-list-ol">
-                            <field string="Versions" name="version_count" widget="statinfo" />
-                        </button>
-                        -->
                         <button class="oe_stat_button" type="action" name="514" icon="fa-tasks">
                             <field string="Tasks" name="task_count" widget="statinfo" options="{'label_field': 'label_tasks'}"/>
                         </button>
@@ -91,12 +86,11 @@
                                 <field name="rating_status_period" class="oe_inline" attrs="{'required': [('rating_status','=','periodic')], 'invisible': [('rating_status','!=','periodic')]}" groups="project.group_project_rating"/>
                                 <field name="portal_show_rating" attrs="{'invisible': [('rating_status','==','no')]}" groups="project.group_project_rating"/>
                                 <field name="subtask_project_id" groups="project.group_subtask_project"/>
+                                
                             </group>
                             <group name="misc">
                                 <group string="Configuration" groups="base.group_no_one" name="configuration">
-                                    <!-- <field name="sequence" groups="base.group_no_one"/>
-                                    <field name="company_id" groups="base.group_multi_company"/> -->
-                                    <field name="version_id"/>
+                                    
                                 </group>
                             </group>
                         </page>
