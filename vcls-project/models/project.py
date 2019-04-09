@@ -11,31 +11,28 @@ class Project(models.Model):
         string = 'Project Type',
     )
 
-    """
-    version_ids = fields.One2many(
-        'project.version',
-        'project_id',
-        string='All Versions',
-        compute = '_get_versions',
-        )
-
-    version_id = fields.Many2one('project.version',
-        string='Current Version',
-        help='Currently Developed Version',
-        )
-    
-    version_count = fields.Integer(
-        string = 'Version Count',
-        compute = '_get_versions',
+    parent_task_count = fields.Integer(
+        compute = '_compute_parent_task_count'
     )
+
+    child_task_count = fields.Integer(
+        compute = '_compute_child_task_count'
+    )
+
+    
 
     ###################
     # COMPUTE METHODS #
     ###################
 
-    @api.multi
-    def _get_versions(self):
-        for proj in self:
-            proj.version_ids = self.env['project.version'].search([('project_id','=',proj.id)])
-            proj.version_count = len(proj.version_ids)
-    """
+    def _compute_parent_task_count(self):
+        task_data = self.env['project.task'].read_group([('parent_id','=',False),('project_id', 'in', self.ids), '|', ('stage_id.fold', '=', False), ('stage_id', '=', False)], ['project_id'], ['project_id'])
+        result = dict((data['project_id'][0], data['project_id_count']) for data in task_data)
+        for project in self:
+            project.parent_task_count = result.get(project.id, 0)
+    
+    def _compute_child_task_count(self):
+        task_data = self.env['project.task'].read_group([('parent_id','!=',False),('project_id', 'in', self.ids), '|', ('stage_id.fold', '=', False), ('stage_id', '=', False)], ['project_id'], ['project_id'])
+        result = dict((data['project_id'][0], data['project_id_count']) for data in task_data)
+        for project in self:
+            project.child_task_count = result.get(project.id, 0)
