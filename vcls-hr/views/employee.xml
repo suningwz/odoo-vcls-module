@@ -334,7 +334,7 @@
         <field name="name">hr.employee.absent.kanban</field>
         <field name="model">hr.employee</field>
         <field name="arch" type="xml">
-            <kanban class="o_hr_employee_kanban">
+            <kanban class="o_hr_employee_kanban" create='0'>
                 <field name="id"/>
                 <field name="message_follower_ids"/>
                 <field name="message_ids"/>
@@ -358,7 +358,7 @@
                             </div>
                             <div>
                                 <span class='fa fa-map-marker'></span>
-                                <field name="office_id" />
+                                <field name="office_id" readonly='1'/>
                             </div>
                             <div>
                                 <span class='fa fa-group'></span>
