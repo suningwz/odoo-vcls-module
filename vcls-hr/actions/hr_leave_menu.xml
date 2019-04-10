@@ -121,7 +121,7 @@
         <!-- Menu item to see managee's leaves calendar/gantt view -->
         <menuitem
             id="menu_leaves_management_overview"
-            name="Managee's leaves"
+            name="Gantt Overview"
             parent="menu_leaves_management"
             sequence="15"
             action="hr_holidays.action_hr_holidays_dashboard"
@@ -315,11 +315,11 @@
 
         <!-- action for Leave's overview -->
         <record id="action_hr_absent_today_overview" model="ir.actions.act_window">
-            <field name="name">Absent today Overview</field>
+            <field name="name">Absent Today</field>
             <field name="res_model">hr.employee</field>
             <field name="view_mode">kanban,form</field>
             <field name="domain">[('is_absent_totay','=',True)]</field>
-            <field name="context">{'search_default_group_department': 1}</field>
+            <field name="context">{'search_default_group_office': 1}</field>
             <field name="view_id" ref="view_employee_absent_kanban"/>
         </record>
 
