@@ -27,6 +27,10 @@
                         <button name = "new_benefit_pop_up" string = "New benefit set" type = "object"
                                 icon="fa-coffee"
                                 attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"/>
+                        
+                        <button name = "new_benefit_pop_up" string = "TEZST" type = "object"
+                                icon="fa-coffee"
+                                attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"/>
 
                     </header>
                     
