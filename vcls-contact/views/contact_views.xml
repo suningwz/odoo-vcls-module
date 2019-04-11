@@ -1,0 +1,90 @@
+<odoo>
+  <data>
+
+    <record id="view_contact_search_main" model="ir.ui.view">
+      <field name="name">view_contact_search_main</field>
+      <field name="model">res.partner</field>
+      <field name="arch" type="xml">
+        <search string="Search Partner">
+          <field name="name" filter_domain="['|','|',('display_name','ilike',self),('ref','=',self),('email','ilike',self)]"/>
+          <field name="parent_id" domain="[('is_company','=',True)]" operator="child_of"/>
+          <filter name="filter_my_partners" help="My Contacts" domain="[('user_id','=',uid)]"/>
+          <separator/>
+          <filter string="Individuals" name="type_person" domain="[('is_company','=',False)]"/>
+          <filter string="Companies" name="type_company" domain="[('is_company','=',True)]"/>
+          <separator/>
+          <!-- 
+          <filter string="Customers" name="customer" domain="['|','|',('customer','=',True),('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
+          <filter string="Vendors" name="supplier" domain="['|','|',('supplier','=',True),('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
+          -->
+          <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+          <separator/>
+          <field name="category_id" string="Tag" filter_domain="[('category_id','ilike', self)]"/>
+          <field name="user_id"/>
+          <field name="phone" filter_domain="['|',('phone','ilike',self),('mobile','=',self)]"/>
+          <group expand="0" name="group_by" string="Group By">
+              <filter name="salesperson" string="Salesperson" domain="[]" context="{'group_by' : 'user_id'}"/>
+              <filter name="group_company" string="Company" context="{'group_by': 'parent_id'}"/>
+              <filter name="group_country" string="Country" context="{'group_by': 'country_id'}"/>
+          </group>
+        </search>   
+      </field>
+    </record>
+
+    <!-- used to visualize All Contacts -->
+    <record model="ir.actions.act_window" id="action_all_contacts">
+      <field name="name">All</field>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">kanban,tree,form,activity</field>
+    </record>
+
+    <!-- used to visualize VCLS Entities -->
+    <record model="ir.actions.act_window" id="action_vcls_entities">
+      <field name="name">VCLS Entities</field>
+      <field name="domain" eval="[('is_company','=',True),('is_internal','=',True)]"/>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">kanban,tree,form,activity</field>
+    </record>
+
+    <!-- used to visualize Client Accounts -->
+    <record model="ir.actions.act_window" id="action_accounts">
+      <field name="name">Accounts</field>
+      <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),'|','|',('customer','=',True),('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">kanban,tree,form,activity</field>
+    </record>
+
+    <!-- used to visualize Suppliers Accounts, i.e. the ones having suppliers or one suppliers child as a tag -->
+    <record model="ir.actions.act_window" id="action_suppliers_accounts">
+      <field name="name">Accounts</field>
+      <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),'|','|',('supplier','=',True),('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">kanban,tree,form,activity</field>
+    </record>
+
+    <!-- used to visualize VCLS Employees-->
+    <record model="ir.actions.act_window" id="action_vcls_employees">
+      <field name="name">VCLS Employees</field>
+      <field name="domain" eval="[('employee','=',True)]"/>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">kanban,tree,form,activity</field>
+    </record>
+
+    <!-- used to visualize Client Contacts-->
+    <record model="ir.actions.act_window" id="action_client_contacts">
+      <field name="name">Individuals</field>
+      <field name="domain" eval="[('is_company','=',False),('employee','=',False),'|','|',('customer','=',True),('parent_id.category_id','=',ref('vcls-contact.category_account')),('parent_id.category_id','=',False)]"/>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">kanban,tree,form,activity</field>
+    </record>
+
+    <!-- used to visualize Suppliers Contacts, i.e. the ones having suppliers or one suppliers child as a tag-->
+    <record model="ir.actions.act_window" id="action_suppliers_contacts">
+      <field name="name">Individuals</field>
+      <field name="domain" eval="[('is_company','=',False),('employee','=',False),'|','|',('supplier','=',True),('parent_id.category_id','=',ref('vcls-contact.category_suppliers')),('parent_id.category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">kanban,tree,form,activity</field>
+    </record>
+      
+  </data>
+</odoo>

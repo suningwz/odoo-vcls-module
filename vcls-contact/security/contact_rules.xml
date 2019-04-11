@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+    <!-- We override exisitng rule to exclude hidden contacts-->
+    <record id="base.res_partner_rule_private_employee" model="ir.rule">
+        <field name="domain_force">[
+            ('hidden','=',False),
+            '|',
+            ('type', '!=', 'private'),('type', '=', False)
+        ]</field>
+    </record>
+
+    <record id="base.res_partner_rule_private_group" model="ir.rule">
+        <field name="domain_force">[
+            ('hidden','=',False),
+            ('type', '=', 'private')
+        ]</field>
+    </record>
+
+    <!-- We add a rule to authorize CEO group to see hidden contacts-->
+    <record id="res_partner_rule_ceo_all" model="ir.rule">
+        <field name="name">res_partner_rule_ceo_all: CEO sees all</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+        <field name="domain_force">[
+                (1, '=', 1),
+        ]</field>
+        <field name="groups" eval="[(4, ref('vcls-contact.vcls_group_ceo'))]"/>
+    </record> 
+      
+             
+    </data>
+</odoo>

@@ -28,16 +28,17 @@
         'data/res.partner.category.csv',
         
         ### SECURITY ###
-        #'security/ir.model.access.csv',
         'security/vcls_groups.xml',
+        'security/ir.model.access.csv',
+        'security/contact_rules.xml',
         
         ### VIEWS ###
-        'views/company_views.xml',
+        'views/contact_views.xml',
 
         ### MENUS ###
         'views/contact_menu.xml',
         ],
-        
+
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',

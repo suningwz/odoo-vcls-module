@@ -28,5 +28,3 @@ class ContactExt(models.Model):
         for contact in self:
             if contact.employee or self.env['res.company'].search([('partner_id.id','=',contact.id)]):
                 contact.is_internal = True
-    """
-    """

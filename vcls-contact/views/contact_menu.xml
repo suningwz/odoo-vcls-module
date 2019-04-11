@@ -1,6 +1,18 @@
 <odoo>
   <data>
 
+      <!-- we override the main menu 
+      <field name="action" eval="action_all_contacts"/>
+      -->
+      <record id="contacts.res_partner_menu_contacts" model="ir.ui.menu">
+        <field name="name">All</field>
+      </record>
+
+      <record id="contacts.res_partner_menu_config" model="ir.ui.menu">
+        <field name="sequence">12</field>
+      </record>
+
+      <!-- VCLS Menus -->
       <menuitem 
         name="VCLS"
         parent="contacts.menu_contacts"
@@ -25,14 +37,55 @@
         sequence="6"
       />
 
+      <!-- Client Menus -->
       <menuitem 
-        name="Accounts"
+        name="Clients"
         parent="contacts.menu_contacts"
         id="menu_accounts"
-        action="action_accounts"
+        action=""
         sequence="6"
       />
 
-      
+      <menuitem 
+        name="Accounts"
+        parent="menu_accounts"
+        id="menu_client_accounts"
+        action="action_accounts"
+        sequence="3"
+      />
+
+      <menuitem 
+        name="Individuals"
+        parent="menu_accounts"
+        id="menu_client_contacts"
+        action="action_client_contacts"
+        sequence="6"
+      />
+
+      <!-- Suppliers Menus -->
+      <menuitem 
+        name="Suppliers"
+        parent="contacts.menu_contacts"
+        id="menu_suppliers"
+        action=""
+        sequence="9"
+      />
+
+      <menuitem 
+        name="Accounts"
+        parent="menu_suppliers"
+        id="menu_suppliers_accounts"
+        action="action_suppliers_accounts"
+        sequence="3"
+      />
+
+      <menuitem 
+        name="Individuals"
+        parent="menu_suppliers"
+        id="menu_suppliers_contacts"
+        action="action_suppliers_contacts"
+        sequence="6"
+      />
+
   </data>
 </odoo>
