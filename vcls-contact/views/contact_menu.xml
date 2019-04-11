@@ -1,0 +1,9 @@
+<odoo>
+  <data>
+
+      <menuitem name="To Update" parent="contacts.menu_contacts" id="menu_exec"
+        
+        action="action_exec" sequence="3" />
+      
+  </data>
+</odoo>

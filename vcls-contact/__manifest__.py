@@ -33,6 +33,7 @@
         'views/company_views.xml',
 
         ### MENUS ###
+        'views/contact_menu.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
