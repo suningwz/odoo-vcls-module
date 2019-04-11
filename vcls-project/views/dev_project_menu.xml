@@ -22,6 +22,14 @@
             action="vcls-project.action_main_project"
         />
 
+        <menuitem
+            id="menu_dev_task_main"
+            name="Development Tasks"
+            parent="menu_dev_project"
+            sequence="6"
+            action="vcls-project.action_task_dev"
+        />
+
         <!--
         <menuitem
             id="menu_project_version"

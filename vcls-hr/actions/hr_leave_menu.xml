@@ -326,7 +326,7 @@
         <!-- Menu item for leave default view (when open Leaves module = Absent today) -->
         <menuitem
         id="hr_holidays.menu_hr_holidays_dashboard"
-        name="Overview"
+        name="Absent Today"
         parent="hr_holidays.menu_hr_holidays_root"
         sequence="1"
         action="action_hr_absent_today_overview"

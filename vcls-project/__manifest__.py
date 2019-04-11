@@ -33,7 +33,6 @@
 
         ### MENUS ###
         'views/dev_project_menu.xml',
-        'views/dev_task_menu.xml',
 
     ],
 
