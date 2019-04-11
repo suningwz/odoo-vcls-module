@@ -3,7 +3,6 @@
       
     <record model="ir.actions.act_window" id="action_accounts">
       <field name="name">Accounts</field>
-      <!-- field name="domain">['&',('employee','=',0),('is_company','=',1)]</field -->
       <field name="domain">[('is_company','=',1)]</field>
       <field name="res_model">res.partner</field>
       <field name="view_mode">kanban,tree,form,activity</field>
