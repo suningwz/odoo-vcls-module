@@ -1,9 +1,30 @@
 <odoo>
   <data>
 
-      <menuitem name="To Update" parent="contacts.menu_contacts" id="menu_exec"
-        
-        action="action_exec" sequence="3" />
+      <menuitem 
+        name="VCLS"
+        parent="contacts.menu_contacts"
+        id="menu_VCLS"
+        action=""
+        sequence="3"
+      />
+
+      <menuitem 
+        name="VCLS Entities"
+        parent="menu_VCLS"
+        id="menu_VCLS_entities"
+        action="action_vcls_entities"
+        sequence="3"
+      />
+
+      <menuitem 
+        name="Accounts"
+        parent="contacts.menu_contacts"
+        id="menu_accounts"
+        action="action_accounts"
+        sequence="6"
+      />
+
       
   </data>
 </odoo>

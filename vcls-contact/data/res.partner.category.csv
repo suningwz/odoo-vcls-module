@@ -1,0 +1,10 @@
+id,name,parent_id:id
+category_account,Account,
+category_suppliers,Suppliers,
+category_PS,Project Services,category_suppliers
+category_AS,Admin Services,category_suppliers
+category_Office,Office,category_suppliers
+category_competitor,Competitor,
+category_partner,Partner,
+category_regulator,Regulator,
+category_conference_org,Conference Organisation,

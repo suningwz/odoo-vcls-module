@@ -6,16 +6,27 @@ class ContactExt(models.Model):
     
     _inherit = 'res.partner'
 
-    
-    hidden = fields.Boolean(string="Confidential", default=False)
-# class vcls-contact(models.Model):
-#     _name = 'vcls-contact.vcls-contact'
+    hidden = fields.Boolean(
+        string="Confidential",
+        default=False,
+        )
 
-#     name = fields.Char()
-#     value = fields.Integer()
-#     value2 = fields.Float(compute="_value_pc", store=True)
-#     description = fields.Text()
-#
-#     @api.depends('value')
-#     def _value_pc(self):
-#         self.value2 = float(self.value) / 100
+    
+    is_internal = fields.Boolean(
+        string="Is Internal",
+        compute = '_compute_is_internal',
+        store = True,
+        default = False,
+    )
+
+    ###################
+    # COMPUTE METHODS #
+    ###################
+    
+    @api.depends('employee','id')
+    def _compute_is_internal(self):
+        for contact in self:
+            if contact.employee :#or self.env['res.company'].search([('partner_id.id','=',contact.id)]):
+                contact.is_internal = True
+    """
+    """
