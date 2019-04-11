@@ -8,6 +8,7 @@
             parent=""
             sequence="100"
             action=""
+            web_icon="fa fa-code,#f1c40f,#34495e"
         />
 
         <record id="menu_dev_project" model="ir.ui.menu">
