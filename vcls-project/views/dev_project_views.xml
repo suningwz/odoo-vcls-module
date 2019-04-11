@@ -125,18 +125,6 @@
             </field>
         </record>
 
-        <!-- EXTENDING ACTUAL PROJECT.TASK VIEW TO INCLUDE THINGS 
-        <record model="ir.ui.view" id="vcls_view_project_task_form">
-            <field name="name">project.task.form</field>
-            <field name="model">project.task</field>
-            <field name="inherit_id" ref="project.view_task_form2"/>
-            <field name="arch" type="xml">
-                <field name="project_id" position="before">
-                <field name="id"/>
-                </field>
-            </field>
-        </record>
-        -->
 
         <!-- Main Dev Projects Actions -->
         <record id="vcls-project.action_main_project" model="ir.actions.act_window">
