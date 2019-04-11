@@ -257,6 +257,10 @@ class Leave(models.Model):
         for rec in self:
             if rec.holiday_type != 'employee' or not rec.employee_id or rec.holiday_status_id.allocation_type == 'no':
                 continue
+
+            #if the current user is member of HR, then bypass the validation.
+            if self.env.user.has_group('vcls-hr.vcls_group_HR_local'):
+                continue
             
             #if the holiday type authorizes to take credit, then the limit is the calculated max credit
             if rec.holiday_status_id.authorize_negative:
@@ -265,5 +269,5 @@ class Leave(models.Model):
                 limit = rec.future_number_of_days
                 
             if  (limit + rec.number_of_days) < rec.number_of_days: #we add number_of_days becaus the virtual remaining leaves is already updated when we test this part of the code
-                raise ValidationError('The number of remaining leaves ({} days) is not sufficient for this leave type.\n'
-                                        'Please also check the leaves waiting for validation ({} days).'.format(round(limit + rec.number_of_days,2),rec.number_of_days))
+                raise ValidationError('The number of remaining leaves ({} days) is currently not sufficient for this leave type.\n'
+                                        'Please contact your local HR representative for particular case management.'.format(round(limit + rec.number_of_days,2)))
