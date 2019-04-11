@@ -4,7 +4,15 @@
     <!-- used to visualize VCLS Entities-->
     <record model="ir.actions.act_window" id="action_vcls_entities">
       <field name="name">VCLS Entities</field>
-      <field name="domain" eval="[('is_company','=',True)]"/>
+      <field name="domain" eval="[('is_company','=',True),('is_internal','=',True)]"/>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">kanban,tree,form,activity</field>
+    </record>
+
+    <!-- used to visualize VCLS Employees-->
+    <record model="ir.actions.act_window" id="action_vcls_employees">
+      <field name="name">VCLS Employees</field>
+      <field name="domain" eval="[('employee','=',True)]"/>
       <field name="res_model">res.partner</field>
       <field name="view_mode">kanban,tree,form,activity</field>
     </record>

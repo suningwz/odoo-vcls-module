@@ -18,6 +18,14 @@
       />
 
       <menuitem 
+        name="VCLS Employee"
+        parent="menu_VCLS"
+        id="menu_VCLS_employees"
+        action="action_vcls_employees"
+        sequence="6"
+      />
+
+      <menuitem 
         name="Accounts"
         parent="contacts.menu_contacts"
         id="menu_accounts"

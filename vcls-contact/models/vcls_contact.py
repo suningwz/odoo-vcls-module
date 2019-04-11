@@ -23,10 +23,10 @@ class ContactExt(models.Model):
     # COMPUTE METHODS #
     ###################
     
-    @api.depends('employee','id')
+    @api.depends('employee')
     def _compute_is_internal(self):
         for contact in self:
-            if contact.employee :#or self.env['res.company'].search([('partner_id.id','=',contact.id)]):
+            if contact.employee or self.env['res.company'].search([('partner_id.id','=',contact.id)]):
                 contact.is_internal = True
     """
     """
