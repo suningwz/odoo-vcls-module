@@ -7,6 +7,7 @@ from odoo.exceptions import UserError, ValidationError
 class ChangeRequest(models.Model):
     _name = 'helpdesk.change.request'
     _description = 'Change Request'
+    _inherit = 'helpdesk.ticket'
 
     name = fields.Char()
     reason_for_change = fields.Text('Reason for Change')
@@ -14,7 +15,7 @@ class ChangeRequest(models.Model):
     impact = fields.Integer()
     severity = fields.Selection([('1','Low / Informational'),('2','Normal / Minor'),('3','Significant / Critical')],string="Severity")
     main_risks = fields.Text('Main risks')
-    priority = fields.Selection([('1','Standard'),('2','Minor'),('3','Medium'),('4','Critical')],string="Priority")
+    priority = fields.Selection([('0','Standard'),('1','Minor'),('2','Medium'),('3','Critical')],string="Priority")
     cmb_meeting_date = fields.Date(string="CMB Meeting date")
     validation_status = fields.Selection([('1','Approved'),('2','Rejected'),('3','On Hold')],string="Validation Status")
     risk_analysis = fields.Char() 
