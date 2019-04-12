@@ -6,3 +6,4 @@ access_helpdesk_ticket_type_employee,helpdesk.ticket.type.employee,helpdesk.mode
 access_ticket_subcategory_admin,ticket.subcategory.admin,model_helpdesk_ticket_subcategory,base.group_system,1,1,1,1
 access_ticket_subcategory_default,ticket.subcategory.default,model_helpdesk_ticket_subcategory,,1,0,0,0
 access_ticket_subcategory_manager,ticket.subcategory.manager,model_helpdesk_ticket_subcategory,helpdesk.group_helpdesk_manager,1,1,1,1
+access_ticket_change_request,change_request.default,model_helpdesk_change_request,,1,1,1,1

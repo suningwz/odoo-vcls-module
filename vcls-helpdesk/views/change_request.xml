@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+
+        <record id="helpdesk_change_request_action" model="ir.actions.act_window">
+            <field name="name">Change Request</field>
+            <field name="res_model">helpdesk.change.request</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem
+          id="helpdesk_change_request_menu"
+          action="helpdesk_change_request_action"
+          name = "Change Request"
+          parent="helpdesk.menu_helpdesk_root"
+          sequence="5" />
+
+
+       <!-- View Form related to the existing employees -->
+       <!--
+        <record id="change_request_view_tree" model="ir.ui.view">
+            <field name="name">Change Request List</field>
+            <field name="model">helpdesk.change.request</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="change_request_view_form" model="ir.ui.view">
+            <field name="name">Change Request Form</field>
+            <field name="model">helpdesk.change.request</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="change_request_view_search" model="ir.ui.view">
+            <field name="name">Change Request Search</field>
+            <field name="model">helpdesk.change.request</field>
+            <field name="arch" type="xml">
+                <search>    
+                    <field name="name"/>
+                </search>
+            </field>
+        </record> -->
+
+    </data>
+</odoo>
