@@ -1,0 +1,143 @@
+<odoo>
+    <data>
+
+        <record id="dev_project_view_kanban" model="ir.ui.view">
+            <field name="name">dev.project.project.kanban</field>
+            <field name="model">project.project</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile">
+                    <field name="user_id" string="Project Manager"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_content oe_kanban_global_click o_kanban_get_form">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <strong><field name="name" string="Project Name"/></strong>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-8">
+                                        <field name="partner_id" string="Contact"/>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="oe_kanban_bottom_right">
+                                            <img t-att-src="kanban_image('res.users', 'image_small', record.user_id.raw_value)" t-att-title="record.user_id.value" t-att-alt="record.user_id.value" width="24" height="24" class="oe_kanban_avatar float-right"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="o_project_kanban_boxes">
+                                    <a class="o_project_kanban_box" name="304" type="action">
+                                        <div>
+                                            <span class="o_value"><t t-esc="record.task_count.value"/></span>
+                                            <span class="o_label"><t t-esc="record.label_tasks.value"/></span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="view_dev_project_form" model="ir.ui.view">
+            <field name="name">view_dev_project_form</field>
+            <field name="model">project.project</field>
+            <field name="arch" type="xml">
+                <form string="Development Project">
+                <header>
+                        <button name="150" string="Share" type="action" class="oe_highlight oe_read_only"/>
+                    </header>
+                <sheet string="Project">
+                    <div class="oe_button_box" name="button_box" groups="base.group_user">
+                        <button class="oe_stat_button" type="action" name="514" icon="fa-tasks">
+                            <field string="Versions" name="parent_task_count" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="action" name="514" icon="fa-tasks">
+                            <field string="Tasks" name="child_task_count" widget="statinfo" options="{'label_field': 'label_tasks'}"/>
+                        </button>
+                        <button name="action_view_all_rating" type="object" attrs="{'invisible': ['|', '|', ('rating_status', '=', 'no'), ('percentage_satisfaction_task', '=', -1)]}" class="oe_stat_button oe_percent" icon="fa-smile-o" groups="project.group_project_rating">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="percentage_satisfaction_task" nolabel="1"/>
+                                </span>
+                                <span class="o_stat_text">
+                                    % On <field readonly="1" name="label_tasks" options="{'label_field': 'label_tasks'}"/>
+                                </span>
+                            </div>
+                        </button>
+                        <button name="toggle_active" type="object" confirm="(Un)archiving a project automatically (un)archives its tasks. Do you want to proceed?" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Project Name"/>
+                        </h1>
+                        <div name="options_active">
+                            <div>
+                                <label for="label_type" class="oe_inline" string="Project Type :"/>
+                                <field name="project_type" class="oe_inline oe_input_align"/>
+                            </div>
+                        </div>
+                    </div>
+                    <notebook>
+                        <page name="settings" string="Settings">
+                            <group>
+                                <field name="user_id" string="Project Manager" attrs="{'readonly':[('active','=',False)]}"/>
+                                <field name="privacy_visibility" widget="radio"/>
+                                <label for="rating_status" groups="project.group_project_rating"/>
+                                <div groups="project.group_project_rating">
+                                    <field name="rating_status" widget="radio"/>
+                                    <p attrs="{'invisible': [('rating_status','not in',('periodic','stage'))]}" class="text-muted oe_edit_only">
+                                        Edit project's stages and set an email template on the stages on which you want to activate the rating.
+                                    </p>
+                                </div>
+                                <field name="rating_status_period" class="oe_inline" attrs="{'required': [('rating_status','=','periodic')], 'invisible': [('rating_status','!=','periodic')]}" groups="project.group_project_rating"/>
+                                <field name="portal_show_rating" attrs="{'invisible': [('rating_status','==','no')]}" groups="project.group_project_rating"/>
+                                <field name="subtask_project_id" groups="project.group_subtask_project"/>
+                                
+                            </group>
+                            <group name="misc">
+                                <group string="Configuration" groups="base.group_no_one" name="configuration">
+                                    
+                                </group>
+                            </group>
+                        </page>
+                        <page name="emails" string="Emails" attrs="{'invisible': [('alias_domain', '=', False)]}">
+                            <group name="group_alias">
+                                <label for="alias_name" string="Email Alias"/>
+                                <div name="alias_def">
+                                    <field name="alias_id" class="oe_read_only oe_inline" string="Email Alias" required="0"/>
+                                    <div class="oe_edit_only oe_inline" name="edit_alias" style="display: inline;">
+                                        <field name="alias_name" class="oe_inline"/>@<field name="alias_domain" class="oe_inline" readonly="1"/>
+                                    </div>
+                                </div>
+                                <field name="alias_contact" class="oe_inline oe_edit_only" string="Accept Emails From"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" help="Follow this project to automatically track the events associated to tasks and issues of this project." groups="base.group_user"/>
+                </div>
+                </form>
+            </field>
+        </record>
+
+
+        <!-- Main Dev Projects Actions -->
+        <record id="vcls-project.action_main_project" model="ir.actions.act_window">
+            <field name="name">Development Projects</field>
+            <field name="res_model">project.project</field>
+            <field name="view_type">form</field>
+            <field name="domain">[('project_type','=','dev')]</field>
+            <field name="view_mode">kanban,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.dev_project_view_kanban')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.view_dev_project_form')}), 
+            ]"/>
+        </record>
+
+    </data>
+</odoo>

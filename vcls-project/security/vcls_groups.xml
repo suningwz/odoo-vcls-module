@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Create the VCLS DEV group category -->
+        <record model="ir.module.category" id="group_category_vcls_development">
+            <field name="name">VCLS Internal Dev</field>
+            <field name="description">Extra right to the internal development team</field>
+            <field name="sequence">3</field>
+        </record>
+        
+        <!-- Create the dev related groups -->
+        <record id="vcls_group_dev_manager" model="res.groups">
+            <field name="name">Development Manager</field>
+            <field name="category_id" ref="group_category_vcls_development"/>
+        </record>
+        
+        <record id="vcls_group_dev_user" model="res.groups">
+            <field name="name">Development User</field>
+            <field name="category_id" ref="group_category_vcls_development"/>
+        </record>
+        
+        <!-- Extend admin group inheritance -->
+        <record id="base.group_system" model="res.groups">
+            <field name="implied_ids" eval="[(4,ref('vcls_group_dev_manager'))]"/>
+        </record>
+
+        <record id="vcls-project.vcls_group_dev_manager" model="res.groups">
+            <field name="implied_ids" eval="[(4,ref('vcls_group_dev_user'))]"/>
+        </record>
+        
+    </data>
+</odoo>

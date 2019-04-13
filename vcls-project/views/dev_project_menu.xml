@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <menuitem
+            id="menu_dev_project"
+            name="Development"
+            parent=""
+            sequence="100"
+            action=""
+            web_icon="fa fa-code,#f1c40f,#34495e"
+        />
+
+        <record id="menu_dev_project" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('vcls-project.vcls_group_dev_user'))]"/>
+        </record>
+        
+        <menuitem
+            id="menu_dev_project_main"
+            name="Development Projects"
+            parent="menu_dev_project"
+            sequence="3"
+            action="vcls-project.action_main_project"
+        />
+
+        
+        <menuitem
+            id="menu_dev_task_main"
+            name="Development Tasks"
+            parent="menu_dev_project"
+            sequence="6"
+            action="vcls-project.action_task_dev"
+        />
+        <!--
+        -->
+
+    </data>
+</odoo>

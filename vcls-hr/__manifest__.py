@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '1.3.2',
+    'version': '1.4.0',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -118,5 +118,6 @@
         'demo/hr.leave.type.csv',
         # Not working
         # 'demo/leave_allocation.xml',
+        'demo/hr.leave.xml'
     ],
 }

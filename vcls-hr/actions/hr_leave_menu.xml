@@ -106,6 +106,27 @@
             parent="hr_holidays.menu_hr_holidays_root"
             sequence="4"
         />
+
+
+        <!-- Managee's leave menu action -->
+        <record id="hr_holidays.action_hr_holidays_dashboard" model="ir.actions.act_window">
+            <field name="view_mode">gantt,calendar</field>
+            <field name="context">{'search_default_year': 1, 
+            'search_default_group_employee': 1, 
+            'short_name': 1,
+            'search_default_my_team_leaves': 1,
+            }</field>
+        </record>
+
+        <!-- Menu item to see managee's leaves calendar/gantt view -->
+        <menuitem
+            id="menu_leaves_management_overview"
+            name="Gantt Overview"
+            parent="menu_leaves_management"
+            sequence="15"
+            action="hr_holidays.action_hr_holidays_dashboard"
+        />
+
         <!-- Configure groups to access leaves management: LM and HR teams -->
         <record id="menu_leaves_management" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_lm'))]"/>
@@ -248,6 +269,7 @@
             sequence="15"
             action="hr_holidays.hr_leave_allocation_action_all"
         />
+
         <!-- Configure groups to access leaves management -->
         <record id="menu_leaves_allocation" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
@@ -290,6 +312,25 @@
         <record id="hr_holidays.menu_hr_holidays_report" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
         </record>
+
+        <!-- action for Leave's overview -->
+        <record id="action_hr_absent_today_overview" model="ir.actions.act_window">
+            <field name="name">Absent Today</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_mode">kanban,form</field>
+            <field name="domain">[('is_absent_totay','=',True)]</field>
+            <field name="context">{'search_default_group_office': 1}</field>
+            <field name="view_id" ref="view_employee_absent_kanban"/>
+        </record>
+
+        <!-- Menu item for leave default view (when open Leaves module = Absent today) -->
+        <menuitem
+        id="hr_holidays.menu_hr_holidays_dashboard"
+        name="Absent Today"
+        parent="hr_holidays.menu_hr_holidays_root"
+        sequence="1"
+        action="action_hr_absent_today_overview"
+        groups="hr_holidays.group_hr_holidays_manager"/>
         
     </data>
 </odoo>
