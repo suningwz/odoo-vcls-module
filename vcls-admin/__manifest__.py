@@ -18,8 +18,15 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base',
-                'vcls-hr'],
+    'depends': [
+                    'vcls-hr',
+                    'vcls-helpdesk',
+                    'vcls-contact',
+                    'vcls-crm',
+                    'vcls-interfaces',
+                    'vcls-project',
+                    'vcls-theme'
+                ],
 
     # always loaded
     'data': [
