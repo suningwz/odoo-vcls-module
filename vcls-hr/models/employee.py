@@ -440,7 +440,7 @@ class Employee(models.Model):
         self._set_resource_calendar()
         self._wt_to_tag()
         self._check_lm_membership()
-        self._end_contracts()
+        #self._end_contracts()
     
     #if multiple open contracts exists, then we set the end date of the old ones the day before the start of the new ones
     @api.model
