@@ -26,6 +26,7 @@
 
         ### CONFIGURATION DATA ###
         'data/res.partner.category.csv',
+        'data/ir.config_parameter.csv',
         
         ### SECURITY ###
         'security/vcls_groups.xml',
