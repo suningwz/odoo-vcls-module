@@ -39,7 +39,7 @@
         #########
         'views/ticket.xml',
         'views/wizard_ticket.xml',
-        'views/change_request.xml',
+        #'views/change_request.xml',
         
         ###########
         # ACTIONS #
