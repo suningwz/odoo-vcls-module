@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "vcls-installer",
+    'name': "vcls-admin",
 
     'summary': """
-        This module install every other VCLS modules in order to avoid conflicts.
-        """,
+        VCLS customs for admin applications""",
 
     'description': """
     """,
@@ -20,24 +19,23 @@
 
     # any module necessary for this one to work correctly
     'depends': [
-                # install contacts before
-                'vcls-hr',
-                'vcls-helpdesk',
-                'vcls-contact',
-                'vcls-crm',
-                'vcls-interfaces',
-                'vcls-project',
-                'vcls-theme'
-        ],
+                    'vcls-hr',
+                    'vcls-helpdesk',
+                    'vcls-contact',
+                    'vcls-crm',
+                    'vcls-interfaces',
+                    'vcls-project',
+                    'vcls-theme'
+                ],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
-        # 'views/views.xml',
-        # 'views/templates.xml',
+        'views/views.xml',
+        'views/templates.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
-        # 'demo/demo.xml',
+        'demo/demo.xml',
     ],
 }
