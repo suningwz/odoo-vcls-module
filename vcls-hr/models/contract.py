@@ -127,7 +127,7 @@ class Contract(models.Model):
     def _check_dates(self):
         invalid = self.filtered(lambda c: c.date_end and c.date_start > c.date_end)
         if invalid:
-            raise ValidationError(_('Contract start date must be earlier than contract end date on {}.'.format(invalid.mapped('name'))))
+            raise ValidationError('Contract start date must be earlier than contract end date on {}.'.format(invalid.mapped('name')))
     
     #####################
     # Selection Methods #
