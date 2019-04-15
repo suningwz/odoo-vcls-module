@@ -2,6 +2,7 @@
 
 #Odoo Imports
 from odoo import api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 class Contract(models.Model):
     
@@ -116,13 +117,17 @@ class Contract(models.Model):
         for rec in self:
             rec.company_id = rec.employee_id.company_id
             rec.resource_calendar_id = False
+
+    ######################
+    # Validation Methods #
+    ######################
     
-    """
-    @api.onchange('job_id','company_id')
-    def _onchange_IT_ticket(self):
-        for rec in self:
-            rec.employee_id.create_IT_ticket('modify')
-    """
+    #We override this one just to add a more indicative error message.
+    @api.constrains('date_start', 'date_end')
+    def _check_dates(self):
+        invalid = self.filtered(lambda c: c.date_end and c.date_start > c.date_end)
+        if invalid:
+            raise ValidationError('Contract start date must be earlier than contract end date on {}.'.format(invalid.mapped('name')))
     
     #####################
     # Selection Methods #
