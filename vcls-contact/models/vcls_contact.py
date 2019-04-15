@@ -12,14 +12,14 @@ class ContactExt(models.Model):
         )
 
     stage = fields.Selection([
-        ('1', 'Undefined'),
-        ('2', 'New'),
-        ('3', 'Verified'),
-        ('4', 'Outdated'),
-        ('5', 'Archived'),], 
+        ('0', 'Undefined'),
+        ('1', 'New'),
+        ('2', 'Verified'),
+        ('3', 'Outdated'),
+        ('4', 'Archived')], 
         string='Status',
         track_visibility='onchange',
-        default='1',
+        default='0',
         )
 
     is_internal = fields.Boolean(
