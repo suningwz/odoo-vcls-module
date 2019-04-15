@@ -1,6 +1,20 @@
 <odoo>
   <data>
 
+    <record id="base.view_partner_form" model="ir.ui.view">
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_form" />
+      <field name="arch" type="xml">
+          <!--This will create the statusbar, thanks to the widget. -->
+          <xpath expr="//div[@name='button_box']" position="before">
+              <button name="toggle_active" />
+              <header>
+                <field name="stages" widget="statusbar"/>
+              </header>
+          </xpath>
+      </field>
+    </record>
+
     <record id="view_contact_search_main" model="ir.ui.view">
       <field name="name">view_contact_search_main</field>
       <field name="model">res.partner</field>
