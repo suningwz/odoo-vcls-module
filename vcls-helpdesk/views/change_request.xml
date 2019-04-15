@@ -57,7 +57,9 @@
                                 <field name="sla_id" invisible="1"/>
                                 <field name="reason_for_change"/>
                                 <field name="due_date"/>
-                                <field name="impact"/>
+                                <field name="impact" />
+                                <field name="severity"/>
+                                <field name="main_risks"/>
                               
                             </group>
                             <group>
@@ -66,14 +68,13 @@
                                 <field name="partner_email"/>
                                 <field name="ticket_type_id"/>
                                 <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
-                                <field name="severity"/>
-                                <field name="main_risks"/>
-                                <field name="cmb_meeting_date"/>
-                                <field name="validation_status"/>
+                                
+                                <field name="cmb_meeting_date" attrs="{'invisible': ['|', ('priority', '=', '0'), '|', ('priority', '=', '1'), ('priority', '=', False)]}"/>
+                                <field name="validation_status" attrs="{'invisible': ['|', ('priority', '=', '0'), '|', ('priority', '=', '1'), ('priority', '=', False)]}"/>
                                 <field name="risk_analysis" widget="url"/>
                                 <field name="implementation_testing_plan" widget="url"/>
                                 <field name="rollback_plan" widget="url"/>
-                                <field name="backout_plan" widget="url"/>
+                                <field name="backout_plan" widget="url"/> 
                             </group>
                         </group>
                         <field name="description" class="field_description" placeholder="Description of the ticket..."/>
