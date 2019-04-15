@@ -85,6 +85,131 @@
       <field name="res_model">res.partner</field>
       <field name="view_mode">kanban,tree,form,activity</field>
     </record>
-      
+    
+    <record id="base.view_partner_form" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="priority" eval="1"/>
+            <field name="arch" type="xml">
+                <form string="Partners">
+
+                <header>
+                   <field name="stage" widget="statusbar" options="{'clickable': '1'}"/> 
+                </header>
+                <sheet>
+                     <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                options='{"terminology": "archive"}'/>
+                        </button>
+                    </div> 
+                    <div id="o_contact_container">
+                        
+                            <div id="o_contact_main">
+                            
+                                <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;:&quot;image_medium&quot;}"/>
+                               
+                                <div class="oe_title">
+                                    <label for="name" class="oe_edit_only" string="First Name then Family Name" />
+                                    <h1>
+                                        <field name="name" placeholder="Contact First Name then Family Name" required="True"/>
+                                    </h1>
+                                </div>
+                    
+                                
+                                
+                                <!-- the header is accessible to everyone -->
+                                <group>
+                                    <group string="">
+                                        <field name="is_company" invisible="1"/>
+                                        <field name="email" widget="email"/>
+                                        
+                                    </group>
+                                    <group string="">
+                                        <field name="phone" widget="phone"/>
+                                        <field name="mobile" widget="phone"/>
+                                    </group>
+                                </group>
+                                
+                            </div>
+                      </div>
+                      <notebook>
+                            <!-- personnal info just accessible to the employee and the hr -->
+                            <page name="personal_information" string="Personal Information" attrs="">
+                                <group>
+                                    <group string="Administrative Information">
+                                        <field name="name"/>
+                                        <field name="parent_name"/>
+                                        <field name="country_id" string="Primary Citizenship"/>
+                                    </group>
+                                    
+                                    <group string="Contact Information">
+                                        
+                                        <label for="street" string="Private Address"/>
+                                        <div class="o_address_format">
+                                            <field name="street" placeholder="Street..." class="o_address_street"/>
+                                            <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                            <field name="city" placeholder="City" class="o_address_city"/>
+                                            <field name="state_id" class="o_address_state" placeholder="State" options="{&quot;no_open&quot;: True}"/>
+                                            <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                            <field name="vat" placeholder="e.g. BE0477472701" attrs="{'readonly': [('parent_id','!=',False)]}"/>
+                                        </div>
+                    
+                                        <field name="email" widget="email"/>
+                                        <field name="phone" widget="phone"/>
+                                        
+                                    </group>
+                                </group>
+                                <field name="comment" placeholder="Other Information ..." colspan="4"/>
+                            </page>
+                            
+                            <page name="job_information" string="Job Information" attrs="">
+                            <!-- <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">-->
+                                <group>
+                                    <group string="General Information">
+                        
+                                        <field name="category_id" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" placeholder="e.g. FR - Cadre" groups="hr.group_hr_user"/>
+                                        <field name="function"/>
+                                        <field name="parent_id" string='Line Manager'/>
+                                        
+                                        
+                                    </group>
+                                   
+                                    <group string=" ">
+                                        <field name="company_id" string="Legal Entity"/>
+                                        <field name="user_id"/>
+                                        <!--<field name="job_profile_id"/> -->
+                                        
+                                        
+                                    </group>
+                                      
+                                    </group>
+                                    
+                            </page>
+                            
+                            <page name='sales_purchases' string="Sales &amp; Purchases">
+                                <group name="container_row_2">
+                                    <group string="Sales" name="sale" priority="1">
+                                        <field name="customer"/>
+                                        <field name="user_id"/>
+                                    </group>
+                                    <group string="Purchase" name="purchase" priority="2">
+                                        <field name="supplier"/>
+                                    </group>
+                                    <group string="Misc">
+                                        <field name="ref"/>
+                                        <field name="barcode"/>
+                                        <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                                        <field name="industry_id" attrs="{'invisible': [('is_company', '=', False)]}" options="{'no_create': True}"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                </sheet>
+                </form>
+            </field>
+        </record>
+        
   </data>
 </odoo>

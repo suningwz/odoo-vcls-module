@@ -22,15 +22,15 @@ class ContactExt(models.Model):
     )
 
     stage = fields.Selection([
-        ('1', 'Undefined'),
-        ('2', 'New'),
-        ('3', 'Verified'),
-        ('4', 'Outdated'),
-        ('5', 'Archived'),
-        ('6', 'Inactive')], 
+        ('0', 'Undefined'),
+        ('1', 'New'),
+        ('2', 'Verified'),
+        ('3', 'Outdated'),
+        ('4', 'Archived')], 
         string='Status',
-        default='1',
-    )
+        track_visibility='onchange',
+        default='0',
+        )
 
     sharepoint_folder = fields.Char(
         string = 'Sharepoint Folder',
