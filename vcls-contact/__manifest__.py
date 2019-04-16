@@ -19,7 +19,11 @@
     'version': '0.1.3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'contacts'],
+    'depends': [
+        'base',
+        'contacts',
+        'survey',
+        ],
 
     # always loaded
     'data': [

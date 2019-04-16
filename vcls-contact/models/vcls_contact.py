@@ -53,6 +53,13 @@ class ContactExt(models.Model):
         string = 'Account Manager',
     )
 
+    #BD fields
+    country_group_id = fields.Many2one(
+        'res.country.group',
+        string = "Geographic Area",
+        compute = '_compute_country_group',
+    )
+
     #project management fields
     assistant_id = fields.Many2one(
         'res.users',
@@ -86,14 +93,20 @@ class ContactExt(models.Model):
             if contact.employee or self.env['res.company'].search([('partner_id.id','=',contact.id)]):
                 contact.is_internal = True
     
-    @api.depends('category_id','create_folder')
+    @api.depends('country_id')
+    def _compute_country_group(self):
+        for contact in self:
+            # please dev here
+            pass
+    
+    @api.depends('category_id','create_folder','altname')
     def _compute_sharepoint_folder(self):
         for contact in self:
             #search if this is an account contact
             if self.env.ref('vcls-contact.category_account') in contact.category_id and contact.create_folder:
                 root = self.env.ref('vcls-contact.conf_path_sp_client_root').value
                 contact.sharepoint_folder = "{}{:.1}/{}".format(root,contact.altname,contact.altname)
-                raise ValidationError("{}".format(contact.sharepoint_folder))
+            #raise ValidationError("{}".format(contact.sharepoint_folder))
                 
 
     # We reset the number of bounced emails to 0 in order to re-detect problems after email change
