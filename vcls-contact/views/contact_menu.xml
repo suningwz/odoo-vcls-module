@@ -7,6 +7,7 @@
       -->
 		<record id="contacts.res_partner_menu_contacts" model="ir.ui.menu">
 			<field name="name">All</field>
+			<field name="active" eval="False"/>
 		</record>
 
 		<record id="contacts.res_partner_menu_config" model="ir.ui.menu">
@@ -84,7 +85,7 @@
 			parent="contacts.menu_contacts" 
 			id="menu_admin" 
 			action="" 
-			sequence="12" />
+			sequence="1" />
 
 		<menuitem 
 			name="All" 
