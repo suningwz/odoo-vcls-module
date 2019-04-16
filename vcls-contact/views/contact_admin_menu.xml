@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.actions.act_window" id="action_admin_all">
+            <field name="name">All contacts</field>
+            <field name="domain" eval="[('stage','!=',4)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_admin_new">
+            <field name="name">New contacts</field>
+            <field name="domain" eval="[('stage','=',1)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_admin_outdated">
+            <field name="name">Outdated contacts</field>
+            <field name="domain" eval="[('stage','=',3)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_admin_archive">
+            <field name="name">Archived contacts</field>
+            <field name="domain" eval="[('stage','=',4)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
+        <!-- Administration menu -->
+        <menuitem name="Administration" parent="contacts.menu_contacts" id="menu_admin" action="" sequence="3" />
+
+        <menuitem name="All" parent="menu_admin" id="menu_admin_all" action="action_admin_all" sequence="3" />
+
+        <menuitem name="New" parent="menu_admin" id="menu_admin_new" action="action_admin_new" sequence="3" />
+
+        <menuitem name="Outdated" parent="menu_admin" id="menu_admin_outdated" action="action_admin_outdated" sequence="3" />
+
+        <menuitem name="Archive" parent="menu_admin" id="menu_admin_archive" action="action_admin_archive" sequence="3" />
+
+    </data>
+</odoo>
