@@ -2,7 +2,7 @@
 <odoo>
     <data>
 
-    <!-- Main Form View, Adapting to contact tags as well as user group -->
+        <!-- Main Form View, Adapting to contact tags as well as user group -->
         <record id="view_form_contact_all" model="ir.ui.view">
             <field name="name">view_form_contact_all</field>
             <field name="model">res.partner</field>

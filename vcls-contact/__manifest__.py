@@ -41,8 +41,7 @@
         'views/contact_views.xml',
 
         ### MENUS ###
-        'views/contact_menu.xml',
-        'views/contact_admin_menu.xml'
+        'views/contact_menu.xml'
         ],
 
     # only loaded in demonstration mode
