@@ -9,6 +9,8 @@ class ContactExt(models.Model):
     
     ### CUSTOM FIELDS FOR EVERY KIND OF CONTACTS ###
 
+    description = fields.Text()
+
     hidden = fields.Boolean(
         string="Confidential",
         default=False,
