@@ -1,215 +1,362 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <data>
+    <data>
 
-    <!-- Main Form View, Adapting to contact tags as well as user group -->
+        <!-- Main Form View, Adapting to contact tags as well as user group -->
         <record id="view_form_contact_all" model="ir.ui.view">
             <field name="name">view_form_contact_all</field>
             <field name="model">res.partner</field>
             <field name="arch" type="xml">
                 <form string="Partners">
-                    <header>
-                   <field name="stage" widget="statusbar" options="{'clickable': '1'}"/> 
-                </header>
-                <sheet>
-                     <div class="oe_button_box" name="button_box">
-                        <button name="toggle_active" type="object"
-                                class="oe_stat_button" icon="fa-archive">
-                            <field name="active" widget="boolean_button"
-                                options='{"terminology": "archive"}'/>
-                        </button>
-                    </div> 
-                    <div id="o_contact_container">
-                        
-                            <div id="o_contact_main">
-                            
-                                <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;:&quot;image_medium&quot;}"/>
-                               
-                                <div class="oe_title">
-                                    <label for="name" class="oe_edit_only" string="First Name then Family Name" />
-                                    <h1>
-                                        <field name="name" placeholder="Contact First Name then Family Name" required="True"/>
-                                    </h1>
+                    <sheet>
+                        <header>
+                            <field name="stage" widget="statusbar" options="{'clickable': '1'}"/> 
+                        </header>
+                        <div id="o_contact_container">
+                                <div id="o_contact_main">
+                                    <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;:&quot;image_medium&quot;}"/>
+                                    <div class="oe_title">
+                                        <label for="name" class="oe_edit_only" string="First Name then Family Name" />
+                                        <h1>
+                                            <field name="name" placeholder="Contact First Name then Family Name" required="True"/>
+                                        </h1>
+                                    </div>
+                                    <!-- the header is accessible to everyone -->
+                                    <group>
+                                        <group string="">
+                                            <!-- NOT company -->
+                                            <group attrs="{'invisible': [('is_company', '=', True)]}">
+                                                <field name="email"/>
+                                                <field name="phone"/>
+                                            </group>
+                                            <!-- is_company -->
+                                            <group attrs="{'invisible': [('is_company', '=', False)]}">
+                                                <field name="category_id"/>
+                                                <field name="website"/>
+                                                <field name="city"/>
+                                                <field name="country_id"/>
+                                                <field name="is_company" invisible="1"/>
+                                                <field name="active" invisible="1" />
+                                            </group>
+                                        </group>
+                                        <group string="">
+                                            <group string="Sales" name="sale" priority="1">
+                                                <field name="customer"/>
+                                                <field name="user_id"/>
+                                            </group>
+                                            <field name="parent_id"/>
+                                        </group>
+                                    </group>
                                 </div>
-                    
-                                
-                                
-                                <!-- the header is accessible to everyone -->
-                                <group>
-                                    <group string="">
-                                        <field name="is_company" invisible="1"/>
-                                        <field name="email" widget="email"/>
-                                        
-                                    </group>
-                                    <group string="">
-                                        <field name="phone" widget="phone"/>
-                                        <field name="mobile" widget="phone"/>
-                                    </group>
-                                </group>
-                                
                             </div>
-                      </div>
-                      <notebook>
-                            <!-- personnal info just accessible to the employee and the hr -->
-                            <page name="personal_information" string="Personal Information" attrs="">
-                                <group>
-                                    <group string="Administrative Information">
-                                        <field name="name"/>
-                                        <field name="parent_name"/>
-                                        <field name="country_id" string="Primary Citizenship"/>
+                            <notebook>
+                                <!--  related contact (reuse existing one) -->
+                                <page name="individuals" string="Individuals" attrs="{'invisible': [('is_company', '=', False)]}">
+                                    <field name="child_ids" mode="kanban" context="{'default_parent_id': active_id, 'default_street': street, 'default_street2': street2, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_supplier': supplier, 'default_customer': customer, 'default_lang': lang, 'default_user_id': user_id}">
+                                        <kanban>
+                                            <field name="id"/>
+                                            <field name="color"/>
+                                            <field name="name"/>
+                                            <field name="title"/>
+                                            <field name="type"/>
+                                            <field name="email"/>
+                                            <field name="parent_id"/>
+                                            <field name="is_company"/>
+                                            <field name="function"/>
+                                            <field name="phone"/>
+                                            <field name="street"/>
+                                            <field name="street2"/>
+                                            <field name="zip"/>
+                                            <field name="city"/>
+                                            <field name="country_id"/>
+                                            <field name="mobile"/>
+                                            <field name="state_id"/>
+                                            <field name="image_small"/>
+                                            <field name="lang"/>
+                                            <!-- fields in form x2many view to diminish requests -->
+                                            <field name="comment"/>
+                                            <field name="customer"/>
+                                            <field name="display_name"/>
+                                            <field name="supplier"/>
+                                            <templates>
+                                                <t t-name="kanban-box">
+                                                    <t t-set="color" t-value="kanban_color(record.color.raw_value)"/>
+                                                    <div t-att-class="color + (record.title.raw_value == 1 ? ' oe_kanban_color_alert' : '') + ' oe_kanban_global_click'">
+                                                        <div class="o_kanban_image">
+                                                            <img alt="" t-if="record.image_small.raw_value" t-att-src="kanban_image('res.partner', 'image_small', record.id.raw_value)"/>
+                                                            <t t-if="!record.image_small.raw_value">
+                                                                <img alt="Delivery" t-if="record.type.raw_value === 'delivery'" t-att-src='_s + "/base/static/img/truck.png"'/>
+                                                                <img alt="Invoice" t-if="record.type.raw_value === 'invoice'" t-att-src='_s + "/base/static/img/money.png"'/>
+                                                                <t t-if="record.type.raw_value !== 'invoice' &amp;&amp; record.type.raw_value !== 'delivery'">
+                                                                    <img alt="Logo" t-if="record.is_company.raw_value === true" t-att-src='_s + "/base/static/img/company_image.png"'/>
+                                                                    <img alt="Avatar" t-if="record.is_company.raw_value === false" t-att-src='_s + "/base/static/img/avatar.png"'/>
+                                                                </t>
+                                                            </t>
+                                                        </div>
+                                                        <div class="oe_kanban_details">
+                                                            <field name="name"/>
+                                                            <div t-if="record.function.raw_value"><field name="function"/></div>
+                                                            <div t-if="record.email.raw_value"><field name="email" widget="email"/></div>
+                                                            <div t-if="record.type.raw_value != 'contact'">
+                                                                <div>
+                                                                    <field name="zip"/>
+                                                                    <field name="city"/>
+                                                                </div>
+                                                                <field t-if="record.state_id.raw_value" name="state_id"/>
+                                                                <field name="country_id"/>
+                                                            </div>
+                                                            <div t-if="record.phone.raw_value">Phone: <field name="phone"/></div>
+                                                            <div t-if="record.mobile.raw_value">Mobile: <field name="mobile"/></div>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <form string="Contact / Address">
+                                            <sheet>
+                                                <!-- parent_id and type fields needed in attrs in base_address_city module which overwrites
+                                                _fields_view_get() of partner. It would be better to put those fields there but the web client
+                                                dosen't support when a field is displayed several times in the same view.-->
+                                                <field name="type" required="1" widget="radio" options="{'horizontal': true}"/>
+                                                <field name="parent_id" invisible="1"/>
+                                                <hr/>
+                                                <group>
+                                                    <group attrs="{'invisible': [('type','=', 'contact')]}">
+                                                        <label for="street" string="Address"/>
+                                                        <div>
+                                                            <div class="o_address_format" name="div_address">
+                                                                <field name="street" placeholder="Street..." class="o_address_street"/>
+                                                                <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                                                <field name="city" placeholder="City" class="o_address_city"/>
+                                                                <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}' context="{'country_id': country_id, 'zip': zip}"/>
+                                                                <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                                                <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                                                            </div>
+                                                        </div>
+                                                    </group>
+                                                    <group>
+                                                        <field name="name" string="Contact Name" attrs="{'required' : [('type', '=', 'contact')]}"/>
+                                                        <field name="title" placeholder="e.g. Mr."
+                                                            attrs="{'invisible': [('type','!=', 'contact')]}"/>
+                                                        <field name="function" placeholder="e.g. Sales Director"
+                                                            attrs="{'invisible': [('type','!=', 'contact')]}"/>
+                                                        <field name="email"/>
+                                                        <field name="phone" widget="phone"/>
+                                                        <field name="mobile" widget="phone"/>
+                                                        <field name="comment" placeholder="internal note..."/>
+                                                    </group>
+                                                </group>
+                                                <field name="supplier" invisible="True"/>
+                                                <field name="customer" invisible="True"/>
+                                                <field name="lang" invisible="True"/>
+                                                <field name="image" invisible="True"/>
+                                                <field name="user_id" invisible="True"/>
+                                            </sheet>
+                                        </form>
+                                    </field>
+                                </page>
+                                <page name="contact" string="Contact Information" attrs="{'invisible': [('is_company', '=', False)]}">
+                                    <group>
+                                            <label for="street" string="Private Address"/>
+                                            <div class="o_address_format">
+                                                <field name="street" placeholder="Street..." class="o_address_street"/>
+                                                <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                                <field name="city" placeholder="City" class="o_address_city"/>
+                                                <field name="state_id" class="o_address_state" placeholder="State" options="{&quot;no_open&quot;: True}"/>
+                                                <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                                <field name="vat" placeholder="e.g. BE0477472701" attrs="{'readonly': [('parent_id','!=',False)]}"/>
+                                            </div>
+                                            <field name="email" widget="email"/>
+                                            <field name="phone" widget="phone"/>
+                                            <field name="lang"/>
                                     </group>
-                                    
-                                    <group string="Contact Information">
-                                        
-                                        <label for="street" string="Private Address"/>
-                                        <div class="o_address_format">
-                                            <field name="street" placeholder="Street..." class="o_address_street"/>
-                                            <field name="street2" placeholder="Street 2..." class="o_address_street"/>
-                                            <field name="city" placeholder="City" class="o_address_city"/>
-                                            <field name="state_id" class="o_address_state" placeholder="State" options="{&quot;no_open&quot;: True}"/>
-                                            <field name="zip" placeholder="ZIP" class="o_address_zip"/>
-                                            <field name="vat" placeholder="e.g. BE0477472701" attrs="{'readonly': [('parent_id','!=',False)]}"/>
-                                        </div>
-                    
-                                        <field name="email" widget="email"/>
-                                        <field name="phone" widget="phone"/>
-                                        
+                                </page>
+                                <!-- personnal info just accessible to the employee and the hr -->
+                                <page name="personal_information" string="Personal Information" attrs="{'invisible': [('is_company', '=', True)]}">
+                                    <group>
+                                        <group string="Administrative Information">
+                                            <field name="name"/>
+                                            <field name="parent_name"/>
+                                            <field name="country_id" string="Primary Citizenship"/>
+                                        </group>
+                                        <group string="Contact Information">
+                                            <label for="street" string="Private Address"/>
+                                            <div class="o_address_format">
+                                                <field name="street" placeholder="Street..." class="o_address_street"/>
+                                                <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                                <field name="city" placeholder="City" class="o_address_city"/>
+                                                <field name="state_id" class="o_address_state" placeholder="State" options="{&quot;no_open&quot;: True}"/>
+                                                <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                                <field name="vat" placeholder="e.g. BE0477472701" attrs="{'readonly': [('parent_id','!=',False)]}"/>
+                                            </div>
+                                            <field name="email" widget="email"/>
+                                            <field name="phone" widget="phone"/>
+                                        </group>
                                     </group>
-                                </group>
-                                <field name="comment" placeholder="Other Information ..." colspan="4"/>
-                            </page>
-                            
-                            <page name="job_information" string="Job Information" attrs="">
-                            <!-- <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">-->
-                                <group>
-                                    <group string="General Information">
-                        
-                                        <field name="category_id" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" placeholder="e.g. FR - Cadre" groups="hr.group_hr_user"/>
-                                        <field name="function"/>
-                                        <field name="parent_id" string='Line Manager'/>
-                                        
-                                        
+                                    <field name="comment" placeholder="Other Information ..." colspan="4"/>
+                                </page>
+                                
+                                <page name="job_information" string="Job Information" attrs="{'invisible': [('is_company', '=', True)]}">
+                                <!-- <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">-->
+                                    <group>
+                                        <group string="General Information">
+                                            <field name="category_id" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" placeholder="e.g. FR - Cadre" groups="hr.group_hr_user"/>
+                                            <field name="function"/>
+                                            <field name="parent_id" string='Line Manager'/>
+                                        </group>
+                                        <group string=" ">
+                                            <field name="company_id" string="Legal Entity"/>
+                                            <field name="user_id"/>
+                                            <!--<field name="job_profile_id"/> -->                    
+                                        </group>   
                                     </group>
-                                   
-                                    <group string=" ">
-                                        <field name="company_id" string="Legal Entity"/>
-                                        <field name="user_id"/>
-                                        <!--<field name="job_profile_id"/> -->
-                                        
-                                        
+                                </page>
+                                <page name='sales_purchases' string="Sales &amp; Purchases" attrs="{'invisible': [('is_company', '=', True)]}">
+                                    <group name="container_row_2">
+                                        <group string="Sales" name="sale" priority="1">
+                                            <field name="customer"/>
+                                            <field name="user_id"/>
+                                        </group>
+                                        <group string="Purchase" name="purchase" priority="2">
+                                            <field name="supplier"/>
+                                        </group>
+                                        <group string="Misc">
+                                            <field name="ref"/>
+                                            <field name="barcode"/>
+                                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                                            <field name="industry_id" attrs="{'invisible': [('is_company', '=', False)]}" options="{'no_create': True}"/>
+                                        </group>
                                     </group>
-                                      
-                                    </group>
-                                    
-                            </page>
-                            
-                            <page name='sales_purchases' string="Sales &amp; Purchases">
-                                <group name="container_row_2">
-                                    <group string="Sales" name="sale" priority="1">
-                                        <field name="customer"/>
-                                        <field name="user_id"/>
-                                    </group>
-                                    <group string="Purchase" name="purchase" priority="2">
-                                        <field name="supplier"/>
-                                    </group>
-                                    <group string="Misc">
-                                        <field name="ref"/>
-                                        <field name="barcode"/>
-                                        <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
-                                        <field name="industry_id" attrs="{'invisible': [('is_company', '=', False)]}" options="{'no_create': True}"/>
-                                    </group>
-                                </group>
-                            </page>
-                        </notebook>
-                </sheet>
+                                </page>
+                            </notebook>
+                    </sheet>
                 </form>
             </field>
         </record>
 
-    <record id="view_contact_search_main" model="ir.ui.view">
-      <field name="name">view_contact_search_main</field>
-      <field name="model">res.partner</field>
-      <field name="arch" type="xml">
-        <search string="Search Partner">
-          <field name="name" filter_domain="['|','|',('display_name','ilike',self),('ref','=',self),('email','ilike',self)]"/>
-          <field name="parent_id" domain="[('is_company','=',True)]" operator="child_of"/>
-          <filter name="filter_my_partners" help="My Contacts" domain="[('user_id','=',uid)]"/>
-          <separator/>
-          <filter string="Individuals" name="type_person" domain="[('is_company','=',False)]"/>
-          <filter string="Companies" name="type_company" domain="[('is_company','=',True)]"/>
-          <separator/>
-          <!-- 
-          <filter string="Customers" name="customer" domain="['|','|',('customer','=',True),('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
-          <filter string="Vendors" name="supplier" domain="['|','|',('supplier','=',True),('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
-          -->
-          <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
-          <separator/>
-          <field name="category_id" string="Tag" filter_domain="[('category_id','ilike', self)]"/>
-          <field name="user_id"/>
-          <field name="phone" filter_domain="['|',('phone','ilike',self),('mobile','=',self)]"/>
-          <group expand="0" name="group_by" string="Group By">
-              <filter name="salesperson" string="Salesperson" domain="[]" context="{'group_by' : 'user_id'}"/>
-              <filter name="group_company" string="Company" context="{'group_by': 'parent_id'}"/>
-              <filter name="group_country" string="Country" context="{'group_by': 'country_id'}"/>
-          </group>
-        </search>   
-      </field>
-    </record>
+        <record id="contacts.action_contacts_view_form" model="ir.actions.act_window.view">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_form_contact_all"/>
+            <field name="act_window_id" ref="contacts.action_contacts"/>
+        </record>
 
-    <!-- used to visualize All Contacts -->
-    <record model="ir.actions.act_window" id="action_all_contacts">
-      <field name="name">All</field>
-      <field name="res_model">res.partner</field>
-      <field name="view_mode">kanban,tree,form,activity</field>
-    </record>
+        <record id="view_contact_search_main" model="ir.ui.view">
+            <field name="name">view_contact_search_main</field>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <search string="Search Partner">
+                <field name="name" filter_domain="['|','|',('display_name','ilike',self),('ref','=',self),('email','ilike',self)]"/>
+                <field name="parent_id" domain="[('is_company','=',True)]" operator="child_of"/>
+                <filter name="filter_my_partners" help="My Contacts" domain="[('user_id','=',uid)]"/>
+                <separator/>
+                <filter string="Individuals" name="type_person" domain="[('is_company','=',False)]"/>
+                <filter string="Companies" name="type_company" domain="[('is_company','=',True)]"/>
+                <separator/>
+                <!-- 
+                <filter string="Customers" name="customer" domain="['|','|',('customer','=',True),('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
+                <filter string="Vendors" name="supplier" domain="['|','|',('supplier','=',True),('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
+                -->
+                <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                <separator/>
+                <field name="category_id" string="Tag" filter_domain="[('category_id','ilike', self)]"/>
+                <field name="user_id"/>
+                <field name="phone" filter_domain="['|',('phone','ilike',self),('mobile','=',self)]"/>
+                <group expand="0" name="group_by" string="Group By">
+                    <filter name="salesperson" string="Salesperson" domain="[]" context="{'group_by' : 'user_id'}"/>
+                    <filter name="group_company" string="Company" context="{'group_by': 'parent_id'}"/>
+                    <filter name="group_country" string="Country" context="{'group_by': 'country_id'}"/>
+                </group>
+                </search>   
+            </field>
+        </record>
 
-    <!-- used to visualize VCLS Entities -->
-    <record model="ir.actions.act_window" id="action_vcls_entities">
-      <field name="name">VCLS Entities</field>
-      <field name="domain" eval="[('is_company','=',True),('is_internal','=',True)]"/>
-      <field name="res_model">res.partner</field>
-      <field name="view_mode">kanban,tree,form,activity</field>
-    </record>
+        <!-- used to visualize All Contacts -->
+        <record model="ir.actions.act_window" id="action_all_contacts">
+            <field name="name">All</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
 
-    <!-- used to visualize Client Accounts -->
-    <record model="ir.actions.act_window" id="action_accounts">
-      <field name="name">Accounts</field>
-      <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),'|','|',('customer','=',True),('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
-      <field name="res_model">res.partner</field>
-      <field name="view_mode">kanban,tree,form,activity</field>
-    </record>
+        <!-- used to visualize VCLS Entities -->
+        <record model="ir.actions.act_window" id="action_vcls_entities">
+            <field name="name">VCLS Entities</field>
+            <field name="domain" eval="[('is_company','=',True),('is_internal','=',True)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
 
-    <!-- used to visualize Suppliers Accounts, i.e. the ones having suppliers or one suppliers child as a tag -->
-    <record model="ir.actions.act_window" id="action_suppliers_accounts">
-      <field name="name">Accounts</field>
-      <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),'|','|',('supplier','=',True),('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
-      <field name="res_model">res.partner</field>
-      <field name="view_mode">kanban,tree,form,activity</field>
-    </record>
+        <!-- used to visualize Client Accounts -->
+        <record model="ir.actions.act_window" id="action_accounts">
+            <field name="name">Accounts</field>
+            <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),'|','|',('customer','=',True),('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
 
-    <!-- used to visualize VCLS Employees-->
-    <record model="ir.actions.act_window" id="action_vcls_employees">
-      <field name="name">VCLS Employees</field>
-      <field name="domain" eval="[('employee','=',True)]"/>
-      <field name="res_model">res.partner</field>
-      <field name="view_mode">kanban,tree,form,activity</field>
-    </record>
+        <!-- used to visualize Suppliers Accounts, i.e. the ones having suppliers or one suppliers child as a tag -->
+        <record model="ir.actions.act_window" id="action_suppliers_accounts">
+            <field name="name">Accounts</field>
+            <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),'|','|',('supplier','=',True),('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
 
-    <!-- used to visualize Client Contacts-->
-    <record model="ir.actions.act_window" id="action_client_contacts">
-      <field name="name">Individuals</field>
-      <field name="domain" eval="[('is_company','=',False),('employee','=',False),'|','|',('customer','=',True),('parent_id.category_id','=',ref('vcls-contact.category_account')),('parent_id.category_id','=',False)]"/>
-      <field name="res_model">res.partner</field>
-      <field name="view_mode">kanban,tree,form,activity</field>
-    </record>
+        <!-- used to visualize VCLS Employees-->
+        <record model="ir.actions.act_window" id="action_vcls_employees">
+            <field name="name">VCLS Employees</field>
+            <field name="domain" eval="[('employee','=',True)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
 
-    <!-- used to visualize Suppliers Contacts, i.e. the ones having suppliers or one suppliers child as a tag-->
-    <record model="ir.actions.act_window" id="action_suppliers_contacts">
-      <field name="name">Individuals</field>
-      <field name="domain" eval="[('is_company','=',False),('employee','=',False),'|','|',('supplier','=',True),('parent_id.category_id','=',ref('vcls-contact.category_suppliers')),('parent_id.category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
-      <field name="res_model">res.partner</field>
-      <field name="view_mode">kanban,tree,form,activity</field>
-    </record>
+        <!-- used to visualize Client Contacts-->
+        <record model="ir.actions.act_window" id="action_client_contacts">
+            <field name="name">Individuals</field>
+            <field name="domain" eval="[('is_company','=',False),('employee','=',False),'|','|',('customer','=',True),('parent_id.category_id','=',ref('vcls-contact.category_account')),('parent_id.category_id','=',False)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
+        <!-- used to visualize Suppliers Contacts, i.e. the ones having suppliers or one suppliers child as a tag-->
+        <record model="ir.actions.act_window" id="action_suppliers_contacts">
+            <field name="name">Individuals</field>
+            <field name="domain" eval="[('is_company','=',False),('employee','=',False),'|','|',('supplier','=',True),('parent_id.category_id','=',ref('vcls-contact.category_suppliers')),('parent_id.category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
+        <!-- used to visualize all contacts for administration -->
+        <record model="ir.actions.act_window" id="action_admin_all">
+            <field name="name">All contacts</field>
+            <field name="domain" eval="[('stage','!=',4)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
+        <!-- used to visualize New Contacts for administration -->
+        <record model="ir.actions.act_window" id="action_admin_new">
+            <field name="name">New contacts</field>
+            <field name="domain" eval="[('stage','=',1)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
+        <!-- used to visualize outdated contacts for administration -->
+        <record model="ir.actions.act_window" id="action_admin_outdated">
+            <field name="name">Outdated contacts</field>
+            <field name="domain" eval="[('stage','=',3)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
+        <!-- used to visualize archived contacts for administration -->
+        <record model="ir.actions.act_window" id="action_admin_archive">
+            <field name="name">Archived contacts</field>
+            <field name="domain" eval="[('stage','=',4)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
 
     </data>
 </odoo>
