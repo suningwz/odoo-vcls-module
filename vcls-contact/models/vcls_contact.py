@@ -20,17 +20,17 @@ class ContactExt(models.Model):
         store = True,
         default = False,
     )
-
+    
     stage = fields.Selection([
-        ('0', 'Undefined'),
-        ('1', 'New'),
-        ('2', 'Verified'),
-        ('3', 'Outdated'),
-        ('4', 'Archived')], 
+        (0, 'Undefined'),
+        (1, 'New'),
+        (2, 'Verified'),
+        (3, 'Outdated'),
+        (4, 'Archived')], 
         string='Status',
         track_visibility='onchange',
-        default='0',
-        )
+        default=0,
+    )
 
     sharepoint_folder = fields.Char(
         string = 'Sharepoint Folder',
