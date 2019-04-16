@@ -28,6 +28,10 @@
         <record id="company_RRG" model="res.company">
             <field name="name">Regulatory Resources Group</field>
         </record>
+
+        <record id="company_BH" model="res.company">
+            <field name="name">B&amp;H</field>
+        </record>
       
  </data>
 </odoo>
