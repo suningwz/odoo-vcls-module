@@ -25,31 +25,31 @@
                                     <!-- the header is accessible to everyone -->
                                     <group>
                                             <!-- NOT company -->
-                                            <group attrs="{'invisible': [('is_company', '=', True)]}">
+                                            <group string="Main information" attrs="{'invisible': [('is_company', '=', True)]}">
                                                 <field name="email"/>
                                                 <field name="phone"/>
                                             </group>
+
                                             <!-- is_company -->
-                                            <group attrs="{'invisible': [('is_company', '=', False)]}">
+                                            <group string="Main information" attrs="{'invisible': [('is_company', '=', False)]}">
                                                 <field name="category_id"/>
-                                                <field name="website"/>
-                                                <field name="city"/>
-                                                <field name="country_id"/>
+                                                <field name="website" widget="url"/>
+                                                <field name="city" string="City"/>
+                                                <field name="country_id" string="Country"/>
                                                 <field name="is_company" invisible="1"/>
                                                 <field name="active" invisible="1" />
-                                                <group string="Sharepoint">
-                                                    <field name="create_folder" />
-                                                    <field name="custom_sp_link" attrs="{'invisible': [('create_folder', '=', False)]}" widget="url"/>
-                                                    <field name="sharepoint_folder" attrs="{'invisible': ['|',('custom_sp_link','!=',False),('create_folder','=',False)]}" widget="url"/>
-                                                </group>
                                             </group>
-                                        <group string="">
+
+                                            <group string="Sharepoint">
+                                                <field name="create_folder" />
+                                                <field name="custom_sp_link" attrs="{'invisible': [('create_folder', '=', False)]}" widget="url"/>
+                                                <field name="sharepoint_folder" attrs="{'invisible': ['|',('custom_sp_link','!=',False),('create_folder','=',False)]}" widget="url"/>
+                                            </group>
+                                        
                                             <group string="Sales" name="sale" priority="1">
                                                 <field name="customer"/>
                                                 <field name="user_id"/>
                                             </group>
-                                            <field name="parent_id"/>
-                                        </group>
                                     </group>
                                 </div>
                             </div>
@@ -208,11 +208,12 @@
                                             <field name="function"/>
                                             <field name="parent_id" string='Line Manager'/>
                                         </group>
-                                        <group string=" ">
+                                        
+                                        <group>
                                             <field name="company_id" string="Legal Entity"/>
                                             <field name="user_id"/>
                                             <!--<field name="job_profile_id"/> -->                    
-                                        </group>   
+                                        </group>
                                     </group>
                                 </page>
                                 <page name='sales_purchases' string="Sales &amp; Purchases" attrs="{'invisible': [('is_company', '=', True)]}">
@@ -348,7 +349,7 @@
         <!-- used to visualize New Contacts for administration -->
         <record model="ir.actions.act_window" id="action_admin_new">
             <field name="name">New contacts</field>
-            <field name="domain" eval="[('stage','=',1)]"/>
+            <field name="domain" eval="[('stage','=',2)]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>
