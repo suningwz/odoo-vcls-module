@@ -1,10 +1,10 @@
-id,name,parent_id:id
-category_account,Account,
-category_suppliers,Suppliers,
-category_PS,Project Services,category_suppliers
-category_AS,Admin Services,category_suppliers
-category_Office,Office,category_suppliers
-category_competitor,Competitor,
-category_partner,Partner,
-category_regulator,Regulator,
-category_conference_org,Conference Organisation,
+id,name,parent_id:id,color
+category_account,Account,,1
+category_suppliers,Suppliers,,2
+category_PS,Project Services,category_suppliers,3
+category_AS,Admin Services,category_suppliers,4
+category_Office,Office,category_suppliers,5
+category_competitor,Competitor,,6
+category_partner,Partner,,7
+category_regulator,Regulator,,8
+category_conference_org,Conference Organisation,,9
