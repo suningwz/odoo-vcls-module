@@ -376,7 +376,56 @@
                 
             </field>
         </record>
-      
+
+        <!-- RELATED ACTIONS -->
+
+        <record id="action_hr_absent_today_overview" model="ir.actions.act_window">
+            <field name="name">Absent Today</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_mode">kanban,form</field>
+            <field name="domain">[('is_absent_totay','=',True)]</field>
+            <field name="context">{'search_default_group_office': 1}</field>
+            <field name="view_id" ref="view_employee_absent_kanban"/>
+        </record>
+
+        <!-- MY LEAVES ACTIONS -->
+        <record id="hr_holidays.hr_leave_action_new_request" model="ir.actions.act_window">
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">calendar,tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1')}),
+            ]"/>
+        </record>
+
+        <record id="hr_holidays.hr_leave_action_my" model="ir.actions.act_window">
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,calendar</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1')}),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
+            ]"/>
+        </record>
+
+        <!-- We change the default filtering of the summary action -->
+        <record id="hr_holidays.open_company_allocation" model="ir.actions.act_window">
+            <field name="context">{
+                'search_default_group_type': 1,
+                'search_default_validated': 1,
+                'search_default_approve': 1,
+                'search_default_active_types': 1,
+                }
+            </field>
+            <field name="domain">[('user_id', '=', uid)]</field>
+        </record>
+
+    </data>
+</odoo>
+
       <!--
       <record id="hr_leave_view_kanban" model="ir.ui.view">
         <field name="name">hr.leave.view.kanban</field>
@@ -436,8 +485,7 @@
      </record>
 -->
       
-  </data>
-</odoo>
+  
                    
                
             
