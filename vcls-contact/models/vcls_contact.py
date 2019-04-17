@@ -39,6 +39,10 @@ class ContactExt(models.Model):
         compute = '_compute_sharepoint_folder',
         readonly = True,
     )
+    
+    custom_sp_link = fields.Char(
+        string = 'Custom Sharepoint Folder',
+    )
 
     create_folder = fields.Boolean(
         string = "Create Sharepoint Folder",

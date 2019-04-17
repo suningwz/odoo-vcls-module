@@ -37,6 +37,11 @@
                                                 <field name="country_id"/>
                                                 <field name="is_company" invisible="1"/>
                                                 <field name="active" invisible="1" />
+                                                <group string="Sharepoint">
+                                                    <field name="create_folder" />
+                                                    <field name="custom_sp_link" attrs="{'invisible': [('create_folder', '=', False)]}" widget="url"/>
+                                                    <field name="sharepoint_folder" attrs="{'invisible': ['|',('custom_sp_link','!=',False),('create_folder','=',False)]}" widget="url"/>
+                                                </group>
                                             </group>
                                         <group string="">
                                             <group string="Sales" name="sale" priority="1">
