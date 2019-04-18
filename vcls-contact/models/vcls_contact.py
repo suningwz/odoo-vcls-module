@@ -48,6 +48,13 @@ class ContactExt(models.Model):
         string = "Create Sharepoint Folder",
     )
 
+    ### THe objective of this field is to assist responsible roles in contact completion exercise and maintain a good data quality
+    completion_ratio = fields.Float(
+        string = "Data Completion Estimation",
+        compute = '_compute_completion_ratio',
+        default = 0.0,
+    )
+
     #Contact fields
     fax = fields.Char()
 
@@ -107,6 +114,11 @@ class ContactExt(models.Model):
             groups = contact.country_id.country_group_ids.filtered(#group_type == 'BD')
             if groups:
                 contact.country_group_id = groups[0]"""
+    
+    def _compute_completion_ratio(self):
+        for contact in self:
+            pass
+            """ This estimator is related to the type of contact."""
     
     @api.depends('category_id','create_folder','altname')
     def _compute_sharepoint_folder(self):
