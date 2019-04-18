@@ -1,0 +1,53 @@
+<odoo>
+  <data>
+
+    <!-- Tree Views -->
+    <record id="view_exceptional_category_tree" model="ir.ui.view">
+        <field name="name">view_exceptional_category_tree</field>
+        <field name="model">hr.exceptional.leave.category</field>
+        <field name="arch" type="xml">
+            <tree string="Exceptional Leaves Categories" create="true" delete="true" edit="true">
+                <field name="company"/>
+                <field name="name"/>
+                <field name="default_max_allocated_days"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Tree Views -->
+    <record id="view_exceptional_case_tree" model="ir.ui.view">
+        <field name="name">view_exceptional_case_tree</field>
+        <field name="model">hr.exceptional.leave.case</field>
+        <field name="arch" type="xml">
+            <tree string="Exceptional Leaves Cases" create="true" delete="true" edit="true">
+                <field name="category_id"/>
+                <field name="name"/>
+                <field name="max_allocated_days"/>
+            </tree>
+        </field>
+    </record>
+      
+    <!-- Leaves to approve, using the existing action slightly customized -->
+    <record id="action_exceptional_leave_cat" model="ir.actions.act_window">
+        <field name="name">Exceptional Leave Category</field>
+        <field name="res_model">hr.exceptional.leave.category</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_exceptional_category_tree')}),
+            ]"/>
+    </record>
+
+    <!-- Leaves to approve, using the existing action slightly customized -->
+    <record id="action_exceptional_leave_case" model="ir.actions.act_window">
+        <field name="name">Exceptional Leave Case</field>
+        <field name="res_model">hr.exceptional.leave.case</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_exceptional_case_tree')}),
+            ]"/>
+    </record>
+            
+  </data>
+</odoo>

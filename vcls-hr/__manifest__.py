@@ -54,6 +54,7 @@
         'views/benefits.xml',
         'views/company_org.xml',
         'views/contract.xml',
+        'views/exceptional_leaves.xml',
         'views/job.xml',
         'views/leave.xml',
         'views/leave_allocation.xml',
