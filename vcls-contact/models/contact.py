@@ -106,7 +106,6 @@ class ContactExt(models.Model):
         string = 'AltName',
     )
 
-
     ###################
     # COMPUTE METHODS #
     ###################
@@ -127,7 +126,7 @@ class ContactExt(models.Model):
     def _compute_completion_ratio(self):
         for contact in self:
             pass
-            """ This estimator is related to the type of contact.""
+            """ This estimator is related to the type of contact."""
 
     @api.depends('category_id','create_folder','altname')
     def _compute_sharepoint_folder(self):

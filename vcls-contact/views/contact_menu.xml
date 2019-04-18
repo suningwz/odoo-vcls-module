@@ -7,7 +7,7 @@
       -->
 		<record id="contacts.res_partner_menu_contacts" model="ir.ui.menu">
 			<field name="name">All</field>
-			<field name="active" eval="False"/>
+			<field name="active" eval="True"/>
 		</record>
 
 		<record id="contacts.res_partner_menu_config" model="ir.ui.menu">
