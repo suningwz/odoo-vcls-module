@@ -3,47 +3,29 @@
 	<data>
 
 		<!-- we override the main menu 
-      <field name="action" eval="action_all_contacts"/> -->
+      <field name="action" eval="action_all_contacts"/> 
       
 		<record id="contacts.res_partner_menu_contacts" model="ir.ui.menu">
 			<field name="name">All</field>
 			<field name="active" eval="False"/>
 			<field name="sequence">1</field>
 			<field name="parent">menu_admin</field>
-		</record>
+		</record>-->
 
 		<record id="contacts.res_partner_menu_config" model="ir.ui.menu">
 			<field name="sequence">12</field>
 		</record>
 
-		<!-- VCLS Menus -->
-		<menuitem 
-			name="VCLS" 
-			parent="contacts.menu_contacts" 
-			id="menu_VCLS" 
-			action="" 
-			sequence="3" />
-
-		<menuitem 
-			name="VCLS Entities" 
-			parent="menu_VCLS" 
-			id="menu_VCLS_entities" 
-			action="action_vcls_entities" 
-			sequence="3" />
-
-		<menuitem 
-			name="VCLS Employee" 
-			parent="menu_VCLS" 
-			id="menu_VCLS_employees" 
-			action="action_vcls_employees" 
-			sequence="6" />
+		<record id="contacts.menu_config_bank_accounts" model="ir.ui.menu">
+			<field name="active" eval="False"/>
+		</record>
 
 		<!-- Client Menus -->
 		<menuitem 
 			name="Clients" 
 			parent="contacts.menu_contacts" 
 			id="menu_accounts" action="" 
-			sequence="6" />
+			sequence="1" />
 
 		<menuitem 
 			name="Accounts" 
@@ -65,7 +47,7 @@
 			parent="contacts.menu_contacts" 
 			id="menu_suppliers" 
 			action="" 
-			sequence="9" />
+			sequence="5" />
 
 		<menuitem 
 			name="Accounts" 
@@ -81,13 +63,35 @@
 			action="action_suppliers_contacts" 
 			sequence="6" />
 
+		<!-- VCLS Menus -->
+		<menuitem 
+			name="VCLS" 
+			parent="contacts.menu_contacts" 
+			id="menu_VCLS" 
+			action="" 
+			sequence="8" />
+
+		<menuitem 
+			name="VCLS Entities" 
+			parent="menu_VCLS" 
+			id="menu_VCLS_entities" 
+			action="action_vcls_entities" 
+			sequence="3" />
+
+		<menuitem 
+			name="VCLS Employee" 
+			parent="menu_VCLS" 
+			id="menu_VCLS_employees" 
+			action="action_vcls_employees" 
+			sequence="6" />
+
 		<!-- Administration menu -->
 		<menuitem 
 			name="Administration" 
 			parent="contacts.menu_contacts" 
 			id="menu_admin" 
 			action="" 
-			sequence="1" />
+			sequence="10" />
 
 		<menuitem 
 			name="All" 
