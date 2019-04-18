@@ -102,8 +102,11 @@ class ContactExt(models.Model):
     @api.depends('country_id')
     def _compute_country_group(self):
         for contact in self:
-            # please dev here
             pass
+            """# please dev here
+            groups = contact.country_id.country_group_ids.filtered(#group_type == 'BD')
+            if groups:
+                contact.country_group_id = groups[0]"""
     
     @api.depends('category_id','create_folder','altname')
     def _compute_sharepoint_folder(self):
