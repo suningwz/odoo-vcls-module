@@ -79,7 +79,7 @@
                 'search_default_active_types': 1,
                 }
             </field>
-            <field name="domain">[('user_id', '=', uid)]</field>
+            <field name="domain">[('employee_id.user_id', '=', uid),('holiday_type','=','employee')]</field>
         </record>
       
         <!-- LM LEAVE SUMMARY MENU ACTION -->
