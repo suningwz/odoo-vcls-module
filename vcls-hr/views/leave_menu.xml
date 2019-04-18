@@ -96,6 +96,15 @@
             action="hr_holidays.action_hr_holidays_dashboard"
         />
 
+        <!-- LM LEAVE SUMMARY MENU ITEM -->
+        <menuitem
+            id="menu_lm_leave_summary"
+            name="Leaves Summary"
+            parent="menu_leaves_management"
+            sequence="15"
+            action="lm_leave_summary_action"
+        />
+
         <!-- HR Leaves -->
         <!-- head menu -->
         <menuitem
@@ -136,6 +145,15 @@
         <record id="menu_leaves_allocation" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
         </record>
+
+         <!-- HR SUMMARY MENU ITEM -->
+        <menuitem
+            id="menu_hr_leave_summary"
+            name="Leaves Summary"
+            parent="menu_leaves_management_hr"
+            sequence="20"
+            action="hr_leave_summary_action"
+        />
         
         
         
@@ -172,7 +190,7 @@
 
 
 
-        <!-- Force the main overview to create for employee only -->
+        <!-- Force the main overview to create for employee only 
         <record id="hr_holidays.action_hr_holidays_dashboard" model="ir.ui.menu">
             <field name="res_model">hr.leave</field>
             <field name="view_type">form</field>
@@ -185,11 +203,12 @@
             ]"/>
             <field name="context">{'search_default_group_employee': 1}</field>
         </record>
-        
-        <!-- Add groups to the Dashboard menu -->
+        -->
+        <!-- Add groups to the Dashboard menu 
         <record id="hr_holidays.menu_hr_holidays_dashboard" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('hr_holidays.group_hr_holidays_user'))]"/>
         </record>
+        -->
         
 
         

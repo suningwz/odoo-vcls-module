@@ -411,18 +411,6 @@
             ]"/>
         </record>
 
-        <!-- We change the default filtering of the summary action -->
-        <record id="hr_holidays.open_company_allocation" model="ir.actions.act_window">
-            <field name="context">{
-                'search_default_group_type': 1,
-                'search_default_validated': 1,
-                'search_default_approve': 1,
-                'search_default_active_types': 1,
-                }
-            </field>
-            <field name="domain">[('user_id', '=', uid)]</field>
-        </record>
-
         <!-- LEAVES FOR LM -->
         <!-- Leaves to approve, using the existing action slightly customized -->
         <record id="hr_holidays.hr_leave_action_action_approve_department" model="ir.actions.act_window">
