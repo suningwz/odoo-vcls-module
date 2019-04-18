@@ -7,8 +7,8 @@ class CountryGroup(models.Model):
     _inherit = 'res.country.group'
 
     group_type = fields.Selection([
-        (1, 'BD'),
-        (2, 'Other')],
+        ('BD', 'Business Development'),
+        ],
         string='Group Type',
         track_visibility='onchange',
         default=False,
@@ -120,7 +120,7 @@ class ContactExt(models.Model):
     @api.depends('country_id')
     def _compute_country_group(self):
         for contact in self:
-            groups = contact.country_id.country_group_ids.filtered([('group_type','=','1')])
+            groups = contact.country_id.country_group_ids.filtered([('group_type','=','BD')])
             if groups:
                 contact.country_group_id = groups[0]
 
