@@ -200,8 +200,8 @@ class PayrollLine(models.Model):
             l.cp_paid_days = aggregate['days']
             l.cp_paid_info = aggregate['info']
             l.cp_paid_balance = aggregate['balance']
-            
-            aggregate = l.aggregate_payroll_type('cp_unpaid')
+
+            aggregate = l.aggregate_payroll_type('cp_unpaid') 
             l.cp_unpaid_days = aggregate['days']
             l.cp_unpaid_info = aggregate['info']
             
