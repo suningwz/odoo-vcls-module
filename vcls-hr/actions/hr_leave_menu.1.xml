@@ -1,32 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
-        <!-- Menu item for leave default view (when open Leaves module = Absent today) -->
-        <menuitem
-            id="hr_holidays.menu_hr_holidays_dashboard"
-            name="Absent Today"
-            parent="hr_holidays.menu_hr_holidays_root"
-            sequence="1"
-            action="action_hr_absent_today_overview"
-            groups="hr_holidays.group_hr_holidays_manager"
-        />
-
-        <!-- MY LEAVES -->
-        <!-- Rename the misleading 'New Request' in 'Calendar Overview' -->
-        <record id="hr_holidays.hr_leave_menu_new_request" model="ir.ui.menu">
-            <field name="name">Calendar Overview</field>
-        </record>
-
-        <!-- deactivate allocations menus because we don't use it for now -->
-        <record id="hr_holidays.menu_open_allocation" model="ir.ui.menu">
-            <field name="active" eval="False"/>
-        </record> 
-
-
-
-
-
         <!-- Force the main overview to create for employee only -->
         <record id="hr_holidays.action_hr_holidays_dashboard" model="ir.ui.menu">
             <field name="res_model">hr.leave</field>
@@ -48,8 +22,19 @@
         
         <!-- LINK NEW VIEWS TO EXISITNG 'MY LEAVES' ACTIONS -->
         <!-- Calendar Overview -->
+        <!-- Rename the misleading 'New Request' in 'Calendar Overview' -->
+        <record id="hr_holidays.hr_leave_menu_new_request" model="ir.ui.menu">
+            <field name="name">Calendar Overview</field>
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">calendar,tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1')}),
+            ]"/>
+        </record>
         
-        <!--
         <record id="hr_holidays.hr_leave_action_my" model="ir.ui.menu">
             <field name="res_model">hr.leave</field>
             <field name="view_type">form</field>
@@ -59,11 +44,24 @@
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1')}),
             ]"/>
-        </record> -->
+        </record>
         
+        <!-- We change the default filtering of the summary action -->
+        <record id="hr_holidays.open_company_allocation" model="ir.actions.act_window">
+            <field name="context">{
+                'search_default_group_type': 1,
+                'search_default_my_leaves': 1,
+                'search_default_validated': 1,
+                'search_default_approve': 1,
+                'search_default_active_types': 1,
+                }
+            </field>
+        </record>
         
-        
-          
+        <!-- deactivate allocations menus because we don't use it for now -->
+        <record id="hr_holidays.menu_open_allocation" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>   
         
         <!-- MANAGEES LEAVES -->
         <!-- deactivate all managers menu to reorganise them -->
@@ -315,9 +313,24 @@
             <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls-hr.vcls_group_HR_local'))]"/>
         </record>
 
-        
+        <!-- action for Leave's overview -->
+        <record id="action_hr_absent_today_overview" model="ir.actions.act_window">
+            <field name="name">Absent Today</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_mode">kanban,form</field>
+            <field name="domain">[('is_absent_totay','=',True)]</field>
+            <field name="context">{'search_default_group_office': 1}</field>
+            <field name="view_id" ref="view_employee_absent_kanban"/>
+        </record>
 
-        
+        <!-- Menu item for leave default view (when open Leaves module = Absent today) -->
+        <menuitem
+        id="hr_holidays.menu_hr_holidays_dashboard"
+        name="Absent Today"
+        parent="hr_holidays.menu_hr_holidays_root"
+        sequence="1"
+        action="action_hr_absent_today_overview"
+        groups="hr_holidays.group_hr_holidays_manager"/>
         
     </data>
 </odoo>
