@@ -9,61 +9,69 @@
             <field name="model">res.partner</field>
             <field name="arch" type="xml">
                 <form string="Partners">
-                        <header>                    
-                            <field name="stage" widget="statusbar" options="{'clickable': '1'}"/>
-                        </header>
+                    <header>                    
+                        <field name="stage" widget="statusbar"  options="{'clickable': '1'}"/>
+                    </header>
                     <sheet>
                         <div id="o_contact_container">
-                                <div id="o_contact_main">
-                                    <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;:&quot;image_medium&quot;}"/>
-                                    <div class="oe_title">
-                                        <label for="name" class="oe_edit_only" string="First Name then Family Name" />
-                                        <h1>
-                                            <field name="name" placeholder="Contact First Name then Family Name" required="True"/>
-                                        </h1>
-                                    </div>
-                                    
-                                    <field name="category_id" string='' widget="many2many_tags" options="{'no_create_edit': True}" placeholder="e.g. FR - Cadre"/>
-                                    <!-- the header is accessible to everyone -->
-                                    <group>
-                                            <!-- NOT company -->
-                                            <group attrs="{'invisible': [('is_company', '=', True)]}">
-                                                <div>
-                                                    <field name="city" string=""/>
-                                                    <string>, </string>
-                                                    <field name="country_id" string=""/>
-                                                </div>
-                                            </group>
-                                            <!-- is_company -->
-                                            <group attrs="{'invisible': [('is_company', '=', False)]}">
-                                                <div>
-                                                    <field name="city" string=""/>
-                                                    <string>, </string>
-                                                    <field name="country_id" string=""/>
-                                                </div>
-                                                <field name="is_company" invisible="1"/>
-                                                <field name="active" invisible="1" />
-                                            </group>
-
-                                            <group>
-                                                <field name="create_folder" invisible='1'/>
-                                                <div class="oe_button_box" name="button_box">
-                                                    <button name = "create_folder_btn" string = "Create Sharepoint Folder" type = "object" attrs="{'invisible': [('create_folder', '=', False)]}" />
-                                                </div>
-                                                <field name="custom_sp_link" attrs="{'invisible': [('create_folder', '=', False)]}" widget="url"/>
-                                                <field name="sharepoint_folder" attrs="{'invisible': ['|',('custom_sp_link','!=',False),('create_folder','=',False)]}" widget="url"/>
-                                            </group>
-                                            <group attrs="{'invisible': [('is_company', '=', True)]}" >
-                                                <field name="email"/>    
-                                                <field name="phone"/>
-                                            </group>
-                                    </group>
+                            <div id="o_contact_main">
+                                <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;:&quot;image_medium&quot;}"/>
+                                <div class="oe_title">
+                                    <field name="company_type" widget="radio" class="oe_edit_only" options="{'horizontal': true}"/>
+                                    <h1>
+                                        <field name="name" required="True"/>
+                                    </h1>
                                 </div>
+                                <field name="category_id" string='' widget="many2many_tags" options="{'no_create_edit': True}" placeholder="Client, Supplier, etc."/>
+                                <separator string="   "/>
+                                <field name="parent_id" widget="res_partner_many2one" placeholder="Company" domain="[('is_company', '=', True)]" attrs="{'invisible': ['|', '&amp;', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False),('company_name', '!=', '')]}"/>
+                                <!-- Invisible Fields used -->
+                                <field name="is_company" invisible="1"/>
+                                <field name="supplier" invisible="1"/>
+                                <field name="customer" invisible="1"/>
+                                
+                                <field name="company_name" invisible="1"/>
+                                <field name="user_id" invisible="1"/>
+                                <field name="lang" invisible="1"/>
+
+                                <!--Same Header for any kind of contact -->
+                                <group>
+                                    <group>
+                                        <field name="email"/>    
+                                        <field name="phone"/>
+                                        <field name="mobile"/>
+                                        <field name="website" widget="url"/>
+                                    </group>
+                                    <group>
+                                        <label for="street" string="Address"/>
+                                        <div>
+                                            <div class="o_address_format" name="div_address">
+                                                <field name="street" placeholder="Street..." class="o_address_street"/>
+                                                <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+                                                <field name="city" placeholder="City" class="o_address_city"/>
+                                                <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}' context="{'country_id': country_id, 'zip': zip}"/>
+                                                <field name="zip" placeholder="ZIP" class="o_address_zip"/>
+                                                <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                                            </div>
+                                        </div>   
+                                    </group>
+
+                                    <group>
+                                        <field name="create_folder" invisible='1'/>
+                                        <div class="oe_button_box" name="button_box">
+                                            <button name = "create_folder_btn" string = "Create Sharepoint Folder" type = "object" attrs="{'invisible': [('create_folder', '=', False)]}" />
+                                        </div>
+                                        <field name="custom_sp_link" attrs="{'invisible': [('create_folder', '=', False)]}" widget="url"/>
+                                        <field name="sharepoint_folder" attrs="{'invisible': ['|',('custom_sp_link','!=',False),('create_folder','=',False)]}" widget="url"/>
+                                    </group>
+                                        
+                                </group>
+                            </div>
                             </div>
                             <notebook>
                                 <!--  related contact (reuse existing one) -->
                                 <page name="individuals" string="Individuals" attrs="{'invisible': [('is_company', '=', False)]}">
-                                    <field name="child_ids" mode="kanban" context="{'default_parent_id': active_id, 'default_street': street, 'default_street2': street2, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_supplier': supplier, 'default_customer': customer, 'default_lang': lang, 'default_user_id': user_id}">
+                                    <field name="child_ids" mode="kanban">
                                         <kanban>
                                             <field name="id"/>
                                             <field name="color"/>
@@ -123,131 +131,18 @@
                                                 </t>
                                             </templates>
                                         </kanban>
-                                        <form string="Contact / Address">
-                                            <sheet>
-                                                <!-- parent_id and type fields needed in attrs in base_address_city module which overwrites
-                                                _fields_view_get() of partner. It would be better to put those fields there but the web client
-                                                dosen't support when a field is displayed several times in the same view.-->
-                                                <field name="type" required="1" widget="radio" options="{'horizontal': true}"/>
-                                                <field name="parent_id" invisible="1"/>
-                                                <hr/>
-                                                <group>
-                                                    <group attrs="{'invisible': [('type','=', 'contact')]}">
-                                                        <label for="street" string="Address"/>
-                                                        <div>
-                                                            <div class="o_address_format" name="div_address">
-                                                                <field name="street" placeholder="Street..." class="o_address_street"/>
-                                                                <field name="street2" placeholder="Street 2..." class="o_address_street"/>
-                                                                <field name="city" placeholder="City" class="o_address_city"/>
-                                                                <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}' context="{'country_id': country_id, 'zip': zip}"/>
-                                                                <field name="zip" placeholder="ZIP" class="o_address_zip"/>
-                                                                <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
-                                                            </div>
-                                                        </div>
-                                                    </group>
-                                                    <group>
-                                                        <field name="name" string="Contact Name" attrs="{'required' : [('type', '=', 'contact')]}"/>
-                                                        <field name="title" placeholder="e.g. Mr."
-                                                            attrs="{'invisible': [('type','!=', 'contact')]}"/>
-                                                        <field name="function" placeholder="e.g. Sales Director"
-                                                            attrs="{'invisible': [('type','!=', 'contact')]}"/>
-                                                        <field name="email"/>
-                                                        <field name="phone" widget="phone"/>
-                                                        <field name="mobile" widget="phone"/>
-                                                        <field name="comment" placeholder="internal note..."/>
-                                                    </group>
-                                                </group>
-                                                <field name="supplier" invisible="True"/>
-                                                <field name="customer" invisible="True"/>
-                                                <field name="lang" invisible="True"/>
-                                                <field name="image" invisible="True"/>
-                                                <field name="user_id" invisible="True"/>
-                                            </sheet>
-                                        </form>
                                     </field>
-                                </page>
-                                <page name="contact" string="Contact Information" attrs="{'invisible': [('is_company', '=', False)]}">
-                                    <group>
-                                            <label for="street" string="Private Address"/>
-                                            <div class="o_address_format">
-                                                <field name="street" placeholder="Street..." class="o_address_street"/>
-                                                <field name="street2" placeholder="Street 2..." class="o_address_street"/>
-                                                <field name="city" placeholder="City" class="o_address_city"/>
-                                                <field name="state_id" class="o_address_state" placeholder="State" options="{&quot;no_open&quot;: True}"/>
-                                                <field name="zip" placeholder="ZIP" class="o_address_zip"/>
-                                                <field name="vat" placeholder="e.g. BE0477472701" attrs="{'readonly': [('parent_id','!=',False)]}"/>
-                                            </div>
-                                            <field name="email" widget="email"/>
-                                            <field name="phone" widget="phone"/>
-                                            <field name="lang"/>
-                                    </group>
-                                </page>
-                                <!-- personnal info just accessible to the employee and the hr -->
-                                <page name="personal_information" string="Personal Information" attrs="{'invisible': [('is_company', '=', True)]}">
-                                    <group>
-                                        <group string="Administrative Information">
-                                            <field name="name"/>
-                                            <field name="parent_name"/>
-                                            <field name="country_id" string="Primary Citizenship"/>
-                                        </group>
-                                        <group string="Contact Information">
-                                            <label for="street" string="Private Address"/>
-                                            <div class="o_address_format">
-                                                <field name="street" placeholder="Street..." class="o_address_street"/>
-                                                <field name="street2" placeholder="Street 2..." class="o_address_street"/>
-                                                <field name="city" placeholder="City" class="o_address_city"/>
-                                                <field name="state_id" class="o_address_state" placeholder="State" options="{&quot;no_open&quot;: True}"/>
-                                                <field name="zip" placeholder="ZIP" class="o_address_zip"/>
-                                                <field name="vat" placeholder="e.g. BE0477472701" attrs="{'readonly': [('parent_id','!=',False)]}"/>
-                                            </div>
-                                            <field name="email" widget="email"/>
-                                            <field name="phone" widget="phone"/>
-                                        </group>
-                                    </group>
-                                    <field name="comment" placeholder="Other Information ..." colspan="4"/>
+
                                 </page>
                                 
-                                <page name="job_information" string="Job Information" attrs="{'invisible': [('is_company', '=', True)]}">
-                                <!-- <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">-->
-                                    <group>
-                                        <group string="General Information">
-                                            <field name="function"/>
-                                            <field name="parent_id" string='Line Manager'/>
-                                        </group>
-                                        
-                                        <group>
-                                            <field name="company_id" string="Legal Entity"/>
-                                            <field name="user_id"/>
-                                            <!--<field name="job_profile_id"/> -->                    
-                                        </group>
-                                    </group>
-                                </page>
-                                <page name='sales_purchases' string="Sales &amp; Purchases" attrs="{'invisible': [('is_company', '=', True)]}">
-                                    <group name="container_row_2">
-                                        <group string="Sales" name="sale" priority="1">
-                                            <field name="customer"/>
-                                            <field name="user_id"/>
-                                        </group>
-                                        <group string="Purchase" name="purchase" priority="2">
-                                            <field name="supplier"/>
-                                        </group>
-                                        <group string="Misc">
-                                            <field name="ref"/>
-                                            <field name="barcode"/>
-                                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
-                                            <field name="industry_id" attrs="{'invisible': [('is_company', '=', False)]}" options="{'no_create': True}"/>
-                                        </group>
-                                    </group>
-                                </page>
-                            </notebook>
-                            <group>
-                                <div class="oe_chatter">
-                                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
-                                    <field name="activity_ids" widget="mail_activity"/>
-                                    <field name="message_ids" widget="mail_thread"/>
-                                </div>
-                            </group>
+                            </notebook>       
+
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
                 </form>
             </field>
         </record>    
@@ -282,15 +177,6 @@
                 </search>   
             </field>
         </record>
-
-        <!--
-        <record id="contacts.action_contacts_view_form" model="ir.actions.act_window.view">
-            <field name="sequence" eval="2"/>
-            <field name="view_mode">form</field>
-            <field name="view_id" ref="view_form_contact_all"/>
-            <field name="act_window_id" ref="contacts.action_contacts"/>
-        </record>-->
-
 
         <!-- used to visualize All Contacts -->
         <record model="ir.actions.act_window" id="action_all_contacts">
@@ -355,7 +241,7 @@
         <!-- used to visualize all contacts for administration -->
         <record model="ir.actions.act_window" id="action_admin_all">
             <field name="name">All contacts</field>
-            <field name="domain" eval="[('stage','!=',4)]"/>
+            <!--<field name="domain" eval="[('active','=',4)]"/>-->
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
             <field name="view_ids" eval="[(5, 0, 0),
