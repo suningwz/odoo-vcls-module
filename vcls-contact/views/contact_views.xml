@@ -204,7 +204,7 @@
                                 <!-- <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">-->
                                     <group>
                                         <group string="General Information">
-                                            <field name="category_id" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" placeholder="e.g. FR - Cadre" groups="hr.group_hr_user"/>
+                                            <field name="category_id" widget="many2many_tags" options="{'no_create_edit': True}" placeholder="e.g. FR - Cadre" groups="hr.group_hr_user"/>
                                             <field name="function"/>
                                             <field name="parent_id" string='Line Manager'/>
                                         </group>
