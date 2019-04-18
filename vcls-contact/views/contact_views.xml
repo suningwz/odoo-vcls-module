@@ -147,10 +147,11 @@
             <field name="name">All</field>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
-            <!--<field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_form_contact_all')}),
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('base.res_partner_kanban_view')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('base.view_partner_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_form_contact_all')}),
             ]"/>
-            -->
         </record>
 
         <!-- used to visualize VCLS Entities -->
@@ -208,7 +209,9 @@
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_form_contact_all')}),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('base.res_partner_kanban_view')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('base.view_partner_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_form_contact_all')}),
             ]"/>
         </record>
 

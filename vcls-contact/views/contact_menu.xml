@@ -3,11 +3,13 @@
 	<data>
 
 		<!-- we override the main menu 
-      <field name="action" eval="action_all_contacts"/>
-      -->
+      <field name="action" eval="action_all_contacts"/> -->
+      
 		<record id="contacts.res_partner_menu_contacts" model="ir.ui.menu">
 			<field name="name">All</field>
-			<field name="active" eval="True"/>
+			<field name="active" eval="False"/>
+			<field name="sequence">1</field>
+			<field name="parent">menu_admin</field>
 		</record>
 
 		<record id="contacts.res_partner_menu_config" model="ir.ui.menu">
