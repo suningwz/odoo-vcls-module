@@ -262,7 +262,7 @@
         <!-- used to visualize outdated contacts for administration -->
         <record model="ir.actions.act_window" id="action_admin_outdated">
             <field name="name">Outdated contacts</field>
-            <field name="domain" eval="[('stage','=',3)]"/>
+            <field name="domain" eval="[('stage','=',4)]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>
@@ -270,7 +270,7 @@
         <!-- used to visualize archived contacts for administration -->
         <record model="ir.actions.act_window" id="action_admin_archive">
             <field name="name">Archived contacts</field>
-            <field name="domain" eval="[('stage','=',4)]"/>
+            <field name="domain" eval="[('stage','=',5)]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>
