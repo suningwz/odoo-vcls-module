@@ -61,7 +61,7 @@ class ContactExt(models.Model):
 
     ### THe objective of this field is to assist responsible roles in contact completion exercise and maintain a good data quality
     completion_ratio = fields.Float(
-        string = "Data Completion Estimation",
+        string = "Est. Data Completion",
         compute = '_compute_completion_ratio',
         default = 0.0,
     )

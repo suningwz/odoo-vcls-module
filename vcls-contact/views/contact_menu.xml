@@ -115,7 +115,7 @@
 			sequence="9" />
 
 		<menuitem 
-			name="Archive" 
+			name="Archived" 
 			parent="menu_admin" 
 			id="menu_admin_archive" 
 			action="action_admin_archive" 
