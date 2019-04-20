@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_vcls-admin_vcls-admin,vcls-admin.vcls-admin,model_vcls-admin_vcls-admin,,1,0,0,0
+access_visibleview_item_default,access_visibleview_item_default,model_visible_view_item,,1,0,0,0
+access_visibleview_item_admin,access_visibleview_item_admin,model_visible_view_item,base.group_system,1,1,1,1

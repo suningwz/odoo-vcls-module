@@ -30,9 +30,19 @@
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
-        'views/views.xml',
-        'views/templates.xml',
+
+        ### SECURITY ###
+        #'security/ir.model.access.csv',
+
+        ### ACTIONS
+        'actions/admin_user_cronjob.xml',
+
+        ### VIEWS
+        #'views/vcls_admin.xml',
+
+        ### RECORDS
+        #'data/vis.view.item.csv',
+        
     ],
     # only loaded in demonstration mode
     'demo': [
