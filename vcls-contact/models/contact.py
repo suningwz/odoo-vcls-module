@@ -106,10 +106,24 @@ class ContactExt(models.Model):
         string = 'AltName',
     )
 
+    ### VIEW VISIBILITY
+    see_segmentation = fields.Boolean (
+        compute = '_compute_visibility',
+        default = False,
+        store = True,
+    )
+
     ###################
     # COMPUTE METHODS #
     ###################
     
+    @api.depends('category_id')
+    def _compute_visibility(self):
+        for contact in self:
+            contact.see_segmentation = False
+            if self.env.ref('vcls-contact.category_account') in contact.category_id:
+                contact.see_segmentation = True
+
     @api.depends('employee')
     def _compute_is_internal(self):
         for contact in self:

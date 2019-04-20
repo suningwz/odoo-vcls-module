@@ -34,6 +34,8 @@
                                 <field name="user_id" invisible="1"/>
                                 <field name="lang" invisible="1"/>
 
+                                <field name="see_segmentation" invisible="1"/>
+
                                 <!--Same Header for any kind of contact -->
                                 <group>
                                     <group>
@@ -149,6 +151,8 @@
 
                                 </page>
                                 <page name="supplier" string="Suppliers Info">
+                                </page>
+                                <page name="segmentation" string="Business Segmentation" attrs="{'invisible': [('see_segmentation', '=', False)]}">
                                 </page>
                                 
                             </notebook>       
