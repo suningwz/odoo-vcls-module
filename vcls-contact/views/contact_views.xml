@@ -23,27 +23,76 @@
                                     </h1>
                                 </div>
                                 <field name="category_id" string='' widget="many2many_tags" options="{'no_create_edit': True}" placeholder="Client, Supplier, etc."/>
+                                <field name="sharepoint_folder" widget="url" readonly="1" text="   Open Document Folder" string='' attrs="{'invisible': [('create_folder', '=', False)]}"/>
                                 <separator string="   "/>
                                 <field name="parent_id" widget="res_partner_many2one" placeholder="Company" domain="[('is_company', '=', True)]" attrs="{'invisible': ['|', '&amp;', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False),('company_name', '!=', '')]}"/>
+                                <separator string="   "/>
+                                <field name="completion_ratio" widget="percentpie"/>
+
+                                <group attrs="{'invisible': [('is_company', '=', False)]}">
+                                    
+                                    <group string=" ">
+                                        <field name="hidden" groups="vcls-contact.vcls_group_ceo"/>
+                                        <field name="altname" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
+                
+                                        <field name="currency_id"/>
+                                    </group>
+                                    <group string="Internal Contacts">
+                                        <field name="user_id"/>
+                                        <field name="expert_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
+                                        <field name="assistant_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
+                                        <field name="controller_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
+                                        <field name="invoice_admin_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>    
+                                    </group>
+                                </group>
+                            </div>
+                            </div>
+
                                 <!-- Invisible Fields used -->
                                 <field name="is_company" invisible="1"/>
                                 <field name="supplier" invisible="1"/>
                                 <field name="customer" invisible="1"/>
                                 
                                 <field name="company_name" invisible="1"/>
-                                <field name="user_id" invisible="1"/>
+                
                                 <field name="lang" invisible="1"/>
 
+                                
                                 <field name="see_segmentation" invisible="1"/>
+                                <field name="see_supplier" invisible="1"/>
+                                    
+                                    <!--
+                                    <group>
+                                        <group>
+                                            
+                                        </group>
+                                        <group>
+                                            
+                                        </group>
+                                    </group>
+                                    
 
-                                <!--Same Header for any kind of contact -->
+                                    <div>
+                                        <field name="create_folder" invisible='1'/>
+                                        <div class="oe_button_box" name="button_box">
+                                            <button name = "create_folder_btn" string = "Create Sharepoint Folder" type = "object" attrs="{'invisible': [('create_folder', '=', False)]}" />
+                                        </div>
+                                        <field name="custom_sp_link" attrs="{'invisible': [('create_folder', '=', False)]}" widget="url"/>
+                                        <field name="sharepoint_folder" attrs="{'invisible': ['|',('custom_sp_link','!=',False),('create_folder','=',False)]}" widget="url"/>
+                                    </div>
+                                    -->
+                                        
+                                
+                            <notebook>
+                                <page name="contact" string="Contact Info">
                                 <group>
                                     <group>
                                         <field name="email"/>    
-                                        <field name="phone"/>
-                                        <field name="mobile"/>
+                                        <field name="phone" widget="phone"/>
+                                        <field name="mobile" widget="phone"/>
+                                        <field name="fax" widget="phone"/>
                                         <field name="website" widget="url"/>
-                                        
+                                        <field name="create_folder" invisible="0"/>
                                     </group>
                                     <group>
                                         <label for="street" string="Address"/>
@@ -58,33 +107,8 @@
                                             </div>
                                         </div>   
                                     </group>
-
-                                    <field name="completion_ratio" widget="percentpie"/>
-                                    <!--
-                                    <group>
-                                    <group>
-                                          
-                                    </group>
-                                    <group>
-                                          
-                                    </group>
-                                    </group>
-                                    
-
-                                    <div>
-                                        <field name="create_folder" invisible='1'/>
-                                        <div class="oe_button_box" name="button_box">
-                                            <button name = "create_folder_btn" string = "Create Sharepoint Folder" type = "object" attrs="{'invisible': [('create_folder', '=', False)]}" />
-                                        </div>
-                                        <field name="custom_sp_link" attrs="{'invisible': [('create_folder', '=', False)]}" widget="url"/>
-                                        <field name="sharepoint_folder" attrs="{'invisible': ['|',('custom_sp_link','!=',False),('create_folder','=',False)]}" widget="url"/>
-                                    </div>
-                                    -->
-                                        
                                 </group>
-                            </div>
-                            </div>
-                            <notebook>
+                                </page>
                                 <!--  related contact (reuse existing one) -->
                                 <page name="individuals" string="Individuals" attrs="{'invisible': [('is_company', '=', False)]}">
                                     <field name="child_ids" mode="kanban">
@@ -150,9 +174,25 @@
                                     </field>
 
                                 </page>
-                                <page name="supplier" string="Suppliers Info">
+
+                                
+
+                                <page name="description" string="Description">
+                                    <field name="description"/>
                                 </page>
                                 <page name="segmentation" string="Business Segmentation" attrs="{'invisible': [('see_segmentation', '=', False)]}">
+                                    <group>
+                                        <group>
+                                            <field name="country_group_id"/>
+                                            <field name="industry_id"/>
+                                        </group>
+                                        <group>
+                                            
+                                        </group>
+                                    </group>
+                                </page>
+                                
+                                <page name="financials" string="Financials" attrs="{'invisible': [('see_segmentation', '=', False)]}">
                                 </page>
                                 
                             </notebook>       

@@ -27,6 +27,16 @@
 
     # always loaded
     'data': [
+
+        ### SECURITY
+        'security/vcls_groups.xml',
+        'security/ir.model.access.csv',
+
+        ### VIEWS
+        'views/sup_contact_views.xml',
+
+        ### MENUS
+        'views/supplier_menu.xml',
         
     ],
     # only loaded in demonstration mode

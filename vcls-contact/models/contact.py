@@ -51,9 +51,9 @@ class ContactExt(models.Model):
         readonly = True,
     )
     
-    custom_sp_link = fields.Char(
+    """custom_sp_link = fields.Char(
         string = 'Custom Sharepoint Folder',
-    )
+    )"""
 
     create_folder = fields.Boolean(
         string = "Create Sharepoint Folder",
@@ -84,10 +84,20 @@ class ContactExt(models.Model):
         compute = '_compute_country_group',
     )
 
+    currency_id = fields.Many2one(
+        'res.currency',
+        string="Currency",
+        )
+
     #project management fields
     assistant_id = fields.Many2one(
         'res.users',
         string = 'Project Assistant',
+    )
+
+    expert_id = fields.Many2one(
+        'res.users',
+        string = 'Main Expert',
     )
 
     #finance fields
@@ -102,12 +112,18 @@ class ContactExt(models.Model):
     )
 
     #connection with external systems
+
     altname = fields.Char(
         string = 'AltName',
     )
 
     ### VIEW VISIBILITY
     see_segmentation = fields.Boolean (
+        compute = '_compute_visibility',
+        default = False,
+        store = True,
+    )
+    see_supplier = fields.Boolean (
         compute = '_compute_visibility',
         default = False,
         store = True,
@@ -123,6 +139,10 @@ class ContactExt(models.Model):
             contact.see_segmentation = False
             if self.env.ref('vcls-contact.category_account') in contact.category_id:
                 contact.see_segmentation = True
+            
+            contact.see_supplier = False
+            if self.env.ref('vcls-contact.category_PS') in contact.category_id:
+                contact.see_supplier = True
 
     @api.depends('employee')
     def _compute_is_internal(self):
@@ -146,7 +166,7 @@ class ContactExt(models.Model):
     def _compute_sharepoint_folder(self):
         for contact in self:
             #search if this is an account contact
-            if self.env.ref('vcls-contact.category_account') in contact.category_id and contact.create_folder:
+            if self.env.ref('vcls-contact.category_account') in contact.category_id and contact.create_folder and contact.altname:
                 root = self.env.ref('vcls-contact.conf_path_sp_client_root').value
                 contact.sharepoint_folder = "{}{:.1}/{}".format(root,contact.altname,contact.altname)
             #raise ValidationError("{}".format(contact.sharepoint_folder))

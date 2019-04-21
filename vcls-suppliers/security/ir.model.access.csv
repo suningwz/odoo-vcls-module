@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_vcls-suppliers_vcls-suppliers,vcls-suppliers.vcls-suppliers,model_vcls-suppliers_vcls-suppliers,,1,0,0,0
+access_project_supplier_type_default,access_project_supplier_type_default,vcls-suppliers.model_project_supplier_type,,1,0,0,0
+access_project_supplier_type_rm,access_project_supplier_type_rm,vcls-suppliers.model_project_supplier_type,vcls-suppliers.vcls_group_rm,1,1,1,1
