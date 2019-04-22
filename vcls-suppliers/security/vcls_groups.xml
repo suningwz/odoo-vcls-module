@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Create the superuser groups, which has almost all roles except HR ones to protect private data-->
+        <record id="vcls_group_rm" model="res.groups">
+            <field name="name">Resource Manager</field>
+            <field name="category_id"/>
+        </record>
+        
+    </data>
+</odoo>

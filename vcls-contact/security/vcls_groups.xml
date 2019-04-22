@@ -2,20 +2,12 @@
 <odoo>
     <data>
         
-        <!-- Create the group category 
-        <record model="ir.module.category" id="vcls_module">
-            <field name="name">VCLS Extra Roles</field>
-            <field name="description">Defines extra rights used in the VCLS module.</field>
-            <field name="sequence">3</field>
-        </record>
-        -->
-        
-        <!-- Create the CEO group, which will access to hidden contacts -->
+        <!-- Create the CEO group, which will access to hidden contacts and inherits contact creation rights -->
         <record id="vcls_group_ceo" model="res.groups">
             <field name="name">CEO Group</field>
-             <field name="category_id"/>
+            <field name="category_id"/>
+            <field name="implied_ids" eval="[(4,ref('base.group_partner_manager'))]"/>
         </record>
-        
         
     </data>
 </odoo>

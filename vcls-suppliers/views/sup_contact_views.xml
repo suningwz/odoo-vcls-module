@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="sup_view_form_contact_all" model="ir.ui.view">
+            <field name="name">sup_view_form_contact_all</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="vcls-contact.view_form_contact_all"/>
+
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/notebook/page[4]" position="after">
+                    <page name="suppliers" string="Supplier Info" attrs="{'invisible': [('see_supplier', '=', False)]}">
+                    <field name="see_supplier" invisible="1"/>
+                    <group>
+                        <field name="project_supplier_type_id"/>
+                        <field name="expertise_area_ids" widget="many2many_tags"/>
+                    </group>
+                    </page>
+            
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_supplier_project_type">
+            <field name="name">view_supplier_project_type</field>
+            <field name="model">project.supplier.type</field>
+            <field name="arch" type="xml">
+                <tree create='1' editable='bottom'>
+                    <field name="name"/>
+                    <field name="active"/> 
+                </tree>
+            </field>
+        </record>
+
+        
+        <record model="ir.actions.act_window" id="action_project_supplier_type">
+            <field name="name">Project Supplier Type</field>
+            <field name="res_model">project.supplier.type</field>
+            <field name="view_mode">tree</field>
+            <field name="view_ref">view_supplier_project_type</field>
+        </record>
+
+        <record model="ir.ui.view" id="view_expertise_area">
+            <field name="name">view_expertise_area</field>
+            <field name="model">expertise.area</field>
+            <field name="arch" type="xml">
+                <tree create='1' editable='bottom'>
+                    <field name="name"/>
+                    <field name="active"/> 
+                </tree>
+            </field>
+        </record>
+
+        
+        <record model="ir.actions.act_window" id="action_expertise_area">
+            <field name="name">Expertise Area</field>
+            <field name="res_model">expertise.area</field>
+            <field name="view_mode">tree</field>
+            <field name="view_ref">view_expertise_area</field>
+        </record>
+
+    </data>
+</odoo>
+    
+    
+        
+  
