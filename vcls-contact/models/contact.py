@@ -153,7 +153,8 @@ class ContactExt(models.Model):
     @api.depends('country_id')
     def _compute_country_group(self):
         for contact in self:
-            groups = contact.country_id.country_group_ids.filtered([('group_type','=','BD')])
+            #groups = contact.country_id.country_group_ids.filtered([('group_type','=','BD')])
+            groups = contact.country_id.country_group_ids
             if groups:
                 contact.country_group_id = groups[0]
 
