@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '1.4.0',
+    'version': '1.4.3',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -54,20 +54,25 @@
         'views/benefits.xml',
         'views/company_org.xml',
         'views/contract.xml',
+        'views/exceptional_leaves.xml',
         'views/job.xml',
         'views/leave.xml',
         'views/leave_allocation.xml',
         'views/leave_report.xml',
         'views/working_times.xml',
+
+        ########
+        # MENU #
+        ########
+        'views/employee_menu.xml',
+        'views/leave_menu.xml',
       
         ###########
         # ACTIONS #
         ###########
-        'actions/hr_employee_menu.xml',
+        
         'actions/hr_employee_cronjob.xml',
-        'actions/hr_leave_menu.xml',
         'actions/hr_leave_cronjob.xml',
-        'actions/leave_report_menu.xml',
         
         #############
         # SEQUENCES #

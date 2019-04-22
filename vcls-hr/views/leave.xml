@@ -376,7 +376,141 @@
                 
             </field>
         </record>
-      
+
+        <!-- RELATED ACTIONS -->
+
+        <record id="action_hr_absent_today_overview" model="ir.actions.act_window">
+            <field name="name">Absent Today</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_mode">kanban,form</field>
+            <field name="domain">[('is_absent_totay','=',True)]</field>
+            <field name="context">{'search_default_group_office': 1}</field>
+            <field name="view_id" ref="view_employee_absent_kanban"/>
+        </record>
+
+        <!-- MY LEAVES ACTIONS -->
+        <record id="hr_holidays.hr_leave_action_new_request" model="ir.actions.act_window">
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">calendar,tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1')}),
+            ]"/>
+        </record>
+
+        <record id="hr_holidays.hr_leave_action_my" model="ir.actions.act_window">
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,calendar</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_leave_form1')}),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('hr_holidays.hr_leave_view_calendar')}),
+            ]"/>
+        </record>
+
+        <!-- LEAVES FOR LM -->
+        <!-- Leaves to approve, using the existing action slightly customized -->
+        <record id="hr_holidays.hr_leave_action_action_approve_department" model="ir.actions.act_window">
+            <field name="name">Leaves To Approve</field>
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree_multi_nocreate')}),
+            ]"/>
+            <field name="context">{
+                'search_default_approve':1}
+            </field>
+            <field name="domain">[('lm_user_id','=',uid)]</field>
+        </record>
+
+        <!-- All Leaves -->
+        <record id="hr_holidays.hr_leave_action_all" model="ir.actions.act_window">
+            <field name="name">All Leaves</field>
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree_multi_nocreate')}),
+            ]"/>
+            <field name="context">{}</field>
+            <field name="domain">[('lm_user_id','=',uid)]</field>
+        </record>
+
+        <!-- Gantt Overview -->
+        <record id="hr_holidays.action_hr_holidays_dashboard" model="ir.actions.act_window">
+            <field name="view_mode">gantt,calendar</field>
+            <field name="context">{'search_default_year': 1, 
+            'search_default_group_employee': 1, 
+            'short_name': 1,
+            'search_default_my_team_leaves': 1,
+            }</field>
+        </record>
+        
+        <!-- HR LEAVES -->
+        <!-- Leaves to approve, using the existing action slightly customized -->
+        <record id="hr_leave_action_action_approve_department_hr" model="ir.actions.act_window">
+            <field name="name">Leaves To Approve</field>
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree_multi')}),
+            ]"/>
+            <field name="context">{
+                'search_default_approve':1}
+            </field>
+            <field name="domain">[]</field>
+        </record>
+
+        <record id="hr_leave_action_all_hr" model="ir.actions.act_window">
+            <field name="name">All Leaves</field>
+            <field name="res_model">hr.leave</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_tree_multi')}),
+            ]"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <!-- menu for HR allocation -->
+        <record id="hr_holidays.hr_leave_allocation_action_all" model="ir.actions.act_window">
+            <field name="name">All Allocations</field>
+            <field name="res_model">hr.leave.allocation</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('hr_holidays.hr_leave_allocation_view_tree')}),
+            ]"/>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new leave allocation request
+                </p>
+            </field>
+        </record>
+
+        <!-- CONFIGURATION -->
+        <!-- action for bank holidays -->
+        <record id="action_hr_bank_holiday" model="ir.actions.act_window">
+            <field name="name">Bank Holiday</field>
+            <field name="res_model">hr.bank.holiday</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-hr.view_bank_holiday_tree_1')}),
+            ]"/>
+        </record>
+
+    </data>
+</odoo>
+
       <!--
       <record id="hr_leave_view_kanban" model="ir.ui.view">
         <field name="name">hr.leave.view.kanban</field>
@@ -436,8 +570,7 @@
      </record>
 -->
       
-  </data>
-</odoo>
+  
                    
                
             

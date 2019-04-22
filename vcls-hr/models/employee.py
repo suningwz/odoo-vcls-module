@@ -440,7 +440,22 @@ class Employee(models.Model):
         self._set_resource_calendar()
         self._wt_to_tag()
         self._check_lm_membership()
-        self._end_contracts()
+        #self._end_contracts()
+        self._set_user_tz()
+    
+    @api.model
+    def _set_user_tz(self):
+        ''' Set User timezone
+        [when] the tz of the employee is false
+        [Comments]
+            This function set the timezone with 
+            the tz from the ressource working time
+            of the employee
+        '''
+        employees = self.env['hr.employee'].search([('user_id.tz','=',False),('resource_calendar_id','!=',False),('user_id','!=',False)])
+        for employee in employees:
+            employee.user_id.tz = employee.resource_calendar_id.tz
+                
     
     #if multiple open contracts exists, then we set the end date of the old ones the day before the start of the new ones
     @api.model

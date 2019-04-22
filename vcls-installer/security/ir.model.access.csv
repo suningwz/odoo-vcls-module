@@ -1,2 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_vcls-installer_vcls-installer,vcls-installer.vcls-installer,model_vcls-installer_vcls-installer,,1,0,0,0

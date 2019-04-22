@@ -6,3 +6,4 @@ LVT.WW.EXCEPTIONAL.01,Exceptional Leave,No allocation,400,,,Employee Manager,bas
 LVT.IND.EXCEPTIONAL.01,Exceptional Leave,No allocation,400,,,Employee Manager,company_VCPVT,FALSE,FALSE,0,Day,,
 LVT.RRG.EXCEPTIONAL.01,Exceptional Leave,No allocation,400,,,Employee Manager,company_RRG,FALSE,FALSE,0,Day,,
 LVT.CWLS.EXCEPTIONAL.01,Exceptional Leave,No allocation,400,,,Employee Manager,company_CWLS,FALSE,FALSE,0,Day,,
+LVT.BH.EXCEPTIONAL.01,Exceptional Leave,No allocation,400,,,Employee Manager,company_BH,FALSE,FALSE,0,Day,,

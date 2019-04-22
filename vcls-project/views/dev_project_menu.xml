@@ -8,12 +8,13 @@
             parent=""
             sequence="100"
             action=""
+            web_icon="fa fa-code,#f1c40f,#34495e"
         />
 
         <record id="menu_dev_project" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('vcls-project.vcls_group_dev_user'))]"/>
         </record>
-
+        
         <menuitem
             id="menu_dev_project_main"
             name="Development Projects"
@@ -22,6 +23,7 @@
             action="vcls-project.action_main_project"
         />
 
+        
         <menuitem
             id="menu_dev_task_main"
             name="Development Tasks"
@@ -29,15 +31,7 @@
             sequence="6"
             action="vcls-project.action_task_dev"
         />
-
         <!--
-        <menuitem
-            id="menu_project_version"
-            name="Project Versions"
-            parent="menu_dev_project"
-            sequence="6"
-            action="vcls-project.action_main_version"
-        />
         -->
 
     </data>

@@ -40,9 +40,6 @@
         ### VIEWS
         #'views/vcls_admin.xml',
 
-        ### RECORDS
-        #'data/vis.view.item.csv',
-        
     ],
     # only loaded in demonstration mode
     'demo': [

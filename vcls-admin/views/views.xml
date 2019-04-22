@@ -1,0 +1,90 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <!--
+    <record model="ir.ui.view" id="vcls-admin.list">
+      <field name="name">vcls-admin list</field>
+      <field name="model">vcls-admin.vcls-admin</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </tree>
+      </field>
+    </record>
+    -->
+
+    <!-- actions opening views on models -->
+    <!--
+    <record model="ir.actions.act_window" id="vcls-admin.action_window">
+      <field name="name">vcls-admin window</field>
+      <field name="res_model">vcls-admin.vcls-admin</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    -->
+
+    <!-- server action to the one above -->
+    <!--
+    <record model="ir.actions.server" id="vcls-admin.action_server">
+      <field name="name">vcls-admin server</field>
+      <field name="model_id" ref="model_vcls-admin_vcls-admin"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+    -->
+
+    <!-- Top menu item -->
+    <!--
+    <menuitem name="vcls-admin" id="vcls-admin.menu_root"/>
+    -->
+    <!-- menu categories -->
+    <!--
+    <menuitem name="Menu 1" id="vcls-admin.menu_1" parent="vcls-admin.menu_root"/>
+    <menuitem name="Menu 2" id="vcls-admin.menu_2" parent="vcls-admin.menu_root"/>
+    -->
+    <!-- actions -->
+    <!--
+    <menuitem name="List" id="vcls-admin.menu_1_list" parent="vcls-admin.menu_1"
+              action="vcls-admin.action_window"/>
+    <menuitem name="Server to list" id="vcls-admin" parent="vcls-admin.menu_2"
+              action="vcls-admin.action_server"/>
+    -->
+    <record id="view_module_filter_v2" model="ir.ui.view">
+        <field name="name">ir.module.module.list.select</field>
+        <field name="model">ir.module.module</field>
+        <field name='inherit_id' ref="base.view_module_filter" />
+        <field name="arch" type="xml">
+          <xpath expr="//search" position='replace'>
+            <search string="Search modules">
+                <field name="name" filter_domain="['|', '|', ('summary', 'ilike', self), ('shortdesc', 'ilike', self), ('name',
+                    'ilike', self)]" string="Module"/>
+                <filter name="vcls" string="VCLS" domain="[('name','ilike','vcls')]"/>
+                <filter name="app" string="Apps" domain="[('application', '=', True)]"/>
+                <filter name="extra" string="Extra" domain="[('application', '=', False)]"/>
+                <separator/>
+                <filter name="installed" string="Installed" domain="[('state', 'in', ['installed', 'to upgrade', 'to remove'])]"/>
+                <filter name="not_installed" string="Not Installed" domain="[('state', 'in', ['uninstalled', 'uninstallable', 'to install'])]"/>
+                <field name="category_id"/>
+                <group expand="0" string="Group By">
+                    <filter string="Author" name="author" domain="[]" context="{'group_by':'author'}"/>
+                    <filter string="Category" name="category" domain="[]" context="{'group_by':'category_id'}"/>
+                </group>
+            </search>
+          </xpath>
+        </field>
+    </record>
+
+    <record id="base.open_module_tree" model="ir.actions.act_window">
+        <field name="context">{'search_default_vcls':1}</field>
+    </record>
+
+    
+  </data>
+</odoo>
