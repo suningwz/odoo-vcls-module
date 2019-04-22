@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+
+		<menuitem 
+			name="Suppliers" 
+			parent="contacts.res_partner_menu_config" 
+			id="menu_config_suppliers" action="" 
+			sequence="6" />
+
+		<menuitem 
+			name="Project Suppliers Types" 
+			parent="menu_config_suppliers" 
+			id="menu_config_suppliers_type" 
+			action="action_project_supplier_type" 
+			sequence="3" />
+		
+		<menuitem 
+			name="Expertise Area" 
+			parent="menu_config_suppliers" 
+			id="menu_expertise_area" 
+			action="action_expertise_area" 
+			sequence="6" />
+
+
+	</data>
+</odoo>

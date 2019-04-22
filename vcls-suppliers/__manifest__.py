@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "vcls-contact",
+    'name': "vcls-suppliers",
 
     'summary': """
-        VCLS custom contact module
-        """,
+        External Resource Management""",
 
     'description': """
+        External Resource Management
     """,
 
     'author': "VCLS",
@@ -16,34 +16,33 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.3.0',
+    'version': '0.1',
 
     # any module necessary for this one to work correctly
     'depends': [
         'base',
-        'contacts',
         'survey',
+        'vcls-contact',
         ],
 
     # always loaded
     'data': [
 
-        ### CONFIGURATION DATA ###
-        'data/res.partner.category.csv',
-        'data/ir.config_parameter.csv',
-        
-        ### SECURITY ###
+        ### SECURITY
         'security/vcls_groups.xml',
         'security/ir.model.access.csv',
-        'security/contact_rules.xml',
+
+        ### VIEWS
+        'views/sup_contact_views.xml',
+
+        ### MENUS
+        'views/supplier_menu.xml',
+
+        ### RECORDS
+        'data/expertise.area.csv',
+        'data/project.supplier.type.csv',
         
-        ### VIEWS ###
-        'views/contact_views.xml',
-
-        ### MENUS ###
-        'views/contact_menu.xml'
-        ],
-
+    ],
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',

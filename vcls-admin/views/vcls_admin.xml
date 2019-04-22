@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+
+		<!-- used to visualize VCLS Entities -->
+        <record model="ir.actions.act_window" id="action_vis_view_item">
+            <field name="name">Visible View Items</field>
+            <field name="res_model">visible.view.item</field>
+            <field name="view_mode">tree</field>
+        </record>
+		
+		<menuitem 
+			name="VCLS admin" 
+			parent="base.menu_custom" 
+			id="menu_vcls_admin" 
+			action="" 
+			sequence="3" />
+
+		<menuitem 
+			name="Visible View Items" 
+			parent="menu_vcls_admin" 
+			id="menu_vis_view_item" 
+			action="action_vis_view_item" 
+			sequence="3" />
+
+	</data>
+</odoo>
