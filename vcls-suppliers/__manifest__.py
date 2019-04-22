@@ -27,6 +27,9 @@
 
     # always loaded
     'data': [
+        ### RECORDS
+        'data/expertise.area.csv',
+        'data/project.supplier.type.csv',
 
         ### SECURITY
         'security/vcls_groups.xml',
@@ -36,11 +39,7 @@
         'views/sup_contact_views.xml',
 
         ### MENUS
-        'views/supplier_menu.xml',
-
-        ### RECORDS
-        'data/expertise.area.csv',
-        'data/project.supplier.type.csv',
+        'views/supplier_menu.xml',  
         
     ],
     # only loaded in demonstration mode
