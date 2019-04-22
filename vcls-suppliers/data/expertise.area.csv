@@ -1,0 +1,17 @@
+id,name
+expertise_area_biostat,(Bio) Statistician
+expertise_area_atmp,ATMP
+expertise_area_c_dev,Clinical Development
+expertise_area_nc_dev,Non-Clinical Development
+expertise_area_cmc,CMC
+expertise_area_cra,CRA
+expertise_area_cro,CRO
+expertise_area_db,Database
+expertise_area_db_mgmt,Database Management
+expertise_area_ma,Market Access
+expertise_area_mw,Medical Writer
+expertise_area_ohp,OHP (device etc.)
+expertise_area_pv,PV
+expertise_area_pv_rev,PV Literature Review
+expertise_area_reg_company,Regulatory Company
+expertise_area_reg_generalist,Regulatory Generalist

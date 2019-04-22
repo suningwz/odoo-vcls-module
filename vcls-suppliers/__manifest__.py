@@ -37,6 +37,10 @@
 
         ### MENUS
         'views/supplier_menu.xml',
+
+        ### RECORDS
+        'data/expertise.area.csv',
+        'data/project.supplier.type.csv',
         
     ],
     # only loaded in demonstration mode

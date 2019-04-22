@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_project_supplier_type_default,access_project_supplier_type_default,vcls-suppliers.model_project_supplier_type,,1,0,0,0
 access_project_supplier_type_rm,access_project_supplier_type_rm,vcls-suppliers.model_project_supplier_type,vcls-suppliers.vcls_group_rm,1,1,1,1
+access_expertise_area_default,access_expertise_area_default,vcls-suppliers.model_expertise_area,,1,0,0,0
+access_expertise_area_type_rm,access_expertise_area_rm,vcls-suppliers.model_expertise_area,vcls-suppliers.vcls_group_rm,1,1,1,1

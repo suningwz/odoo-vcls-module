@@ -23,7 +23,7 @@
                                     </h1>
                                 </div>
                                 <field name="category_id" string='' widget="many2many_tags" options="{'no_create_edit': True}" placeholder="Client, Supplier, etc."/>
-                                <field name="sharepoint_folder" widget="url" readonly="1" text="   Open Document Folder" string='' attrs="{'invisible': [('create_folder', '=', False)]}"/>
+                                <field name="sharepoint_folder" widget="url" readonly="1" text="|   Open Document Folder" string='' attrs="{'invisible': [('create_folder', '=', False)]}"/>
                                 <separator string="   "/>
                                 <field name="parent_id" widget="res_partner_many2one" placeholder="Company" domain="[('is_company', '=', True)]" attrs="{'invisible': ['|', '&amp;', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False),('company_name', '!=', '')]}"/>
                                 <separator string="   "/>
