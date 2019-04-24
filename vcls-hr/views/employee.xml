@@ -361,11 +361,11 @@
                                 </div>
                             </div>
                             <div>
-                                <span class='fa fa-map-marker'></span>
+                                <span class='fa fa-map-marker' aria-label="Office" title="Office"></span>
                                 <field name="office_id" readonly='1'/>
                             </div>
                             <div>
-                                <span class='fa fa-group'></span>
+                                <span class='fa fa-group' aria-label="Department" title="Department"></span>
                                 <field name="department_id" />
                             </div>
                         </div>
