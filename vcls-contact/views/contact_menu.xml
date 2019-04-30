@@ -135,6 +135,27 @@
 			action="action_admin_archive" 
 			sequence="12" />
 		
+		<!-- Configuration menu -->
+		<menuitem 
+			name="Client Segmentation" 
+			parent="contacts.res_partner_menu_config" 
+			id="menu_config_client_segmentation" action="" 
+			sequence="7" />
+
+		<menuitem 
+			name="Client Activities" 
+			parent="menu_config_client_segmentation" 
+			id="menu_client_activity" 
+			action="action_client_activity" 
+			sequence="3" />
+		
+		<menuitem 
+			name="Client Products" 
+			parent="menu_config_client_segmentation" 
+			id="menu_client_product" 
+			action="action_client_product" 
+			sequence="6" />
+		
 
 	</data>
 </odoo>

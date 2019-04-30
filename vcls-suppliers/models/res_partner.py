@@ -10,7 +10,9 @@ class ExpertiseArea(models.Model):
     active = fields.Boolean(
         default = True,
     )
-    name = fields.Char()
+    name = fields.Char(
+        required = True,
+    )
 
 class ProjectSupplierType(models.Model):
 
@@ -19,7 +21,9 @@ class ProjectSupplierType(models.Model):
     active = fields.Boolean(
         default = True,
     )
-    name = fields.Char()
+    name = fields.Char(
+        required = True,
+    )
 
 class ContactExt(models.Model):
 

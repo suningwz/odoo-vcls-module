@@ -89,6 +89,18 @@ class ContactExt(models.Model):
         string="Currency",
         readonly = False,
         )
+    
+    client_activity_ids = fields.Many2many(
+        'client.activity',
+        string = 'Client Activity',
+    )
+
+    client_product_ids = fields.Many2many(
+        'client.product',
+        string = 'Client Product',
+    )
+    
+
 
     #project management fields
     assistant_id = fields.Many2one(
