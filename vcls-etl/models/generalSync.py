@@ -11,13 +11,14 @@ class ETLMap(models.Model):
     # Helsinki
     odooId = fields.Char(readonly = True)
     externalId = fields.Char(readonly = True)
+    syncRecordId = fields.Many2one('etl.sync.mixin', readonly = True) # -> need testing
 
 
 class GeneralSync(models.AbstractModel):
     _name = 'etl.sync.mixin'
     """ This model represents an abstract parent class used to manage ETL """
 
-    keys = fields.One2many('etl.sync.keys', readonly = True)
+    keys = fields.One2many('etl.sync.keys', readonly = True) # Not rightly declared -> error
     lastRun = fields.Date(readonly = True)
 
     def getLastRun(self):
