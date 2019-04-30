@@ -76,7 +76,6 @@
                 'search_default_group_type': 1,
                 'search_default_validated': 1,
                 'search_default_approve': 1,
-                'search_default_active_types': 1,
                 }
             </field>
             <field name="domain">[('employee_id.user_id', '=', uid),('holiday_type','=','employee')]</field>

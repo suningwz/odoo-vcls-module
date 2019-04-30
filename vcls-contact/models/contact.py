@@ -42,7 +42,7 @@ class ContactExt(models.Model):
         (5, 'Archived')], 
         string='Status',
         track_visibility='onchange',
-        default=1,
+        default=2,
     )
 
     sharepoint_folder = fields.Char(
