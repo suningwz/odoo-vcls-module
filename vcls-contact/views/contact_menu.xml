@@ -24,7 +24,8 @@
 		<menuitem 
 			name="Clients" 
 			parent="contacts.menu_contacts" 
-			id="menu_accounts" action="" 
+			id="menu_accounts" 
+			action="" 
 			sequence="1" />
 
 		<menuitem 
@@ -84,6 +85,19 @@
 			id="menu_VCLS_employees" 
 			action="action_vcls_employees" 
 			sequence="6" />
+		
+		<!-- Private Contacts Menu -->
+		<menuitem 
+			name="My Private Contacts" 
+			parent="contacts.menu_contacts" 
+			id="menu_private_contact" 
+			action="action_private_contact" 
+			sequence="9" />
+		
+		<!-- Configure groups to access non active employees -->
+        <record id="vcls-contact.menu_private_contact" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('vcls-contact.vcls_group_ceo'))]"/>
+        </record>
 
 		<!-- Administration menu -->
 		<menuitem 
@@ -120,6 +134,7 @@
 			id="menu_admin_archive" 
 			action="action_admin_archive" 
 			sequence="12" />
+		
 
 	</data>
 </odoo>

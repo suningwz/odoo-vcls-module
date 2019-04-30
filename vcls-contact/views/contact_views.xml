@@ -29,15 +29,14 @@
                                 <separator string="   "/>
                                 <field name="completion_ratio" widget="percentpie"/>
 
-                                <group attrs="{'invisible': [('is_company', '=', False)]}">
+                                <group>
                                     
                                     <group string=" ">
-                                        <field name="hidden" groups="vcls-contact.vcls_group_ceo"/>
+                                        <field name="hidden" string="Is Private?" groups="vcls-contact.vcls_group_ceo"/>
                                         <field name="altname" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
-                
-                                        <field name="currency_id"/>
+                                        <field name="currency_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                     </group>
-                                    <group string="Internal Contacts">
+                                    <group string="Internal Contacts" attrs="{'invisible': [('is_company', '=', False)]}">
                                         <field name="user_id"/>
                                         <field name="expert_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                         <field name="assistant_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
@@ -52,7 +51,7 @@
                                 <field name="is_company" invisible="1"/>
                                 <field name="supplier" invisible="1"/>
                                 <field name="customer" invisible="1"/>
-                                
+                
                                 <field name="company_name" invisible="1"/>
                 
                                 <field name="lang" invisible="1"/>
@@ -80,14 +79,13 @@
                                         <field name="custom_sp_link" attrs="{'invisible': [('create_folder', '=', False)]}" widget="url"/>
                                         <field name="sharepoint_folder" attrs="{'invisible': ['|',('custom_sp_link','!=',False),('create_folder','=',False)]}" widget="url"/>
                                     </div>
-                                    -->
-                                        
+                                    -->   
                                 
                             <notebook>
                                 <page name="contact" string="Contact Info">
                                 <group>
                                     <group>
-                                        <field name="email"/>    
+                                        <field name="email" widget="email"/>    
                                         <field name="phone" widget="phone"/>
                                         <field name="mobile" widget="phone"/>
                                         <field name="fax" widget="phone"/>
@@ -331,6 +329,14 @@
         <record model="ir.actions.act_window" id="action_admin_archive">
             <field name="name">Archived contacts</field>
             <field name="domain" eval="[('stage','=',5)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
+        <!-- Actions used for private EV's contact management -->
+        <record model="ir.actions.act_window" id="action_private_contact">
+            <field name="name">My Private Contacts</field>
+            <field name="domain" eval="[('hidden','=',True)]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>

@@ -218,7 +218,7 @@
         />
         
         <record id="action_hr_officies" model="ir.actions.act_window">
-            <field name="name">VCLS Officies</field>
+            <field name="name">VCLS Offices</field>
             <field name="res_model">hr.office</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>

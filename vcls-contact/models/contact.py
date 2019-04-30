@@ -87,6 +87,7 @@ class ContactExt(models.Model):
     currency_id = fields.Many2one(
         'res.currency',
         string="Currency",
+        readonly = False,
         )
 
     #project management fields
