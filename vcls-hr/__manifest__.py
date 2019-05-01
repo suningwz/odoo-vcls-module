@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '1.4.4',
+    'version': '1.4.5',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -59,6 +59,7 @@
         'views/leave.xml',
         'views/leave_allocation.xml',
         'views/leave_report.xml',
+        'views/leave_type.xml',
         'views/working_times.xml',
 
         ########

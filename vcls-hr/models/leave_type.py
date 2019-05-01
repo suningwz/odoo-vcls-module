@@ -36,6 +36,14 @@ class LeaveType(models.Model):
         default = False,
         )
     
+    payroll_type = fields.Selection([
+        ('rtt', 'RTT'),
+        ('cp_paid', 'CP Paid'),
+        ('cp_unpaid', 'CP Unpaid'),
+        ('sick', 'Sick'),
+        ('other_paid','Other Paid'),
+        ])
+    
     ##################
     # Search methods #
     ##################
