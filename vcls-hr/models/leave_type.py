@@ -77,14 +77,12 @@ class LeaveType(models.Model):
         """
         
         employee_id = self._get_contextual_employee_id()
-        #if args != [('valid', '=', True)]:
-        if ['search_args_filter_1', '=', 'no0'] in args:
-            raise UserError("{} | {}".format(type(args),args))
+        
+        #if this seaerch is called by a view where the below domain has been defined.
+        #This is used to have different search function according to the view
         leave_ids = super(LeaveType, self)._search(args, offset=offset, limit=limit, order=order, count=count, access_rights_uid=access_rights_uid)
-        if not count and not order and employee_id:
-            
+        if not count and not order and employee_id and ['search_args_filter_1', '=', 'no0'] in args:
             leaves = self.browse(leave_ids)
-           
             #we remove the leaves types based on allocations but with a counter == 0
             for item in leaves:
                 if (item.allocation_type  in ['fixed','fixed_allocation']) and item.virtual_remaining_leaves == 0:
@@ -92,12 +90,6 @@ class LeaveType(models.Model):
             
             #oldest counter 1st
             sort_key = lambda l: (l.allocation_type == 'fixed', l.allocation_type == 'fixed_allocation', l.virtual_remaining_leaves>0, 1/l.validity_start_ord, l.allocation_type == 'no')
-            
-            
-            #test = leaves.sorted(key=sort_key, reverse=True)
-            #names = test.mapped('id')
-            #raise ValidationError('{}'.format(names))
-            
             return leaves.sorted(key=sort_key, reverse=True).ids
         
         return leave_ids
