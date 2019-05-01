@@ -83,6 +83,8 @@ class Leave(models.Model):
     #####################
     # Overriden Methods #
     #####################
+
+    """
     #We simplify this method to force the number of days to be based on days and not hours.
     def _get_number_of_days(self, date_from, date_to, employee_id):
         # Returns a float equals to the timedelta between two dates given as string.
@@ -103,17 +105,9 @@ class Leave(models.Model):
             datetime.combine(date_from.date(), time.max),
             False)
 
-        return self.env.user.company_id.resource_calendar_id.get_work_hours_count(date_from, date_to) / (today_hours or HOURS_PER_DAY)
+        return self.env.user.company_id.resource_calendar_id.get_work_hours_count(date_from, date_to) / (today_hours or HOURS_PER_DAY) 
         
-        """
-        delta = date_to.date()-date_from.date()
-        if self.request_unit_half:
-            in_days = 0.5 #half a day is half a day
-        else:
-            in_days = delta.days + 1 #we add one to cover the current day (i.e. if start = end date)
-        
-        return in_days
-        """
+    """
         
     def activity_update(self):
         default_deadline = datetime.today() + relativedelta(weeks=1)
