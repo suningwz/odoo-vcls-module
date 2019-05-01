@@ -141,7 +141,10 @@ class ContactExt(models.Model):
         default = False,
         store = True,
     )
-
+    #log note company change
+    parent_id = fields.Many2one(
+        track_visibility='always'
+    )
     ###################
     # COMPUTE METHODS #
     ###################
