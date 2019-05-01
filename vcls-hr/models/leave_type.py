@@ -77,8 +77,8 @@ class LeaveType(models.Model):
         """
         
         employee_id = self._get_contextual_employee_id()
-        if args != [('valid', '=', True)]:
-        #if ['search_args_filter_1', '=', 'no0'] in args:
+        #if args != [('valid', '=', True)]:
+        if ['search_args_filter_1', '=', 'no0'] in args:
             raise UserError("{} | {}".format(type(args),args))
         leave_ids = super(LeaveType, self)._search(args, offset=offset, limit=limit, order=order, count=count, access_rights_uid=access_rights_uid)
         if not count and not order and employee_id:
