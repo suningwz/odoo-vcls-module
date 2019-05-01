@@ -16,7 +16,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.3.2',
+    'version': '0.3.3',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -44,7 +44,10 @@
         'views/contact_views.xml',
 
         ### MENUS ###
-        'views/contact_menu.xml'
+        'views/contact_menu.xml',
+
+        ### ACTIONS ###
+        'actions/contact_server_action.xml',
         ],
 
     # only loaded in demonstration mode

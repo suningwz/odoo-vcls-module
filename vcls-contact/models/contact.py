@@ -192,3 +192,32 @@ class ContactExt(models.Model):
     def _reset_bounce(self):
         for contact in self:
             contact.message_bounce = 0
+
+    ##################
+    # ACTION METHODS #
+    ##################
+
+    @api.multi
+    def _set_stage_new(self):
+        context = self.env.context
+        contact_ids = context.get('active_ids',[])
+        self.env['res.partner'].browse(contact_ids).write({'stage': 2})
+    
+    @api.multi
+    def _set_stage_verified(self):
+        context = self.env.context
+        contact_ids = context.get('active_ids',[])
+        self.env['res.partner'].browse(contact_ids).write({'stage': 3})
+    
+    @api.multi
+    def _set_stage_outdated(self):
+        context = self.env.context
+        contact_ids = context.get('active_ids',[])
+        self.env['res.partner'].browse(contact_ids).write({'stage': 4})
+    
+    @api.multi
+    def _set_stage_archived(self):
+        context = self.env.context
+        contact_ids = context.get('active_ids',[])
+        self.env['res.partner'].browse(contact_ids).write({'stage': 5,'active':False})
+        

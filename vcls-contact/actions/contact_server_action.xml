@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <record id="server_action_contact_new" model="ir.actions.server">
+            <field name="name">STAGE: Set New</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="state">code</field>
+            <field name="code">model._set_stage_new()</field>
+        </record> 
+
+        <record id="server_action_contact_verified" model="ir.actions.server">
+            <field name="name">STAGE: Set Verified</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="state">code</field>
+            <field name="code">model._set_stage_verified()</field>
+        </record>
+
+        <record id="server_action_contact_outdated" model="ir.actions.server">
+            <field name="name">STAGE: Set Outdated</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="state">code</field>
+            <field name="code">model._set_stage_outdated()</field>
+        </record>
+
+        <record id="server_action_contact_archived" model="ir.actions.server">
+            <field name="name">STAGE: Set Archived</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="state">code</field>
+            <field name="code">model._set_stage_archived()</field>
+        </record>
+        
+    </data>
+</odoo>
