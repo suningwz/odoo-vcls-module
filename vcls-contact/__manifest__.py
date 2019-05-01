@@ -16,7 +16,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.3.1',
+    'version': '0.3.2',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -31,6 +31,8 @@
         ### CONFIGURATION DATA ###
         'data/res.partner.category.csv',
         'data/ir.config_parameter.csv',
+        'data/client.activity.csv',
+        'data/client.product.csv',
         
         ### SECURITY ###
         'security/vcls_groups.xml',
@@ -38,6 +40,7 @@
         'security/contact_rules.xml',
         
         ### VIEWS ###
+        'views/dropdown_views.xml',
         'views/contact_views.xml',
 
         ### MENUS ###

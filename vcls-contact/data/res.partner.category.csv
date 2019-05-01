@@ -1,6 +1,6 @@
 id,name,parent_id:id,color
-category_account,Account,,1
-category_suppliers,Suppliers,,2
+category_account,Client,,1
+category_suppliers,Supplier,,2
 category_PS,Project Services,category_suppliers,3
 category_AS,Admin Services,category_suppliers,4
 category_Office,Office,category_suppliers,5

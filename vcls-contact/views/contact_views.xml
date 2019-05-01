@@ -29,15 +29,14 @@
                                 <separator string="   "/>
                                 <field name="completion_ratio" widget="percentpie"/>
 
-                                <group attrs="{'invisible': [('is_company', '=', False)]}">
+                                <group>
                                     
                                     <group string=" ">
-                                        <field name="hidden" groups="vcls-contact.vcls_group_ceo"/>
+                                        <field name="hidden" string="Is Private?" groups="vcls-contact.vcls_group_ceo"/>
                                         <field name="altname" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
-                
-                                        <field name="currency_id"/>
+                                        <field name="currency_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                     </group>
-                                    <group string="Internal Contacts">
+                                    <group string="Internal Contacts" attrs="{'invisible': [('is_company', '=', False)]}">
                                         <field name="user_id"/>
                                         <field name="expert_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                         <field name="assistant_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
@@ -52,7 +51,7 @@
                                 <field name="is_company" invisible="1"/>
                                 <field name="supplier" invisible="1"/>
                                 <field name="customer" invisible="1"/>
-                                
+                
                                 <field name="company_name" invisible="1"/>
                 
                                 <field name="lang" invisible="1"/>
@@ -80,14 +79,13 @@
                                         <field name="custom_sp_link" attrs="{'invisible': [('create_folder', '=', False)]}" widget="url"/>
                                         <field name="sharepoint_folder" attrs="{'invisible': ['|',('custom_sp_link','!=',False),('create_folder','=',False)]}" widget="url"/>
                                     </div>
-                                    -->
-                                        
+                                    -->   
                                 
                             <notebook>
                                 <page name="contact" string="Contact Info">
                                 <group>
                                     <group>
-                                        <field name="email"/>    
+                                        <field name="email" widget="email"/>    
                                         <field name="phone" widget="phone"/>
                                         <field name="mobile" widget="phone"/>
                                         <field name="fax" widget="phone"/>
@@ -187,7 +185,8 @@
                                             <field name="industry_id"/>
                                         </group>
                                         <group>
-                                            
+                                            <field name="client_activity_ids" widget="many2many_tags"/>
+                                            <field name="client_product_ids" widget="many2many_tags"/>
                                         </group>
                                     </group>
                                 </page>
@@ -253,7 +252,7 @@
         <!-- used to visualize VCLS Entities -->
         <record model="ir.actions.act_window" id="action_vcls_entities">
             <field name="name">VCLS Entities</field>
-            <field name="domain" eval="[('is_company','=',True),('is_internal','=',True)]"/>
+            <field name="domain" eval="[('is_company','=',True),('is_internal','=',True),('stage','in',[2,3,4])]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>
@@ -261,7 +260,7 @@
         <!-- used to visualize Client Accounts -->
         <record model="ir.actions.act_window" id="action_accounts">
             <field name="name">Accounts</field>
-            <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),'|','|',('customer','=',True),('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
+            <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|','|',('customer','=',True),('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>
@@ -269,7 +268,7 @@
         <!-- used to visualize Suppliers Accounts, i.e. the ones having suppliers or one suppliers child as a tag -->
         <record model="ir.actions.act_window" id="action_suppliers_accounts">
             <field name="name">Accounts</field>
-            <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),'|','|',('supplier','=',True),('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
+            <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|','|',('supplier','=',True),('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>
@@ -277,7 +276,7 @@
         <!-- used to visualize VCLS Employees-->
         <record model="ir.actions.act_window" id="action_vcls_employees">
             <field name="name">VCLS Employees</field>
-            <field name="domain" eval="[('employee','=',True)]"/>
+            <field name="domain" eval="[('employee','=',True),('stage','in',[2,3,4])]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>
@@ -285,7 +284,7 @@
         <!-- used to visualize Client Contacts-->
         <record model="ir.actions.act_window" id="action_client_contacts">
             <field name="name">Individuals</field>
-            <field name="domain" eval="[('is_company','=',False),('employee','=',False),'|','|',('customer','=',True),('parent_id.category_id','=',ref('vcls-contact.category_account')),('parent_id.category_id','=',False)]"/>
+            <field name="domain" eval="[('is_company','=',False),('employee','=',False),('stage','in',[2,3,4]),'|','|',('customer','=',True),('parent_id.category_id','=',ref('vcls-contact.category_account')),('parent_id.category_id','=',False)]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>
@@ -293,7 +292,7 @@
         <!-- used to visualize Suppliers Contacts, i.e. the ones having suppliers or one suppliers child as a tag-->
         <record model="ir.actions.act_window" id="action_suppliers_contacts">
             <field name="name">Individuals</field>
-            <field name="domain" eval="[('is_company','=',False),('employee','=',False),'|','|',('supplier','=',True),('parent_id.category_id','=',ref('vcls-contact.category_suppliers')),('parent_id.category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
+            <field name="domain" eval="[('is_company','=',False),('employee','=',False),('stage','in',[2,3,4]),'|','|',('supplier','=',True),('parent_id.category_id','=',ref('vcls-contact.category_suppliers')),('parent_id.category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>
@@ -331,6 +330,14 @@
         <record model="ir.actions.act_window" id="action_admin_archive">
             <field name="name">Archived contacts</field>
             <field name="domain" eval="[('stage','=',5)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
+        <!-- Actions used for private EV's contact management -->
+        <record model="ir.actions.act_window" id="action_private_contact">
+            <field name="name">My Private Contacts</field>
+            <field name="domain" eval="[('hidden','=',True)]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>

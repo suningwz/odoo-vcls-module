@@ -42,7 +42,7 @@ class ContactExt(models.Model):
         (5, 'Archived')], 
         string='Status',
         track_visibility='onchange',
-        default=1,
+        default=2,
     )
 
     sharepoint_folder = fields.Char(
@@ -87,7 +87,20 @@ class ContactExt(models.Model):
     currency_id = fields.Many2one(
         'res.currency',
         string="Currency",
+        readonly = False,
         )
+    
+    client_activity_ids = fields.Many2many(
+        'client.activity',
+        string = 'Client Activity',
+    )
+
+    client_product_ids = fields.Many2many(
+        'client.product',
+        string = 'Client Product',
+    )
+    
+
 
     #project management fields
     assistant_id = fields.Many2one(

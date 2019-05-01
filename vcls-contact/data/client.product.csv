@@ -1,0 +1,10 @@
+id,name
+client_prod_biol_drugs,Biologic Drugs
+client_prod_gene,Cell Gene and Tissue Therapy
+client_prod_chem_drugs,Chemical Drugs
+client_prod_classical_device,Classical Medical Device
+client_prod_digital_device,Digital Medical Device
+client_prod_ehealth,E-Health/M-Health
+client_prod_nutri,Nutritionals and Nutriceuticals
+client_prod_ivd,IVD & CDx
+client_prod_other,Other
