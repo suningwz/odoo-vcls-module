@@ -53,10 +53,10 @@ class LeaveType(models.Model):
             if type.validity_start:
                 type.validity_start_ord = type.validity_start.toordinal()
             else: type.validity_start_ord = 1
-    
+    """
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        """ Override _search to order the results, according to some employee.
+         Override _search to order the results, according to some employee.
         The order is the following
 
          - allocation fixed first, then allowing allocation, then free allocation
@@ -66,7 +66,7 @@ class LeaveType(models.Model):
         on an employee_id given in context. This sort will be done when there
         is an employee_id in context and that no other order has been given
         to the method.
-        """
+        
         employee_id = self._get_contextual_employee_id()
         leave_ids = super(LeaveType, self)._search(args, offset=offset, limit=limit, order=order, count=count, access_rights_uid=access_rights_uid)
         if not count and not order and employee_id:
@@ -89,3 +89,4 @@ class LeaveType(models.Model):
             return leaves.sorted(key=sort_key, reverse=True).ids
         
         return leave_ids
+        """
