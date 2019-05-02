@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from simple_salesforce import Salesforce
 userSF = 'user'
 passwordSF = 'password'
@@ -17,7 +16,7 @@ class ETL_SF:
             raise Exception("This class is a singleton!")
         else:
             ETL_SF.__instance = self
-            ETL_SF.instance = Salesforce(password=passwordSF, username=userSF, security_token=token)
+            ETL_SF.instance = Salesforce
 
     def getConnection(self):
         print('Successful connection to Salesforce.')

@@ -148,14 +148,14 @@ class ContactExt(models.Model):
     
     @api.depends('category_id')
     def _compute_visibility(self):
-        for contact in self:
+        """ for contact in self:
             contact.see_segmentation = False
             if self.env.ref('vcls-contact.category_account') in contact.category_id:
                 contact.see_segmentation = True
             
             contact.see_supplier = False
             if self.env.ref('vcls-contact.category_PS') in contact.category_id:
-                contact.see_supplier = True
+                contact.see_supplier = True """
 
     @api.depends('employee')
     def _compute_is_internal(self):
@@ -178,11 +178,11 @@ class ContactExt(models.Model):
 
     @api.depends('category_id','create_folder','altname')
     def _compute_sharepoint_folder(self):
-        for contact in self:
+        """ for contact in self:
             #search if this is an account contact
             if self.env.ref('vcls-contact.category_account') in contact.category_id and contact.create_folder and contact.altname:
                 root = self.env.ref('vcls-contact.conf_path_sp_client_root').value
-                contact.sharepoint_folder = "{}{:.1}/{}".format(root,contact.altname,contact.altname)
+                contact.sharepoint_folder = "{}{:.1}/{}".format(root,contact.altname,contact.altname) """
             
             #raise ValidationError("{}".format(contact.sharepoint_folder))
                 

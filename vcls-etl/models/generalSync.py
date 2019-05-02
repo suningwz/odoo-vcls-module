@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+
 import datetime, pytz
 from abc import ABC,abstractmethod
 
@@ -14,13 +15,11 @@ class ETLMap(models.Model):
     externalId = fields.Char(readonly = True)
     syncRecordId = fields.Many2one('etl.sync.mixin', readonly = True) # -> need testing
 
-
-class GeneralSync(models.AbstractModel,ABC):
+class GeneralSync(models.AbstractModel):
     _name = 'etl.sync.mixin'
     """ This model represents an abstract parent class used to manage ETL """
-
-    keys = fields.One2many('etl.sync.keys', readonly = True) # Not rightly declared -> error
-    lastRun = fields.Date(readonly = True)
+    keys = fields.One2many('etl.sync.keys','syncRecordId', readonly = True) # Not rightly declared -> error
+    lastRun = fields.DateTime(readonly = True)
 
     def getLastRun(self):
         return self.lastRun
@@ -29,6 +28,8 @@ class GeneralSync(models.AbstractModel,ABC):
         self.lastRun = datetime.datetime.now(pytz.timezone('GMT'))
     
     def getStrLastRun(self):
+        if not self.lastRun:
+            return '2000-01-01T00:00:00.00+0000'
         return self.lastRun.strftime("%Y-%m-%dT%H:%M:%S.00+0000")
     
     def getLastUpdate(self, OD_id):
@@ -47,7 +48,7 @@ class GeneralSync(models.AbstractModel,ABC):
     @api.one
     def toOdooId(self, externalId):
         for key in self.keys:
-            record = self.env['etl.sync.keys'].search([('id', '=', key)], limit = 1)
+            record = self.env['etl.sync.keys'].search([('id', '=', key['odooId'])], limit = 1)
             if record.externalId == externalId:
                 return record.odooId
         raise KeyNotFoundError
@@ -55,7 +56,7 @@ class GeneralSync(models.AbstractModel,ABC):
     @api.one
     def toExternalId(self, odooId):
         for key in self.keys:
-            record = self.env['etl.sync.keys'].search([('id', '=', key)], limit = 1)
+            record = self.env['etl.sync.keys'].search([('id', '=', key['odooId'])], limit = 1)
             if record.odooId == odooId:
                 return record.externalId
         raise KeyNotFoundError
@@ -70,11 +71,11 @@ class GeneralSync(models.AbstractModel,ABC):
         pass
 
     @abstractmethod
-    def update(self, item):
+    def update(self, item, translator):
         pass
 
     @abstractmethod
-    def create(self, item):
+    def createRecord(self, item, translator):
         pass
 
 
