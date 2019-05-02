@@ -1,9 +1,9 @@
 from ETL import ETL
 from abc import ABC, abstractmethod
 from simple_salesforce import Salesforce
-userSF = 'itsupport@voisinconsulting.com'
-passwordSF = 'VCLS-2019'
-token = '4sFAK8v7SiWBo2aYcRhFQbSn'
+userSF = 'user'
+passwordSF = 'password'
+token = ''
 class ETL_SF(ETL):
     __instance = None
     @staticmethod
