@@ -162,7 +162,8 @@
 			id="menu_client_product" 
 			action="action_client_product" 
 			sequence="6" />
-		
+			
+		<!--
 		<menuitem 
 			name="Client Functional Focus" 
 			parent="menu_config_client_segmentation" 
@@ -176,6 +177,7 @@
 			id="menu_client_seniority" 
 			action="action_partner_seniority" 
 			sequence="12" />
+		-->
 		
 
 	</data>
