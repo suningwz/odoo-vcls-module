@@ -163,6 +163,20 @@
 			action="action_client_product" 
 			sequence="6" />
 		
+		<menuitem 
+			name="Client Functional Focus" 
+			parent="menu_config_client_segmentation" 
+			id="menu_client_functional_focus" 
+			action="action_functional_focus" 
+			sequence="9" />
+		
+		<menuitem 
+			name="Client Seniority" 
+			parent="menu_config_client_segmentation" 
+			id="menu_client_seniority" 
+			action="action_partner_seniority" 
+			sequence="12" />
+		
 
 	</data>
 </odoo>

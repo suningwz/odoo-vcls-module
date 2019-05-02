@@ -7,3 +7,9 @@ access_client_activity_edit,access_client_activity_edit,vcls-contact.model_clien
 
 access_client_product_default,access_client_product_default,vcls-contact.model_client_product,,1,0,0,0
 access_client_product_edit,access_client_product_edit,vcls-contact.model_client_product,base.group_partner_manager,1,1,1,1
+
+access_partner_functional_focus_default,access_partner_functional_focus_default,vcls-contact.model_partner_functional_focus,,1,0,0,0
+access_partner_functional_focus_edit,access_partner_functional_focus_edit,vcls-contact.model_partner_functional_focus,base.group_partner_manager,1,1,1,1
+
+access_partner_seniority_default,access_partner_seniority_default,vcls-contact.model_partner_seniority,,1,0,0,0
+access_partner_seniority_edit,access_partner_seniority_edit,vcls-contact.model_partner_seniority,base.group_partner_manager,1,1,1,1
