@@ -5,6 +5,7 @@ passwordSF = 'password'
 token = ''
 class ETL_SF:
     __instance = None
+    instance = None
     @staticmethod
     def getInstance():
         if ETL_SF.__instance == None:
@@ -16,8 +17,8 @@ class ETL_SF:
             raise Exception("This class is a singleton!")
         else:
             ETL_SF.__instance = self
+            ETL_SF.instance = Salesforce(password=passwordSF, username=userSF, security_token=token)
 
     def getConnection(self):
-        instance = Salesforce(password=passwordSF, username=userSF, security_token=token)
         print('Successful connection to Salesforce.')
-        return instance
+        return ETL_SF.instance
