@@ -69,7 +69,6 @@
                                 <field name="lang" invisible="1"/>                               
                                 <field name="see_segmentation" invisible="1"/>
                                 <field name="see_supplier" invisible="1"/>
-                                <field name="create_folder" invisible="1"/>
                                     
                                     <!--
                                     <group>
