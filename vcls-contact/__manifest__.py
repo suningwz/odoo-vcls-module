@@ -33,8 +33,8 @@
         'data/ir.config_parameter.csv',
         'data/client.activity.csv',
         'data/client.product.csv',
-        #'data/partner.seniority.csv',
-        #'data/partner.functional.focus.csv',
+        'data/partner.seniority.csv',
+        'data/partner.functional.focus.csv',
         
         ### SECURITY ###
         'security/vcls_groups.xml',
