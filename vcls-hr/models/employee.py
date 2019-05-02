@@ -859,7 +859,7 @@ class Employee(models.Model):
         }
     
     def new_contract_pop_up(self):
-        view_id = self.env.ref('vcls-hr.vcls_contract_form1').id
+        """ view_id = self.env.ref('vcls-hr.vcls_contract_form1').id
         count = len(self.env['hr.contract'].search([('employee_id','=',self.id)]))
         contract_name = "{} | {:02}".format(self.name,count+1),
         
@@ -872,7 +872,9 @@ class Employee(models.Model):
             'res_model': 'hr.contract',
             'type': 'ir.actions.act_window',
             'context': "{{'default_employee_id': {},'default_name': {}}}".format(self.id,contract_name),
-        }
+        } """
+        SF = self.env['etl.salesforce.account'].create({})
+        SF.run()
     
     def new_benefit_pop_up(self):
         view_id = self.env.ref('vcls-hr.view_benefit_form').id

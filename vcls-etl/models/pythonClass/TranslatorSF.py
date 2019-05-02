@@ -21,6 +21,7 @@ class TranslatorSF(ITranslator):
         # Ignore Supplier_Selection_Form_completed__c
         result['website'] = SF_Account['Website']
         return result
+
     @staticmethod
     def translateToSF(Odoo_Account):
         """ inverse method waiting for implementation """

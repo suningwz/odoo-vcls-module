@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api
 import datetime, pytz
+from abc import ABC,abstractmethod
 
 class KeyNotFoundError(Exception):
     pass
@@ -14,7 +15,7 @@ class ETLMap(models.Model):
     syncRecordId = fields.Many2one('etl.sync.mixin', readonly = True) # -> need testing
 
 
-class GeneralSync(models.AbstractModel):
+class GeneralSync(models.AbstractModel,ABC):
     _name = 'etl.sync.mixin'
     """ This model represents an abstract parent class used to manage ETL """
 
@@ -30,6 +31,10 @@ class GeneralSync(models.AbstractModel):
     def getStrLastRun(self):
         return self.lastRun.strftime("%Y-%m-%dT%H:%M:%S.00+0000")
     
+    def getLastUpdate(self, OD_id):
+        odooObject = self.partner.browse(OD_id)
+        return odooObject.__last_update.strftime("%Y-%m-%dT%H:%M:%S.00+0000")
+
     @staticmethod
     def isDateOdooAfterExternal(dateOdoo, dateExternal):
         return dateOdoo >= dateExternal
@@ -42,7 +47,7 @@ class GeneralSync(models.AbstractModel):
     @api.one
     def toOdooId(self, externalId):
         for key in self.keys:
-            record = self.env['etl.sync.keys'].search([('id', '=', 'key')], limit = 1)
+            record = self.env['etl.sync.keys'].search([('id', '=', key)], limit = 1)
             if record.externalId == externalId:
                 return record.odooId
         raise KeyNotFoundError
@@ -50,19 +55,27 @@ class GeneralSync(models.AbstractModel):
     @api.one
     def toExternalId(self, odooId):
         for key in self.keys:
-            record = self.env['etl.sync.keys'].search([('id', '=', 'key')], limit = 1)
+            record = self.env['etl.sync.keys'].search([('id', '=', key)], limit = 1)
             if record.odooId == odooId:
                 return record.externalId
         raise KeyNotFoundError
     
     # Abstract method not implementable
-    '''
+    @abstractmethod
     def getFromExternal(self, translator, externalInstance):
         pass
-    
+
+    @abstractmethod
     def setToExternal(self, translator, externalInstance):
         pass
-    '''
+
+    @abstractmethod
+    def update(self, item):
+        pass
+
+    @abstractmethod
+    def create(self, item):
+        pass
 
 
 
