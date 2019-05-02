@@ -73,18 +73,25 @@
 			sequence="8" />
 
 		<menuitem 
-			name="VCLS Entities" 
-			parent="menu_VCLS" 
-			id="menu_VCLS_entities" 
-			action="action_vcls_entities" 
-			sequence="3" />
-
-		<menuitem 
-			name="VCLS Employee" 
+			name="VCLS Employees" 
 			parent="menu_VCLS" 
 			id="menu_VCLS_employees" 
 			action="action_vcls_employees" 
+			sequence="3" />
+		
+		<menuitem 
+			name="VCLS Offices" 
+			parent="menu_VCLS" 
+			id="menu_VCLS_offices" 
+			action="action_vcls_offices" 
 			sequence="6" />
+		
+		<menuitem 
+			name="VCLS Legal Entities" 
+			parent="menu_VCLS" 
+			id="menu_VCLS_entities" 
+			action="action_vcls_entities" 
+			sequence="9" />
 		
 		<!-- Private Contacts Menu -->
 		<menuitem 
