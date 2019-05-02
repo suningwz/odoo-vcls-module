@@ -135,7 +135,7 @@ class ContactExt(models.Model):
 
     ### FIELDS FOR INDIVIDUALS ###
     # We override title to rename it
-    title = fields.Many2one(
+    """title = fields.Many2one(
         string='Salutation',
     )
 
@@ -152,7 +152,7 @@ class ContactExt(models.Model):
     partner_seniority_id = fields.Many2one(
         'partner.seniority',
         string = 'Seniority',
-    )
+    )"""
 
     ### VIEW VISIBILITY
     see_segmentation = fields.Boolean (
@@ -167,7 +167,7 @@ class ContactExt(models.Model):
     )
     #log note company change
     parent_id = fields.Many2one(
-        track_visibility='always'
+        track_visibility='always',
     )
     ###################
     # COMPUTE METHODS #
