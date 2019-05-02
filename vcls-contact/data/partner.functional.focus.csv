@@ -1,0 +1,12 @@
+id,name
+funct_focus_corporate,Corporate
+funct_focus_reg,Regulatory
+funct_focus_ma,Market Access/P&R
+funct_focus_business,Business/Commercial/Alliances
+funct_focus_sales,Sales & Account Management
+funct_focus_rd,R&D/Scientific/Medical
+funct_focus_preclinical,Preclinical
+funct_focus_clinical,Clinical
+funct_focus_safety,Safety & Vigilance
+funct_focus_cmc,CMC/Formulation/Analytics
+funct_focus_other,Other

@@ -73,18 +73,33 @@
 			sequence="8" />
 
 		<menuitem 
-			name="VCLS Entities" 
-			parent="menu_VCLS" 
-			id="menu_VCLS_entities" 
-			action="action_vcls_entities" 
-			sequence="3" />
-
-		<menuitem 
-			name="VCLS Employee" 
+			name="VCLS Employees" 
 			parent="menu_VCLS" 
 			id="menu_VCLS_employees" 
 			action="action_vcls_employees" 
+			sequence="3" />
+		
+		<menuitem 
+			name="VCLS Offices" 
+			parent="menu_VCLS" 
+			id="menu_VCLS_offices" 
+			action="action_vcls_offices" 
 			sequence="6" />
+
+		<!-- Create one menu in the employee app -->
+		<menuitem 
+			name="VCLS Offices" 
+			parent="hr.menu_hr_root" 
+			id="menu_VCLS_offices_employee" 
+			action="action_vcls_offices" 
+			sequence="6" />
+		
+		<menuitem 
+			name="VCLS Legal Entities" 
+			parent="menu_VCLS" 
+			id="menu_VCLS_entities" 
+			action="action_vcls_entities" 
+			sequence="9" />
 		
 		<!-- Private Contacts Menu -->
 		<menuitem 
@@ -155,6 +170,22 @@
 			id="menu_client_product" 
 			action="action_client_product" 
 			sequence="6" />
+
+		
+		<menuitem 
+			name="Client Functional Focus" 
+			parent="menu_config_client_segmentation" 
+			id="menu_client_functional_focus" 
+			action="action_functional_focus" 
+			sequence="9" />
+		
+		<menuitem 
+			name="Client Seniority" 
+			parent="menu_config_client_segmentation" 
+			id="menu_client_seniority" 
+			action="action_partner_seniority" 
+			sequence="12" />
+		
 		
 
 	</data>

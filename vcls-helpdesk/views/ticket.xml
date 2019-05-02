@@ -46,7 +46,7 @@
                                 <field name="sla_id" invisible="1"/>
                             </group>
                             <group>
-                                <field name="partner_id" class="field_partner_id"/>
+                                <field name="partner_id" class="field_partner_id" domain="[('employee','=',True)]"/>
                                 <field name="partner_name" attrs="{'invisible': [('partner_id', '!=', False)]}"/>
                                 <field name="partner_email"/>
                                 <field name="priority" widget="priority"/>
