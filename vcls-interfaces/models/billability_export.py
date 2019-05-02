@@ -73,12 +73,8 @@ class BillabilityExport(models.Model):
         distribution['Weekends [d]'] = distribution['Days [d]']-len(gen_worked_days)
         
         #loop companies to access bank holidays
-        companies = self.env['res.company'].search([])
+        companies = self.env['res.company'].search([('short_name','!=','BH')])
         for company in companies:
-            #we temporary exclude B&H from the export
-            if company.short_name == "BH":
-                continue
-                
             bank_days = set(self.env['hr.bank.holiday'].search([('company_id.id','=',company.id),('date','>=',self.start_date),('date','<=',self.end_date)]).mapped('date'))
             distribution['Bank Holiday [d]'] = len(bank_days)
             comp_worked_days = gen_worked_days - bank_days
