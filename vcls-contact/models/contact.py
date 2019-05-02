@@ -99,9 +99,12 @@ class ContactExt(models.Model):
         'client.product',
         string = 'Client Product',
     )
+
+    #Marketing fields
+    linkedin = fields.Char(
+        string='LinkedIn Profile',
+    )
     
-
-
     #project management fields
     assistant_id = fields.Many2one(
         'res.users',
@@ -128,6 +131,27 @@ class ContactExt(models.Model):
 
     altname = fields.Char(
         string = 'AltName',
+    )
+
+    ### FIELDS FOR INDIVIDUALS ###
+    # We override title to rename it
+    title = fields.Many2one(
+        string='Salutation',
+    )
+
+    job_title = fields.Char(
+        string='Job Title',
+        help='Please use \"tbc\" if unknown.',
+    )
+
+    functional_focus_id = fields.Many2one(
+        'partner.functional.focus',
+        string = 'Functional  Focus',
+    )
+
+    partner_seniority_id = fields.Many2one(
+        'partner.seniority',
+        string = 'Seniority',
     )
 
     ### VIEW VISIBILITY

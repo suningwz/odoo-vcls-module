@@ -1,0 +1,11 @@
+id,name
+partner_seniority_ceo,CEO/President/Chairman
+partner_seniority_founder,Founder/Partner/Associate/Owner/Principal
+partner_seniority_c,CxO
+partner_seniority_vp,(Ex/Sr) VP
+partner_seniority_dir,(Sr) Director
+partner_seniority_head,Head
+partner_seniority_manager,Manager
+partner_seniority_doers,Doers [Lead(er)/Coordinator/Executive/officer/chargé de/chef de projet/responsable]
+partner_seniority_assistant,Assistant
+partner_seniority_other,Other
