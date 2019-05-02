@@ -19,13 +19,13 @@
                                 <div class="oe_title">
                                     <field name="company_type" widget="radio" class="oe_edit_only" options="{'horizontal': true}"/>
                                     <h1>
-                                        <field name="name" required="True" placeholder="Company Name or Contact Name (first>middle>last)"/>
+                                        <field name="name" required="True" placeholder="Company or Contact Name (first>middle>last)"/>
                                     </h1>
                                 </div>
                                 <field name="category_id" string='' widget="many2many_tags" required="True" options="{'no_create_edit': True}" placeholder="Client, Supplier, etc."/>
                                 <field name="sharepoint_folder" widget="url" readonly="1" text="|   Open Document Folder" string='' attrs="{'invisible': [('create_folder', '=', False)]}"/>
                                 <separator string="   "/>
-
+                                <!--
                                 <group attrs="{'invisible': [('is_company', '=', True)]}">
                                     <group>
                                         <field name="title"/>
@@ -53,6 +53,7 @@
                                         <field name="invoice_admin_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>    
                                     </group>
                                 </group>
+                                -->
 
                                 <separator string="   "/>
                                 <field name="completion_ratio" widget="percentpie"/>
