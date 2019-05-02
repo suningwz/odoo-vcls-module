@@ -8,5 +8,5 @@ category_competitor,Competitor,,6
 category_partner,Partner,,7
 category_regulator,Regulator,,8
 category_conference_org,Conference Organisation,,9
-category_vcls,VCLS,,10
-category_vcls_office,Office,category_vcls,11
+category_vcls,VCLS Internal,,10
+category_vcls_office, VCLS Office,category_vcls,11
