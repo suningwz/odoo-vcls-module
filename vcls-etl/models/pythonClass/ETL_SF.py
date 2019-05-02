@@ -1,10 +1,9 @@
-from ETL import ETL
 from abc import ABC, abstractmethod
 from simple_salesforce import Salesforce
 userSF = 'user'
 passwordSF = 'password'
 token = ''
-class ETL_SF(ETL):
+class ETL_SF:
     __instance = None
     @staticmethod
     def getInstance():
