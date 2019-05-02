@@ -16,7 +16,7 @@ class ETL_SF:
             raise Exception("This class is a singleton!")
         else:
             ETL_SF.__instance = self
-            ETL_SF.instance = Salesforce
+            ETL_SF.instance = 
 
     def getConnection(self):
         print('Successful connection to Salesforce.')

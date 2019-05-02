@@ -19,7 +19,7 @@ class GeneralSync(models.AbstractModel):
     _name = 'etl.sync.mixin'
     """ This model represents an abstract parent class used to manage ETL """
     keys = fields.One2many('etl.sync.keys','syncRecordId', readonly = True) # Not rightly declared -> error
-    lastRun = fields.DateTime(readonly = True)
+    lastRun = fields.Char(readonly = True)
 
     def getLastRun(self):
         return self.lastRun
