@@ -37,9 +37,30 @@ class TranslatorSF(ITranslator.ITranslator):
         return result
 
     @staticmethod
-    def translateToSF(Odoo_Account):
-        """ inverse method waiting for implementation """
-        pass
+    def translateToSF(Odoo_Contact, odoo):
+        result = {}
+        # Modify the name with -test
+        # result['Name'] = Odoo_Contact.name
+
+        result['Supplier_Status__c'] = TranslatorSF.revertStatus(Odoo_Contact.stage)
+
+        '''
+        if SF_Account['BillingAddress']:
+            result['city'] = SF_Account['BillingAddress']['city']
+            result['zip'] = SF_Account['BillingAddress']['postalCode']
+            result['street'] = SF_Account['BillingAddress']['street']
+        '''
+
+        result['Phone'] = Odoo_Contact.phone
+        result['Fax'] = Odoo_Contact.fax
+        result['Sharepoint_Folder__c'] = TranslatorSF.revertUrl(Odoo_Contact.sharepoint_folder)
+        # Ignore description
+        result['Website'] = Odoo_Contact.website
+
+        # Ignore company_type
+        result['BillingCountry'] = TranslatorSF.revertCountry(Odoo_Contact.country.id, odoo)
+        # result['user_id'] = TranslatorSF.convertAccountManager(SF_Account['OwnerId'],odoo, SF)
+        return result
 
     @staticmethod
     def convertStatus(status):
@@ -53,12 +74,30 @@ class TranslatorSF(ITranslator.ITranslator):
             return 1
     
     @staticmethod
+    def revertStatus(status):
+        if status == 5:
+            return 'Active - contract set up, information completed'
+        elif status == 2 or status == 3:
+            return 'Prospective: no contract, pre-identify'
+        elif status == 4:
+            return 'Inactive - reason mentioned'
+        else: # Undefined
+            return 'Undefined - to fill'
+    
+    @staticmethod
     def convertUrl(url):
         if url == "No link for this relationship":
             return None
         startIndex = url.find('http://')>0
         endIndex = url.find('target')-2
         return url[startIndex:endIndex]
+    
+    @staticmethod
+    def revertUrl(url):
+        if not url:
+            return "No link for this relationship"
+        else:
+            return '<a href="{}" target="_blank">Supplier Folder</a>'.format(url)
     
     @staticmethod
     def convertCountry(country,odoo):
@@ -134,14 +173,88 @@ class TranslatorSF(ITranslator.ITranslator):
             return odoo.env.ref('base.ae').id
         elif 'us' :
             return odoo.env.ref('base.us').id
+
+    @staticmethod
+    def revertCountry(country, odoo):
+        if country == None:
+            return None
+        elif  country == odoo.env.ref('base.ar').id:
+            return odoo.env.ref('base.ar').name
+        elif country == odoo.env.ref('base.au').id:
+            return odoo.env.ref('base.au').name
+        elif country == odoo.env.ref('base.be').id:
+            return odoo.env.ref('base.be').name
+        elif country == odoo.env.ref('base.br').id:
+            return odoo.env.ref('base.br').name
+        elif country == odoo.env.ref('base.ca').id:
+            return odoo.env.ref('base.ca').name
+        elif country == odoo.env.ref('base.cn').id:
+            return odoo.env.ref('base.cn').name
+        elif country == odoo.env.ref('base.hr').id:
+            return odoo.env.ref('base.hr').name
+        elif country == odoo.env.ref('base.cz').id:
+            return odoo.env.ref('base.cz').name
+        elif country == odoo.env.ref('base.dk').id:
+            return odoo.env.ref('base.dk').name
+        elif country == odoo.env.ref('base.eg').id:
+            return odoo.env.ref('base.eg').name
+        elif country == odoo.env.ref('base.fr').id:
+            return odoo.env.ref('base.fr').name
+        elif country == odoo.env.ref('base.de').id:
+            return odoo.env.ref('base.de').name
+        elif country == odoo.env.ref('base.gr').id:
+            return odoo.env.ref('base.gr').name
+        elif country == odoo.env.ref('base.hk').id:
+            return odoo.env.ref('base.hk').name
+        elif country == odoo.env.ref('base.in').id:
+            return odoo.env.ref('base.in').name
+        elif country == odoo.env.ref('base.ie').id:
+            return odoo.env.ref('base.ie').name
+        elif country == odoo.env.ref('base.il').id:
+            return odoo.env.ref('base.il').name
+        elif country == odoo.env.ref('base.it').id:
+            return odoo.env.ref('base.it').name
+        elif country == odoo.env.ref('base.jp').id:
+            return odoo.env.ref('base.jp').name
+        elif country == odoo.env.ref('base.jo').id:
+            return odoo.env.ref('base.jo').name
+        elif country == odoo.env.ref('base.kr').id:
+            return odoo.env.ref('base.kr').name
+        elif country == odoo.env.ref('base.lt').id:
+            return odoo.env.ref('base.lt').name
+        elif country == odoo.env.ref('base.nl').id:
+            return odoo.env.ref('base.nl').name
+        elif country == odoo.env.ref('base.no').id:
+            return odoo.env.ref('base.no').name
+        elif country == odoo.env.ref('base.pl').id:
+            return odoo.env.ref('base.pl').name
+        elif country == odoo.env.ref('base.pt').id:
+            return odoo.env.ref('base.pt').name
+        elif country == odoo.env.ref('base.sg').id:
+            return odoo.env.ref('base.sg').name
+        elif country == odoo.env.ref('base.za').id:
+            return odoo.env.ref('base.za').name
+        elif country == odoo.env.ref('base.es').id:
+            return odoo.env.ref('base.es').name
+        elif country == odoo.env.ref('base.se').id:
+            return odoo.env.ref('base.se').name
+        elif country == odoo.env.ref('base.ch').id:
+            return odoo.env.ref('base.ch').name
+        elif country == odoo.env.ref('base.uk').id:
+            return odoo.env.ref('base.uk').name
+        elif country == odoo.env.ref('base.ae').id:
+            return odoo.env.ref('base.ae').name
+        elif country == odoo.env.ref('base.us').id:         
+            return odoo.env.ref('base.us').name
         else:
             return None
-    
+        
+
     @staticmethod
     def convertAccountManager(ownerId, odoo, SF):
         mail = TranslatorSF.getUserMail(ownerId,SF)
         return TranslatorSF.getUserId(mail,odoo)
-
+    
     @staticmethod
     def convertCategory(isSupplier, SFtype, odoo):
         result = []

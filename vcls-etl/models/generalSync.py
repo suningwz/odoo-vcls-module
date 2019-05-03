@@ -21,9 +21,6 @@ class GeneralSync(models.AbstractModel):
     keys = fields.One2many('etl.sync.keys','syncRecordId', readonly = True) # Not rightly declared -> error
     lastRun = fields.Char(readonly = True)
 
-    def getLastRun(self):
-        return self.lastRun
-    
     def setNextRun(self):
         self.lastRun = datetime.datetime.now(pytz.timezone('GMT')).strftime("%Y-%m-%dT%H:%M:%S.00+0000")
     

@@ -13,7 +13,7 @@ class SFAccountSync(models.Model):
         print('Connecting to the Saleforce Database')
         sfInstance = ETL_SF.ETL_SF.getInstance()
         self.getFromExternal(translator, sfInstance.getConnection())
-        ##self.setToExternal(TranslatorSF(),ETL_SF.getInstance())
+        self.setToExternal(translator, sfInstance.getConnection(), 0)
         self.setNextRun()
 
 
@@ -24,12 +24,13 @@ class SFAccountSync(models.Model):
             try:
                 if not self.isDateOdooAfterExternal(self.getLastUpdate(self.toOdooId(SFrecord['Id'])), SFrecord['LastModifiedDate']):
                     self.update(SFrecord,translator,externalInstance)
-
             except (generalSync.KeyNotFoundError, ValueError) as error:
                 self.createRecord(SFrecord, translator,externalInstance)
 
-    def setToExternal(self, translator, externalInstance):
-        pass
+    def setToExternal(self, translator, externalInstance, time):
+        modifiedRecords = self.env['res.partner'].search([('write_date','>',self.getStrLastRun())])
+        print(modifiedRecords)
+
 
     def update(self, item, translator,externalInstance):
         OD_id = self.toOdooId(item['Id'])
