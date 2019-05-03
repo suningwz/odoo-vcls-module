@@ -1,6 +1,7 @@
 from . import TranslatorSF
 from . import ETL_SF
 from . import generalSync
+import pytz
 from odoo import models, fields, api
 from datetime import datetime
 
@@ -9,11 +10,12 @@ class SFAccountSync(models.Model):
     _inherit = 'etl.sync.mixin'
 
     def run(self):
+        time = datetime.now(pytz.timezone('Europe/Paris'))
         translator = TranslatorSF.TranslatorSF()
         print('Connecting to the Saleforce Database')
         sfInstance = ETL_SF.ETL_SF.getInstance()
         self.getFromExternal(translator, sfInstance.getConnection())
-        self.setToExternal(translator, sfInstance.getConnection(), 0)
+        self.setToExternal(translator, sfInstance.getConnection(), time)
         self.setNextRun()
 
 
@@ -23,13 +25,24 @@ class SFAccountSync(models.Model):
         for SFrecord in Modifiedrecords:
             try:
                 if not self.isDateOdooAfterExternal(self.getLastUpdate(self.toOdooId(SFrecord['Id'])), SFrecord['LastModifiedDate']):
-                    self.update(SFrecord,translator,externalInstance)
+                    self.update(SFrecord, translator, externalInstance)
             except (generalSync.KeyNotFoundError, ValueError) as error:
-                self.createRecord(SFrecord, translator,externalInstance)
+                self.createRecord(SFrecord, translator, externalInstance)
 
     def setToExternal(self, translator, externalInstance, time):
-        modifiedRecords = self.env['res.partner'].search([('write_date','>',self.getStrLastRun())])
+        time1 = self.getToOdooLastRun()
+        print('{} < record < {}'.format(time1, time))
+        # niquz time
+        time = datetime.strptime(time.strftime("%Y-%m-%dT%H:%M:%S.00+0000"), "%Y-%m-%dT%H:%M:%S.00+0000")
+        print(time.tzinfo)
+        print(time1.tzinfo)
+        modifiedRecords = self.env['res.partner'].search([('write_date','>',time1),('write_date','<',time)])
         print(modifiedRecords)
+        for record in modifiedRecords:
+            try:
+                self.updateSF(record,translator,externalInstance)
+            except (generalSync. KeyNotFoundError, ValueError) as error:
+                self.createSF(record,translator,externalInstance)
 
 
     def update(self, item, translator,externalInstance):
@@ -48,3 +61,15 @@ class SFAccountSync(models.Model):
         self.addKeys(item['Id'], partner_id)
         i = self.env['etl.sync.keys'].search([('odooId','=',partner_id)])
         print(i)
+
+    def updateSF(self,item,translator,externalInstance):
+        SF_ID = self.toExternalId(str(item.id))
+        sfAttributes = translator.translateToSF(item, self)
+        externalInstance.Account.update(SF_ID[0],sfAttributes)
+        print('Updated record in Salesforce: {}'.format(item.name))
+    
+    def createSF(self,item,translator,externalInstance):
+        sfAttributes = translator.translateToSF(item, self)
+        sfRecord = externalInstance.Account.create(sfAttributes)
+        print('Create new record in Salesforce: {}'.format(item.name))
+        self.addKeys(sfRecord['id'], item.id)

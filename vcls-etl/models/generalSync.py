@@ -3,6 +3,7 @@
 from odoo import models, fields, api
 
 import datetime, pytz
+from tzlocal import get_localzone
 from abc import ABC,abstractmethod
 
 class KeyNotFoundError(Exception):
@@ -28,6 +29,13 @@ class GeneralSync(models.AbstractModel):
         if not self.lastRun:
             return '2000-01-01T00:00:00.00+0000'
         return self.lastRun
+
+    def getToOdooLastRun(self):
+        # Time in external format & string
+        timeExternal = datetime.datetime.strptime(self.lastRun, "%Y-%m-%dT%H:%M:%S.00+0000")
+        # Time in external format
+        return timeExternal
+        """ .astimezone(get_localzone() )"""
     
     @api.model
     def getLastUpdate(self, OD_id):
@@ -54,6 +62,7 @@ class GeneralSync(models.AbstractModel):
     
     @api.one
     def toExternalId(self, odooId):
+
         for key in self.keys:
             if key.odooId == odooId:
                 return key.externalId

@@ -35,14 +35,19 @@ class TranslatorSF(ITranslator.ITranslator):
         result['category_id'] =  [(6, 0, TranslatorSF.convertCategory(SF_Account['Is_supplier__c'], SF_Account['Type'],odoo))]
     
         return result
+    @staticmethod
+    def test(word):
+        print(word)
+        return word.replace("-test","")
 
     @staticmethod
     def translateToSF(Odoo_Contact, odoo):
         result = {}
         # Modify the name with -test
-        # result['Name'] = Odoo_Contact.name
+        result['Name'] = TranslatorSF.test(Odoo_Contact.name)
+        print(result['Name'])
 
-        result['Supplier_Status__c'] = TranslatorSF.revertStatus(Odoo_Contact.stage)
+        #result['Supplier_Status__c'] = TranslatorSF.revertStatus(Odoo_Contact.stage)
 
         '''
         if SF_Account['BillingAddress']:
@@ -53,12 +58,12 @@ class TranslatorSF(ITranslator.ITranslator):
 
         result['Phone'] = Odoo_Contact.phone
         result['Fax'] = Odoo_Contact.fax
-        result['Sharepoint_Folder__c'] = TranslatorSF.revertUrl(Odoo_Contact.sharepoint_folder)
+        # result['Sharepoint_Folder__c'] = TranslatorSF.revertUrl(Odoo_Contact.sharepoint_folder)
         # Ignore description
         result['Website'] = Odoo_Contact.website
 
         # Ignore company_type
-        result['BillingCountry'] = TranslatorSF.revertCountry(Odoo_Contact.country.id, odoo)
+        result['BillingCountry'] = TranslatorSF.revertCountry(Odoo_Contact.country_id.id, odoo)
         # result['user_id'] = TranslatorSF.convertAccountManager(SF_Account['OwnerId'],odoo, SF)
         return result
 
