@@ -873,8 +873,11 @@ class Employee(models.Model):
             'type': 'ir.actions.act_window',
             'context': "{{'default_employee_id': {},'default_name': {}}}".format(self.id,contract_name),
         } """
-        SF = self.env['etl.salesforce.account'].create({})
-        SF.run()
+        SF = self.env['etl.salesforce.account'].search([])
+        if not SF:
+            SF = self.env['etl.salesforce.account'].create({})
+
+        SF[0].run()
     
     def new_benefit_pop_up(self):
         view_id = self.env.ref('vcls-hr.view_benefit_form').id

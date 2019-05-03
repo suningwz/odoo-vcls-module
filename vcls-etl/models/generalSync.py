@@ -25,16 +25,19 @@ class GeneralSync(models.AbstractModel):
         return self.lastRun
     
     def setNextRun(self):
-        self.lastRun = datetime.datetime.now(pytz.timezone('GMT'))
+        self.lastRun = datetime.datetime.now(pytz.timezone('GMT')).strftime("%Y-%m-%dT%H:%M:%S.00+0000")
     
     def getStrLastRun(self):
         if not self.lastRun:
             return '2000-01-01T00:00:00.00+0000'
-        return self.lastRun.strftime("%Y-%m-%dT%H:%M:%S.00+0000")
+        return self.lastRun
     
+    @api.model
     def getLastUpdate(self, OD_id):
-        odooObject = self.partner.browse(OD_id)
-        return odooObject.__last_update.strftime("%Y-%m-%dT%H:%M:%S.00+0000")
+        partner = self.env['res.partner']
+        odid = int(OD_id[0])
+        record = partner.browse([odid])
+        return str(record.write_date)
 
     @staticmethod
     def isDateOdooAfterExternal(dateOdoo, dateExternal):
@@ -42,23 +45,21 @@ class GeneralSync(models.AbstractModel):
     
     @api.one
     def addKeys(self, externalId, odooId):
-        self.keys = (0, 0,  { 'odooId': odooId, 'externalId': externalId })
+        self.keys = [(0, 0,  { 'odooId': odooId, 'externalId': externalId })]
     # need test
 
     @api.one
     def toOdooId(self, externalId):
         for key in self.keys:
-            record = self.env['etl.sync.keys'].search([('id', '=', key['odooId'])], limit = 1)
-            if record.externalId == externalId:
-                return record.odooId
+            if key.externalId == externalId:
+                return key.odooId
         raise KeyNotFoundError
     
     @api.one
     def toExternalId(self, odooId):
         for key in self.keys:
-            record = self.env['etl.sync.keys'].search([('id', '=', key['odooId'])], limit = 1)
-            if record.odooId == odooId:
-                return record.externalId
+            if key.odooId == odooId:
+                return key.externalId
         raise KeyNotFoundError
     
     # Abstract method not implementable
