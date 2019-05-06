@@ -872,8 +872,8 @@ class Employee(models.Model):
             'res_model': 'hr.contract',
             'type': 'ir.actions.act_window',
             'context': "{{'default_employee_id': {},'default_name': {}}}".format(self.id,contract_name),
-        }
-    
+        } 
+
     def new_benefit_pop_up(self):
         view_id = self.env.ref('vcls-hr.view_benefit_form').id
         return {

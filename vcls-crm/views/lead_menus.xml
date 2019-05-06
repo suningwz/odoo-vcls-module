@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="crm.crm_menu_sales" model="ir.ui.menu">
+			<field name="name">Opportunities</field>
+		</record>
+
+    </data>
+</odoo>

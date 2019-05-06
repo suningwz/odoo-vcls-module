@@ -205,11 +205,11 @@ class ContactExt(models.Model):
 
     @api.depends('category_id','create_folder','altname')
     def _compute_sharepoint_folder(self):
-        for contact in self:
+        """ for contact in self:
             #search if this is an account contact
             if self.env.ref('vcls-contact.category_account') in contact.category_id and contact.create_folder and contact.altname:
                 root = self.env.ref('vcls-contact.conf_path_sp_client_root').value
-                contact.sharepoint_folder = "{}{:.1}/{}".format(root,contact.altname,contact.altname)
+                contact.sharepoint_folder = "{}{:.1}/{}".format(root,contact.altname,contact.altname) """
             
             #raise ValidationError("{}".format(contact.sharepoint_folder))
                 

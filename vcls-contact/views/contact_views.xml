@@ -200,17 +200,6 @@
                                     </group>
                                 </page>
 
-                                <page name="marketing" string="Marketing" attrs="{'invisible': [('see_segmentation', '=', False)]}">
-                                    <group>
-                                        <group>
-                                            
-                                        </group>
-                                        <group>
-                                            
-                                        </group>
-                                    </group>
-                                </page>
-                                
                                 <page name="financials" string="Financials" attrs="{'invisible': [('see_segmentation', '=', False)]}">
                                 </page>
                                 
@@ -352,16 +341,18 @@
 
         <!-- used to visualize Client Accounts -->
         <record model="ir.actions.act_window" id="action_accounts">
-            <field name="name">Accounts</field>
-            <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|','|',('customer','=',True),('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
+            <field name="name">Client Accounts</field>
+            <!--<field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|','|',('customer','=',True),('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>-->
+            <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|',('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>
 
         <!-- used to visualize Suppliers Accounts, i.e. the ones having suppliers or one suppliers child as a tag -->
         <record model="ir.actions.act_window" id="action_suppliers_accounts">
-            <field name="name">Accounts</field>
-            <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|','|',('supplier','=',True),('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
+            <field name="name">Supplier Accounts</field>
+            <!-- <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|','|',('supplier','=',True),('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/> -->
+            <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|',('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>
@@ -376,16 +367,18 @@
 
         <!-- used to visualize Client Contacts-->
         <record model="ir.actions.act_window" id="action_client_contacts">
-            <field name="name">Individuals</field>
-            <field name="domain" eval="[('is_company','=',False),('employee','=',False),('stage','in',[2,3,4]),'|','|',('customer','=',True),('parent_id.category_id','=',ref('vcls-contact.category_account')),('parent_id.category_id','=',False)]"/>
+            <field name="name">Client Individuals</field>
+            <!--<field name="domain" eval="[('is_company','=',False),('employee','=',False),('stage','in',[2,3,4]),'|','|',('customer','=',True),('parent_id.category_id','=',ref('vcls-contact.category_account')),('parent_id.category_id','=',False)]"/>-->
+            <field name="domain" eval="[('is_company','=',False),('employee','=',False),('stage','in',[2,3,4]),'|',('parent_id.category_id','=',ref('vcls-contact.category_account')),('parent_id.category_id','=',False)]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>
 
         <!-- used to visualize Suppliers Contacts, i.e. the ones having suppliers or one suppliers child as a tag-->
         <record model="ir.actions.act_window" id="action_suppliers_contacts">
-            <field name="name">Individuals</field>
-            <field name="domain" eval="[('is_company','=',False),('employee','=',False),('stage','in',[2,3,4]),'|','|',('supplier','=',True),('parent_id.category_id','=',ref('vcls-contact.category_suppliers')),('parent_id.category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
+            <field name="name">Supplier Individuals</field>
+            <!-- <field name="domain" eval="[('is_company','=',False),('employee','=',False),('stage','in',[2,3,4]),'|','|',('supplier','=',True),('parent_id.category_id','=',ref('vcls-contact.category_suppliers')),('parent_id.category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/> -->
+            <field name="domain" eval="[('is_company','=',False),('employee','=',False),('stage','in',[2,3,4]),'|',('parent_id.category_id','=',ref('vcls-contact.category_suppliers')),('parent_id.category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>

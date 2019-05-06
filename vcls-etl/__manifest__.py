@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "vcls-crm",
+    'name': "vcls-etl",
 
     'summary': """
-        VCLS customs for CRM/Sales/Marketing applications.""",
-
-    'description': """
     """,
 
-    'author': "VCLS",
-    'website': "http://www.voisinconsulting.com",
+    'description': """
+        Long description of module's purpose
+    """,
+
+    'author': "My Company",
+    'website': "http://www.yourcompany.com",
 
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
@@ -19,30 +20,24 @@
 
     # any module necessary for this one to work correctly
     'depends': ['base',
-                'crm',
-                #'marketing_automation',
-                #'mass_mailing',
-                'website',
-                #'website_crm',
                 'vcls-contact',
+                'vcls-hr',
                 ],
 
     # always loaded
     'data': [
-
-        ### SECURITY ###
-        #'security/vcls_groups.xml',
+        
         'security/ir.model.access.csv',
-        'security/lead_rules.xml',
+        # 'security/ir.model.access.csv',
+        'views/views.xml',
+        'views/templates.xml',
+        'data/parameters.xml',
+        'actions/etl_cronjob.xml',
 
-        ### VIEWS & MENUS ###
-        'views/lead_views.xml',
-        'views/lead_menus.xml',
-        'views/crm_contact_views.xml',
-
+        
     ],
     # only loaded in demonstration mode
     'demo': [
-        
+        'demo/demo.xml',
     ],
 }

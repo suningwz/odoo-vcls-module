@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="crm_view_form_contact_all" model="ir.ui.view">
+            <field name="name">crm_view_form_contact_all</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="vcls-contact.view_form_contact_all"/>
+
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/notebook/page[5]" position="after">
+                    <page name="marketing" string="Marketing Info" attrs="{'invisible': [('see_segmentation', '=', False)]}">
+                    <field name="see_segmentation" invisible="1"/>
+                    <group>
+                        
+                    </group>
+                    </page>
+            
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
