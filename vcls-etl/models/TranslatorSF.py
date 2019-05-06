@@ -285,6 +285,6 @@ class TranslatorSF(ITranslator.ITranslator):
     def getUserId(mail, odoo):
         result = odoo.env['res.users'].search([('email','=',mail)])
         if result:
-            return result[0]
+            return result[0].id
         else:
             return None
