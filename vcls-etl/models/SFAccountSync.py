@@ -23,7 +23,7 @@ class SFAccountSync(models.Model):
         if not SF:
             SF = self.env['etl.salesforce.account'].create({})
         SF[0].getFromExternal(translator, sfInstance.getConnection())
-        SF[0].setToExternal(translator, sfInstance.getConnection(), time)
+       # SF[0].setToExternal(translator, sfInstance.getConnection(), time)
         SF[0].setNextRun()
 
 
