@@ -37,8 +37,9 @@
 
         ### VIEWS & MENUS ###
         'views/lead_views.xml',
-        'views/lead_menus.xml',
         'views/crm_contact_views.xml',
+        'views/dropdown_views.xml',
+        'views/lead_menu.xml',
 
     ],
     # only loaded in demonstration mode

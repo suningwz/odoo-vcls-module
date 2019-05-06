@@ -1,3 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
 access_opportunity_default,access_opportunity_default,crm.model_crm_lead,base.group_user,1,0,1,0
 access_opportunity_default,access_opportunity_default,crm.model_crm_lead,sales_team.group_sale_salesman,1,1,1,1
+
+access_lead_source_default,access_lead_source_default,vcls-crm.model_lead_source,,1,0,0,0
+access_lead_source_edit,access_lead_source_edit,vcls-crm.model_lead_source,sales_team.group_sale_manager,1,1,1,1

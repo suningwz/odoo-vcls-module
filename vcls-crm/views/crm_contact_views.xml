@@ -12,7 +12,15 @@
                     <page name="marketing" string="Marketing Info" attrs="{'invisible': [('see_segmentation', '=', False)]}">
                     <field name="see_segmentation" invisible="1"/>
                     <group>
-                        
+                        <group>
+                            <field name="no_mail"/>
+                            <field name="opted_in"/>
+                            <field name="opted_out"/>                 
+                        </group>
+                        <group>
+                            <field name="lead_source_id"/>  
+                            <field name="external_ref_id"/>           
+                        </group>
                     </group>
                     </page>
             
