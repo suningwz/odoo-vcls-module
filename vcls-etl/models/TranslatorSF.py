@@ -6,7 +6,7 @@ class TranslatorSF(ITranslator.ITranslator):
     def translateToOdoo(SF_Account, odoo, SF):
         result = {}
         # Modify the name with -test
-        result['name'] = SF_Account['Name'] + '-test'
+        result['name'] = SF_Account['Name'] #+ '-test'
 
         # result['category_id'] = reference Supplier_Category__c
         result['stage'] = TranslatorSF.convertStatus(SF_Account['Supplier_Status__c'])
@@ -70,21 +70,21 @@ class TranslatorSF(ITranslator.ITranslator):
     @staticmethod
     def convertStatus(status):
         if status == 'Active - contract set up, information completed':
-            return 5
+            return 3
         elif status == 'Prospective: no contract, pre-identify':
             return 2
         elif status == 'Inactive - reason mentioned':
-            return 4
+            return 5
         else: # Undefined
             return 1
     
     @staticmethod
     def revertStatus(status):
-        if status == 5:
+        if status == 3:
             return 'Active - contract set up, information completed'
-        elif status == 2 or status == 3:
+        elif status == 2:
             return 'Prospective: no contract, pre-identify'
-        elif status == 4:
+        elif status == 5:
             return 'Inactive - reason mentioned'
         else: # Undefined
             return 'Undefined - to fill'
