@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
+    <data noupdate="0">
         <record id="cron_etl" model="ir.cron">
             <field name="name">ETL Saleforce / Odoo</field>
             <field name="active" eval="False"/>
