@@ -100,7 +100,6 @@
                                         <field name="fax" widget="phone"/>
                                         <field name="website" widget="url"/>
                                         <field name="linkedin" widget="url"/>
-                                        <field name="partner_assistant_id" attrs="{'invisible': [('is_company', '=', True)]}"/>
                                     </group>
                                     <group>
                                         <label for="street" string="Address"/>
