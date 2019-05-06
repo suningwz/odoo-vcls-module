@@ -20,20 +20,29 @@
     # any module necessary for this one to work correctly
     'depends': ['base',
                 'crm',
-                'marketing_automation',
-                'mass_mailing',
+                #'marketing_automation',
+                #'mass_mailing',
                 'website',
-                'website_crm',
+                #'website_crm',
+                'vcls-contact',
                 ],
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
-        #'views/views.xml',
-        #'views/templates.xml',
+
+        ### SECURITY ###
+        #'security/vcls_groups.xml',
+        'security/ir.model.access.csv',
+        'security/lead_rules.xml',
+
+        ### VIEWS & MENUS ###
+        'views/lead_views.xml',
+        'views/lead_menus.xml',
+        'views/crm_contact_views.xml',
+
     ],
     # only loaded in demonstration mode
     'demo': [
-        'demo/demo.xml',
+        
     ],
 }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        
+       
+        <!-- Actions used for private EV's contact management 
+        <record model="ir.actions.act_window" id="action_private_contact">
+            <field name="name">My Private Contacts</field>
+            <field name="domain" eval="[('hidden','=',True)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+        -->
+
+    </data>
+</odoo>

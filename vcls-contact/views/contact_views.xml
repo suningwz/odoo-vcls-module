@@ -200,17 +200,6 @@
                                     </group>
                                 </page>
 
-                                <page name="marketing" string="Marketing" attrs="{'invisible': [('see_segmentation', '=', False)]}">
-                                    <group>
-                                        <group>
-                                            
-                                        </group>
-                                        <group>
-                                            
-                                        </group>
-                                    </group>
-                                </page>
-                                
                                 <page name="financials" string="Financials" attrs="{'invisible': [('see_segmentation', '=', False)]}">
                                 </page>
                                 

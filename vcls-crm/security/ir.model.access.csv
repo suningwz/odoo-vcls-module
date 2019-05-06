@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_vcls-crm_vcls-crm,vcls-crm.vcls-crm,model_vcls-crm_vcls-crm,,1,0,0,0
+access_opportunity_default,access_opportunity_default,crm.model_crm_lead,base.group_user,1,0,1,0
+access_opportunity_default,access_opportunity_default,crm.model_crm_lead,sales_team.group_sale_salesman,1,1,1,1
