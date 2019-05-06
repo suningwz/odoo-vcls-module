@@ -27,6 +27,7 @@
                 'mail',
                 'snailmail',
                 'vcls-helpdesk',
+                'vcls-etl'
                ],
 
     # always loaded
