@@ -6,12 +6,5 @@
 			<field name="name">Opportunities</field>
 		</record>
 
-        <menuitem 
-			name="Lead Sources" 
-			parent="crm.menu_crm_config_lead" 
-			id="menu_lead_source" 
-			action="action_lead_source" 
-			sequence="9" />
-
     </data>
 </odoo>
