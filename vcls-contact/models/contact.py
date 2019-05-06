@@ -154,6 +154,12 @@ class ContactExt(models.Model):
         string = 'Seniority',
     )
 
+    partner_assistant_id = fields.Many2one(
+        'res.partner',
+        string = "Assistant",
+        help = 'Document if this contact has an assistant.',
+    )
+
     ### VIEW VISIBILITY
     see_segmentation = fields.Boolean (
         compute = '_compute_visibility',
