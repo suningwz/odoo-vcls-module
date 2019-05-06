@@ -21,13 +21,16 @@
     # any module necessary for this one to work correctly
     'depends': ['base',
                 'hr',
-                'vcls-contact'],
+                'vcls-contact',
+                'vcls-hr'],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'data/parameters.xml',
+        'actions/etl_cronjob.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

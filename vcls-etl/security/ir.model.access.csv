@@ -1,2 +1,8 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_vcls-etl_vcls-etl,vcls-etl.vcls-etl,model_vcls-etl_vcls-etl,,1,0,0,0
+access_vcls-etl_keys_user,vcls-etl.etl.sync.keys.base,model_etl_sync_keys,base.group_user,1,0,0,0
+access_vcls-etl_keys_support,vcls-etl.etl.sync.keys.support,model_etl_sync_keys,vcls-hr.vcls_group_superuser_lvl1,1,1,1,1
+access_vcls-etl_generalSync_user,vcls-etl.etl.sync.mixin.base,model_etl_sync_mixin,base.group_user,1,0,0,0
+access_vcls-etl_generalSync_support,vcls-etl.etl.sync.mixin.support,model_etl_sync_mixin,vcls-hr.vcls_group_superuser_lvl1,1,1,1,1
+
+
+

@@ -1,0 +1,18 @@
+<odoo>
+    <data>
+        <record id="SF_mail" model="ir.config_parameter">
+            <field name="key">sf.mail</field>
+            <field name="value">mail</field>
+        </record>
+
+        <record id="SF_password" model="ir.config_parameter">
+            <field name="key">sf.password</field>
+            <field name="value">password</field>
+        </record>
+
+        <record id="SF_token" model="ir.config_parameter">
+            <field name="key">sf.token</field>
+            <field name="value">token</field>
+        </record>
+    </data>
+</odoo>
