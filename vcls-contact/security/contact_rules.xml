@@ -3,6 +3,7 @@
     <data>
 
     <!-- We override exisitng rule to exclude hidden contacts-->
+    <function model="ir.model.data" name="_remove_no_update" eval="[False,'base.res_partner_rule_private_employee']"/>
     <record id="base.res_partner_rule_private_employee" model="ir.rule">
         <field name="domain_force">[
             ('hidden','=',False),
@@ -11,6 +12,7 @@
         ]</field>
     </record>
 
+    <function model="ir.model.data" name="_remove_no_update" eval="[False,'base.res_partner_rule_private_group']"/>
     <record id="base.res_partner_rule_private_group" model="ir.rule">
         <field name="domain_force">[
             ('hidden','=',False),
