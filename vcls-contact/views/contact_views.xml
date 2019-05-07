@@ -19,24 +19,33 @@
                                 <div class="oe_title">
                                     <field name="company_type" widget="radio" class="oe_edit_only" options="{'horizontal': true}"/>
                                     <h1>
-                                        <field name="name" required="True"/>
+                                        <field name="name" required="True" placeholder="Company Name or Contact Name (first>middle>last)"/>
                                     </h1>
                                 </div>
-                                <field name="category_id" string='' widget="many2many_tags" options="{'no_create_edit': True}" placeholder="Client, Supplier, etc."/>
+                                <field name="category_id" string='' widget="many2many_tags" required="True" options="{'no_create_edit': True}" placeholder="Client, Supplier, etc."/>
                                 <field name="sharepoint_folder" widget="url" readonly="1" text="|   Open Document Folder" string='' attrs="{'invisible': [('create_folder', '=', False)]}"/>
                                 <separator string="   "/>
-                                <field name="parent_id" widget="res_partner_many2one" placeholder="Company" domain="[('is_company', '=', True)]" attrs="{'invisible': ['|', '&amp;', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False),('company_name', '!=', '')]}"/>
-                                <separator string="   "/>
-                                <field name="completion_ratio" widget="percentpie"/>
 
-                                <group>
-                                    
+                                <group attrs="{'invisible': [('is_company', '=', True)]}">
+                                    <group>
+                                        <field name="title"/>
+                                        <field name="email" widget="email" attrs="{'required': [('is_company', '=', False)]}"/>
+                                        <field name="hidden" string="Is Private?" groups="vcls-contact.vcls_group_ceo"/>
+                                    </group>
+                                    <group>
+                                        <field name="job_title"/>
+                                        <field name="parent_id" widget="res_partner_many2one" placeholder="Company" domain="[('is_company', '=', True)]" attrs="{'invisible': ['|', '&amp;', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False),('company_name', '!=', '')]}"/>
+                                    </group>
+                                </group>
+
+                                <group attrs="{'invisible': [('is_company', '=', False)]}">
                                     <group string=" ">
                                         <field name="hidden" string="Is Private?" groups="vcls-contact.vcls_group_ceo"/>
                                         <field name="altname" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                         <field name="currency_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
+                                        <field name="create_folder" invisible="0"/>
                                     </group>
-                                    <group string="Internal Contacts" attrs="{'invisible': [('is_company', '=', False)]}">
+                                    <group string="Internal Contacts">
                                         <field name="user_id"/>
                                         <field name="expert_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                         <field name="assistant_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
@@ -44,19 +53,19 @@
                                         <field name="invoice_admin_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>    
                                     </group>
                                 </group>
-                            </div>
-                            </div>
 
+                                <separator string="   "/>
+                                <field name="completion_ratio" widget="percentpie"/>
+
+                                
+                            </div>
+                            </div>
                                 <!-- Invisible Fields used -->
                                 <field name="is_company" invisible="1"/>
                                 <field name="supplier" invisible="1"/>
-                                <field name="customer" invisible="1"/>
-                
-                                <field name="company_name" invisible="1"/>
-                
-                                <field name="lang" invisible="1"/>
-
-                                
+                                <field name="customer" invisible="1"/>                
+                                <field name="company_name" invisible="1"/>              
+                                <field name="lang" invisible="1"/>                               
                                 <field name="see_segmentation" invisible="1"/>
                                 <field name="see_supplier" invisible="1"/>
                                     
@@ -82,7 +91,7 @@
                                     -->   
                                 
                             <notebook>
-                                <page name="contact" string="Contact Info">
+                                <page name="contact" string="Communication &amp; Address">
                                 <group>
                                     <group>
                                         <field name="email" widget="email"/>    
@@ -90,7 +99,7 @@
                                         <field name="mobile" widget="phone"/>
                                         <field name="fax" widget="phone"/>
                                         <field name="website" widget="url"/>
-                                        <field name="create_folder" invisible="0"/>
+                                        <field name="linkedin" widget="url"/>
                                     </group>
                                     <group>
                                         <label for="street" string="Address"/>
@@ -172,12 +181,12 @@
                                     </field>
 
                                 </page>
-
-                                
+  
 
                                 <page name="description" string="Description">
                                     <field name="description"/>
                                 </page>
+
                                 <page name="segmentation" string="Business Segmentation" attrs="{'invisible': [('see_segmentation', '=', False)]}">
                                     <group>
                                         <group>
@@ -187,6 +196,17 @@
                                         <group>
                                             <field name="client_activity_ids" widget="many2many_tags"/>
                                             <field name="client_product_ids" widget="many2many_tags"/>
+                                        </group>
+                                    </group>
+                                </page>
+
+                                <page name="marketing" string="Marketing" attrs="{'invisible': [('see_segmentation', '=', False)]}">
+                                    <group>
+                                        <group>
+                                            
+                                        </group>
+                                        <group>
+                                            
                                         </group>
                                     </group>
                                 </page>
@@ -253,6 +273,14 @@
         <record model="ir.actions.act_window" id="action_vcls_entities">
             <field name="name">VCLS Entities</field>
             <field name="domain" eval="[('is_company','=',True),('is_internal','=',True),('stage','in',[2,3,4])]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
+        <!-- used to visualize VCLS Offices-->
+        <record model="ir.actions.act_window" id="action_vcls_offices">
+            <field name="name">VCLS Offices</field>
+            <field name="domain" eval="[('category_id','=',ref('vcls-contact.category_vcls_office')),('stage','in',[2,3,4])]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>

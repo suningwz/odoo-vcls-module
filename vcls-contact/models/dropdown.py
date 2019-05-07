@@ -24,3 +24,25 @@ class ClientProduct(models.Model):
     name = fields.Char(
         required = True,
     )
+
+class FunctionalFocus(models.Model):
+
+    _name = 'partner.functional.focus'
+
+    active = fields.Boolean(
+        default = True,
+    )
+    name = fields.Char(
+        required = True,
+    )
+
+class PartnerSeniority(models.Model):
+
+    _name = 'partner.seniority'
+
+    active = fields.Boolean(
+        default = True,
+    )
+    name = fields.Char(
+        required = True,
+    )

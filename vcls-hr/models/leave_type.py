@@ -36,6 +36,21 @@ class LeaveType(models.Model):
         default = False,
         )
     
+    payroll_type = fields.Selection([
+        ('rtt', 'RTT'),
+        ('cp_paid', 'CP Paid'),
+        ('cp_unpaid', 'CP Unpaid'),
+        ('sick', 'Sick'),
+        ('other_paid','Other Paid'),
+        ])
+    
+    # this fields will just be used to trigger various path in the _search below.
+    # in can be added to the domain in the view, and will then appear in the args values of the _search
+    search_args_filter_1 = fields.Char(
+        readonly=True,
+        default="no0",
+    )
+    
     ##################
     # Search methods #
     ##################
@@ -48,7 +63,8 @@ class LeaveType(models.Model):
     
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        """ Override _search to order the results, according to some employee.
+        """
+        Override _search to order the results, according to some employee.
         The order is the following
 
          - allocation fixed first, then allowing allocation, then free allocation
@@ -59,12 +75,14 @@ class LeaveType(models.Model):
         is an employee_id in context and that no other order has been given
         to the method.
         """
+        
         employee_id = self._get_contextual_employee_id()
+        
+        #if this seaerch is called by a view where the below domain has been defined.
+        #This is used to have different search function according to the view
         leave_ids = super(LeaveType, self)._search(args, offset=offset, limit=limit, order=order, count=count, access_rights_uid=access_rights_uid)
-        if not count and not order and employee_id:
-            
+        if not count and not order and employee_id and ['search_args_filter_1', '=', 'no0'] in args:
             leaves = self.browse(leave_ids)
-           
             #we remove the leaves types based on allocations but with a counter == 0
             for item in leaves:
                 if (item.allocation_type  in ['fixed','fixed_allocation']) and item.virtual_remaining_leaves == 0:
@@ -72,12 +90,7 @@ class LeaveType(models.Model):
             
             #oldest counter 1st
             sort_key = lambda l: (l.allocation_type == 'fixed', l.allocation_type == 'fixed_allocation', l.virtual_remaining_leaves>0, 1/l.validity_start_ord, l.allocation_type == 'no')
-            
-            
-            #test = leaves.sorted(key=sort_key, reverse=True)
-            #names = test.mapped('id')
-            #raise ValidationError('{}'.format(names))
-            
             return leaves.sorted(key=sort_key, reverse=True).ids
         
         return leave_ids
+        

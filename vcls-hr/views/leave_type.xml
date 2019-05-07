@@ -1,0 +1,59 @@
+<odoo>
+  <data>
+          
+        <!-- View Form related to the existing employees -->
+        <record id="view_leave_type_tree" model="ir.ui.view">
+            <field name="name">view_leave_type_tree</field>
+            <field name="model">hr.leave.type</field>
+            <field name="arch" type="xml">
+                <tree string="Leave Summary">
+                    <field name="display_name"/>
+                    <field name="company_id"/>
+                    <field name="allocation_type"/>
+                    <field name="validation_type"/>
+                    <field name="is_managed_by_hr"/>
+                    <field name="payroll_type"/>
+                    <field name="validity_start"/>
+                    <field name="validity_stop"/>
+                </tree>  
+            </field>
+        </record>
+      
+        <record id="view_leave_type_search" model="ir.ui.view">
+            <field name="name">view_leave_type_search</field>
+            <field name="model">hr.leave.type</field>
+            <field name="arch" type="xml">
+                <search string="Search Leave Type">
+                    <field name="name"/>
+                    <field name="payroll_type"/>
+                    <field name="company_id"/>
+                    <!-- FILTER MENU 
+                    <filter string="Approved Requests" domain="[('state', '=', 'validate')]" name="validated"/>
+                    <separator/>
+                    -->
+                    <!-- GROUP BY MENU -->
+                    <group expand="0" string="Group By">
+                        <filter name="group_company" string="Company" context="{'group_by':'company_id'}"/>
+                        <filter name="group_payroll" string="Payroll Type" context="{'group_by':'payroll_type'}"/>
+                    </group>
+                    <!-- END OF GROUP BY MENU -->
+                </search>
+            </field>
+        </record>
+
+        <!-- User LEAVE SUMMARY We change the default filtering of the summary action -->
+        <record id="hr_holidays.open_view_holiday_status" model="ir.actions.act_window">
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                    (0, 0, {'view_mode': 'tree', 'view_id': ref('view_leave_type_tree')}),
+                ]"/>
+            <field name="search_view_id" ref='view_leave_type_search'/>
+            <field name="context">{
+                'search_default_group_company': 1,
+                'search_default_group_payroll': 1,
+                }
+            </field>
+        </record>
+
+    </data>
+</odoo>
