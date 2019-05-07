@@ -9,7 +9,7 @@ class TranslatorSF(ITranslator.ITranslator):
         result['name'] = SF_Account['Name'] + '-test'
 
         # result['category_id'] = reference Supplier_Category__c
-        result['stage'] = TranslatorSF.convertStatus(SF_Account['Supplier_Status__c'])
+        result['stage'] = TranslatorSF.convertStatus(SF_Account['Supplier_Status__c'],SF_Account['Is_supplier__c'] or SF_Account['Supplier__c'])
         # Ignore  Account_Level__c
 
         # result['state_id'] = reference  BillingState
@@ -31,10 +31,17 @@ class TranslatorSF(ITranslator.ITranslator):
         result['create_folder'] = SF_Account['Create_Sharepoint_Folder__c']
         result['company_type'] = 'company'
         result['country_id'] = TranslatorSF.convertCountry(SF_Account['BillingCountry'],odoo)
-        result['user_id'] = TranslatorSF.convertAccountManager(SF_Account['OwnerId'],odoo, SF)
-        result['category_id'] =  [(6, 0, TranslatorSF.convertCategory(SF_Account['Is_supplier__c'], SF_Account['Type'],odoo))]
+
+        
+        result['user_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
+        result['expert_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Main_VCLS_Contact__c'],odoo, SF)
+        result['assistant_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Project_Assistant__c'],odoo, SF)
+        result['controller_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Project_Controller__c'],odoo, SF)
+
+        result['category_id'] =  [(6, 0, TranslatorSF.convertCategory(SF_Account['Is_supplier__c'] or SF_Account['Supplier__c'], SF_Account['Type'],odoo))]
     
         return result
+
     @staticmethod
     def test(word):
         print(word)
@@ -64,27 +71,29 @@ class TranslatorSF(ITranslator.ITranslator):
 
         # Ignore company_type
         result['BillingCountry'] = TranslatorSF.revertCountry(Odoo_Contact.country_id.id, odoo)
-        # result['user_id'] = TranslatorSF.convertAccountManager(SF_Account['OwnerId'],odoo, SF)
+        # result['user_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
         return result
 
     @staticmethod
-    def convertStatus(status):
+    def convertStatus(status, is_supplier):
         if status == 'Active - contract set up, information completed':
-            return 5
+            return 3
         elif status == 'Prospective: no contract, pre-identify':
             return 2
         elif status == 'Inactive - reason mentioned':
-            return 4
+            return 5
+        elif is_supplier: # New
+            return 2
         else: # Undefined
             return 1
     
     @staticmethod
     def revertStatus(status):
-        if status == 5:
+        if status == 3:
             return 'Active - contract set up, information completed'
-        elif status == 2 or status == 3:
+        elif status == 2:
             return 'Prospective: no contract, pre-identify'
-        elif status == 4:
+        elif status == 5:
             return 'Inactive - reason mentioned'
         else: # Undefined
             return 'Undefined - to fill'
@@ -256,7 +265,7 @@ class TranslatorSF(ITranslator.ITranslator):
         
 
     @staticmethod
-    def convertAccountManager(ownerId, odoo, SF):
+    def convertSfIdToOdooId(ownerId, odoo, SF):
         mail = TranslatorSF.getUserMail(ownerId,SF)
         return TranslatorSF.getUserId(mail,odoo)
     
@@ -285,6 +294,6 @@ class TranslatorSF(ITranslator.ITranslator):
     def getUserId(mail, odoo):
         result = odoo.env['res.users'].search([('email','=',mail)])
         if result:
-            return result[0]
+            return result[0].id
         else:
             return None
