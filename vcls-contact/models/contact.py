@@ -172,7 +172,7 @@ class ContactExt(models.Model):
     ###################
     # COMPUTE METHODS #
     ###################
-           
+    
     @api.depends('category_id')
     def _compute_visibility(self):
         for contact in self:
