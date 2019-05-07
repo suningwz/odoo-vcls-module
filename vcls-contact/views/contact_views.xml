@@ -341,7 +341,7 @@
 
         <!-- used to visualize Client Accounts -->
         <record model="ir.actions.act_window" id="action_accounts">
-            <field name="name">Client Accounts</field>
+            <field name="name">Client Companies</field>
             <!--<field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|','|',('customer','=',True),('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>-->
             <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|',('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
             <field name="res_model">res.partner</field>
@@ -350,7 +350,7 @@
 
         <!-- used to visualize Suppliers Accounts, i.e. the ones having suppliers or one suppliers child as a tag -->
         <record model="ir.actions.act_window" id="action_suppliers_accounts">
-            <field name="name">Supplier Accounts</field>
+            <field name="name">Supplier Companies</field>
             <!-- <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|','|',('supplier','=',True),('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/> -->
             <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|',('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
             <field name="res_model">res.partner</field>
