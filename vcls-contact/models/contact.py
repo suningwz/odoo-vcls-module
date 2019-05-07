@@ -175,14 +175,14 @@ class ContactExt(models.Model):
     
     @api.depends('category_id')
     def _compute_visibility(self):
-        """ for contact in self:
+        for contact in self:
             contact.see_segmentation = False
             if self.env.ref('vcls-contact.category_account') in contact.category_id:
                 contact.see_segmentation = True
             
             contact.see_supplier = False
             if self.env.ref('vcls-contact.category_PS') in contact.category_id:
-                contact.see_supplier = True """
+                contact.see_supplier = True
 
     @api.depends('employee')
     def _compute_is_internal(self):

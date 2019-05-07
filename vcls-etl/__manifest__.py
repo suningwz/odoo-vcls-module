@@ -21,7 +21,8 @@
     # any module necessary for this one to work correctly
     'depends': ['base',
                 'vcls-contact',
-                'vcls-hr'],
+                'vcls-hr',
+                ],
 
     # always loaded
     'data': [
@@ -29,7 +30,9 @@
         'views/views.xml',
         'views/templates.xml',
         'data/parameters.xml',
-        'actions/etl_cronjob.xml'
+        'actions/etl_cronjob.xml',
+
+        
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Deactivate the multicompany rules -->
+        <record id="crm.crm_lead_company_rule" model="ir.rule">
+            <field name="active" eval="False"/>
+        </record>
+             
+    </data>
+</odoo>
