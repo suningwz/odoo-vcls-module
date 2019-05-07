@@ -55,7 +55,7 @@
                                 </group>
 
                                 <separator string="   "/>
-                                <field name="completion_ratio" widget="percentpie"/>
+                                <field name="completion_ratio" widget="percentpie" invisible='1'/>
 
                                 
                             </div>
