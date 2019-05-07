@@ -31,12 +31,8 @@ class SFAccountSync(models.Model):
         Modifiedrecords = externalInstance.query(sql + self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000"))['records']
         for SFrecord in Modifiedrecords:
             try:
-                if fullUpdate:
-                    if self.toOdooId(SFrecord['Id']):
-                        self.update(SFrecord, translator, externalInstance)
-                else:
-                    if not self.isDateOdooAfterExternal(self.getLastUpdate(self.toOdooId(SFrecord['Id'])), datetime.strptime(SFrecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")):
-                        self.update(SFrecord, translator, externalInstance)
+                if fullUpdate or not self.isDateOdooAfterExternal(self.getLastUpdate(self.toOdooId(SFrecord['Id'])), datetime.strptime(SFrecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")):
+                    self.update(SFrecord, translator, externalInstance)
             except (generalSync.KeyNotFoundError, ValueError) as error:
                 self.createRecord(SFrecord, translator, externalInstance)
 
