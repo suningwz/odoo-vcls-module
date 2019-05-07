@@ -6,7 +6,7 @@ class TranslatorSF(ITranslator.ITranslator):
     def translateToOdoo(SF_Account, odoo, SF):
         result = {}
         # Modify the name with -test
-        result['name'] = SF_Account['Name'] + '-test'
+        result['name'] = SF_Account['Name'] #+ '-test'
 
         # result['category_id'] = reference Supplier_Category__c
         result['stage'] = TranslatorSF.convertStatus(SF_Account['Supplier_Status__c'],SF_Account['Is_supplier__c'] or SF_Account['Supplier__c'])
@@ -34,12 +34,26 @@ class TranslatorSF(ITranslator.ITranslator):
 
         
         result['user_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
-        result['expert_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Main_VCLS_Contact__c'],odoo, SF)
-        result['assistant_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Project_Assistant__c'],odoo, SF)
-        result['controller_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Project_Controller__c'],odoo, SF)
+        """ if SF_Account['Main_VCLS_Contact__c']:
+            result['expert_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Main_VCLS_Contact__c'],odoo, SF) """
+        """ if SF_Account['Project_Assistant__c']:
+            result['assistant_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Project_Assistant__c'],odoo, SF)
+        if SF_Account['Project_Controller__c']:
+            result['controller_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Project_Controller__c'],odoo, SF) """
 
         result['category_id'] =  [(6, 0, TranslatorSF.convertCategory(SF_Account['Is_supplier__c'] or SF_Account['Supplier__c'], SF_Account['Type'],odoo))]
     
+        result['message_ids'] = [(0, 0, TranslatorSF.generateLog(SF_Account))]
+        return result
+    
+    @staticmethod
+    def generateLog(SF_Account):
+        result = {
+            'model': 'res.partner',
+            'message_type': 'comment',
+            'body': '<p>Updated.</p>'
+        }
+
         return result
 
     @staticmethod
