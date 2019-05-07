@@ -246,6 +246,21 @@
             </field>
         </record>
 
+        <!-- Add Account Manager in partner kanban view -->
+        <record id="res_partner_kanban_view" model="ir.ui.view">
+            <field name="name">res.partner.kanban.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('oe_kanban_partner_links')]" position="before">
+                    <div t-if="record.user_id.raw_value">
+                        <span class="fa fa-user-circle" aria-label="Account Manager" title="Account Manager"/>
+                        <field name="user_id"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
         <!-- VCLS Offices KANBAN View -->
         <record id="view_kanban_vcls_office" model="ir.ui.view">
         <field name="name">res.partner.vclsoffice.kanban</field>
