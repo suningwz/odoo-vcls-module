@@ -252,8 +252,11 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.res_partner_kanban_view"/>
             <field name="arch" type="xml">
+                <field name="mobile" position="before">
+                    <field name="company_type"/>
+                </field>
                 <xpath expr="//div[hasclass('oe_kanban_partner_links')]" position="before">
-                    <div t-if="record.user_id.raw_value">
+                    <div t-if="record.user_id.raw_value and record.company_type.raw_value == 'company'">
                         <span class="fa fa-user-circle" aria-label="Account Manager" title="Account Manager"/>
                         <field name="user_id"/>
                     </div>
