@@ -172,7 +172,23 @@ class ContactExt(models.Model):
     ###################
     # COMPUTE METHODS #
     ###################
-    
+    @api.onchange('parent_id')
+    def contact_adoption(self):
+        try:
+            if not self.env['account.invoice.report'].search([('partner_id.id','=', self._origin.id)]) and not self.env['crm.lead'].search([('partner_id.id','=', self._origin.id)]):
+                partners = self.env['res.partner'].browse(self._origin.id)
+                parent = self.parent_id
+                for contact in partners:
+                    s = contact.copy()
+                    self.env['res.partner'].browse(s.id).write({'stage':5})
+                self.parent_id = parent
+            else:
+                print("Reference found")
+                self.parent_id = self._origin.parent_id
+        except (KeyError) as error:
+            print("Model(s) does not exist")
+           
+
     @api.depends('category_id')
     def _compute_visibility(self):
         for contact in self:
