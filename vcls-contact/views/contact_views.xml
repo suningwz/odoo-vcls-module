@@ -46,7 +46,7 @@
                                         <field name="create_folder" invisible="0"/>
                                     </group>
                                     <group string="Internal Contacts">
-                                        <field name="user_id"/>
+                                        <field name="user_id" string="Account Manager"/>
                                         <field name="expert_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                         <field name="assistant_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                         <field name="controller_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
