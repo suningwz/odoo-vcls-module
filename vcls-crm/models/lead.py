@@ -6,8 +6,17 @@ from odoo.exceptions import UserError, ValidationError
 class Leads(models.Model):
 
     _inherit = 'crm.lead'
+
+    ###################
+    # DEFAULT METHODS #
+    ###################
+
+    def _default_am(self):
+        return self.guess_am()
     
     ### CUSTOM FIELDS RELATED TO MARKETING PURPOSES ###
+    user_id = fields.Many2one('res.users', string='Account Manager', track_visibility='onchange', default='_default_am')
+
     country_group_id = fields.Many2one(
         'res.country.group',
         string = "Geographic Area",
@@ -52,8 +61,24 @@ class Leads(models.Model):
 
     @api.depends('country_id')
     def _compute_country_group(self):
-        for contact in self:
-            #groups = contact.country_id.country_group_ids.filtered([('group_type','=','BD')])
-            groups = contact.country_id.country_group_ids
+        for lead in self:
+            groups = lead.country_id.country_group_ids
             if groups:
-                contact.country_group_id = groups[0]
+                lead.country_group_id = groups[0]
+    
+    @api.onchange('partner_id','country_id')
+    def _change_am(self):
+        for lead in self:
+            lead.user_id = lead.guess_am()
+
+    ################
+    # TOOL METHODS #
+    ################
+
+    def guess_am(self):
+        if self.partner_id.user_id:
+            return self.partner_id.user_id
+        elif self.country_group_id.default_am:
+            return self.country_group_id.default_am
+        else:
+            return False
