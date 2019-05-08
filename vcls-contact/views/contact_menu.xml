@@ -28,6 +28,11 @@
 			action="" 
 			sequence="1" />
 
+		<!-- Configure groups open access to everyone -->
+        <record id="contacts.menu_contacts" model="ir.ui.menu">
+            <field name="groups_id" eval="[(5, 0, 0)]"/>
+        </record>
+
 		<menuitem 
 			name="Companies" 
 			parent="menu_accounts" 
@@ -51,12 +56,12 @@
 			sequence="5" />
 
 		<menuitem 
-			name="Project Suppliers" 
+			name="Project Services" 
 			parent="menu_suppliers" 
 			id="menu_suppliers_project" 
 			action="action_suppliers_project" 
 			sequence="1" />
-			
+
 		<!--
 		<menuitem 
 			name="Companies" 
