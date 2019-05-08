@@ -62,7 +62,7 @@ class SFAccountSync(models.Model):
         partner = self.env['res.partner']
         odid = int(OD_id[0])
         record = partner.browse([odid])
-        record.image=False
+        record.image=self._get_default_image(False, odooAttributes.get('is_company'), False)
         record.write(odooAttributes)
         print('Updated record in Odoo: {}'.format(item['Name']))
 

@@ -30,6 +30,8 @@ class TranslatorSF(ITranslator.ITranslator):
 
         result['create_folder'] = SF_Account['Create_Sharepoint_Folder__c']
         result['company_type'] = 'company'
+        #documented to trigger proper default image loaded
+        result['is_company'] = 'True'
         result['country_id'] = TranslatorSF.convertCountry(SF_Account['BillingCountry'],odoo)
 
         
@@ -44,6 +46,7 @@ class TranslatorSF(ITranslator.ITranslator):
         result['category_id'] =  [(6, 0, TranslatorSF.convertCategory(SF_Account['Is_supplier__c'] or SF_Account['Supplier__c'], SF_Account['Type'],odoo))]
     
         result['message_ids'] = [(0, 0, TranslatorSF.generateLog(SF_Account))]
+
         return result
     
     @staticmethod
