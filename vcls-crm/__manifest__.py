@@ -35,10 +35,12 @@
         'security/ir.model.access.csv',
         'security/lead_rules.xml',
 
-        ### VIEWS & MENUS ###
+        ### VIEWS ###
         'views/lead_views.xml',
+        #'views/crm_contact_views.xml',
+
+        ### MENUS ###
         'views/lead_menus.xml',
-        'views/crm_contact_views.xml',
 
     ],
     # only loaded in demonstration mode
