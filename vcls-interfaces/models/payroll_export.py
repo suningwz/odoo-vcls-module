@@ -48,13 +48,11 @@ class PayrollExport(models.Model):
     )
     
     leave_start_date = fields.Date(
-        string = 'Leave Period Start',
-        required = True,
+        string = 'Leave Period Start', 
         )
     
     leave_end_date = fields.Date(
         string = 'Leave Period End',
-        required = True,
         )
     
     payment_date = fields.Date(
