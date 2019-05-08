@@ -29,7 +29,7 @@
 			sequence="1" />
 
 		<!-- Configure groups open access to everyone -->
-        <record id="contacts.menu_contacts" model="ir.ui.menu">
+        <record id="contacts.menu_accounts" model="ir.ui.menu">
             <field name="groups_id" eval="[(5, 0, 0)]"/>
         </record>
 
