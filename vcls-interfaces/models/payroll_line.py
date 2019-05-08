@@ -160,18 +160,18 @@ class PayrollLine(models.Model):
             # We select all the validated leaves for the employee, which are starting before the end of the period AND ending after the start of the period.
             leaves = self.env['hr.leave'].search([
                 ('employee_id','=',l.employee_id.id),
-                ('date_to','>=',l.export_id.start_date),
-                ('date_from','<=',l.export_id.end_date),
+                ('date_to','>=',l.export_id.leave_start_date),
+                ('date_from','<=',l.export_id.leave_end_date),
                 ('state','=','validate'),
                 '|',
                 ('holiday_status_id.validity_stop','=',False), #no validity end date or after export start
-                ('holiday_status_id.validity_stop','>=',l.export_id.start_date)])
+                ('holiday_status_id.validity_stop','>=',l.export_id.leave_start_date)])
             l.write({'leave_ids': [(6, 0, leaves.mapped('id'))]})
             
             #loop in leaves to process it
             for leave in leaves:
-                leave.trunc_start = max(leave.date_from.date(),l.export_id.start_date)
-                leave.trunc_end = min(leave.date_to.date(),l.export_id.end_date)
+                leave.trunc_start = max(leave.date_from.date(),l.export_id.leave_start_date)
+                leave.trunc_end = min(leave.date_to.date(),l.export_id.leave_end_date)
                 if leave.request_unit_half :
                     leave.trunc_duration = 0.5
                 else:
@@ -236,11 +236,11 @@ class PayrollLine(models.Model):
             past_leaves = self.env['hr.leave'].search([
                 ('employee_id','=',self.employee_id.id),
                 ('holiday_status_id.payroll_type','=',payroll_type),
-                ('date_to','<',self.export_id.end_date),
+                ('date_to','<',self.export_id.leave_end_date),
                 ('state','=','validate'),
                 '|',
                 ('holiday_status_id.validity_stop','=',False), #no validity end date or after export start
-                ('holiday_status_id.validity_stop','>=',self.export_id.start_date)]) 
+                ('holiday_status_id.validity_stop','>=',self.export_id.leave_start_date)]) 
             past_leaves -= leaves
             
             #we look for all allocations grouped in the defined payroll_type
@@ -250,21 +250,21 @@ class PayrollLine(models.Model):
                 ('holiday_status_id.payroll_type','=',payroll_type),
                 '|',
                 ('holiday_status_id.validity_stop','=',False), #no validity end date or after export start
-                ('holiday_status_id.validity_stop','>=',self.export_id.start_date)])
+                ('holiday_status_id.validity_stop','>=',self.export_id.leave_start_date)])
             
-            increment = sum(allocs.filtered(lambda r: (r.accrual == True) and (r.date_to.date() > self.export_id.start_date)).mapped('number_per_interval'))
+            increment = sum(allocs.filtered(lambda r: (r.accrual == True) and (r.date_to.date() > self.export_id.leave_start_date)).mapped('number_per_interval'))
             
             #we check if there was an accrual iteration between the export end_date and today()
             delta_days = 0
             if (increment > 0):
                 today = date.today()
                 #raise ValidationError("{}".format(today.month))
-                delta_month = today.month-self.export_id.end_date.month
+                delta_month = today.month-self.export_id.leave_end_date.month
                 if delta_month < 0: #this is the case when year has changed between the two months
                     delta_month += 12
                     
                 #if the export ends the last day of the month, then the accrual has been taken into account. We decrement the delta_month.
-                if (self.export_id.end_date + relativedelta(days=1)).day == 1: 
+                if (self.export_id.leave_end_date + relativedelta(days=1)).day == 1: 
                     delta_month = max(0,delta_month-1)
                 
                 #if delta_month, we need to check the the different aggrations at each date to ensure we dont bypass the date_to of the accrual.
