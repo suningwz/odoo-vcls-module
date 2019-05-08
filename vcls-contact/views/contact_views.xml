@@ -366,6 +366,14 @@
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>
 
+        <!-- used to visualize all project suppliers -->
+        <record model="ir.actions.act_window" id="action_suppliers_project">
+            <field name="name">Project Suppliers</field>
+            <field name="domain" eval="[('is_internal','=',False),('stage','in',[2,3,4]),'|',('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
         <!-- used to visualize Suppliers Accounts, i.e. the ones having suppliers or one suppliers child as a tag -->
         <record model="ir.actions.act_window" id="action_suppliers_accounts">
             <field name="name">Supplier Companies</field>
@@ -412,6 +420,14 @@
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('base.view_partner_tree')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('view_form_contact_all')}),
             ]"/>
+        </record>
+
+         <!-- used to visualize Undefined Contacts for administration -->
+        <record model="ir.actions.act_window" id="action_admin_undefined">
+            <field name="name">Undefined contacts</field>
+            <field name="domain" eval="[('stage','=',1)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
         </record>
 
         <!-- used to visualize New Contacts for administration -->

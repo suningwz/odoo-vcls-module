@@ -51,6 +51,14 @@
 			sequence="5" />
 
 		<menuitem 
+			name="Project Suppliers" 
+			parent="menu_suppliers" 
+			id="menu_suppliers_project" 
+			action="action_suppliers_project" 
+			sequence="1" />
+			
+		<!--
+		<menuitem 
 			name="Companies" 
 			parent="menu_suppliers" 
 			id="menu_suppliers_accounts" 
@@ -63,6 +71,7 @@
 			id="menu_suppliers_contacts" 
 			action="action_suppliers_contacts" 
 			sequence="6" />
+		-->
 
 		<!-- VCLS Menus -->
 		<menuitem 
@@ -121,6 +130,11 @@
 			id="menu_admin" 
 			action="" 
 			sequence="10" />
+		
+		<!-- Configure groups to access non active employees -->
+        <record id="vcls-contact.menu_admin" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('base.group_partner_manager'))]"/>
+        </record>
 
 		<menuitem 
 			name="All" 
@@ -128,6 +142,13 @@
 			id="menu_admin_all" 
 			action="action_admin_all" 
 			sequence="3" />
+		
+		<menuitem 
+			name="Undefined" 
+			parent="menu_admin" 
+			id="menu_admin_undefined" 
+			action="action_admin_undefined" 
+			sequence="6" />
 
 		<menuitem 
 			name="New" 
