@@ -46,7 +46,7 @@
                                         <field name="create_folder" invisible="0"/>
                                     </group>
                                     <group string="Internal Contacts">
-                                        <field name="user_id"/>
+                                        <field name="user_id" string="Account Manager"/>
                                         <field name="expert_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                         <field name="assistant_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                         <field name="controller_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
@@ -55,7 +55,7 @@
                                 </group>
 
                                 <separator string="   "/>
-                                <field name="completion_ratio" widget="percentpie"/>
+                                <field name="completion_ratio" widget="percentpie" invisible='1'/>
 
                                 
                             </div>
@@ -246,6 +246,24 @@
             </field>
         </record>
 
+        <!-- Add Account Manager in partner kanban view -->
+        <record id="res_partner_kanban_view" model="ir.ui.view">
+            <field name="name">res.partner.kanban.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+            <field name="arch" type="xml">
+                <field name="mobile" position="before">
+                    <field name="company_type"/>
+                </field>
+                <xpath expr="//div[hasclass('oe_kanban_partner_links')]" position="before">
+                    <div t-if="record.user_id.raw_value and record.company_type.raw_value == 'company'">
+                        <span class="fa fa-user-circle" aria-label="Account Manager" title="Account Manager"/>
+                        <field name="user_id"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
         <!-- VCLS Offices KANBAN View -->
         <record id="view_kanban_vcls_office" model="ir.ui.view">
         <field name="name">res.partner.vclsoffice.kanban</field>
@@ -341,16 +359,24 @@
 
         <!-- used to visualize Client Accounts -->
         <record model="ir.actions.act_window" id="action_accounts">
-            <field name="name">Client Accounts</field>
+            <field name="name">Client Companies</field>
             <!--<field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|','|',('customer','=',True),('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>-->
             <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|',('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
         </record>
 
+        <!-- used to visualize all project suppliers -->
+        <record model="ir.actions.act_window" id="action_suppliers_project">
+            <field name="name">Project Services</field>
+            <field name="domain" eval="[('is_internal','=',False),('stage','in',[2,3,4]),'|',('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
+
         <!-- used to visualize Suppliers Accounts, i.e. the ones having suppliers or one suppliers child as a tag -->
         <record model="ir.actions.act_window" id="action_suppliers_accounts">
-            <field name="name">Supplier Accounts</field>
+            <field name="name">Supplier Companies</field>
             <!-- <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|','|',('supplier','=',True),('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/> -->
             <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|',('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
             <field name="res_model">res.partner</field>
@@ -394,6 +420,14 @@
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('base.view_partner_tree')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('view_form_contact_all')}),
             ]"/>
+        </record>
+
+         <!-- used to visualize Undefined Contacts for administration -->
+        <record model="ir.actions.act_window" id="action_admin_undefined">
+            <field name="name">Undefined contacts</field>
+            <field name="domain" eval="[('stage','=',1)]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
         </record>
 
         <!-- used to visualize New Contacts for administration -->

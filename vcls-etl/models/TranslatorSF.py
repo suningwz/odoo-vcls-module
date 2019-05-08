@@ -9,7 +9,7 @@ class TranslatorSF(ITranslator.ITranslator):
         result['name'] = SF_Account['Name'] #+ '-test'
 
         # result['category_id'] = reference Supplier_Category__c
-        result['stage'] = TranslatorSF.convertStatus(SF_Account['Supplier_Status__c'])
+        result['stage'] = TranslatorSF.convertStatus(SF_Account['Supplier_Status__c'],SF_Account['Is_supplier__c'] or SF_Account['Supplier__c'])
         # Ignore  Account_Level__c
 
         # result['state_id'] = reference  BillingState
@@ -30,11 +30,35 @@ class TranslatorSF(ITranslator.ITranslator):
 
         result['create_folder'] = SF_Account['Create_Sharepoint_Folder__c']
         result['company_type'] = 'company'
+        #documented to trigger proper default image loaded
+        result['is_company'] = 'True'
         result['country_id'] = TranslatorSF.convertCountry(SF_Account['BillingCountry'],odoo)
-        result['user_id'] = TranslatorSF.convertAccountManager(SF_Account['OwnerId'],odoo, SF)
-        result['category_id'] =  [(6, 0, TranslatorSF.convertCategory(SF_Account['Is_supplier__c'], SF_Account['Type'],odoo))]
+
+        
+        result['user_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
+        """ if SF_Account['Main_VCLS_Contact__c']:
+            result['expert_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Main_VCLS_Contact__c'],odoo, SF) """
+        """ if SF_Account['Project_Assistant__c']:
+            result['assistant_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Project_Assistant__c'],odoo, SF)
+        if SF_Account['Project_Controller__c']:
+            result['controller_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Project_Controller__c'],odoo, SF) """
+
+        result['category_id'] =  [(6, 0, TranslatorSF.convertCategory(SF_Account['Is_supplier__c'] or SF_Account['Supplier__c'], SF_Account['Type'],odoo))]
     
+        result['message_ids'] = [(0, 0, TranslatorSF.generateLog(SF_Account))]
+
         return result
+    
+    @staticmethod
+    def generateLog(SF_Account):
+        result = {
+            'model': 'res.partner',
+            'message_type': 'comment',
+            'body': '<p>Updated.</p>'
+        }
+
+        return result
+
     @staticmethod
     def test(word):
         print(word)
@@ -64,17 +88,19 @@ class TranslatorSF(ITranslator.ITranslator):
 
         # Ignore company_type
         result['BillingCountry'] = TranslatorSF.revertCountry(Odoo_Contact.country_id.id, odoo)
-        # result['user_id'] = TranslatorSF.convertAccountManager(SF_Account['OwnerId'],odoo, SF)
+        # result['user_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
         return result
 
     @staticmethod
-    def convertStatus(status):
+    def convertStatus(status, is_supplier):
         if status == 'Active - contract set up, information completed':
             return 3
         elif status == 'Prospective: no contract, pre-identify':
             return 2
         elif status == 'Inactive - reason mentioned':
             return 5
+        elif is_supplier: # New
+            return 2
         else: # Undefined
             return 1
     
@@ -256,7 +282,7 @@ class TranslatorSF(ITranslator.ITranslator):
         
 
     @staticmethod
-    def convertAccountManager(ownerId, odoo, SF):
+    def convertSfIdToOdooId(ownerId, odoo, SF):
         mail = TranslatorSF.getUserMail(ownerId,SF)
         return TranslatorSF.getUserId(mail,odoo)
     
