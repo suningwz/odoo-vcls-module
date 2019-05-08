@@ -41,6 +41,22 @@ class PayrollExport(models.Model):
         required = True,
         )
     
+    custom_leave_dates = fields.Boolean(
+        default = False,
+        compute = '_compute_custom_leave_dates',
+        store = True,
+    )
+    
+    leave_start_date = fields.Date(
+        string = 'Leave Period Start',
+        required = True,
+        )
+    
+    leave_end_date = fields.Date(
+        string = 'Leave Period End',
+        required = True,
+        )
+    
     payment_date = fields.Date(
         string = 'Payment Date',
         required = True,
@@ -154,6 +170,25 @@ class PayrollExport(models.Model):
             export.total_wage = sum(export.line_ids.mapped('prorated_salary'))/12
             export.total_benefit = sum(export.line_ids.mapped(lambda r: r.transport_allowance + r.car_allowance + r.lunch_allowance))
             export.total_bonus = sum(export.line_ids.mapped('total_bonus'))
+    
+    @api.onchange('start_date')
+    def _set_leave_start(self):
+        for export in self:
+            export.leave_start_date = export.start_date
+
+    @api.onchange('end_date')
+    def _set_leave_end(self):
+        for export in self:
+            export.leave_end_date = export.end_date
+    
+    @api.depends('company_id')
+    def _compute_custom_leave_dates(self):
+        for export in self:
+            if export.company_id == self.env.ref('base.main_company') or export.company_id == self.env.ref('vcls-hr.company_VCFR'):
+                export.custom_leave_dates = True
+            else:
+                export.custom_leave_dates = False
+        
 
     
     ################
@@ -172,9 +207,16 @@ class PayrollExport(models.Model):
             
         short = self.env['res.company'].search([('id','=',company_id)]).short_name
         vals['name'] = "{}{}_{}_{:02}_PayrollExport".format(month,year,short,index)
-        
+
         #export is created
         export=super().create(vals)
+
+        #we update the notes in case of custom
+        if export.custom_leave_dates:
+            if export.notes:
+                export.notes = " Leave Period: {} to {} | {}".format(export.leave_start_date, export.leave_end_date, export.notes)
+            else:
+                export.notes = " Leave Period: {} to {}".format(export.leave_start_date, export.leave_end_date)
         
         # LINES CREATION #
         #we search for elligible employees, i.e. the ones that were active at the export end_date 
