@@ -6,5 +6,18 @@
 			<field name="name">Opportunities</field>
 		</record>
 
+        <menuitem 
+			name="New CI" 
+			parent="contacts.menu_contacts" 
+			id="menu_new_CI" 
+			action="action_new_CI" 
+			sequence="9" />
+        
+        <!-- Configure groups to access non active employees 
+        <record id="vcls-crm.menu_new_CI" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('vcls-contact.vcls_group_ceo'))]"/>
+        </record>
+        -->
+
     </data>
 </odoo>

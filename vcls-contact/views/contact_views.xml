@@ -33,7 +33,7 @@
                                         <field name="hidden" string="Is Private?" groups="vcls-contact.vcls_group_ceo"/>
                                     </group>
                                     <group>
-                                        <field name="job_title" attrs="{'required': [('is_company', '=', False)]}"/>
+                                        <field name="function" attrs="{'required': [('is_company', '=', False)]}"/>
                                         <field name="parent_id" widget="res_partner_many2one" placeholder="Company" domain="[('is_company', '=', True)]" attrs="{'invisible': ['|', '&amp;', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False),('company_name', '!=', '')]}"/>
                                     </group>
                                 </group>

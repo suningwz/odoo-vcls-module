@@ -95,13 +95,14 @@
 			action="action_vcls_offices" 
 			sequence="6" />
 
-		<!-- Create one menu in the employee app -->
+		<!-- Create one menu in the employee app 
 		<menuitem 
 			name="VCLS Offices" 
 			parent="hr.menu_hr_root" 
 			id="menu_VCLS_offices_employee" 
 			action="action_vcls_offices" 
 			sequence="6" />
+		-->
 		
 		<menuitem 
 			name="VCLS Legal Entities" 
