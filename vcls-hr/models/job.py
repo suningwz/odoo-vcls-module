@@ -16,7 +16,10 @@ class Job(models.Model):
     name = fields.Char(
         compute='_compute_name',
 <<<<<<< HEAD
+<<<<<<< HEAD
         #store = True,
+=======
+>>>>>>> parent of 43a8e96... job position name = Stored
 =======
 >>>>>>> parent of 43a8e96... job position name = Stored
         )
