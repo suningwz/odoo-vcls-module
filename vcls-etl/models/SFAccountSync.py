@@ -34,13 +34,13 @@ class SFAccountSync(models.Model):
         sql += 'Supplier_Status__c, Account_Level__c, LastModifiedDate, '
         sql += 'BillingCountry, BillingState, BillingAddress, BillingStreet, '
         sql += 'Phone, Fax, Area_of_expertise__c, Sharepoint_Folder__c, '
-        sql += 'Supplier_Description__c, Key_Information__c, '
+        sql += 'Supplier_Description__c, Key_Information__c, Project_Assistant__c, '
         sql += 'Supplier_Selection_Form_completed__c, Website, '
-        sql += 'Create_Sharepoint_Folder__c, OwnerId, Is_supplier__c, '
+        sql += 'Create_Sharepoint_Folder__c, OwnerId, Is_supplier__c, Main_VCLS_Contact__c, '
         sql += 'Supplier__c, Type, Project_Controller__c, VCLS_Alt_Name__c, '
-        sql += 'Supplier_Project__c, Activity__c, Product_Type__c '
+        sql += 'Supplier_Project__c, Activity__c, Product_Type__c, Industry '
         sql += 'FROM Account '
-        sql += 'WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c is not null and VCLS_Alt_Name__c is not null))'
+        sql += 'WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null))'
         
         if fullUpdate:
             Modifiedrecords = externalInstance.query(sql)['records']

@@ -9,7 +9,7 @@ class TranslatorSF(ITranslator.ITranslator):
         result['name'] = SF_Account['Name'] #+ '-test'
 
         # result['category_id'] = reference Supplier_Category__c
-        result['stage'] = TranslatorSF.convertStatus(SF_Account['Supplier_Status__c'],SF_Account['Is_supplier__c'] or SF_Account['Supplier__c'])
+        result['stage'] = TranslatorSF.convertStatus(SF_Account)
         # Ignore  Account_Level__c
 
         # result['state_id'] = reference  BillingState
@@ -47,7 +47,7 @@ class TranslatorSF(ITranslator.ITranslator):
         result['industry_id'] = TranslatorSF.convertIndustry(SF_Account['Industry'],odoo)
         result['expertise_area_ids'] = [(6, 0, TranslatorSF.convertArea(SF_Account['Area_of_expertise__c'],odoo))]
         result['project_supplier_type_id'] = TranslatorSF.convertProject(SF_Account['Supplier_Project__c'],odoo)
-        result['client_activity_ids'] = [(6, 0, TranslatorSF.convertActivity(SF_Account['Actvity__c'],odoo))]
+        result['client_activity_ids'] = [(6, 0, TranslatorSF.convertActivity(SF_Account['Activity__c'],odoo))]
         result['client_product_ids'] = [(6, 0, TranslatorSF.convertProduct(SF_Account['Product_Type__c'],odoo))]
         result['category_id'] =  [(6, 0, TranslatorSF.convertCategory(SF_Account,odoo))]
         result['message_ids'] = [(0, 0, TranslatorSF.generateLog(SF_Account))]
@@ -97,14 +97,15 @@ class TranslatorSF(ITranslator.ITranslator):
         return result
 
     @staticmethod
-    def convertStatus(status, is_supplier):
-        if status == 'Active - contract set up, information completed':
+    def convertStatus(SF):
+        status = SF['Supplier_Status__c']
+        if (status == 'Active - contract set up, information completed') or SF['Project_Controller__c']:
             return 3
         elif status == 'Prospective: no contract, pre-identify':
             return 2
         elif status == 'Inactive - reason mentioned':
             return 5
-        elif is_supplier: # New
+        elif SF['Is_supplier__c'] or SF['Supplier__c']: # New
             return 2
         else: # Undefined
             return 1
@@ -297,7 +298,7 @@ class TranslatorSF(ITranslator.ITranslator):
         SFtype = SFAccount['Type']
         if SFAccount['Is_supplier__c'] or SFAccount['Supplier__c']:
             result += [odoo.env.ref('vcls-contact.category_PS').id]
-        elif SFAccount['Project_Controller__c '] and SFAccount['VCLS_Alt_Name__c']:
+        elif SFAccount['Project_Controller__c'] and SFAccount['VCLS_Alt_Name__c']:
             result += [odoo.env.ref('vcls-contact.category_account').id]
         if SFtype:
             if (not SFAccount['Is_supplier__c'] or not SFAccount['Supplier__c']) and 'supplier' in SFtype.lower():
