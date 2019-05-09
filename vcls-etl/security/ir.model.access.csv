@@ -2,3 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_etl_keys_admin,access_etl_keys_admin,vcls-etl.model_etl_sync_keys,base.group_system,1,1,1,1
 access_etl_sync_mixin_admin,access_etl_sync_mixin_admin,vcls-etl.model_etl_sync_mixin,base.group_system,1,1,1,1
 access_etl_salesforce_account_admin,access_etl_salesforce_account_admin,vcls-etl.model_etl_salesforce_account,base.group_system,1,1,1,1
+access_etl_salesforce_contact_admin,access_etl_salesforce_contact_admin,vcls-etl.model_etl_salesforce_contact,base.group_system,1,1,1,1

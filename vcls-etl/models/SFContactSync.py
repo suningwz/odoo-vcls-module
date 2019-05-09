@@ -1,51 +1,51 @@
-from . import TranslatorSFAccount
+from . import TranslatorSFContact
 from . import ETL_SF
 from . import generalSync
 
+import pytz
 from simple_salesforce import Salesforce
 from tzlocal import get_localzone
-import pytz
 from datetime import datetime
 
 from odoo import models, fields, api
 
-class SFAccountSync(models.Model):
-    _name = 'etl.salesforce.account'
+class SFContactSync(models.Model):
+    _name = 'etl.salesforce.contact'
     _inherit = 'etl.sync.mixin'
 
     def run(self,isFullUpdate):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
-        translator = TranslatorSFAccount.TranslatorSFAccount()
+        translator = TranslatorSFContact.TranslatorSFContact()
        # time = datetime.now(pytz.timezone("GMT"))
         print('Connecting to the Saleforce Database')
         sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
-        SF = self.env['etl.salesforce.account'].search([])
+        SF = self.env['etl.salesforce.contact'].search([])
         if not SF:
-            SF = self.env['etl.salesforce.account'].create({})
+            SF = self.env['etl.salesforce.contact'].create({})
         SF[0].getFromExternal(translator, sfInstance.getConnection(),isFullUpdate)
        # SF[0].setToExternal(translator, sfInstance.getConnection(), time)
         SF[0].setNextRun()
 
     def getFromExternal(self, translator, externalInstance, fullUpdate):
         
-        sql = 'SELECT Id, Name, Supplier_Category__c, '
-        sql += 'Supplier_Status__c, Account_Level__c, LastModifiedDate, '
-        sql += 'BillingCountry, BillingState, BillingAddress, BillingStreet, '
-        sql += 'Phone, Fax, Area_of_expertise__c, Sharepoint_Folder__c, '
-        sql += 'Supplier_Description__c, Key_Information__c, Project_Assistant__c, '
-        sql += 'Supplier_Selection_Form_completed__c, Website, '
-        sql += 'Create_Sharepoint_Folder__c, OwnerId, Is_supplier__c, Main_VCLS_Contact__c, '
-        sql += 'Supplier__c, Type, Project_Controller__c, VCLS_Alt_Name__c, '
-        sql += 'Supplier_Project__c, Activity__c, Product_Type__c, Industry '
-        sql += 'FROM Account '
-        sql += 'WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null))'
+        sql =  'SELECT C.Id, C.Name, C.AccountId, C.Phone, C.Fax, '
+        sql += 'C.OwnerId, C.LastModifiedDate, C.LinkedIn_Profile__c, '
+        sql += 'C.Category__c, C.Supplier__c, Salutation, C.Email, '
+        sql += 'C.Title, C.MobilePhone, C.MailingAddress, C.AccountWebsite__c, '
+        sql += 'C.Description, C.MailingCountry, C.Inactive_Contact__c '
+        sql += 'FROM Contact as C '
+        sql += 'Where C.AccountId In ('
+        sql +=  'SELECT A.Id '
+        sql +=  'FROM Account as A '
+        sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
+        sql += ')'
         
         if fullUpdate:
             Modifiedrecords = externalInstance.query(sql)['records']
         else:
-            Modifiedrecords = externalInstance.query(sql +' AND LastModifiedDate > '+ self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000"))['records']
+            Modifiedrecords = externalInstance.query(sql +' And C.LastModifiedDate > '+ self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000"))['records']
         
         for SFrecord in Modifiedrecords:
             try:
@@ -75,7 +75,6 @@ class SFAccountSync(models.Model):
         partner = self.env['res.partner']
         odid = int(OD_id[0])
         record = partner.browse([odid])
-        record.image=record._get_default_image(False, odooAttributes.get('is_company'), False)
         record.write(odooAttributes)
         print('Updated record in Odoo: {}'.format(item['Name']))
 
