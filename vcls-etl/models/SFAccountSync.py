@@ -1,4 +1,4 @@
-from . import TranslatorSF
+from . import TranslatorSFAccount
 from . import ETL_SF
 from . import generalSync
 
@@ -17,7 +17,7 @@ class SFAccountSync(models.Model):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
-        translator = TranslatorSF.TranslatorSF()
+        translator = TranslatorSFAccount.TranslatorSFAccount()
        # time = datetime.now(pytz.timezone("GMT"))
         print('Connecting to the Saleforce Database')
         sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)

@@ -1,6 +1,6 @@
 from . import ITranslator
 
-class TranslatorSF(ITranslator.ITranslator):
+class TranslatorSFAccount(ITranslator.ITranslator):
     
     @staticmethod
     def translateToOdoo(SF_Account, odoo, SF):
@@ -9,7 +9,7 @@ class TranslatorSF(ITranslator.ITranslator):
         result['name'] = SF_Account['Name'] #+ '-test'
 
         # result['category_id'] = reference Supplier_Category__c
-        result['stage'] = TranslatorSF.convertStatus(SF_Account)
+        result['stage'] = TranslatorSFAccount.convertStatus(SF_Account)
         # Ignore  Account_Level__c
 
         # result['state_id'] = reference  BillingState
@@ -21,7 +21,7 @@ class TranslatorSF(ITranslator.ITranslator):
         result['phone'] = SF_Account['Phone']
         result['fax'] = SF_Account['Fax']
         # Ignore Area_of_expertise__c
-        result['sharepoint_folder'] = TranslatorSF.convertUrl(SF_Account['Sharepoint_Folder__c']) # /!\
+        result['sharepoint_folder'] = TranslatorSFAccount.convertUrl(SF_Account['Sharepoint_Folder__c']) # /!\
         result['description'] = ''
         result['description'] += 'Supplier description : ' + str(SF_Account['Supplier_Description__c']) + '\n'
         result['description'] += 'Key Information : {}\n'.format(SF_Account['Key_Information__c'])
@@ -32,25 +32,25 @@ class TranslatorSF(ITranslator.ITranslator):
         result['company_type'] = 'company'
         #documented to trigger proper default image loaded
         result['is_company'] = 'True'
-        result['country_id'] = TranslatorSF.convertCountry(SF_Account['BillingCountry'],odoo)
+        result['country_id'] = TranslatorSFAccount.convertCountry(SF_Account['BillingCountry'],odoo)
 
         
-        result['user_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
+        result['user_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
         if SF_Account['Main_VCLS_Contact__c']:
-            result['expert_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Main_VCLS_Contact__c'],odoo, SF)
+            result['expert_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['Main_VCLS_Contact__c'],odoo, SF)
         if SF_Account['Project_Assistant__c']:
-            result['assistant_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Project_Assistant__c'],odoo, SF)
+            result['assistant_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['Project_Assistant__c'],odoo, SF)
         if SF_Account['Project_Controller__c']:
-            result['controller_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Project_Controller__c'],odoo, SF)
+            result['controller_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['Project_Controller__c'],odoo, SF)
 
         
-        result['industry_id'] = TranslatorSF.convertIndustry(SF_Account['Industry'],odoo)
-        result['expertise_area_ids'] = [(6, 0, TranslatorSF.convertArea(SF_Account['Area_of_expertise__c'],odoo))]
-        result['project_supplier_type_id'] = TranslatorSF.convertProject(SF_Account['Supplier_Project__c'],odoo)
-        result['client_activity_ids'] = [(6, 0, TranslatorSF.convertActivity(SF_Account['Activity__c'],odoo))]
-        result['client_product_ids'] = [(6, 0, TranslatorSF.convertProduct(SF_Account['Product_Type__c'],odoo))]
-        result['category_id'] =  [(6, 0, TranslatorSF.convertCategory(SF_Account,odoo))]
-        result['message_ids'] = [(0, 0, TranslatorSF.generateLog(SF_Account))]
+        result['industry_id'] = TranslatorSFAccount.convertIndustry(SF_Account['Industry'],odoo)
+        result['expertise_area_ids'] = [(6, 0, TranslatorSFAccount.convertArea(SF_Account['Area_of_expertise__c'],odoo))]
+        result['project_supplier_type_id'] = TranslatorSFAccount.convertProject(SF_Account['Supplier_Project__c'],odoo)
+        result['client_activity_ids'] = [(6, 0, TranslatorSFAccount.convertActivity(SF_Account['Activity__c'],odoo))]
+        result['client_product_ids'] = [(6, 0, TranslatorSFAccount.convertProduct(SF_Account['Product_Type__c'],odoo))]
+        result['category_id'] =  [(6, 0, TranslatorSFAccount.convertCategory(SF_Account,odoo))]
+        result['message_ids'] = [(0, 0, TranslatorSFAccount.generateLog(SF_Account))]
 
         return result
     
@@ -73,10 +73,10 @@ class TranslatorSF(ITranslator.ITranslator):
     def translateToSF(Odoo_Contact, odoo):
         result = {}
         # Modify the name with -test
-        result['Name'] = TranslatorSF.test(Odoo_Contact.name)
+        result['Name'] = TranslatorSFAccount.test(Odoo_Contact.name)
         print(result['Name'])
 
-        #result['Supplier_Status__c'] = TranslatorSF.revertStatus(Odoo_Contact.stage)
+        #result['Supplier_Status__c'] = TranslatorSFAccount.revertStatus(Odoo_Contact.stage)
 
         '''
         if SF_Account['BillingAddress']:
@@ -87,13 +87,13 @@ class TranslatorSF(ITranslator.ITranslator):
 
         result['Phone'] = Odoo_Contact.phone
         result['Fax'] = Odoo_Contact.fax
-        # result['Sharepoint_Folder__c'] = TranslatorSF.revertUrl(Odoo_Contact.sharepoint_folder)
+        # result['Sharepoint_Folder__c'] = TranslatorSFAccount.revertUrl(Odoo_Contact.sharepoint_folder)
         # Ignore description
         result['Website'] = Odoo_Contact.website
 
         # Ignore company_type
-        result['BillingCountry'] = TranslatorSF.revertCountry(Odoo_Contact.country_id.id, odoo)
-        # result['user_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
+        result['BillingCountry'] = TranslatorSFAccount.revertCountry(Odoo_Contact.country_id.id, odoo)
+        # result['user_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
         return result
 
     @staticmethod
@@ -289,8 +289,8 @@ class TranslatorSF(ITranslator.ITranslator):
 
     @staticmethod
     def convertSfIdToOdooId(ownerId, odoo, SF):
-        mail = TranslatorSF.getUserMail(ownerId,SF)
-        return TranslatorSF.getUserId(mail,odoo)
+        mail = TranslatorSFAccount.getUserMail(ownerId,SF)
+        return TranslatorSFAccount.getUserId(mail,odoo)
     
     @staticmethod
     def convertCategory(SFAccount, odoo):

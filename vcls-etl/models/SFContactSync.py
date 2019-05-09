@@ -30,18 +30,22 @@ class SFContactSync(models.Model):
 
     def getFromExternal(self, translator, externalInstance, fullUpdate):
         
-        sql =  'SELECT C.Id, C.Name'
-        sql += 'FROM Contact as C'
-        sql += 'Where EXISTS ('
-        sql +=  'SELECT A.Id'
-        sql +=  'FROM Account as A'
-        sql +=  'WHERE (A.Supplier__c = True or A.Is_supplier__c = True) and C.AccountId = A.Id '
+        sql =  'SELECT C.Id, C.Name, C.AccountId, C.Phone, C.Fax, '
+        sql += 'C.OwnerId, C.LastModifiedDate, C.LinkedIn_Profile__c, '
+        sql += 'C.Category__c, C.Supplier__c, Salutation, C.Email, '
+        sql += 'C.Title, C.MobilePhone, C.MailingAddress, C.AccountWebsite__c, '
+        sql += 'C.Description, C.MailingCountry, C.Inactive_Contact__c '
+        sql += 'FROM Contact as C '
+        sql += 'Where C.AccountId In ('
+        sql +=  'SELECT A.Id '
+        sql +=  'FROM Account as A '
+        sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
         sql += ')'
         
         if fullUpdate:
             Modifiedrecords = externalInstance.query(sql)['records']
         else:
-            Modifiedrecords = externalInstance.query(sql +' AND C.LastModifiedDate > '+ self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000"))['records']
+            Modifiedrecords = externalInstance.query(sql +' And C.LastModifiedDate > '+ self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000"))['records']
         
         for SFrecord in Modifiedrecords:
             try:
@@ -71,7 +75,6 @@ class SFContactSync(models.Model):
         partner = self.env['res.partner']
         odid = int(OD_id[0])
         record = partner.browse([odid])
-        record.image=record._get_default_image(False, odooAttributes.get('is_company'), False)
         record.write(odooAttributes)
         print('Updated record in Odoo: {}'.format(item['Name']))
 

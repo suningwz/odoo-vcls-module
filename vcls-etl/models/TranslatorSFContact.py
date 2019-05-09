@@ -1,5 +1,8 @@
 from . import ITranslator
 
+class KeyNotFoundError(Exception):
+    pass
+
 class TranslatorSFContact(ITranslator.ITranslator):
     
     @staticmethod
@@ -9,42 +12,40 @@ class TranslatorSFContact(ITranslator.ITranslator):
         result['name'] = SF_Contact['Name'] #+ '-test'
 
         # result['category_id'] = reference Supplier_Category__c
-        result['stage'] = TranslatorSFContact.convertStatus(SF_Contact['Supplier_Status__c'],SF_Contact['Is_supplier__c'] or SF_Contact['Supplier__c'])
+        result['stage'] = TranslatorSFContact.convertStatus(SF_Contact)
         # Ignore  Contact_Level__c
 
         # result['state_id'] = reference  BillingState
-        if SF_Contact['BillingAddress']:
-            result['city'] = SF_Contact['BillingAddress']['city']
-            result['zip'] = SF_Contact['BillingAddress']['postalCode']
-            result['street'] = SF_Contact['BillingAddress']['street']
+        if SF_Contact['MailingAddress']:
+            result['city'] = SF_Contact['MailingAddress']['city']
+            result['zip'] = SF_Contact['MailingAddress']['postalCode']
+            result['street'] = SF_Contact['MailingAddress']['street']
         
+        result['linkedin'] = SF_Contact['LinkedIn_Profile__c']
         result['phone'] = SF_Contact['Phone']
         result['fax'] = SF_Contact['Fax']
+        result['mobile'] = SF_Contact['MobilePhone']
+        result['email'] = SF_Contact['Email']
         # Ignore Area_of_expertise__c
-        result['sharepoint_folder'] = TranslatorSFContact.convertUrl(SF_Contact['Sharepoint_Folder__c']) # /!\
         result['description'] = ''
-        result['description'] += 'Supplier description : ' + str(SF_Contact['Supplier_Description__c']) + '\n'
-        result['description'] += 'Key Information : {}\n'.format(SF_Contact['Key_Information__c'])
+        result['description'] += 'Contact description : ' + str(SF_Contact['Description']) + '\n'
         # Ignore Supplier_Selection_Form_completed__c
-        result['website'] = SF_Contact['Website']
+        result['website'] = SF_Contact['AccountWebsite__c']
 
-        result['create_folder'] = SF_Contact['Create_Sharepoint_Folder__c']
-        result['company_type'] = 'company'
+        result['parent_id'] = TranslatorSFContact.toOdooId(SF_Contact['AccountId'],odoo)
+        result['company_type'] = 'person'
         #documented to trigger proper default image loaded
-        result['is_company'] = 'True'
-        result['country_id'] = TranslatorSFContact.convertCountry(SF_Contact['BillingCountry'],odoo)
+        result['is_company'] = False
+        result['country_id'] = TranslatorSFContact.convertCountry(SF_Contact['MailingCountry'],odoo)
 
         
         result['user_id'] = TranslatorSFContact.convertSfIdToOdooId(SF_Contact['OwnerId'],odoo, SF)
-        if SF_Contact['Main_VCLS_Contact__c']:
-            result['expert_id'] = TranslatorSFContact.convertSfIdToOdooId(SF_Contact['Main_VCLS_Contact__c'],odoo, SF)
-        if SF_Contact['Project_Assistant__c']:
-            result['assistant_id'] = TranslatorSFContact.convertSfIdToOdooId(SF_Contact['Project_Assistant__c'],odoo, SF)
-        if SF_Contact['Project_Controller__c']:
-            result['controller_id'] = TranslatorSFContact.convertSfIdToOdooId(SF_Contact['Project_Controller__c'],odoo, SF)
-
-        result['category_id'] =  [(6, 0, TranslatorSFContact.convertCategory(SF_Contact['Is_supplier__c'] or SF_Contact['Supplier__c'], SF_Contact['Type'],odoo))]
+       
+        result['category_id'] =  [(6, 0, TranslatorSFContact.convertCategory(SF_Contact['Supplier__c'],SF_Contact['Category__c'],odoo))]
     
+        result['title'] = TranslatorSFContact.convertSalutation(SF_Contact['Salutation'], odoo)
+
+        result['function'] = SF_Contact['Title']
         result['message_ids'] = [(0, 0, TranslatorSFContact.generateLog(SF_Contact))]
 
         return result
@@ -92,17 +93,11 @@ class TranslatorSFContact(ITranslator.ITranslator):
         return result
 
     @staticmethod
-    def convertStatus(status, is_supplier):
-        if status == 'Active - contract set up, information completed':
-            return 3
-        elif status == 'Prospective: no contract, pre-identify':
-            return 2
-        elif status == 'Inactive - reason mentioned':
+    def convertStatus(SF):
+        if SF['Inactive_Contact__c']:
             return 5
-        elif is_supplier: # New
+        else: # New
             return 2
-        else: # Undefined
-            return 1
     
     @staticmethod
     def revertStatus(status):
@@ -291,13 +286,13 @@ class TranslatorSFContact(ITranslator.ITranslator):
         result = []
         if isSupplier:
             result += [odoo.env.ref('vcls-contact.category_PS').id]
-        if SFtype:
+        """ if SFtype:
             if (not isSupplier) and 'supplier' in SFtype.lower():
                 result += [odoo.env.ref('vcls-contact.category_PS').id]
             if 'competitor' in SFtype.lower():
                 result += [odoo.env.ref('vcls-contact.category_competitor').id]
             if 'partner' in SFtype.lower():
-                result += [odoo.env.ref('vcls-contact.category_partner').id]
+                result += [odoo.env.ref('vcls-contact.category_partner').id] """
         return result
     
     @staticmethod
@@ -305,7 +300,8 @@ class TranslatorSFContact(ITranslator.ITranslator):
         userIdString = "'{}'".format(userId)
         queryUser = "Select Username FROM User Where Id = {}".format(userIdString)
         result = SF.query(queryUser)['records']
-        return result[0]['Username']
+        if result:
+            return result[0]['Username']
 
     @staticmethod
     def getUserId(mail, odoo):
@@ -314,3 +310,24 @@ class TranslatorSFContact(ITranslator.ITranslator):
             return result[0].id
         else:
             return None
+
+    @staticmethod
+    def convertSalutation(SFSalutation, odoo):
+        if SFSalutation:
+            if 'mr' in SFSalutation.lower():
+                return odoo.env.ref('base.res_partner_title_mister').id
+            if 'dr' in SFSalutation.lower():
+                return odoo.env.ref('base.res_partner_title_doctor').id
+            if 'ms' in SFSalutation.lower():
+                return odoo.env.ref('base.res_partner_title_miss').id
+            if 'mrs' in SFSalutation.lower():
+                return odoo.env.ref('base.res_partner_title_madam').id
+            if 'prof' in SFSalutation.lower():
+                return odoo.env.ref('base.res_partner_title_prof').id
+
+    @staticmethod
+    def toOdooId(externalId, odoo):
+        for key in odoo.env['etl.salesforce.account'].keys:
+            if key.externalId == externalId:
+                return key.odooId
+        return None
