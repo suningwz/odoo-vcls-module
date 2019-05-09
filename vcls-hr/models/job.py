@@ -15,7 +15,10 @@ class Job(models.Model):
     #in oder to enforce naming convention
     name = fields.Char(
         compute='_compute_name',
+<<<<<<< HEAD
         #store = True,
+=======
+>>>>>>> parent of 43a8e96... job position name = Stored
         )
       
     #################
@@ -67,6 +70,31 @@ class Job(models.Model):
             elif rec.project_role_id:
                 rec.name = "{}".format(rec.project_role_id.name)
                     
+    '''
+    @api.depends('department_id','support_fct','vcls_activity_id','project_role_id')
+    def _compute_name(self):
+        for rec in self:
+            if rec.department_id.id == self.env.ref('vcls-hr.department_operations').id:
+                if rec.vcls_activity_id:
+                    rec.name = "{} - ".format(rec.vcls_activity_id.name)
+                if rec.project_role_id:
+                    rec.name = "{}{}".format(rec.name,rec.project_role_id.name)
+            else:
+                if rec.department_id:
+                    rec.name = "{} - ".format(rec.department_id.name)
+                if rec.support_fct:
+                    rec.name = "{}{}".format(rec.name,rec.support_fct)
+                    
+    @api.depends('department_id')
+    def _get_view_mode(self):
+        for rec in self:
+            if rec.department_id.id == self.env.ref('vcls-hr.department_operations').id:
+                rec.view_mode = 'operation'
+            elif rec.department_id.id:
+                rec.view_mode = 'support'
+            else:
+                rec.view_mode = 'undef'
+    '''
     
     #######################
     # Constrains Methods #
