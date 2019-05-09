@@ -8,8 +8,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class PayrollLine(models.Model):
     _name = 'export.payroll.line'
-        
-    """ This model represents a line in a monthly payroll, corresponding to the status of an employee per month."""
+    _description = 'This model represents a line in a monthly payroll, corresponding to the status of an employee per month.'
 
     name = fields.Char(
         readonly = True,
