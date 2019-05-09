@@ -64,12 +64,12 @@
                             <field name="team_id" widget="selection" domain="[('use_leads','=',True)]"/>
                             <field name="type" invisible="1"/> 
                             <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
+                            <field name="date_deadline" string="Proposale Sending Deadline"/>
                         </group>
                         <group>
                             <field name="priority" widget="priority"/>
                             <field name="score"/>
-                            <field name="date_deadline" string="Proposale Sending Deadline"/>
-                            
+                            <field name="expected_start_date"/>
                         </group>
                     </group>
                     <notebook>
