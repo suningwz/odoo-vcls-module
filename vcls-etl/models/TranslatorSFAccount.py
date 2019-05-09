@@ -328,6 +328,76 @@ class TranslatorSFAccount(ITranslator.ITranslator):
     def convertIndustry(SfIndustry,odoo):
         if SfIndustry:
             if 'pharma' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Pharma')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif 'biotechnology - therapeutics' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Biotech')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif 'medtech' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Traditional MedTech')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif 'biotech' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Biotech')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif 'consulting' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Unknown')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif 'biotechnology / r&d services' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Biotech')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif'cro' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','CRO')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif 'healthcare' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Unknown')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif 'other' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Unknown')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            else:
+                industry = odoo.env['res.partner.industry'].search([('name','=','Unknown')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            """if 'pharma' in SfIndustry.lower():
                 return odoo.env.ref('__export__.res_partner_industry_34_88c49c6e').id
             elif 'biotechnology - therapeutics' in SfIndustry.lower():
                 return odoo.env.ref('__export__.res_partner_industry_35_05ac8f62').id
@@ -346,7 +416,7 @@ class TranslatorSFAccount(ITranslator.ITranslator):
             elif 'other' in SfIndustry.lower():
                 return odoo.env.ref('__export__.res_partner_industry_38_3c31212a').id
             else:
-                return odoo.env.ref('__export__.res_partner_industry_44_858f790a').id
+                return odoo.env.ref('__export__.res_partner_industry_44_858f790a').id"""
         else:
             return None
     
