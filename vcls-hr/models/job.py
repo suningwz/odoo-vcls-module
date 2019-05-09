@@ -15,7 +15,7 @@ class Job(models.Model):
     #in oder to enforce naming convention
     name = fields.Char(
         compute='_compute_name',
-        store = True,
+        #store = True,
         )
       
     #################
