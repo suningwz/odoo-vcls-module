@@ -246,7 +246,6 @@
                 <!-- GROUP BY -->
                 <group expand="0" name="group_by" string="Group By">
                     <filter name="salesperson" string="Account Manager" domain="[]" context="{'group_by' : 'user_id'}"/>
-                    <filter name="group_country_group" string="Country Groups" context="{'group_by': 'country_group_id'}"/>
                     <filter name="group_country" string="Country" context="{'group_by': 'country_id'}"/>
                     <filter name="group_industry" string="Industry" context="{'group_by': 'industry_id'}"/>
                     <filter name="group_company" string="Company" context="{'group_by': 'parent_id'}"/>
