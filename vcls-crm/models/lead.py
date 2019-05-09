@@ -25,7 +25,7 @@ class Leads(models.Model):
 
     referent_id = fields.Many2one(
         'res.partner',
-        string = 'Referred By',
+        string = 'Referent',
     )
 
     functional_focus_id = fields.Many2one(

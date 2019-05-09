@@ -57,7 +57,6 @@
             <field name="name">Project Supplier Type</field>
             <field name="res_model">project.supplier.type</field>
             <field name="view_mode">tree</field>
-            <field name="view_ref">view_supplier_project_type</field>
         </record>
 
         <record model="ir.ui.view" id="view_expertise_area">
@@ -76,7 +75,6 @@
             <field name="name">Expertise Area</field>
             <field name="res_model">expertise.area</field>
             <field name="view_mode">tree</field>
-            <field name="view_ref">view_expertise_area</field>
         </record>
 
     </data>

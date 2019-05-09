@@ -11,7 +11,7 @@ class KeyNotFoundError(Exception):
 
 class ETLMap(models.Model):
     _name = 'etl.sync.keys'
-    _description = ''
+    _description = 'tbd'
     # Helsinki
     odooId = fields.Char(readonly = True)
     externalId = fields.Char(readonly = True)

@@ -6,6 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 class ExpertiseArea(models.Model):
 
     _name = 'expertise.area'
+    _description = 'Used to search for specific project suppliers.'
 
     active = fields.Boolean(
         default = True,
@@ -17,6 +18,7 @@ class ExpertiseArea(models.Model):
 class ProjectSupplierType(models.Model):
 
     _name = 'project.supplier.type'
+    _description = 'Defines contractual situation of the supplier.'
 
     active = fields.Boolean(
         default = True,
