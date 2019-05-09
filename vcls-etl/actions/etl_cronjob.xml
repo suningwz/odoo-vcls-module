@@ -39,5 +39,16 @@
             <field name="code">model.run(False)</field>
         </record>
 
+        <record id="cron_etl_contact_full_Update" model="ir.cron">
+            <field name="name">ETL Saleforce Contact full update</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="doall">1</field>
+            <field name="model_id" ref="model_etl_salesforce_contact" />
+            <field name="state">code</field>
+            <field name="code">model.run(True)</field>
+        </record>
+
     </data>
 </odoo>

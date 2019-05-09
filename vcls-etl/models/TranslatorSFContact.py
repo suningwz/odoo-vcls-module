@@ -327,7 +327,7 @@ class TranslatorSFContact(ITranslator.ITranslator):
 
     @staticmethod
     def toOdooId(externalId, odoo):
-        for key in odoo.env['etl.salesforce.account'].keys:
+        for key in odoo.env['etl.salesforce.account'].search([]).keys:
             if key.externalId == externalId:
                 return key.odooId
         return None
