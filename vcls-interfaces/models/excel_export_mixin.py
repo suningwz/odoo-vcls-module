@@ -10,8 +10,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class ExcelExportMixin(models.AbstractModel):
     _name = 'export.excel.mixin'
-        
-    """ This model represents an abstract parent class used to manage excel reports"""
+    _description = 'This model represents an abstract parent class used to manage excel reports'
     
     name = fields.Char()
     active = fields.Boolean(default=True)

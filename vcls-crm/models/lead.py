@@ -25,7 +25,7 @@ class Leads(models.Model):
 
     referent_id = fields.Many2one(
         'res.partner',
-        string = 'Referred By',
+        string = 'Referent',
     )
 
     functional_focus_id = fields.Many2one(
@@ -54,6 +54,9 @@ class Leads(models.Model):
     )
 
     #date fields
+    expected_start_date = fields.Date(
+        string="Expected Project Start Date",
+    )
 
     ###################
     # COMPUTE METHODS #
@@ -80,5 +83,6 @@ class Leads(models.Model):
             return self.partner_id.user_id
         elif self.country_group_id.default_am:
             return self.country_group_id.default_am
+        #elif self.team_id.
         else:
             return False

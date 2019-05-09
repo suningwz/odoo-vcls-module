@@ -11,6 +11,7 @@ class KeyNotFoundError(Exception):
 
 class ETLMap(models.Model):
     _name = 'etl.sync.keys'
+    _description = 'tbd'
     # Helsinki
     odooId = fields.Char(readonly = True)
     externalId = fields.Char(readonly = True)
@@ -18,7 +19,8 @@ class ETLMap(models.Model):
 
 class GeneralSync(models.AbstractModel):
     _name = 'etl.sync.mixin'
-    """ This model represents an abstract parent class used to manage ETL """
+    _description = 'This model represents an abstract parent class used to manage ETL'
+    
     keys = fields.One2many('etl.sync.keys','syncRecordId', readonly = True) # Not rightly declared -> error
     lastRun = fields.Datetime(readonly = True)
 

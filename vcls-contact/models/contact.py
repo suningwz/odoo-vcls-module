@@ -40,7 +40,7 @@ class ContactExt(models.Model):
         (3, 'Verified'),
         (4, 'Outdated'),
         (5, 'Archived')], 
-        string='Status',
+        string='Stage',
         track_visibility='onchange',
         default=2,
     )
