@@ -46,6 +46,10 @@ class Job(models.Model):
         ('undef','Undefined')], 
         compute='_get_view_mode',
         store=False,)
+
+    region = fields.Char(
+        string = "Region",
+    )
     
     
     
