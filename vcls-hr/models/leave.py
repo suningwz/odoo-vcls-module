@@ -55,11 +55,14 @@ class Leave(models.Model):
     
     lm_user_id = fields.Many2one(
         'res.users',
-        related='employee_id.parent_id.user_id',)
+        related='employee_id.parent_id.user_id',
+        string='Line Manager',
+        )
     
     head_user_id = fields.Many2one(
         'res.users',
-        related='department_id.manager_id.user_id')
+        related='department_id.manager_id.user_id',
+        string='Head',)
     
     future_number_of_days = fields.Float(
         string="Projected Days",
@@ -76,9 +79,9 @@ class Leave(models.Model):
         compute='_compute_future_days',
         )
     
-    start_date = fields.Date(
+    """start_date = fields.Date(
         compute='_compute_dates',
-        readonly=True,)
+        readonly=True,)"""
     
     #####################
     # Overriden Methods #
@@ -148,11 +151,11 @@ class Leave(models.Model):
     # Calculation Methods #
     #######################
     
-    #update the date fields to be used n kanban views to hide time value
+    """#update the date fields to be used n kanban views to hide time value
     @api.depends('date_from','date_to')
     def _compute_dates(self):
         for rec in self:
-            rec.start_date = rec.date_from.date()
+            rec.start_date = rec.date_from.date()"""
     
     # Update the available case list according to the selected category
     @api.depends('exceptional_category_id','exceptional_case_id')
