@@ -37,7 +37,6 @@
         <!-- Create the Head group, which will be prompted as tickbox -->
         <record id="vcls_group_head" model="res.groups">
             <field name="name">Head</field>
-            <field name="description">Members can see salaries of their whole down hierarchy.</field>
             <field name="category_id"/>
         </record>
         

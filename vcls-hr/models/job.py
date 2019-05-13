@@ -12,10 +12,10 @@ class Job(models.Model):
     # Overriden Fields #
     ####################
     
-    #in oder to enforce naming convention
+    """#in oder to enforce naming convention
     name = fields.Char(
         compute='_compute_name',
-        )
+        )"""
       
     #################
     # Custom Fields #
@@ -46,6 +46,10 @@ class Job(models.Model):
         ('undef','Undefined')], 
         compute='_get_view_mode',
         store=False,)
+
+    region = fields.Char(
+        string = "Job Region",
+    )
     
     
     
@@ -53,7 +57,8 @@ class Job(models.Model):
     # Calculation Methods #
     #######################
     
-    @api.depends('department_id','project_role_id')
+    #@api.depends('department_id','project_role_id')
+    @api.onchange('department_id','project_role_id')
     def _compute_name(self):
         for rec in self:
             if rec.department_id and rec.project_role_id:
