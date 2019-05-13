@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, tools, api
 from odoo.exceptions import UserError, ValidationError
 
 class Leads(models.Model):
@@ -86,3 +86,39 @@ class Leads(models.Model):
         #elif self.team_id.
         else:
             return False
+
+    @api.multi
+    def _create_lead_partner_data(self, name, is_company, parent_id=False):
+        """ extract data from lead to create a partner
+            :param name : furtur name of the partner
+            :param is_company : True if the partner is a company
+            :param parent_id : id of the parent partner (False if no parent)
+            :returns res.partner record
+        """
+        data = super._create_lead_partner_data(self,name,is_company,parent_id=False)
+        data['country_group_id'] = self.country_group_id
+        data['referent_id'] = self.referent_id
+        data['functional_focus_id'] = self.functional_focus_id
+        data['partner_seniority_id'] = self.partner_seniority_id
+        data['industry_id'] = self.industry_id
+        data['client_activity_ids'] = self.client_activity_ids
+        data['client_product_ids'] = self.client_product_ids
+
+        return data
+
+    @api.multi
+    def _convert_opportunity_data(self, customer, team_id=False):
+        """ Extract the data from a lead to create the opportunity
+            :param customer : res.partner record
+            :param team_id : identifier of the Sales Team to determine the stage
+        """
+        data = super._convert_opportunity_data(self, customer, team_id=False)
+        data['country_group_id'] = self.country_group_id
+        data['referent_id'] = self.referent_id
+        data['functional_focus_id'] = self.functional_focus_id
+        data['partner_seniority_id'] = self.partner_seniority_id
+        data['industry_id'] = self.industry_id
+        data['client_activity_ids'] = self.client_activity_ids
+        data['client_product_ids'] = self.client_product_ids
+        
+        return data
