@@ -48,7 +48,7 @@ class Job(models.Model):
         store=False,)
 
     region = fields.Char(
-        string = "Job Region",
+        string = "Region",
     )
     
     
