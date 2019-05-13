@@ -51,7 +51,12 @@ class Leave(models.Model):
     
     employee_company_id = fields.Many2one(
         related='employee_id.company_id',
-        String='Employee Company',)
+        )
+    
+    #String Override
+    mode_company_id = fields.Many2one(
+        string='Legal Entity',
+        )
     
     lm_user_id = fields.Many2one(
         'res.users',
