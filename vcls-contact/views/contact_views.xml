@@ -373,11 +373,7 @@
             <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|',('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
-            <field name="context">{
-                'default_is_company': True,
-                'default_category_id': ref('vcls-contact.category_account'),
-                }
-            </field>
+            <field name="context" eval="{'default_is_company': True,'default_category_id': [ref('vcls-contact.category_account')]}"/>
         </record>
 
         <!-- used to visualize all project suppliers -->
@@ -387,6 +383,7 @@
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
             <field name="search_view_id" ref='base.view_res_partner_filter'/>
+            <field name="context" eval="{'default_category_id': [ref('vcls-contact.category_PS')]}"/>
         </record>
 
         <!-- used to visualize Suppliers Accounts, i.e. the ones having suppliers or one suppliers child as a tag -->
@@ -396,6 +393,7 @@
             <field name="domain" eval="[('is_company','=',True),('is_internal','=',False),('stage','in',[2,3,4]),'|',('category_id','=',ref('vcls-contact.category_suppliers')),('category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
+            <field name="context" eval="{'default_is_company': True,'default_category_id': [ref('vcls-contact.category_PS')]}"/>
         </record>
 
         <!-- used to visualize VCLS Employees-->
@@ -413,6 +411,7 @@
             <field name="domain" eval="[('is_company','=',False),('employee','=',False),('stage','in',[2,3,4]),'|',('parent_id.category_id','=',ref('vcls-contact.category_account')),('parent_id.category_id','=',False)]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
+            <field name="context" eval="{'default_is_company': False,'default_category_id': [ref('vcls-contact.category_account')]}"/>
         </record>
 
         <!-- used to visualize Suppliers Contacts, i.e. the ones having suppliers or one suppliers child as a tag-->
@@ -422,6 +421,7 @@
             <field name="domain" eval="[('is_company','=',False),('employee','=',False),('stage','in',[2,3,4]),'|',('parent_id.category_id','=',ref('vcls-contact.category_suppliers')),('parent_id.category_id.parent_id','=',ref('vcls-contact.category_suppliers'))]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
+            <field name="context" eval="{'default_is_company': False,'default_category_id': [ref('vcls-contact.category_PS')]}"/>
         </record>
 
         <!-- used to visualize all contacts for administration -->
