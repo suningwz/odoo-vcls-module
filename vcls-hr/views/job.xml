@@ -47,9 +47,8 @@
             <field name="arch" type="xml">
                   <tree string="Job Position">
                     <field name="name"/>
-                    <field name="job_id"/>
-                    <!-- <field name="department_id"/>
-                    <field name="vcls_activity_id"/> -->
+                    <field name="department_id"/>
+                    <!-- <field name="vcls_activity_id"/> -->
                     <field name="project_role_id"/>
                 </tree>
             </field>
