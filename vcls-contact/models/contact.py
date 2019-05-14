@@ -256,4 +256,13 @@ class ContactExt(models.Model):
         context = self.env.context
         contact_ids = context.get('active_ids',[])
         self.env['res.partner'].browse(contact_ids).write({'stage': 5,'active':False})
+    
+    #####################
+    # SCHEDULED ACTIONS #
+    #####################
+    def update_individual_tags(self):
+        companies = self.env['res.partner'].search([('company_type', '=', 'company')])
+        for company in companies:
+            for child in company.child_ids:
+                child.category_id = [(6, 0, company.category_id.ids)]
         

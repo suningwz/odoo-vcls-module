@@ -50,6 +50,7 @@
 
         ### ACTIONS ###
         'actions/contact_server_action.xml',
+        'actions/cronjob.xml',
         ],
 
     # only loaded in demonstration mode
