@@ -7,6 +7,11 @@ class ContactExt(models.Model):
 
     _inherit = 'res.partner'
     
-    ### CUSTOM FIELDS RELATED TO MARKETING PURPOSES ###
+    ###  ###
+    relation_ids = fields.Many2many(
+        'res.partner.relation',
+        readonly = True,
+        string = 'Mapped Relations',
+    )
 
     
