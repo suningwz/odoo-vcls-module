@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem 
+			name="Contact Relations" 
+			parent="crm.crm_menu_config" 
+			id="menu_contact_relations" 
+			action="" 
+			sequence="16" />
+
+		<menuitem 
+			name="Relation Types" 
+			parent="menu_contact_relations" 
+			id="menu_contact_relations_type" 
+			action="action_partner_relation_type" 
+			sequence="3" />
+		
+		<menuitem 
+			name="All Relations" 
+			parent="menu_contact_relations" 
+			id="menu_contact_relations_all" 
+			action="action_partner_relation" 
+			sequence="6" />
+
+    </data>
+</odoo>

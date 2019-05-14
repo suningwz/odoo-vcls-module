@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.3.2',
+    'version': '0.4',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -38,10 +38,15 @@
 
         ### VIEWS ###
         'views/lead_views.xml',
+        'views/partner_relation.xml',
         #'views/crm_contact_views.xml',
 
         ### MENUS ###
         'views/lead_menus.xml',
+        'views/partner_relation_menus.xml',
+
+        ### RECORDS DATA ###
+        'data/partner.relation.type.csv',
 
     ],
     # only loaded in demonstration mode

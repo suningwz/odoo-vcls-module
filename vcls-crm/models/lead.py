@@ -95,7 +95,7 @@ class Leads(models.Model):
             :param parent_id : id of the parent partner (False if no parent)
             :returns res.partner record
         """
-        data = super._create_lead_partner_data(self,name,is_company,parent_id=False)
+        data = super()._create_lead_partner_data(name,is_company,parent_id)
         data['country_group_id'] = self.country_group_id
         data['referent_id'] = self.referent_id
         data['functional_focus_id'] = self.functional_focus_id
@@ -112,7 +112,7 @@ class Leads(models.Model):
             :param customer : res.partner record
             :param team_id : identifier of the Sales Team to determine the stage
         """
-        data = super._convert_opportunity_data(self, customer, team_id=False)
+        data = super()._convert_opportunity_data(customer, team_id)
         data['country_group_id'] = self.country_group_id
         data['referent_id'] = self.referent_id
         data['functional_focus_id'] = self.functional_focus_id

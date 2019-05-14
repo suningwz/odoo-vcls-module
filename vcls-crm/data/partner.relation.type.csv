@@ -1,0 +1,4 @@
+id,name,source_message,target_message,source_domain,target_domain,description
+rel_type_cmpny_group,Company Group,is a subsidiary of,is the parent company of,"[('is_company','=',True)]","[('is_company','=',True)]",Used to map companies hierarchy.
+rel_type_cmpny_acquired,Acquired Company,has been aquired by,has acquired,"[('is_company','=',True)]","[('is_company','=',True)]",Used to map companies acquisitions.
+rel_type_individual_transfer,Individual Transfer,has changed job to,was working as,"[('is_company','=',False)]","[('is_company','=',False)]",Used to map individuals moving from a company to another.
