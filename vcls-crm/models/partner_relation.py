@@ -26,17 +26,18 @@ class PartnerRelations(models.Model):
         required = True,
     )
 
+    source_message = fields.Char(
+        related = 'type_id.source_message',
+    )
+
+    target_message = fields.Char(
+        related = 'type_id.target_message',
+    )
+
 class PartnerRelationType(models.Model):
 
     _name = 'partner.relation.type'
     _description = 'Predefined relations between partners.'
-
-    """relation_type = fields.Selection([
-        ('company_parent', 'Parent Company'),
-        ('company_acquisition', 'Aquired Company'),
-        ('individual_transfer', 'Individual Transfer'),
-        ],
-    )"""
 
     name = fields.Char(
         required = True,
