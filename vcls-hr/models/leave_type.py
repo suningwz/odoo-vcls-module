@@ -44,12 +44,12 @@ class LeaveType(models.Model):
         ('other_paid','Other Paid'),
         ])
     
-    # this fields will just be used to trigger various path in the _search below.
+    """# this fields will just be used to trigger various path in the _search below.
     # in can be added to the domain in the view, and will then appear in the args values of the _search
     search_args_filter_1 = fields.Char(
         readonly=True,
         default="no0",
-    )
+    )"""
     
     ##################
     # Search methods #
@@ -77,11 +77,12 @@ class LeaveType(models.Model):
         """
         
         employee_id = self._get_contextual_employee_id()
+        no_zero = self.env.context.get('no_zero',False)
         
         #if this seaerch is called by a view where the below domain has been defined.
         #This is used to have different search function according to the view
         leave_ids = super(LeaveType, self)._search(args, offset=offset, limit=limit, order=order, count=count, access_rights_uid=access_rights_uid)
-        if not count and not order and employee_id and ['search_args_filter_1', '=', 'no0'] in args:
+        if not count and not order and employee_id and no_zero:
             leaves = self.browse(leave_ids)
             #we remove the leaves types based on allocations but with a counter == 0
             for item in leaves:

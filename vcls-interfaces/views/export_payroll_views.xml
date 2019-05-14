@@ -65,8 +65,11 @@
                                 <field name="year" readonly="1"/>  
                             </group>
                             <group string="">
+                                <field name="custom_leave_dates" invisible='1'/>
                                 <field name="start_date" attrs="{'readonly': [('id','>',0)]}"/>
                                 <field name="end_date" attrs="{'readonly': [('id','>',0)]}"/>
+                                <field name="leave_start_date" attrs="{'invisible':[('custom_leave_dates','=',False)],'readonly': [('id','>',0)]}"/>
+                                <field name="leave_end_date" attrs="{'invisible':[('custom_leave_dates','=',False)],'readonly': [('id','>',0)]}"/>
                                 <field name="payment_date" attrs="{'readonly': [('id','>',0)]}"/>
                             </group>
                         </group>

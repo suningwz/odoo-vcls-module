@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="view_partner_relation_type_tree">
+            <field name="name">view_partner_relation_type_tree</field>
+            <field name="model">partner.relation.type</field>
+            <field name="arch" type="xml">
+                <tree create='1' editable='bottom'>
+                    <field name="name"/>
+                    <field name="source_message"/>
+                    <field name="target_message"/>
+                    <field name="description"/> 
+                    <field name="source_domain"/>
+                    <field name="target_domain"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_partner_relation">
+            <field name="name">Partner Relations</field>
+            <field name="res_model">res.partner.relation</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_partner_relation_type">
+            <field name="name">Partner Relation Types</field>
+            <field name="res_model">partner.relation.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_partner_relation_type_tree"/>
+        </record>
+
+    </data>
+</odoo>

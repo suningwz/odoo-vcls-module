@@ -6,6 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class WizardTicket(models.TransientModel):
     _name = 'wizard.ticket'
+    _description = 'tbd'
     
     message = fields.Text('Message')
     ticket_id = fields.Many2one('helpdesk.ticket', 'Ticket')

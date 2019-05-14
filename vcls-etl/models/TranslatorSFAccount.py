@@ -1,6 +1,6 @@
 from . import ITranslator
 
-class TranslatorSF(ITranslator.ITranslator):
+class TranslatorSFAccount(ITranslator.ITranslator):
     
     @staticmethod
     def translateToOdoo(SF_Account, odoo, SF):
@@ -9,7 +9,7 @@ class TranslatorSF(ITranslator.ITranslator):
         result['name'] = SF_Account['Name'] #+ '-test'
 
         # result['category_id'] = reference Supplier_Category__c
-        result['stage'] = TranslatorSF.convertStatus(SF_Account['Supplier_Status__c'],SF_Account['Is_supplier__c'] or SF_Account['Supplier__c'])
+        result['stage'] = TranslatorSFAccount.convertStatus(SF_Account)
         # Ignore  Account_Level__c
 
         # result['state_id'] = reference  BillingState
@@ -21,7 +21,7 @@ class TranslatorSF(ITranslator.ITranslator):
         result['phone'] = SF_Account['Phone']
         result['fax'] = SF_Account['Fax']
         # Ignore Area_of_expertise__c
-        result['sharepoint_folder'] = TranslatorSF.convertUrl(SF_Account['Sharepoint_Folder__c']) # /!\
+        result['sharepoint_folder'] = TranslatorSFAccount.convertUrl(SF_Account['Sharepoint_Folder__c']) # /!\
         result['description'] = ''
         result['description'] += 'Supplier description : ' + str(SF_Account['Supplier_Description__c']) + '\n'
         result['description'] += 'Key Information : {}\n'.format(SF_Account['Key_Information__c'])
@@ -30,20 +30,28 @@ class TranslatorSF(ITranslator.ITranslator):
 
         result['create_folder'] = SF_Account['Create_Sharepoint_Folder__c']
         result['company_type'] = 'company'
-        result['country_id'] = TranslatorSF.convertCountry(SF_Account['BillingCountry'],odoo)
+        #documented to trigger proper default image loaded
+        result['is_company'] = 'True'
+        result['country_id'] = TranslatorSFAccount.convertCountry(SF_Account['BillingCountry'],odoo)
 
         
-        result['user_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
-        """ if SF_Account['Main_VCLS_Contact__c']:
-            result['expert_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Main_VCLS_Contact__c'],odoo, SF) """
-        """ if SF_Account['Project_Assistant__c']:
-            result['assistant_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Project_Assistant__c'],odoo, SF)
+        result['user_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
+        if SF_Account['Main_VCLS_Contact__c']:
+            result['expert_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['Main_VCLS_Contact__c'],odoo, SF)
+        if SF_Account['Project_Assistant__c']:
+            result['assistant_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['Project_Assistant__c'],odoo, SF)
         if SF_Account['Project_Controller__c']:
-            result['controller_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['Project_Controller__c'],odoo, SF) """
+            result['controller_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['Project_Controller__c'],odoo, SF)
 
-        result['category_id'] =  [(6, 0, TranslatorSF.convertCategory(SF_Account['Is_supplier__c'] or SF_Account['Supplier__c'], SF_Account['Type'],odoo))]
-    
-        result['message_ids'] = [(0, 0, TranslatorSF.generateLog(SF_Account))]
+        
+        result['industry_id'] = TranslatorSFAccount.convertIndustry(SF_Account['Industry'],odoo)
+        result['expertise_area_ids'] = [(6, 0, TranslatorSFAccount.convertArea(SF_Account['Area_of_expertise__c'],odoo))]
+        result['project_supplier_type_id'] = TranslatorSFAccount.convertProject(SF_Account['Supplier_Project__c'],odoo)
+        result['client_activity_ids'] = [(6, 0, TranslatorSFAccount.convertActivity(SF_Account['Activity__c'],odoo))]
+        result['client_product_ids'] = [(6, 0, TranslatorSFAccount.convertProduct(SF_Account['Product_Type__c'],odoo))]
+        result['category_id'] =  [(6, 0, TranslatorSFAccount.convertCategory(SF_Account,odoo))]
+        result['message_ids'] = [(0, 0, TranslatorSFAccount.generateLog(SF_Account))]
+
         return result
     
     @staticmethod
@@ -65,10 +73,10 @@ class TranslatorSF(ITranslator.ITranslator):
     def translateToSF(Odoo_Contact, odoo):
         result = {}
         # Modify the name with -test
-        result['Name'] = TranslatorSF.test(Odoo_Contact.name)
+        result['Name'] = TranslatorSFAccount.test(Odoo_Contact.name)
         print(result['Name'])
 
-        #result['Supplier_Status__c'] = TranslatorSF.revertStatus(Odoo_Contact.stage)
+        #result['Supplier_Status__c'] = TranslatorSFAccount.revertStatus(Odoo_Contact.stage)
 
         '''
         if SF_Account['BillingAddress']:
@@ -79,24 +87,25 @@ class TranslatorSF(ITranslator.ITranslator):
 
         result['Phone'] = Odoo_Contact.phone
         result['Fax'] = Odoo_Contact.fax
-        # result['Sharepoint_Folder__c'] = TranslatorSF.revertUrl(Odoo_Contact.sharepoint_folder)
+        # result['Sharepoint_Folder__c'] = TranslatorSFAccount.revertUrl(Odoo_Contact.sharepoint_folder)
         # Ignore description
         result['Website'] = Odoo_Contact.website
 
         # Ignore company_type
-        result['BillingCountry'] = TranslatorSF.revertCountry(Odoo_Contact.country_id.id, odoo)
-        # result['user_id'] = TranslatorSF.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
+        result['BillingCountry'] = TranslatorSFAccount.revertCountry(Odoo_Contact.country_id.id, odoo)
+        # result['user_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
         return result
 
     @staticmethod
-    def convertStatus(status, is_supplier):
-        if status == 'Active - contract set up, information completed':
+    def convertStatus(SF):
+        status = SF['Supplier_Status__c']
+        if (status == 'Active - contract set up, information completed') or SF['Project_Controller__c']:
             return 3
         elif status == 'Prospective: no contract, pre-identify':
             return 2
         elif status == 'Inactive - reason mentioned':
             return 5
-        elif is_supplier: # New
+        elif SF['Is_supplier__c'] or SF['Supplier__c']: # New
             return 2
         else: # Undefined
             return 1
@@ -280,16 +289,19 @@ class TranslatorSF(ITranslator.ITranslator):
 
     @staticmethod
     def convertSfIdToOdooId(ownerId, odoo, SF):
-        mail = TranslatorSF.getUserMail(ownerId,SF)
-        return TranslatorSF.getUserId(mail,odoo)
+        mail = TranslatorSFAccount.getUserMail(ownerId,SF)
+        return TranslatorSFAccount.getUserId(mail,odoo)
     
     @staticmethod
-    def convertCategory(isSupplier, SFtype, odoo):
+    def convertCategory(SFAccount, odoo):
         result = []
-        if isSupplier:
+        SFtype = SFAccount['Type']
+        if SFAccount['Is_supplier__c'] or SFAccount['Supplier__c']:
             result += [odoo.env.ref('vcls-contact.category_PS').id]
+        elif SFAccount['Project_Controller__c'] and SFAccount['VCLS_Alt_Name__c']:
+            result += [odoo.env.ref('vcls-contact.category_account').id]
         if SFtype:
-            if (not isSupplier) and 'supplier' in SFtype.lower():
+            if (not SFAccount['Is_supplier__c'] or not SFAccount['Supplier__c']) and 'supplier' in SFtype.lower():
                 result += [odoo.env.ref('vcls-contact.category_PS').id]
             if 'competitor' in SFtype.lower():
                 result += [odoo.env.ref('vcls-contact.category_competitor').id]
@@ -309,5 +321,188 @@ class TranslatorSF(ITranslator.ITranslator):
         result = odoo.env['res.users'].search([('email','=',mail)])
         if result:
             return result[0].id
+        else:
+            return None
+    
+    @staticmethod
+    def convertIndustry(SfIndustry,odoo):
+        if SfIndustry:
+            if 'pharma' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Pharma')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif 'biotechnology - therapeutics' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Biotech')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif 'medtech' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Traditional MedTech')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif 'biotech' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Biotech')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif 'consulting' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Unknown')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif 'biotechnology / r&d services' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Biotech')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif'cro' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','CRO')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif 'healthcare' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Unknown')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            elif 'other' in SfIndustry.lower():
+                industry = odoo.env['res.partner.industry'].search([('name','=','Unknown')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            else:
+                industry = odoo.env['res.partner.industry'].search([('name','=','Unknown')])
+                if industry:
+                    return industry[0].id
+                else:
+                    return None
+
+            """if 'pharma' in SfIndustry.lower():
+                return odoo.env.ref('__export__.res_partner_industry_34_88c49c6e').id
+            elif 'biotechnology - therapeutics' in SfIndustry.lower():
+                return odoo.env.ref('__export__.res_partner_industry_35_05ac8f62').id
+            elif 'medtech' in SfIndustry.lower():
+                return odoo.env.ref('__export__.res_partner_industry_36_3bbdda7e').id
+            elif 'biotech' in SfIndustry.lower():
+                return odoo.env.ref('__export__.res_partner_industry_35_05ac8f62').id
+            elif 'consulting' in SfIndustry.lower():
+                return odoo.env.ref('vcls-contact.client_cat_health_product').id
+            elif 'biotechnology / r&d services' in SfIndustry.lower():
+                return odoo.env.ref('__export__.res_partner_industry_35_05ac8f62').id
+            elif'cro' in SfIndustry.lower():
+                return odoo.env.ref('__export__.res_partner_industry_42_704b94e6').id
+            elif 'healthcare' in SfIndustry.lower():
+                return odoo.env.ref('__export__.res_partner_industry_38_3c31212a').id
+            elif 'other' in SfIndustry.lower():
+                return odoo.env.ref('__export__.res_partner_industry_38_3c31212a').id
+            else:
+                return odoo.env.ref('__export__.res_partner_industry_44_858f790a').id"""
+        else:
+            return None
+    
+    @staticmethod
+    def convertArea(SFArea,odoo):
+        result = []
+        if SFArea:
+            if 'clinical development' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_c_dev').id]
+            if 'regulatory company' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_reg_company').id]
+            if 'medical Writer' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_mw').id]
+            if 'non clinical development' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_nc_dev').id]
+            if 'regulatory generalist' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_reg_generalist').id]
+            if 'ohp' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_ohp').id]
+            if 'atmp' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_atmp').id]
+            if 'market access' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_ma').id]
+            if '(bio) statistician' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_biostat').id]
+            if 'database' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_db').id]
+            if 'database management' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_db_mgmt').id]
+            if 'cra' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_cra').id]
+            if 'cro' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_cro').id]
+            if 'pv' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_pv').id]
+            if 'cmc' in SFArea.lower():
+                result += [odoo.env.ref('vcls-suppliers.expertise_area_cmc').id]
+        return result
+
+    @staticmethod
+    def convertActivity(SfActivity,odoo):
+        result=[]
+        if SfActivity:
+            if 'develop/market healthcare products' in SfActivity.lower():
+                result += [odoo.env.ref('vcls-contact.client_cat_health_product').id]
+            if 'service provider' in SfActivity.lower():
+                result += [odoo.env.ref('vcls-contact.client_cat_service_provider').id]
+            if 'other type of third party' in SfActivity.lower():
+                result += [odoo.env.ref('vcls-contact.client_cat_other').id]
+            if 'network, association, lobby' in SfActivity.lower():
+                result += [odoo.env.ref('vcls-contact.client_cat_network').id]
+            if 'investor' in SfActivity.lower():
+                result += [odoo.env.ref('vcls-contact.client_cat_investor').id]
+        return result
+    @staticmethod
+    def convertProduct(SfActivity,odoo):
+        result=[]
+        if SfActivity:
+            if 'chemical drugs' in SfActivity.lower():
+                result += [odoo.env.ref('vcls-contact.client_prod_chem_drugs').id]
+            if 'biologic drugs' in SfActivity.lower():
+                result += [odoo.env.ref('vcls-contact.client_prod_biol_drugs').id]
+            if 'devices' in SfActivity.lower():
+                result += [odoo.env.ref('vcls-contact.client_prod_digital_device').id]
+            if 'nutritionals and nutriceuticals' in SfActivity.lower():
+                 result += [odoo.env.ref('vcls-contact.client_prod_nutri').id]
+            if 'cell, gene & tissue therapy' in SfActivity.lower():
+                result += [odoo.env.ref('vcls-contact.client_prod_gene').id]
+            if 'e-health' in SfActivity.lower():
+                result += [odoo.env.ref('vcls-contact.client_prod_ehealth').id]
+            if 'other' in SfActivity.lower():
+                result += [odoo.env.ref('vcls-contact.client_prod_other').id]
+        return result
+    
+    @staticmethod
+    def convertProject(SfProject,odoo):
+        if SfProject:
+            if 'freelance consultant' in SfProject.lower():
+                return odoo.env.ref('vcls-suppliers.supplier_type_freelance').id
+            elif 'kol' in SfProject.lower():
+                return odoo.env.ref('vcls-suppliers.supplier_type_kol').id
+            elif 'rrg associates' in SfProject.lower():
+                return odoo.env.ref('vcls-suppliers.supplier_type_rrg').id
+            elif 'consulting company' in SfProject.lower():
+                return odoo.env.ref('vcls-suppliers.supplier_type_company').id
+            elif 'translator' in SfProject.lower():
+                return odoo.env.ref('vcls-suppliers.supplier_type_translator').id
         else:
             return None

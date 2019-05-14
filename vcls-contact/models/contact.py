@@ -40,7 +40,7 @@ class ContactExt(models.Model):
         (3, 'Verified'),
         (4, 'Outdated'),
         (5, 'Archived')], 
-        string='Status',
+        string='Stage',
         track_visibility='onchange',
         default=2,
     )
@@ -138,8 +138,7 @@ class ContactExt(models.Model):
     title = fields.Many2one(
         string='Salutation',
     )
-
-    job_title = fields.Char(
+    function = fields.Char(
         string='Job Title',
         help='Please use \"tbc\" if unknown.',
     )
@@ -152,6 +151,16 @@ class ContactExt(models.Model):
     partner_seniority_id = fields.Many2one(
         'partner.seniority',
         string = 'Seniority',
+    )
+
+    partner_assistant_id = fields.Many2one(
+        'res.partner',
+        string = 'Contact Assistant',
+    )
+
+    referent_id = fields.Many2one(
+        'res.partner',
+        string = 'Referred By',
     )
 
     ### VIEW VISIBILITY
