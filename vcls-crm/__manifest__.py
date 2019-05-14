@@ -31,6 +31,9 @@
     # always loaded
     'data': [
 
+        ## ACTIONS ##
+        'actions/cronjob.xml',
+
         ### SECURITY ###
         #'security/vcls_groups.xml',
         'security/ir.model.access.csv',
