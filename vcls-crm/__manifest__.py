@@ -45,6 +45,9 @@
         'views/lead_menus.xml',
         'views/partner_relation_menus.xml',
 
+        ### RECORDS DATA ###
+        'data/partner.relation.type.csv',
+
     ],
     # only loaded in demonstration mode
     'demo': [

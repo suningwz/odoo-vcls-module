@@ -45,6 +45,8 @@ class PartnerRelationType(models.Model):
         default = True,
     )
 
+    description = fields.Char()
+
     source_message = fields.Char()
     source_domain  = fields.Char()
 
