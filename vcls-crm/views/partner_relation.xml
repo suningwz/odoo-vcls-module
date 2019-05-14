@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.actions.act_window" id="action_partner_relation">
+            <field name="name">Partner Relations</field>
+            <field name="res_model">res.partner.relation</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_partner_relation_type">
+            <field name="name">Partner Relation Types</field>
+            <field name="res_model">partner.relation.type</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>
