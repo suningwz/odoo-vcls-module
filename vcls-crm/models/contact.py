@@ -14,4 +14,6 @@ class ContactExt(models.Model):
         string = 'Mapped Relations',
     )
 
+    ### MARKETING FIELDS ###
+    
     
