@@ -17,15 +17,15 @@ class SFAccountSync(models.Model):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
-        translator = TranslatorSFAccount.TranslatorSFAccount()
-       # time = datetime.now(pytz.timezone("GMT"))
+        #time = datetime.now(pytz.timezone("GMT"))
         print('Connecting to the Saleforce Database')
         sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
+        translator = TranslatorSFAccount.TranslatorSFAccount(sfInstance.getConnection())
         SF = self.env['etl.salesforce.account'].search([])
         if not SF:
             SF = self.env['etl.salesforce.account'].create({})
         SF[0].getFromExternal(translator, sfInstance.getConnection(),isFullUpdate)
-       # SF[0].setToExternal(translator, sfInstance.getConnection(), time)
+        #SF[0].setToExternal(translator, sfInstance.getConnection(), time)
         SF[0].setNextRun()
 
     def getFromExternal(self, translator, externalInstance, fullUpdate):
@@ -37,8 +37,8 @@ class SFAccountSync(models.Model):
         sql += 'Supplier_Description__c, Key_Information__c, Project_Assistant__c, '
         sql += 'Supplier_Selection_Form_completed__c, Website, '
         sql += 'Create_Sharepoint_Folder__c, OwnerId, Is_supplier__c, Main_VCLS_Contact__c, '
-        sql += 'Supplier__c, Type, Project_Controller__c, VCLS_Alt_Name__c, '
-        sql += 'Supplier_Project__c, Activity__c, Product_Type__c, Industry '
+        sql += 'Supplier__c, Type, Project_Controller__c, VCLS_Alt_Name__c,  '
+        sql += 'Supplier_Project__c, Activity__c, Product_Type__c, Industry, CurrencyIsoCode '
         sql += 'FROM Account '
         sql += 'WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null))'
         
@@ -51,7 +51,7 @@ class SFAccountSync(models.Model):
             try:
                 if fullUpdate or not self.isDateOdooAfterExternal(self.getLastUpdate(self.toOdooId(SFrecord['Id'])), datetime.strptime(SFrecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")):
                     self.update(SFrecord, translator, externalInstance)
-            except (generalSync.KeyNotFoundError, ValueError) as error:
+            except (generalSync.KeyNotFoundError, ValueError):
                 self.createRecord(SFrecord, translator, externalInstance)
 
 
@@ -65,7 +65,7 @@ class SFAccountSync(models.Model):
         for record in modifiedRecords:
             try:
                 self.updateSF(record,translator,externalInstance)
-            except (generalSync. KeyNotFoundError, ValueError) as error:
+            except (generalSync. KeyNotFoundError, ValueError):
                 self.createSF(record,translator,externalInstance)
 
 

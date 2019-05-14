@@ -17,10 +17,11 @@ class SFContactSync(models.Model):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
-        translator = TranslatorSFContact.TranslatorSFContact()
+        
        # time = datetime.now(pytz.timezone("GMT"))
         print('Connecting to the Saleforce Database')
         sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
+        translator = TranslatorSFContact.TranslatorSFContact(sfInstance.getConnection())
         SF = self.env['etl.salesforce.contact'].search([])
         if not SF:
             SF = self.env['etl.salesforce.contact'].create({})
@@ -34,7 +35,7 @@ class SFContactSync(models.Model):
         sql += 'C.OwnerId, C.LastModifiedDate, C.LinkedIn_Profile__c, '
         sql += 'C.Category__c, C.Supplier__c, Salutation, C.Email, '
         sql += 'C.Title, C.MobilePhone, C.MailingAddress, C.AccountWebsite__c, '
-        sql += 'C.Description, C.MailingCountry, C.Inactive_Contact__c '
+        sql += 'C.Description, C.MailingCountry, C.Inactive_Contact__c, C.CurrencyIsoCode '
         sql += 'FROM Contact as C '
         sql += 'Where C.AccountId In ('
         sql +=  'SELECT A.Id '
@@ -51,7 +52,7 @@ class SFContactSync(models.Model):
             try:
                 if fullUpdate or not self.isDateOdooAfterExternal(self.getLastUpdate(self.toOdooId(SFrecord['Id'])), datetime.strptime(SFrecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")):
                     self.update(SFrecord, translator, externalInstance)
-            except (generalSync.KeyNotFoundError, ValueError) as error:
+            except (generalSync.KeyNotFoundError, ValueError):
                 self.createRecord(SFrecord, translator, externalInstance)
 
 
@@ -65,7 +66,7 @@ class SFContactSync(models.Model):
         for record in modifiedRecords:
             try:
                 self.updateSF(record,translator,externalInstance)
-            except (generalSync. KeyNotFoundError, ValueError) as error:
+            except (generalSync. KeyNotFoundError, ValueError):
                 self.createSF(record,translator,externalInstance)
 
 

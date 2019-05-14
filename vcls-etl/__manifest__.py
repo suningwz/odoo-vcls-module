@@ -22,6 +22,7 @@
     'depends': ['base',
                 'vcls-contact',
                 'vcls-hr',
+                'vcls-suppliers'
                 ],
 
     # always loaded

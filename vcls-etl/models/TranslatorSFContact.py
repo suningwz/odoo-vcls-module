@@ -4,6 +4,10 @@ class KeyNotFoundError(Exception):
     pass
 
 class TranslatorSFContact(ITranslator.ITranslator):
+
+    def __init__(self,SF):
+        queryUser = "Select Username,Id FROM User"
+        TranslatorSFContact.usersSF = SF.query(queryUser)['records']
     
     @staticmethod
     def translateToOdoo(SF_Contact, odoo, SF):
@@ -37,7 +41,7 @@ class TranslatorSFContact(ITranslator.ITranslator):
         #documented to trigger proper default image loaded
         result['is_company'] = False
         result['country_id'] = TranslatorSFContact.convertCountry(SF_Contact['MailingCountry'],odoo)
-
+        result['currency_id'] = TranslatorSFContact.convertCurrency(SF_Contact['CurrencyIsoCode'],odoo)
         
         result['user_id'] = TranslatorSFContact.convertSfIdToOdooId(SF_Contact['OwnerId'],odoo, SF)
        
@@ -127,154 +131,113 @@ class TranslatorSFContact(ITranslator.ITranslator):
     
     @staticmethod
     def convertCountry(country,odoo):
-        if country == None:
-            return None
-        elif 'argentina' in country.lower() or country.lower() == ('arg') :
-            return odoo.env.ref('base.ar').id
-        elif 'australia' in country.lower() or country.lower() == ('au') :
-            return odoo.env.ref('base.au').id
-        elif 'belgium' in country.lower() or country.lower() == ('be') :
-            return odoo.env.ref('base.be').id
-        elif 'brazil' in country.lower() or country.lower() == ('bra') :
-            return odoo.env.ref('base.br').id
-        elif 'canada' in country.lower() or country.lower() == ('ca') :
-            return odoo.env.ref('base.ca').id
-        elif 'china' in country.lower() or country.lower() == ('cn') :
-            return odoo.env.ref('base.cn').id
-        elif 'croatia' in country.lower() or country.lower() == ('hr') :
-            return odoo.env.ref('base.hr').id
-        elif 'czech republic' in country.lower() or country.lower() == ('cz') :
-            return odoo.env.ref('base.cz').id
-        elif 'denmark' in country.lower() or country.lower() == ('dk') :
-            return odoo.env.ref('base.dk').id
-        elif 'egypt' in country.lower() or country.lower() == ('eg') :
-            return odoo.env.ref('base.eg').id
-        elif 'france' in country.lower() or country.lower() == ('fr') :
-            return odoo.env.ref('base.fr').id
-        elif 'germany' in country.lower() or country.lower() == ('de') :
-            return odoo.env.ref('base.de').id
-        elif 'greece' in country.lower() or country.lower() == ('gr') :
-            return odoo.env.ref('base.gr').id
-        elif 'hong kong' in country.lower() or country.lower() == ('hk') :
-            return odoo.env.ref('base.hk').id
-        elif 'india' in country.lower() or country.lower() == ('in') :
-            return odoo.env.ref('base.in').id
-        elif 'ireland' in country.lower() or country.lower() == ('ie') :
-            return odoo.env.ref('base.ie').id
-        elif 'israel' in country.lower() or country.lower() == ('il') :
-            return odoo.env.ref('base.il').id
-        elif 'italy' in country.lower() or country.lower() == ('it') :
-            return odoo.env.ref('base.it').id
-        elif 'japan' in country.lower() or country.lower() == ('jp') :
-            return odoo.env.ref('base.jp').id
-        elif 'jordan' in country.lower() or country.lower() == ('jo') :
-            return odoo.env.ref('base.jo').id
-        elif 'korea' in country.lower() or country.lower() == ('kr') :
-            return odoo.env.ref('base.kr').id
-        elif 'lithuania' in country.lower() or country.lower() == ('lt') :
-            return odoo.env.ref('base.lt').id
-        elif 'netherlands' in country.lower() or country.lower() == ('nl') :
-            return odoo.env.ref('base.nl').id
-        elif 'norway' in country.lower() or country.lower() == ('no') :
-            return odoo.env.ref('base.no').id
-        elif 'poland' in country.lower() or country.lower() == ('pl') :
-            return odoo.env.ref('base.pl').id
-        elif 'portugal' in country.lower() or country.lower() == ('pt') :
-            return odoo.env.ref('base.pt').id
-        elif 'singapore' in country.lower() or country.lower() == ('sg') :
-            return odoo.env.ref('base.sg').id
-        elif 'south africa' in country.lower() or country.lower() == ('za') :
-            return odoo.env.ref('base.za').id
-        elif 'spain' in country.lower() or country.lower() == ('es') :
-            return odoo.env.ref('base.es').id
-        elif 'sweden' in country.lower() or country.lower() == ('se') :
-            return odoo.env.ref('base.se').id
-        elif 'switzerland' in country.lower() or country.lower() == ('ch') :
-            return odoo.env.ref('base.ch').id
-        elif 'turkey' in country.lower() or country.lower() == ('ch') :
-            return odoo.env.ref('base.ch').id
-        elif 'united kingdom' in country.lower() or country.lower() == ('uk') in country.lower() or country.lower() == ('u.k.') :
-            return odoo.env.ref('base.uk').id
-        elif 'united arab emirates' in country.lower() or country.lower() == ('ae') :
-            return odoo.env.ref('base.ae').id
-        elif 'us' :
-            return odoo.env.ref('base.us').id
+        if country:
+            countrylower = country.lower()
+            if 'argentina' in countrylower or countrylower == ('arg') :
+                return odoo.env.ref('base.ar').id
+            elif 'australia' in countrylower or countrylower == ('au') :
+                return odoo.env.ref('base.au').id
+            elif 'belgium' in countrylower or countrylower == ('be') :
+                return odoo.env.ref('base.be').id
+            elif 'brazil' in countrylower or countrylower == ('bra') :
+                return odoo.env.ref('base.br').id
+            elif 'canada' in countrylower or countrylower == ('ca') :
+                return odoo.env.ref('base.ca').id
+            elif 'china' in countrylower or countrylower == ('cn') :
+                return odoo.env.ref('base.cn').id
+            elif 'croatia' in countrylower or countrylower == ('hr') :
+                return odoo.env.ref('base.hr').id
+            elif 'czech republic' in countrylower or countrylower == ('cz') :
+                return odoo.env.ref('base.cz').id
+            elif 'denmark' in countrylower or countrylower == ('dk') :
+                return odoo.env.ref('base.dk').id
+            elif 'egypt' in countrylower or countrylower == ('eg') :
+                return odoo.env.ref('base.eg').id
+            elif 'france' in countrylower or countrylower == ('fr') :
+                return odoo.env.ref('base.fr').id
+            elif 'germany' in countrylower or countrylower == ('de') :
+                return odoo.env.ref('base.de').id
+            elif 'greece' in countrylower or countrylower == ('gr') :
+                return odoo.env.ref('base.gr').id
+            elif 'hong kong' in countrylower or countrylower == ('hk') :
+                return odoo.env.ref('base.hk').id
+            elif 'india' in countrylower or countrylower == ('in') :
+                return odoo.env.ref('base.in').id
+            elif 'ireland' in countrylower or countrylower == ('ie') :
+                return odoo.env.ref('base.ie').id
+            elif 'israel' in countrylower or countrylower == ('il') :
+                return odoo.env.ref('base.il').id
+            elif 'italy' in countrylower or countrylower == ('it') :
+                return odoo.env.ref('base.it').id
+            elif 'japan' in countrylower or countrylower == ('jp') :
+                return odoo.env.ref('base.jp').id
+            elif 'jordan' in countrylower or countrylower == ('jo') :
+                return odoo.env.ref('base.jo').id
+            elif 'korea' in countrylower or countrylower == ('kr') :
+                return odoo.env.ref('base.kr').id
+            elif 'lithuania' in countrylower or countrylower == ('lt') :
+                return odoo.env.ref('base.lt').id
+            elif 'netherlands' in countrylower or countrylower == ('nl') :
+                return odoo.env.ref('base.nl').id
+            elif 'norway' in countrylower or countrylower == ('no') :
+                return odoo.env.ref('base.no').id
+            elif 'poland' in countrylower or countrylower == ('pl') :
+                return odoo.env.ref('base.pl').id
+            elif 'portugal' in countrylower or countrylower == ('pt') :
+                return odoo.env.ref('base.pt').id
+            elif 'singapore' in countrylower or countrylower == ('sg') :
+                return odoo.env.ref('base.sg').id
+            elif 'south africa' in countrylower or countrylower == ('za') :
+                return odoo.env.ref('base.za').id
+            elif 'spain' in countrylower or countrylower == ('es') :
+                return odoo.env.ref('base.es').id
+            elif 'sweden' in countrylower or countrylower == ('se') :
+                return odoo.env.ref('base.se').id
+            elif 'switzerland' in countrylower or countrylower == ('ch') :
+                return odoo.env.ref('base.ch').id
+            elif 'turkey' in countrylower or countrylower == ('ch') :
+                return odoo.env.ref('base.ch').id
+            elif 'united kingdom' in countrylower or countrylower == ('uk') in countrylower or countrylower == ('u.k.') :
+                return odoo.env.ref('base.uk').id
+            elif 'united arab emirates' in countrylower or countrylower == ('ae') :
+                return odoo.env.ref('base.ae').id
+            elif 'us' in countrylower:
+                return odoo.env.ref('base.us').id
+            elif 'cayman islands' in countrylower or countrylower == ('ky'):
+                return odoo.env.ref('base.ky').id
+            elif 'united states' in countrylower or countrylower == ('us'):
+                return odoo.env.ref('base.us').id
+            elif 'slovakia' in countrylower or countrylower == ('sk'):
+                return odoo.env.ref('base.sk').id
+            elif 'finland' in countrylower or countrylower == ('fi'):
+                return odoo.env.ref('base.fi').id
+            elif 'suisse' in countrylower or countrylower == ('ch'):
+                return odoo.env.ref('base.ch').id
+            elif 'uk' in countrylower or countrylower == ('uk'):
+                return odoo.env.ref('base.uk').id
+            elif 'iceland' in countrylower or countrylower == ('is'):
+                return odoo.env.ref('base.is').id
+            elif 'luxembourg' in countrylower or countrylower == ('lu'):
+                return odoo.env.ref('base.lu').id
+            elif 'thailand' in countrylower or countrylower == ('th'):
+                return odoo.env.ref('base.th').id
+            elif 'vietnam' in countrylower or countrylower == ('vn'):
+                return odoo.env.ref('base.vn').id
+            elif 'bulgaria' in countrylower or countrylower == ('bg'):
+                return odoo.env.ref('base.bg').id
+            elif 'u.K' in countrylower:
+                return odoo.env.ref('base.uk').id
+            elif 'netherland' in countrylower or countrylower == ('nl'):
+                return odoo.env.ref('base.nl').id
+            elif 'belgique' in countrylower or countrylower == ('be'):
+                return odoo.env.ref('base.be').id
+        return None
 
     @staticmethod
     def revertCountry(country, odoo):
-        if country == None:
-            return None
-        elif  country == odoo.env.ref('base.ar').id:
-            return odoo.env.ref('base.ar').name
-        elif country == odoo.env.ref('base.au').id:
-            return odoo.env.ref('base.au').name
-        elif country == odoo.env.ref('base.be').id:
-            return odoo.env.ref('base.be').name
-        elif country == odoo.env.ref('base.br').id:
-            return odoo.env.ref('base.br').name
-        elif country == odoo.env.ref('base.ca').id:
-            return odoo.env.ref('base.ca').name
-        elif country == odoo.env.ref('base.cn').id:
-            return odoo.env.ref('base.cn').name
-        elif country == odoo.env.ref('base.hr').id:
-            return odoo.env.ref('base.hr').name
-        elif country == odoo.env.ref('base.cz').id:
-            return odoo.env.ref('base.cz').name
-        elif country == odoo.env.ref('base.dk').id:
-            return odoo.env.ref('base.dk').name
-        elif country == odoo.env.ref('base.eg').id:
-            return odoo.env.ref('base.eg').name
-        elif country == odoo.env.ref('base.fr').id:
-            return odoo.env.ref('base.fr').name
-        elif country == odoo.env.ref('base.de').id:
-            return odoo.env.ref('base.de').name
-        elif country == odoo.env.ref('base.gr').id:
-            return odoo.env.ref('base.gr').name
-        elif country == odoo.env.ref('base.hk').id:
-            return odoo.env.ref('base.hk').name
-        elif country == odoo.env.ref('base.in').id:
-            return odoo.env.ref('base.in').name
-        elif country == odoo.env.ref('base.ie').id:
-            return odoo.env.ref('base.ie').name
-        elif country == odoo.env.ref('base.il').id:
-            return odoo.env.ref('base.il').name
-        elif country == odoo.env.ref('base.it').id:
-            return odoo.env.ref('base.it').name
-        elif country == odoo.env.ref('base.jp').id:
-            return odoo.env.ref('base.jp').name
-        elif country == odoo.env.ref('base.jo').id:
-            return odoo.env.ref('base.jo').name
-        elif country == odoo.env.ref('base.kr').id:
-            return odoo.env.ref('base.kr').name
-        elif country == odoo.env.ref('base.lt').id:
-            return odoo.env.ref('base.lt').name
-        elif country == odoo.env.ref('base.nl').id:
-            return odoo.env.ref('base.nl').name
-        elif country == odoo.env.ref('base.no').id:
-            return odoo.env.ref('base.no').name
-        elif country == odoo.env.ref('base.pl').id:
-            return odoo.env.ref('base.pl').name
-        elif country == odoo.env.ref('base.pt').id:
-            return odoo.env.ref('base.pt').name
-        elif country == odoo.env.ref('base.sg').id:
-            return odoo.env.ref('base.sg').name
-        elif country == odoo.env.ref('base.za').id:
-            return odoo.env.ref('base.za').name
-        elif country == odoo.env.ref('base.es').id:
-            return odoo.env.ref('base.es').name
-        elif country == odoo.env.ref('base.se').id:
-            return odoo.env.ref('base.se').name
-        elif country == odoo.env.ref('base.ch').id:
-            return odoo.env.ref('base.ch').name
-        elif country == odoo.env.ref('base.uk').id:
-            return odoo.env.ref('base.uk').name
-        elif country == odoo.env.ref('base.ae').id:
-            return odoo.env.ref('base.ae').name
-        elif country == odoo.env.ref('base.us').id:         
-            return odoo.env.ref('base.us').name
-        else:
-            return None
-        
+        if country:
+            return odoo.env['res.country'].browse(country).name
+        return None
 
     @staticmethod
     def convertSfIdToOdooId(ownerId, odoo, SF):
@@ -297,11 +260,11 @@ class TranslatorSFContact(ITranslator.ITranslator):
     
     @staticmethod
     def getUserMail(userId, SF):
-        userIdString = "'{}'".format(userId)
-        queryUser = "Select Username FROM User Where Id = {}".format(userIdString)
-        result = SF.query(queryUser)['records']
-        if result:
-            return result[0]['Username']
+        for user in TranslatorSFContact.usersSF:
+            if user['Id'] == userId:
+                return user['Username']
+            else:
+                return None
 
     @staticmethod
     def getUserId(mail, odoo):
@@ -331,3 +294,10 @@ class TranslatorSFContact(ITranslator.ITranslator):
             if key.externalId == externalId:
                 return key.odooId
         return None
+    @staticmethod
+    def convertCurrency(SfCurrency,odoo):
+        odooCurr = odoo.env['res.currency'].search([('name','=',SfCurrency)]).id
+        if odooCurr:
+            return odooCurr
+        else:
+            return None
