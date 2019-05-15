@@ -21,7 +21,8 @@
                     <sheet>
                         <field name="leave_type_request_unit" invisible="1"/>
                         <field name="is_accrual" invisible="1"/>
-                        <group>
+                        <!--<group>-->
+                            <group>
                             <group>
                                 <field name="employee_company_id" string="Legal Entity" invisible="1"/>
                                 <field name="holiday_status_id" context="{'employee_id':employee_id, 'default_date_from':date_from, 'no_zero':True}" options="{'no_create': True, 'no_open': True}" domain="[('company_id','=',employee_company_id),('is_managed_by_hr','=',False)]"/>
@@ -78,12 +79,17 @@
                                 <field name="exceptional_case_id" string="Exceptional Case"/>
                                 <field name="exceptional_allocation" string="Exceptional Allocation" /> <!--attrs="{'readonly': [('1','=','1')]}"/>-->
                             </group>
-                            
+
+                            <group name="Warning" attrs="{'invisible':[('need_warning','=',False)]}">
+                                <field name="warning_message" string="" />
+                                <field name="need_warning" invisible="1" />   
+                            </group>
+                            </group>
                             <group name="col_right">
                                 <field name="employee_id" invisible="1" attrs="{'readonly': [('state', 'not in', ('draft', 'confirm'))]}"/>
                                 <field name="department_id" groups="hr_holidays.group_hr_holidays_user" invisible="1"/>
                             </group>
-                        </group>
+                        <!--</group>-->
                         
 
                     </sheet>

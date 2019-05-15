@@ -1,0 +1,3 @@
+[submodule "OCA/crm"]
+	path = OCA/crm
+	url = https://github.com/OCA/crm.git
