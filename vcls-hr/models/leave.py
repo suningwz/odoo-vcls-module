@@ -83,6 +83,31 @@ class Leave(models.Model):
     max_credit = fields.Float(
         compute='_compute_future_days',
         )
+
+    # Used to prompt a warning message to some employees
+    need_warning = fields.Boolean(
+        compute = '_compute_need_warning',
+        store = True,
+        default = False,
+    )
+
+    warning_message = fields.Html(
+        readonly = True,
+        default = """<p class=MsoNormal align=center style='text-align:center'><b><span lang=FR-CH
+style='font-size:10.0pt;line-height:107%;font-family:"Roboto",serif;color:#666666;
+background:white'>Vous constatez un écart sur la présentation de vos congés
+payés entre votre bulletin de paie et Kalpa. Pourquoi ?</span></b></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=FR-CH
+style='font-size:10.0pt;line-height:107%;font-family:"Roboto",serif;color:#666666;
+background:white'>En fait, l'acquisition et la prise des congés payés pour les
+temps partiels est proraté sur Kalpa pour être au plus près du réel. Par
+exemple, l'acquisition des congés payés est de 1.67 CP/mois pour un temps
+partiel à 80%. Sur les bulletins de paie, l'acquisition et la prise des congés
+payés n'est pas proraté pour être conforme au Légal. </span><span
+style='font-size:10.0pt;line-height:107%;font-family:"Roboto",serif;color:#666666;
+background:white'>Ainsi l'acquisition de congés payés est de 2.08 CP/mois.</span></span></p>"""      
+    )
     
     """start_date = fields.Date(
         compute='_compute_dates',
@@ -161,6 +186,14 @@ class Leave(models.Model):
     def _compute_dates(self):
         for rec in self:
             rec.start_date = rec.date_from.date()"""
+
+    @api.depends('holiday_status_id','employee_id')
+    def _compute_need_warning(self):
+        for rec in self:
+            if (rec.employee_id.company_id == self.env.ref('base.main_company') or rec.employee_id.company_id == self.env.ref('vcls-hr.company_VCFR')) and (rec.holiday_status_id.allocation_type == 'fixed') and rec.employee_id.resource_calendar_id.effective_percentage < 1.0:
+                rec.need_warning = True
+            else:
+                rec.need_warning = False
     
     # Update the available case list according to the selected category
     @api.depends('exceptional_category_id','exceptional_case_id')

@@ -7,3 +7,4 @@ from . import ITranslator
 from . import TranslatorSFAccount
 from . import TranslatorSFContact
 from . import ETL_SF
+from . import mapOdoo

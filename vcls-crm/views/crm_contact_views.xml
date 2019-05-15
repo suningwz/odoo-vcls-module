@@ -2,8 +2,8 @@
 <odoo>
     <data>
 
-        <record id="crm_view_form_contact_all" model="ir.ui.view">
-            <field name="name">crm_view_form_contact_all</field>
+        <record id="view_form_contact_all_crm" model="ir.ui.view">
+            <field name="name">view_form_contact_all_crm</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="vcls-contact.view_form_contact_all"/>
 
@@ -12,7 +12,13 @@
                     <page name="marketing" string="Marketing Info" attrs="{'invisible': [('see_segmentation', '=', False)]}">
                     <field name="see_segmentation" invisible="1"/>
                     <group>
-                        
+                        <group>
+                            <field name="vcls_contact_id"/>
+                            <field name="opted_in"/>
+                        </group>
+                        <group>
+                            <field name="opted_out"/>
+                        </group>
                     </group>
                     </page>
             

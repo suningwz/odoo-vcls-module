@@ -14,6 +14,19 @@ class ContactExt(models.Model):
         string = 'Mapped Relations',
     )
 
-    ### MARKETING FIELDS ###
+    ### MARKETING FIELDS FOR TRACEABILITY ###
     
-    
+    #Marketing fields
+    opted_in = fields.Boolean(
+        string = 'Opted In',
+    )
+
+    opted_out = fields.Boolean(
+        string = 'Opted Out',
+    )
+
+    vcls_contact_id = fields.Many2one(
+        'res.partner',
+        string = "Initial Contact",
+        domain = "[('employee','=',True)]",
+    )

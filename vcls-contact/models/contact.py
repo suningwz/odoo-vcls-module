@@ -76,7 +76,17 @@ class ContactExt(models.Model):
         'res.users',
         string = 'Account Manager',
     )
+    #override to link
+    activity_user_id = fields.Many2one(
+        'res.users',
+        related = 'user_id',
+        store = True,
+    )
 
+    linkedin = fields.Char(
+        string='LinkedIn Profile',
+    )
+    
     #BD fields
     country_group_id = fields.Many2one(
         'res.country.group',
@@ -100,10 +110,7 @@ class ContactExt(models.Model):
         string = 'Client Product',
     )
 
-    #Marketing fields
-    linkedin = fields.Char(
-        string='LinkedIn Profile',
-    )
+    
     
     #project management fields
     assistant_id = fields.Many2one(
@@ -192,6 +199,19 @@ class ContactExt(models.Model):
             contact.see_supplier = False
             if self.env.ref('vcls-contact.category_PS') in contact.category_id:
                 contact.see_supplier = True
+    
+    @api.onchange('category_id')
+    def _update_booleans(self):
+        for contact in self:
+            if self.env.ref('vcls-contact.category_account') in contact.category_id:
+                contact.customer = True
+            else:
+                contact.customer = False
+            
+            if self.env.ref('vcls-contact.category_suppliers') in contact.category_id or self.env.ref('vcls-contact.category_PS') in contact.category_id or self.env.ref('vcls-contact.category_AS') in contact.category_id:
+                contact.supplier = True
+            else:
+                contact.supplier = False
 
     @api.depends('employee')
     def _compute_is_internal(self):
@@ -256,4 +276,13 @@ class ContactExt(models.Model):
         context = self.env.context
         contact_ids = context.get('active_ids',[])
         self.env['res.partner'].browse(contact_ids).write({'stage': 5,'active':False})
+    
+
+    @api.onchange('category_id', 'company_type')
+    def update_individual_tags(self):
+        for contact in self:
+            if contact.company_type == 'company':
+                for child in contact.child_ids:
+                    if child.company_type == 'person':
+                        child.write({'category_id': [(6, 0, contact.category_id.ids)]})
         
