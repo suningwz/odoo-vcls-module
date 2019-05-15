@@ -283,7 +283,7 @@
             <field name="view_id" ref="view_lead_new_ci_form"/>
         </record>
 
-        <!-- we override the all lead action to replace some views
+        <!-- we override the all lead action to replace some views -->
         <record model="ir.actions.act_window" id="crm.crm_lead_all_leads">
             <field name="name">Leads</field>
             <field name="res_model">crm.lead</field>
@@ -294,9 +294,9 @@
                 (0, 0, {'view_mode': 'calendar', 'view_id': ref('crm.crm_case_calendar_view_leads')}),
                 (0, 0, {'view_mode': 'pivot', 'view_id': ref('crm.crm_lead_view_pivot')}),
                 (0, 0, {'view_mode': 'graph', 'view_id': ref('crm.crm_lead_view_graph')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('view_lead_new_ci_form')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('crm.crm_case_form_view_leads')}),
             ]"/>
-        </record>-->
+        </record>
 
     </data>
 </odoo>
