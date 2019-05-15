@@ -91,12 +91,22 @@ class Leave(models.Model):
         default = False,
     )
 
-    warning_message = fields.Char(
-        default = """Vous constatez un écart sur la présentation de vos congés payés entre votre bulletin de paie et Kalpa. Pourquoi ?
-En fait, l'acquisition et la prise des congés payés pour les temps partiels est proraté sur Kalpa pour être au plus près du réel. 
-Par exemple, l'acquisition des congés payés est de 1.67 CP/mois pour un temps partiel à 80%.
-Sur les bulletins de paie, l'acquisition et la prise des congés payés n'est pas proraté pour être conforme au Légal. 
-Ainsi l'acquisition de congés payés est de 2.08 CP/mois."""
+    warning_message = fields.Html(
+        readonly = True,
+        default = """<p class=MsoNormal align=center style='text-align:center'><b><span lang=FR-CH
+style='font-size:10.0pt;line-height:107%;font-family:"Roboto",serif;color:#666666;
+background:white'>Vous constatez un écart sur la présentation de vos congés
+payés entre votre bulletin de paie et Kalpa. Pourquoi ?</span></b></p>
+
+<p class=MsoNormal style='text-align:justify'><span lang=FR-CH
+style='font-size:10.0pt;line-height:107%;font-family:"Roboto",serif;color:#666666;
+background:white'>En fait, l'acquisition et la prise des congés payés pour les
+temps partiels est proraté sur Kalpa pour être au plus près du réel. Par
+exemple, l'acquisition des congés payés est de 1.67 CP/mois pour un temps
+partiel à 80%. Sur les bulletins de paie, l'acquisition et la prise des congés
+payés n'est pas proraté pour être conforme au Légal. </span><span
+style='font-size:10.0pt;line-height:107%;font-family:"Roboto",serif;color:#666666;
+background:white'>Ainsi l'acquisition de congés payés est de 2.08 CP/mois.</span></span></p>"""      
     )
     
     """start_date = fields.Date(
