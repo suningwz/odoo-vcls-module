@@ -1,9 +1,14 @@
 from . import ITranslator
 
+class KeyNotFoundError(Exception):
+    pass
+
 class TranslatorSFAccount(ITranslator.ITranslator):
+    
     def __init__(self,SF):
         queryUser = "Select Username,Id FROM User"
         TranslatorSFAccount.usersSF = SF.query(queryUser)['records']
+
     @staticmethod
     def translateToOdoo(SF_Account, odoo, SF):
         result = {}
@@ -20,6 +25,9 @@ class TranslatorSFAccount(ITranslator.ITranslator):
             result['zip'] = SF_Account['BillingAddress']['postalCode']
             result['street'] = SF_Account['BillingAddress']['street']
         
+        if SF_Account['BillingCountry']:
+            result['country_id'] = TranslatorSFAccount.convertId(SF_Account['BillingCountry'],odoo,'res.country',False)
+        
         result['phone'] = SF_Account['Phone']
         result['fax'] = SF_Account['Fax']
         # Ignore Area_of_expertise__c
@@ -29,14 +37,12 @@ class TranslatorSFAccount(ITranslator.ITranslator):
         result['description'] += 'Key Information : {}\n'.format(SF_Account['Key_Information__c'])
         # Ignore Supplier_Selection_Form_completed__c
         result['website'] = SF_Account['Website']
-
         result['create_folder'] = SF_Account['Create_Sharepoint_Folder__c']
         result['company_type'] = 'company'
         #documented to trigger proper default image loaded
         result['is_company'] = 'True'
-        result['country_id'] = TranslatorSFAccount.convertCountry(SF_Account['BillingCountry'],odoo)
-
         result['currency_id'] = TranslatorSFAccount.convertCurrency(SF_Account['CurrencyIsoCode'],odoo)
+        
         result['user_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
         if SF_Account['Main_VCLS_Contact__c']:
             result['expert_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['Main_VCLS_Contact__c'],odoo, SF)
@@ -48,12 +54,13 @@ class TranslatorSFAccount(ITranslator.ITranslator):
         
         result['industry_id'] = TranslatorSFAccount.convertIndustry(SF_Account['Industry'],odoo)
         if SF_Account['Area_of_expertise__c']:
-            result['expertise_area_ids'] = [(6, 0, TranslatorSFAccount.convertArea(SF_Account['Area_of_expertise__c'],odoo))]
-        result['project_supplier_type_id'] = TranslatorSFAccount.convertProject(SF_Account['Supplier_Project__c'],odoo)
+            result['expertise_area_ids'] = [(6, 0, TranslatorSFAccount.convertId(SF_Account['Area_of_expertise__c'],odoo,'expertise.area',True))]
+        if SF_Account['Supplier_Project__c']:
+            result['project_supplier_type_id'] = TranslatorSFAccount.convertId(SF_Account['Supplier_Project__c'],odoo,'project.supplier.type',False)
         if SF_Account['Activity__c']:
-            result['client_activity_ids'] = [(6, 0, TranslatorSFAccount.convertActivity(SF_Account['Activity__c'],odoo))]
+            result['client_activity_ids'] = [(6, 0, TranslatorSFAccount.convertId(SF_Account['Activity__c'],odoo,'client.activity',True))]
         if SF_Account['Product_Type__c']:
-            result['client_product_ids'] = [(6, 0, TranslatorSFAccount.convertProduct(SF_Account['Product_Type__c'],odoo))]
+            result['client_product_ids'] = [(6, 0, TranslatorSFAccount.convertId(SF_Account['Product_Type__c'],odoo,'client.product',True))]
         result['category_id'] =  [(6, 0, TranslatorSFAccount.convertCategory(SF_Account,odoo))]
         result['message_ids'] = [(0, 0, TranslatorSFAccount.generateLog(SF_Account))]
 
@@ -82,13 +89,6 @@ class TranslatorSFAccount(ITranslator.ITranslator):
         print(result['Name'])
 
         #result['Supplier_Status__c'] = TranslatorSFAccount.revertStatus(Odoo_Contact.stage)
-
-        '''
-        if SF_Account['BillingAddress']:
-            result['city'] = SF_Account['BillingAddress']['city']
-            result['zip'] = SF_Account['BillingAddress']['postalCode']
-            result['street'] = SF_Account['BillingAddress']['street']
-        '''
 
         result['Phone'] = Odoo_Contact.phone
         result['Fax'] = Odoo_Contact.fax
@@ -140,117 +140,12 @@ class TranslatorSFAccount(ITranslator.ITranslator):
             return "No link for this relationship"
         else:
             return '<a href="{}" target="_blank">Supplier Folder</a>'.format(url)
-    
-    @staticmethod
-    def convertCountry(country,odoo):
-        if country:
-            countrylower = country.lower()
-            if 'argentina' in countrylower or countrylower == ('arg') :
-                return odoo.env.ref('base.ar').id
-            elif 'australia' in countrylower or countrylower == ('au') :
-                return odoo.env.ref('base.au').id
-            elif 'belgium' in countrylower or countrylower == ('be') :
-                return odoo.env.ref('base.be').id
-            elif 'brazil' in countrylower or countrylower == ('bra') :
-                return odoo.env.ref('base.br').id
-            elif 'canada' in countrylower or countrylower == ('ca') :
-                return odoo.env.ref('base.ca').id
-            elif 'china' in countrylower or countrylower == ('cn') :
-                return odoo.env.ref('base.cn').id
-            elif 'croatia' in countrylower or countrylower == ('hr') :
-                return odoo.env.ref('base.hr').id
-            elif 'czech republic' in countrylower or countrylower == ('cz') :
-                return odoo.env.ref('base.cz').id
-            elif 'denmark' in countrylower or countrylower == ('dk') :
-                return odoo.env.ref('base.dk').id
-            elif 'egypt' in countrylower or countrylower == ('eg') :
-                return odoo.env.ref('base.eg').id
-            elif 'france' in countrylower or countrylower == ('fr') :
-                return odoo.env.ref('base.fr').id
-            elif 'germany' in countrylower or countrylower == ('de') :
-                return odoo.env.ref('base.de').id
-            elif 'greece' in countrylower or countrylower == ('gr') :
-                return odoo.env.ref('base.gr').id
-            elif 'hong kong' in countrylower or countrylower == ('hk') :
-                return odoo.env.ref('base.hk').id
-            elif 'india' in countrylower or countrylower == ('in') :
-                return odoo.env.ref('base.in').id
-            elif 'ireland' in countrylower or countrylower == ('ie') :
-                return odoo.env.ref('base.ie').id
-            elif 'israel' in countrylower or countrylower == ('il') :
-                return odoo.env.ref('base.il').id
-            elif 'italy' in countrylower or countrylower == ('it') :
-                return odoo.env.ref('base.it').id
-            elif 'japan' in countrylower or countrylower == ('jp') :
-                return odoo.env.ref('base.jp').id
-            elif 'jordan' in countrylower or countrylower == ('jo') :
-                return odoo.env.ref('base.jo').id
-            elif 'korea' in countrylower or countrylower == ('kr') :
-                return odoo.env.ref('base.kr').id
-            elif 'lithuania' in countrylower or countrylower == ('lt') :
-                return odoo.env.ref('base.lt').id
-            elif 'netherlands' in countrylower or countrylower == ('nl') :
-                return odoo.env.ref('base.nl').id
-            elif 'norway' in countrylower or countrylower == ('no') :
-                return odoo.env.ref('base.no').id
-            elif 'poland' in countrylower or countrylower == ('pl') :
-                return odoo.env.ref('base.pl').id
-            elif 'portugal' in countrylower or countrylower == ('pt') :
-                return odoo.env.ref('base.pt').id
-            elif 'singapore' in countrylower or countrylower == ('sg') :
-                return odoo.env.ref('base.sg').id
-            elif 'south africa' in countrylower or countrylower == ('za') :
-                return odoo.env.ref('base.za').id
-            elif 'spain' in countrylower or countrylower == ('es') :
-                return odoo.env.ref('base.es').id
-            elif 'sweden' in countrylower or countrylower == ('se') :
-                return odoo.env.ref('base.se').id
-            elif 'switzerland' in countrylower or countrylower == ('ch') :
-                return odoo.env.ref('base.ch').id
-            elif 'turkey' in countrylower or countrylower == ('ch') :
-                return odoo.env.ref('base.ch').id
-            elif 'united kingdom' in countrylower or countrylower == ('uk') in countrylower or countrylower == ('u.k.') :
-                return odoo.env.ref('base.uk').id
-            elif 'united arab emirates' in countrylower or countrylower == ('ae') :
-                return odoo.env.ref('base.ae').id
-            elif 'us' in countrylower:
-                return odoo.env.ref('base.us').id
-            elif 'cayman islands' in countrylower or countrylower == ('ky'):
-                return odoo.env.ref('base.ky').id
-            elif 'united states' in countrylower or countrylower == ('us'):
-                return odoo.env.ref('base.us').id
-            elif 'slovakia' in countrylower or countrylower == ('sk'):
-                return odoo.env.ref('base.sk').id
-            elif 'finland' in countrylower or countrylower == ('fi'):
-                return odoo.env.ref('base.fi').id
-            elif 'suisse' in countrylower or countrylower == ('ch'):
-                return odoo.env.ref('base.ch').id
-            elif 'uk' in countrylower or countrylower == ('uk'):
-                return odoo.env.ref('base.uk').id
-            elif 'iceland' in countrylower or countrylower == ('is'):
-                return odoo.env.ref('base.is').id
-            elif 'luxembourg' in countrylower or countrylower == ('lu'):
-                return odoo.env.ref('base.lu').id
-            elif 'thailand' in countrylower or countrylower == ('th'):
-                return odoo.env.ref('base.th').id
-            elif 'vietnam' in countrylower or countrylower == ('vn'):
-                return odoo.env.ref('base.vn').id
-            elif 'bulgaria' in countrylower or countrylower == ('bg'):
-                return odoo.env.ref('base.bg').id
-            elif 'u.K' in countrylower:
-                return odoo.env.ref('base.uk').id
-            elif 'netherland' in countrylower or countrylower == ('nl'):
-                return odoo.env.ref('base.nl').id
-            elif 'belgique' in countrylower or countrylower == ('be'):
-                return odoo.env.ref('base.be').id
-        return None
 
     @staticmethod
     def revertCountry(country, odoo):
         if country:
             return odoo.env['res.country'].browse(country).name
         return None
-        
 
     @staticmethod
     def convertSfIdToOdooId(ownerId, odoo, SF):
@@ -297,47 +192,38 @@ class TranslatorSFAccount(ITranslator.ITranslator):
                 industry = odoo.env['res.partner.industry'].search([('name','=','Pharma')])
                 if industry:
                     return industry[0].id
-
             elif 'biotechnology - therapeutics' in SfIndustry.lower():
                 industry = odoo.env['res.partner.industry'].search([('name','=','Biotech')])
                 if industry:
                     return industry[0].id
-
             elif 'medtech' in SfIndustry.lower():
                 industry = odoo.env['res.partner.industry'].search([('name','=','Traditional MedTech')])
                 if industry:
                     return industry[0].id
-
             elif 'biotech' in SfIndustry.lower():
                 industry = odoo.env['res.partner.industry'].search([('name','=','Biotech')])
                 if industry:
                     return industry[0].id
-
             elif 'consulting' in SfIndustry.lower():
                 industry = odoo.env['res.partner.industry'].search([('name','=','Unknown')])
                 if industry:
                     return industry[0].id
-
             elif 'biotechnology / r&d services' in SfIndustry.lower():
                 industry = odoo.env['res.partner.industry'].search([('name','=','Biotech')])
                 if industry:
                     return industry[0].id
-
             elif'cro' in SfIndustry.lower():
                 industry = odoo.env['res.partner.industry'].search([('name','=','CRO')])
                 if industry:
                     return industry[0].id
-
             elif 'healthcare' in SfIndustry.lower():
                 industry = odoo.env['res.partner.industry'].search([('name','=','Unknown')])
                 if industry:
                     return industry[0].id
-
             elif 'other' in SfIndustry.lower():
                 industry = odoo.env['res.partner.industry'].search([('name','=','Unknown')])
                 if industry:
                     return industry[0].id
-
             else:
                 industry = odoo.env['res.partner.industry'].search([('name','=','Unknown')])
                 if industry:
@@ -364,93 +250,7 @@ class TranslatorSFAccount(ITranslator.ITranslator):
             else:
                 return odoo.env.ref('__export__.res_partner_industry_44_858f790a').id"""
         return None
-    
-    @staticmethod
-    def convertArea(SFArea,odoo):
-        result = []
-        if SFArea:
-            if 'clinical development' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_c_dev').id]
-            if 'regulatory company' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_reg_company').id]
-            if 'medical Writer' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_mw').id]
-            if 'non clinical development' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_nc_dev').id]
-            if 'regulatory generalist' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_reg_generalist').id]
-            if 'ohp' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_ohp').id]
-            if 'atmp' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_atmp').id]
-            if 'market access' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_ma').id]
-            if '(bio) statistician' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_biostat').id]
-            if 'database' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_db').id]
-            if 'database management' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_db_mgmt').id]
-            if 'cra' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_cra').id]
-            if 'cro' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_cro').id]
-            if 'pv' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_pv').id]
-            if 'cmc' in SFArea.lower():
-                result += [odoo.env.ref('vcls-suppliers.expertise_area_cmc').id]
-        return result
 
-    @staticmethod
-    def convertActivity(SfActivity,odoo):
-        result=[]
-        if SfActivity:
-            if 'develop/market healthcare products' in SfActivity.lower():
-                result += [odoo.env.ref('vcls-contact.client_cat_health_product').id]
-            if 'service provider' in SfActivity.lower():
-                result += [odoo.env.ref('vcls-contact.client_cat_service_provider').id]
-            if 'other type of third party' in SfActivity.lower():
-                result += [odoo.env.ref('vcls-contact.client_cat_other').id]
-            if 'network, association, lobby' in SfActivity.lower():
-                result += [odoo.env.ref('vcls-contact.client_cat_network').id]
-            if 'investor' in SfActivity.lower():
-                result += [odoo.env.ref('vcls-contact.client_cat_investor').id]
-        return result
-    @staticmethod
-    def convertProduct(SfActivity,odoo):
-        result=[]
-        if SfActivity:
-            if 'chemical drugs' in SfActivity.lower():
-                result += [odoo.env.ref('vcls-contact.client_prod_chem_drugs').id]
-            if 'biologic drugs' in SfActivity.lower():
-                result += [odoo.env.ref('vcls-contact.client_prod_biol_drugs').id]
-            if 'devices' in SfActivity.lower():
-                result += [odoo.env.ref('vcls-contact.client_prod_digital_device').id]
-            if 'nutritionals and nutriceuticals' in SfActivity.lower():
-                 result += [odoo.env.ref('vcls-contact.client_prod_nutri').id]
-            if 'cell, gene & tissue therapy' in SfActivity.lower():
-                result += [odoo.env.ref('vcls-contact.client_prod_gene').id]
-            if 'e-health' in SfActivity.lower():
-                result += [odoo.env.ref('vcls-contact.client_prod_ehealth').id]
-            if 'other' in SfActivity.lower():
-                result += [odoo.env.ref('vcls-contact.client_prod_other').id]
-        return result
-    
-    @staticmethod
-    def convertProject(SfProject,odoo):
-        if SfProject:
-            if 'freelance consultant' in SfProject.lower():
-                return odoo.env.ref('vcls-suppliers.supplier_type_freelance').id
-            elif 'kol' in SfProject.lower():
-                return odoo.env.ref('vcls-suppliers.supplier_type_kol').id
-            elif 'rrg associates' in SfProject.lower():
-                return odoo.env.ref('vcls-suppliers.supplier_type_rrg').id
-            elif 'consulting company' in SfProject.lower():
-                return odoo.env.ref('vcls-suppliers.supplier_type_company').id
-            elif 'translator' in SfProject.lower():
-                return odoo.env.ref('vcls-suppliers.supplier_type_translator').id
-        else:
-            return None
     @staticmethod
     def convertCurrency(SfCurrency,odoo):
         odooCurr = odoo.env['res.currency'].search([('name','=',SfCurrency)]).id
@@ -458,3 +258,45 @@ class TranslatorSFAccount(ITranslator.ITranslator):
             return odooCurr
         else:
             return None
+
+    @staticmethod
+    def convertId(SF,odoo,model,forMany):
+        element = []
+        print(SF)
+        print("**************************")
+        try:
+            element = TranslatorSFAccount.toOD_id(SF.lower(),odoo,model)
+        except KeyNotFoundError:
+            odooRefs = odoo.env[model].search([('name','ilike',SF)])
+            if odooRefs:
+                for o in odooRefs:
+                    element.append(o.id)
+                    odoo.env['map.odoo'].create({'odModelName':model, 'externalName' : SF.lower(), 'odooId':o.id})
+            else:
+                odoo.env['map.odoo'].create({'odModelName':model, 'externalName' : SF.lower()})
+                return []
+            # add toReviewed for maintain the mapping via UI ODOO
+        if forMany:
+            return element
+        return element[0]
+
+    @staticmethod
+    def toOD_id(SFName,odoo,model):
+        result = []
+        mapping = [odoo.env['map.odoo'].search([('externalName','=ilike',SFName),('odModelName','=',model)])]
+        print(mapping)
+        if mapping[0]:
+            for m in mapping:
+                print(m)
+                if m.odooId:
+                    print("1")
+                    print(m.odooId)
+                    result.append(m.odooId)
+                elif m.externalOdooId:
+                    print("2")
+                    print(m.externalOdooId)
+                    result.append(odoo.env.ref(m.externalOdooId).id) 
+            return result
+
+        #There is no mapping object for this SFName    
+        raise KeyNotFoundError
