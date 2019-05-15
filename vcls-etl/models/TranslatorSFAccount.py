@@ -41,6 +41,8 @@ class TranslatorSFAccount(ITranslator.ITranslator):
         result['currency_id'] = TranslatorSFAccount.convertCurrency(SF_Account['CurrencyIsoCode'],odoo)
         result['altname'] = SF_Account['VCLS_Alt_Name__c']
         result['user_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
+        if SF_Account['Invoice_Administrator__c']:
+           result['invoice_admin_id'] = TranslatorSFAccount.convertId(SF_Account['Invoice_Administrator__c'],odoo,'res.users',False)
         if SF_Account['Main_VCLS_Contact__c']:
             result['expert_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['Main_VCLS_Contact__c'],odoo, SF)
         if SF_Account['Project_Assistant__c']:
@@ -72,21 +74,18 @@ class TranslatorSFAccount(ITranslator.ITranslator):
         }
 
         return result
-
-    @staticmethod
-    def test(word):
-        print(word)
-        return word.replace("-test","")
-
     @staticmethod
     def translateToSF(Odoo_Contact, odoo):
         result = {}
         # Modify the name with -test
-        result['Name'] = TranslatorSFAccount.test(Odoo_Contact.name)
+        result['Name'] = Odoo_Contact.name
         print(result['Name'])
 
         #result['Supplier_Status__c'] = TranslatorSFAccount.revertStatus(Odoo_Contact.stage)
-
+        result['BillingAddress'] = {}
+        result['BillingAddress']['city'] = Odoo_Contact.city
+        result['BillingAddress']['postalCode'] = Odoo_Contact.zip
+        result['BillingAddress']['street'] = Odoo_Contact.street
         result['Phone'] = Odoo_Contact.phone
         result['Fax'] = Odoo_Contact.fax
         # result['Sharepoint_Folder__c'] = TranslatorSFAccount.revertUrl(Odoo_Contact.sharepoint_folder)
@@ -181,6 +180,21 @@ class TranslatorSFAccount(ITranslator.ITranslator):
             return result[0].id
         else:
             return None
+    @staticmethod
+    def getUserIdSf(mail):
+        for user in TranslatorSFAccount.usersSF:
+            if user['Username'] == mail:
+                return user['Id']
+            else:
+                return None
+    @staticmethod
+    def getUserMailOd(userId,odoo):
+        result = odoo.env['res.users'].search([('id','=',userId)])
+        if result:
+            return result[0].email
+        else:
+            return None
+
     
     @staticmethod
     def convertIndustry(SfIndustry,odoo):
@@ -255,3 +269,15 @@ class TranslatorSFAccount(ITranslator.ITranslator):
             return odooCurr
         else:
             return None
+    @staticmethod
+    def toOdooId(externalId, odoo):
+        for key in odoo.env['etl.salesforce.account'].search([]).keys:
+            if key.externalId == externalId:
+                return key.odooId
+        return None
+    @staticmethod
+    def toSfId(odooId,odoo):
+        for key in odoo.env['etl.salesforce.account'].search([]).keys:
+            if key.odooId == odooId:
+                return key.externalId
+        return None
