@@ -76,6 +76,12 @@ class ContactExt(models.Model):
         'res.users',
         string = 'Account Manager',
     )
+    #override to link
+    activity_user_id = fields.Many2one(
+        'res.users',
+        related = 'user_id',
+        store = True,
+    )
 
     #BD fields
     country_group_id = fields.Many2one(
@@ -103,6 +109,20 @@ class ContactExt(models.Model):
     #Marketing fields
     linkedin = fields.Char(
         string='LinkedIn Profile',
+    )
+
+    opted_in = fields.Boolean(
+        string = 'OptedIn',
+    )
+
+    opted_out = fields.Boolean(
+        string = 'OptedOut',
+    )
+
+    vcls_contact_id = fields.Many2one(
+        'res.partner',
+        string = "Initial Contact",
+        domain = "[('employee','=',True)]",
     )
     
     #project management fields
