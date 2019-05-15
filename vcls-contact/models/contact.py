@@ -83,6 +83,10 @@ class ContactExt(models.Model):
         store = True,
     )
 
+    linkedin = fields.Char(
+        string='LinkedIn Profile',
+    )
+    
     #BD fields
     country_group_id = fields.Many2one(
         'res.country.group',
@@ -106,24 +110,7 @@ class ContactExt(models.Model):
         string = 'Client Product',
     )
 
-    #Marketing fields
-    linkedin = fields.Char(
-        string='LinkedIn Profile',
-    )
-
-    opted_in = fields.Boolean(
-        string = 'OptedIn',
-    )
-
-    opted_out = fields.Boolean(
-        string = 'OptedOut',
-    )
-
-    vcls_contact_id = fields.Many2one(
-        'res.partner',
-        string = "Initial Contact",
-        domain = "[('employee','=',True)]",
-    )
+    
     
     #project management fields
     assistant_id = fields.Many2one(
@@ -212,6 +199,19 @@ class ContactExt(models.Model):
             contact.see_supplier = False
             if self.env.ref('vcls-contact.category_PS') in contact.category_id:
                 contact.see_supplier = True
+    
+    @api.onchange('category_id')
+    def _update_booleans(self):
+        for contact in self:
+            if self.env.ref('vcls-contact.category_account') in contact.category_id:
+                contact.customer = True
+            else:
+                contact.customer = False
+            
+            if self.env.ref('vcls-contact.category_suppliers') in contact.category_id or self.env.ref('vcls-contact.category_PS') in contact.category_id or self.env.ref('vcls-contact.category_AS') in contact.category_id:
+                contact.supplier = True
+            else:
+                contact.supplier = False
 
     @api.depends('employee')
     def _compute_is_internal(self):
