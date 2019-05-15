@@ -2,7 +2,7 @@
 <odoo>
     <data>
     
-        <record id="cron_individual_tags" model="ir.cron">
+        <!-- record id="cron_individual_tags" model="ir.cron">
             <field name="name">Sync Individuals from companies tags</field>
             <field name="active" eval="True" />
             <field name="user_id" ref="base.user_admin" />
@@ -13,7 +13,7 @@
             <field name="model_id" ref="model_res_partner" />
             <field name="state">code</field>
             <field name="code">model.update_individual_tags()</field>
-        </record>
+        </record -->
 
     </data>
 </odoo>

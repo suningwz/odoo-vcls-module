@@ -257,12 +257,11 @@ class ContactExt(models.Model):
         contact_ids = context.get('active_ids',[])
         self.env['res.partner'].browse(contact_ids).write({'stage': 5,'active':False})
     
-    #####################
-    # SCHEDULED ACTIONS #
-    #####################
+
+    @api.onchange('category_id', 'company_type')
     def update_individual_tags(self):
-        companies = self.env['res.partner'].search([('company_type', '=', 'company')])
-        for company in companies:
-            for child in company.child_ids:
-                child.category_id = [(6, 0, company.category_id.ids)]
+        for contact in self:
+            if contact.company_type == 'company':
+                for child in contact.child_ids:
+                    child.write({'category_id': [(6, 0, contact.category_id.ids)]})
         

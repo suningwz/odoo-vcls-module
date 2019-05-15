@@ -32,7 +32,7 @@
     'data': [
 
         ## ACTIONS ##
-        'actions/cronjob.xml',
+        # 'actions/cronjob.xml',
 
         ### SECURITY ###
         #'security/vcls_groups.xml',
