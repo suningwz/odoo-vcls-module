@@ -1,8 +1,5 @@
 from . import ITranslator
 
-class KeyNotFoundError(Exception):
-    pass
-
 class TranslatorSFAccount(ITranslator.ITranslator):
     
     def __init__(self,SF):
@@ -258,41 +255,3 @@ class TranslatorSFAccount(ITranslator.ITranslator):
             return odooCurr
         else:
             return None
-
-    @staticmethod
-    def convertId(SF,odoo,model,forMany):
-        element = []
-        SF = SF.split(';')
-        for sfname in SF:
-            try:
-                element = TranslatorSFAccount.toOD_id(sfname.lower(),odoo,model)
-            except KeyNotFoundError:
-                odooRef = odoo.env[model].search([('name','ilike',sfname)],limit=1)
-                if odooRef:
-                    element.append(odooRef.id)
-                    odoo.env['map.odoo'].create({'odModelName':model, 'externalName' : sfname.lower(), 'odooId':odooRef.id})
-                else:
-                    odoo.env['map.odoo'].create({'odModelName':model, 'externalName' : sfname.lower()})
-                # add toReviewed for maintain the mapping via UI ODOO
-
-        if not element:
-            return []
-
-        if forMany:
-            return element
-        return element[0]
-
-    @staticmethod
-    def toOD_id(SFName,odoo,model):
-        result = []
-        mapping = odoo.env['map.odoo'].search([('externalName','=ilike',SFName),('odModelName','=',model)])
-        if mapping:
-            for m in mapping:
-                if m.odooId:
-                    result.append(m.odooId)
-                elif m.externalOdooId:
-                    result.append(odoo.env.ref(m.externalOdooId).id) 
-            return result
-
-        #There is no mapping object for this SFName    
-        raise KeyNotFoundError
