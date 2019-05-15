@@ -42,7 +42,7 @@ class TranslatorSFAccount(ITranslator.ITranslator):
         #documented to trigger proper default image loaded
         result['is_company'] = 'True'
         result['currency_id'] = TranslatorSFAccount.convertCurrency(SF_Account['CurrencyIsoCode'],odoo)
-        
+        result['altname'] = SF_Account['VCLS_Alt_Name__c']
         result['user_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['OwnerId'],odoo, SF)
         if SF_Account['Main_VCLS_Contact__c']:
             result['expert_id'] = TranslatorSFAccount.convertSfIdToOdooId(SF_Account['Main_VCLS_Contact__c'],odoo, SF)
@@ -262,20 +262,22 @@ class TranslatorSFAccount(ITranslator.ITranslator):
     @staticmethod
     def convertId(SF,odoo,model,forMany):
         element = []
-        print(SF)
-        print("**************************")
-        try:
-            element = TranslatorSFAccount.toOD_id(SF.lower(),odoo,model)
-        except KeyNotFoundError:
-            odooRefs = odoo.env[model].search([('name','ilike',SF)])
-            if odooRefs:
-                for o in odooRefs:
-                    element.append(o.id)
-                    odoo.env['map.odoo'].create({'odModelName':model, 'externalName' : SF.lower(), 'odooId':o.id})
-            else:
-                odoo.env['map.odoo'].create({'odModelName':model, 'externalName' : SF.lower()})
-                return []
-            # add toReviewed for maintain the mapping via UI ODOO
+        SF = SF.split(';')
+        for sfname in SF:
+            try:
+                element = TranslatorSFAccount.toOD_id(sfname.lower(),odoo,model)
+            except KeyNotFoundError:
+                odooRef = odoo.env[model].search([('name','ilike',sfname)],limit=1)
+                if odooRef:
+                    element.append(odooRef.id)
+                    odoo.env['map.odoo'].create({'odModelName':model, 'externalName' : sfname.lower(), 'odooId':odooRef.id})
+                else:
+                    odoo.env['map.odoo'].create({'odModelName':model, 'externalName' : sfname.lower()})
+                # add toReviewed for maintain the mapping via UI ODOO
+
+        if not element:
+            return []
+
         if forMany:
             return element
         return element[0]
@@ -283,18 +285,12 @@ class TranslatorSFAccount(ITranslator.ITranslator):
     @staticmethod
     def toOD_id(SFName,odoo,model):
         result = []
-        mapping = [odoo.env['map.odoo'].search([('externalName','=ilike',SFName),('odModelName','=',model)])]
-        print(mapping)
-        if mapping[0]:
+        mapping = odoo.env['map.odoo'].search([('externalName','=ilike',SFName),('odModelName','=',model)])
+        if mapping:
             for m in mapping:
-                print(m)
                 if m.odooId:
-                    print("1")
-                    print(m.odooId)
                     result.append(m.odooId)
                 elif m.externalOdooId:
-                    print("2")
-                    print(m.externalOdooId)
                     result.append(odoo.env.ref(m.externalOdooId).id) 
             return result
 
