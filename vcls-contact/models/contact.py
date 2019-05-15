@@ -263,5 +263,6 @@ class ContactExt(models.Model):
         for contact in self:
             if contact.company_type == 'company':
                 for child in contact.child_ids:
-                    child.write({'category_id': [(6, 0, contact.category_id.ids)]})
+                    if child.company_type == 'person':
+                        child.write({'category_id': [(6, 0, contact.category_id.ids)]})
         
