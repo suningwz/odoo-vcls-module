@@ -78,6 +78,11 @@
                                 <field name="exceptional_case_id" string="Exceptional Case"/>
                                 <field name="exceptional_allocation" string="Exceptional Allocation" /> <!--attrs="{'readonly': [('1','=','1')]}"/>-->
                             </group>
+
+                            <group name="Warning" attrs="{'invisible':[('need_warning','=',False)]}">
+                                <field name="need_warning" invisible="1" />
+                                <field name="warning_message" />
+                            </group>
                             
                             <group name="col_right">
                                 <field name="employee_id" invisible="1" attrs="{'readonly': [('state', 'not in', ('draft', 'confirm'))]}"/>
