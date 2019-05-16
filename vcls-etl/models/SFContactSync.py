@@ -1,6 +1,8 @@
 from . import TranslatorSFContact
 from . import ETL_SF
 from . import generalSync
+import logging
+_logger = logging.getLogger(__name__)
 
 import pytz
 from simple_salesforce import Salesforce
@@ -58,18 +60,14 @@ class SFContactSync(models.Model):
 
     def setToExternal(self, translator, externalInstance, time):
         time1 = self.getStrLastRun()
-        print(time1)
         time = time.replace(second = time.second - 1)
-        print('{} < record < {}'.format(time1, time))
-        modifiedRecords = self.env['res.partner'].search([('write_date','>',time1),('write_date','<',time)])
-        print(modifiedRecords)
+        modifiedRecords = self.env['res.partner'].search([('write_date','>',time1),('write_date','<',time),('is_company','=',False)])
         for record in modifiedRecords:
             try:
                 self.toExternalId(str(record.id))
                 #self.updateSF(record,translator,externalInstance)
             except (generalSync. KeyNotFoundError, ValueError):
                 self.createSF(record,translator,externalInstance)
-
 
     def update(self, item, translator,externalInstance):
         OD_id = self.toOdooId(item['Id'])
@@ -85,17 +83,13 @@ class SFContactSync(models.Model):
         partner_id = self.env['res.partner'].create(odooAttributes).id
         print('Create new record in Odoo: {}'.format(item['Name']))
         self.addKeys(item['Id'], partner_id)
-
-    def updateSF(self,item,translator,externalInstance):
-        SF_ID = self.toExternalId(str(item.id))
-        sfAttributes = translator.translateToSF(item, self)
-        externalInstance.Contact.update(SF_ID[0],sfAttributes)
-        print('Updated record in Salesforce: {}'.format(item.name))
     
     def createSF(self,item,translator,externalInstance):
         sfAttributes = translator.translateToSF(item, self)
         try:
-            sfRecord = externalInstance.Contact.create(sfAttributes)
+            _logger.debug(sfAttributes)
+            _logger.debug("This dictionnary will be create in Account")
+            #sfRecord = externalInstance.Contact.create(sfAttributes)
             print('Create new record in Salesforce: {}'.format(item.name))
             self.addKeys(sfRecord['id'], item.id)
         except:
