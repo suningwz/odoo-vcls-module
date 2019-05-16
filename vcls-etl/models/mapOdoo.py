@@ -11,6 +11,6 @@ class mapOdoo(models.Model):
         (2, 'Verified')],
         string='Stage',
         track_visibility='onchange',
-        default=2,
+        default=1,
     )
     #toReviewed = fields.Selection()

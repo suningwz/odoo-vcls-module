@@ -1,31 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-    <record model="ir.actions.act_window" id="action_etl_account">
-            <field name="name">ETL Salesforce Account</field>
-            <field name="res_model">etl.salesforce.account</field>
-            <field name="view_mode">kanban,tree,form,activity</field>
-    </record>
-    <record model="ir.actions.act_window" id="action_etl_contact">
-            <field name="name">ETL Salesforce Contact</field>
-            <field name="res_model">etl.salesforce.contact</field>
-            <field name="view_mode">kanban,tree,form,activity</field>
-    </record>
-    <record model="ir.actions.act_window" id="action_etl_opportunity">
+	<data>
+
+		<record id="view_search_map_odoo" model="ir.ui.view">
+            <field name="name">view_search_map_odoo</field>
+            <field name="model">map.odoo</field>
+			<field name="arch" type="xml">
+                <search string="Map">
+					<filter name="new" string="New" domain="[('stage','=',1)]" context="{'group_by':'odModelName'}"/>
+				</search>
+            </field>
+        </record>
+
+		<record id="view_form_map_odoo" model="ir.ui.view">
+			<field name="name">view_form_map_odoo</field>
+			<field name="priority" eval="0"/>
+			<field name="model">map.odoo</field>
+			<field name="arch" type="xml">
+				<form string="Map">
+					<header>
+						<field name="stage" widget="statusbar" options="{'clickable': '1'}"/>
+					</header>
+					<group>
+						<field name="odModelName"/>
+						<field name="externalName"/>
+						<field name="odooId"/>
+						<field name="externalOdooId"/>
+					</group>
+				</form>
+			</field>
+		</record>
+
+		<record id="view_tree_map_odoo" model="ir.ui.view">
+			<field name="name">view_tree_map_odoo</field>
+			<field name="model">map.odoo</field>
+			<field name="arch" type="xml">
+				<tree string="Map">
+					<field name="stage" options="{'clickable': '1'}"/>
+					<field name="odModelName"/>
+					<field name="externalName"/>
+					<field name="odooId"/>
+					<field name="externalOdooId"/>
+				</tree>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_etl_account">
+			<field name="name">ETL Salesforce Account</field>
+			<field name="res_model">etl.salesforce.account</field>
+			<field name="view_mode">kanban,tree,form,activity</field>
+		</record>
+		<record model="ir.actions.act_window" id="action_etl_contact">
+			<field name="name">ETL Salesforce Contact</field>
+			<field name="res_model">etl.salesforce.contact</field>
+			<field name="view_mode">kanban,tree,form,activity</field>
+		</record>
+		<record model="ir.actions.act_window" id="action_etl_keys">
+			<field name="name">ETL Keys</field>
+			<field name="res_model">etl.sync.keys</field>
+			<field name="view_mode">kanban,tree,form,activity</field>
+		</record>
+	    <record model="ir.actions.act_window" id="action_etl_opportunity">
             <field name="name">ETL Salesforce Opportunity</field>
             <field name="res_model">etl.salesforce.opportunity</field>
             <field name="view_mode">kanban,tree,form,activity</field>
-    </record>
-    <record model="ir.actions.act_window" id="action_etl_keys">
-            <field name="name">ETL Keys</field>
-            <field name="res_model">etl.sync.keys</field>
-            <field name="view_mode">kanban,tree,form,activity</field>
-    </record>
-    <record model="ir.actions.act_window" id="action_etl_map">
-            <field name="name">ETL Map Odoo</field>
-            <field name="res_model">map.odoo</field>
-            <field name="view_mode">kanban,tree,form,activity</field>
-    </record>
-    </data>
+    	</record>
+		<record model="ir.actions.act_window" id="action_etl_map">
+			<field name="name">ETL Map Odoo</field>
+			<field name="res_model">map.odoo</field>
+			<field name="context">{'search_default_new':1}</field>
+			<field name="view_mode">kanban,tree,form,activity</field>
+			<field name="search_view_id" ref='view_search_map_odoo'/>
+			<field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_tree_map_odoo')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_form_map_odoo')}),
+            ]"/>
+		</record>
+
+	</data>
 </odoo>
     

@@ -91,7 +91,7 @@ class TranslatorSFContact(ITranslator.ITranslator):
         """ for c in Odoo_Contact.category_id:
             category += c.name 
         result['Category__c'] = category""" 
-        result['Salutation'] = TranslatorSFContact.revertSalutation(Odoo_Contact.title.name)
+        result['Salutation'] = odoo.env['map.odoo'].search([('odModelName','=','res.partner.title'),('odooId','=',Odoo_Contact.title)]).externalName
         result['Title'] = Odoo_Contact.function
 
         return result
@@ -188,31 +188,8 @@ class TranslatorSFContact(ITranslator.ITranslator):
             return None
 
     @staticmethod
-    def convertSalutation(SFSalutation, odoo):
-        if SFSalutation:
-            if 'mr' in SFSalutation.lower():
-                return odoo.env.ref('base.res_partner_title_mister').id
-            if 'dr' in SFSalutation.lower():
-                return odoo.env.ref('base.res_partner_title_doctor').id
-            if 'ms' in SFSalutation.lower():
-                return odoo.env.ref('base.res_partner_title_miss').id
-            if 'mrs' in SFSalutation.lower():
-                return odoo.env.ref('base.res_partner_title_madam').id
-            if 'prof' in SFSalutation.lower():
-                return odoo.env.ref('base.res_partner_title_prof').id
-    @staticmethod
-    def revertSalutation(OdooSalutation):
-        if OdooSalutation:
-            if 'mister' in OdooSalutation.lower():
-                return 'mr'
-            if 'doctor' in OdooSalutation.lower():
-                return 'dr'
-            if 'miss' in OdooSalutation.lower():
-                return 'ms'
-            if 'madam' in OdooSalutation.lower():
-                return 'mrs' 
-            if 'prof' in OdooSalutation.lower():
-                return 'prof'
+    def revertSalutation(OdooSalutation, odoo):
+        return odoo
 
     @staticmethod
     def toOdooId(externalId, odoo):
