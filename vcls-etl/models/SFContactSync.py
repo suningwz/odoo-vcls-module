@@ -89,7 +89,7 @@ class SFContactSync(models.Model):
         try:
             _logger.debug(sfAttributes)
             _logger.debug("This dictionnary will be create in Account")
-            #sfRecord = externalInstance.Contact.create(sfAttributes)
+            sfRecord = externalInstance.Contact.create(sfAttributes)
             print('Create new record in Salesforce: {}'.format(item.name))
             self.addKeys(sfRecord['id'], item.id)
         except:
