@@ -215,9 +215,9 @@ class ContactExt(models.Model):
 
     @api.depends('employee')
     def _compute_is_internal(self):
-        """ for contact in self:
+        for contact in self:
             if contact.employee or self.env['res.company'].search([('partner_id.id','=',contact.id)]):
-                contact.is_internal = True """
+                contact.is_internal = True
     
     @api.depends('country_id')
     def _compute_country_group(self):
