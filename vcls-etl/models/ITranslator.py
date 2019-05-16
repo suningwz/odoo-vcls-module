@@ -26,9 +26,9 @@ class ITranslator(ABC):
                 odooRef = odoo.env[model].search([('name','ilike',sfname)],limit=1)
                 if odooRef:
                     element.append(odooRef.id)
-                    odoo.env['map.odoo'].create({'odModelName':model, 'externalName' : sfname.lower(), 'odooId':odooRef.id})
+                    odoo.env['map.odoo'].create({'odModelName':model, 'externalName' : sfname.lower(), 'odooId':odooRef.id, 'stage':1})
                 else:
-                    odoo.env['map.odoo'].create({'odModelName':model, 'externalName' : sfname.lower()})
+                    odoo.env['map.odoo'].create({'odModelName':model, 'externalName' : sfname.lower(), 'stage':1})
                 # add toReviewed for maintain the mapping via UI ODOO
 
         if not element:

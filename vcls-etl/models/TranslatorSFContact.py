@@ -39,11 +39,12 @@ class TranslatorSFContact(ITranslator.ITranslator):
         result['company_type'] = 'person'
         #documented to trigger proper default image loaded
         result['is_company'] = False
+        
         if SF_Contact['MailingCountry']:
             result['country_id'] = TranslatorSFContact.convertId(SF_Contact['MailingCountry'],odoo,'res.country',False)
-        result['currency_id'] = TranslatorSFContact.convertCurrency(SF_Contact['CurrencyIsoCode'],odoo)
         
-        result['user_id'] = TranslatorSFContact.convertSfIdToOdooId(SF_Contact['OwnerId'],odoo, SF)
+        result['currency_id'] = TranslatorSFContact.convertCurrency(SF_Contact['CurrencyIsoCode'],odoo)        
+        result['user_id'] = TranslatorSFContact.convertUserId(SF_Contact['OwnerId'],odoo, SF)
        
         result['category_id'] =  [(6, 0, TranslatorSFContact.convertCategory(SF_Contact['Supplier__c'],SF_Contact['Category__c'],odoo))]
         if SF_Contact['Salutation']:
@@ -135,7 +136,7 @@ class TranslatorSFContact(ITranslator.ITranslator):
         return None
 
     @staticmethod
-    def convertSfIdToOdooId(ownerId, odoo, SF):
+    def convertUserId(ownerId, odoo, SF):
         mail = TranslatorSFContact.getUserMail(ownerId,SF)
         return TranslatorSFContact.getUserId(mail,odoo)
     @staticmethod
