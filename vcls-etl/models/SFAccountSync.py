@@ -17,7 +17,7 @@ class SFAccountSync(models.Model):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
-        #time = datetime.now(pytz.timezone("GMT"))
+        time = datetime.now(pytz.timezone("GMT"))
         print('Connecting to the Saleforce Database')
         sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
         translator = TranslatorSFAccount.TranslatorSFAccount(sfInstance.getConnection())
@@ -25,7 +25,7 @@ class SFAccountSync(models.Model):
         if not SF:
             SF = self.env['etl.salesforce.account'].create({})
         SF[0].getFromExternal(translator, sfInstance.getConnection(),isFullUpdate)
-        #SF[0].setToExternal(translator, sfInstance.getConnection(), time)
+        SF[0].setToExternal(translator, sfInstance.getConnection(), time)
         SF[0].setNextRun()
 
     def getFromExternal(self, translator, externalInstance, fullUpdate):
@@ -38,7 +38,7 @@ class SFAccountSync(models.Model):
         sql += 'Supplier_Selection_Form_completed__c, Website, '
         sql += 'Create_Sharepoint_Folder__c, OwnerId, Is_supplier__c, Main_VCLS_Contact__c, '
         sql += 'Supplier__c, Type, Project_Controller__c, VCLS_Alt_Name__c,  '
-        sql += 'Supplier_Project__c, Activity__c, Product_Type__c, Industry, CurrencyIsoCode '
+        sql += 'Supplier_Project__c, Activity__c, Product_Type__c, Industry, CurrencyIsoCode, Invoice_Administrator__c '
         sql += 'FROM Account '
         sql += 'WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null))'
         
@@ -64,7 +64,8 @@ class SFAccountSync(models.Model):
         print(modifiedRecords)
         for record in modifiedRecords:
             try:
-                self.updateSF(record,translator,externalInstance)
+                self.toExternalId(str(record.id))
+                #self.updateSF(record,translator,externalInstance)
             except (generalSync. KeyNotFoundError, ValueError):
                 self.createSF(record,translator,externalInstance)
 
@@ -84,8 +85,6 @@ class SFAccountSync(models.Model):
         partner_id = self.env['res.partner'].create(odooAttributes).id
         print('Create new record in Odoo: {}'.format(item['Name']))
         self.addKeys(item['Id'], partner_id)
-        i = self.env['etl.sync.keys'].search([('odooId','=',partner_id)])
-        print(i)
 
     def updateSF(self,item,translator,externalInstance):
         SF_ID = self.toExternalId(str(item.id))

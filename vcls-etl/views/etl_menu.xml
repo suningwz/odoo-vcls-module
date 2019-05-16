@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<menuitem 
+			name="ETL" 
+			parent="base.menu_custom" 
+			id="menu_etl" 
+			action="" 
+			sequence="6" />
+		<menuitem 
+			name="Salesforce Account" 
+			parent="menu_etl" 
+			id="menu_etl_account" 
+			action="action_etl_account" 
+			sequence="6" />
+		<menuitem 
+			name="Salesforce Contact" 
+			parent="menu_etl" 
+			id="menu_etl_contact" 
+			action="action_etl_account" 
+			sequence="6" />
+		<menuitem 
+			name="Keys" 
+			parent="menu_etl" 
+			id="menu_etl_keys" 
+			action="action_etl_keys" 
+			sequence="6" />
+		<menuitem 
+			name="Map Odoo" 
+			parent="menu_etl" 
+			id="menu_etl_map" 
+			action="action_etl_map" 
+			sequence="6" />
+	</data>
+</odoo>

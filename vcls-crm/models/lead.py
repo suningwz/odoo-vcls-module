@@ -15,7 +15,12 @@ class Leads(models.Model):
         return self.guess_am()
     
     ### CUSTOM FIELDS RELATED TO MARKETING PURPOSES ###
-    user_id = fields.Many2one('res.users', string='Account Manager', track_visibility='onchange', default='_default_am')
+    user_id = fields.Many2one(
+        'res.users', 
+        string='Account Manager', 
+        track_visibility='onchange', 
+        #default='_default_am',
+        )
 
     country_group_id = fields.Many2one(
         'res.country.group',
@@ -69,10 +74,10 @@ class Leads(models.Model):
             if groups:
                 lead.country_group_id = groups[0]
     
-    @api.onchange('partner_id','country_id')
+    """@api.onchange('partner_id','country_id')
     def _change_am(self):
         for lead in self:
-            lead.user_id = lead.guess_am()
+            lead.user_id = lead.guess_am()"""
 
     ################
     # TOOL METHODS #
