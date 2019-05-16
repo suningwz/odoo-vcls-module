@@ -91,7 +91,7 @@ class TranslatorSFContact(ITranslator.ITranslator):
         """ for c in Odoo_Contact.category_id:
             category += c.name 
         result['Category__c'] = category""" 
-        result['Salutation'] = TranslatorSFContact.revertSalutation(Odoo_Contact.title)
+        result['Salutation'] = TranslatorSFContact.revertSalutation(Odoo_Contact.title.name)
         result['Title'] = Odoo_Contact.function
 
         return result
