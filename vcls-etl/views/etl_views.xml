@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<data>
+
 		<record id="view_search_map_odoo" model="ir.ui.view">
             <field name="name">view_search_map_odoo</field>
             <field name="model">map.odoo</field>
-            <field name="arch" type="xml">
+			<field name="arch" type="xml">
                 <search string="Map">
-                    <field name="stage" string="New" filter_domain="[('stage','=',1)]" context="{'group_by':'odModelName'}"/>
+					<filter name="new" string="New" domain="[('stage','=',1)]" context="{'group_by':'odModelName'}"/>
 				</search>
             </field>
         </record>
@@ -62,7 +63,9 @@
 		<record model="ir.actions.act_window" id="action_etl_map">
 			<field name="name">ETL Map Odoo</field>
 			<field name="res_model">map.odoo</field>
+			<field name="context">{'search_default_new':1}</field>
 			<field name="view_mode">kanban,tree,form,activity</field>
+			<field name="search_view_id" ref='view_search_map_odoo'/>
 			<field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('view_tree_map_odoo')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('view_form_map_odoo')}),
