@@ -28,10 +28,9 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'views/views.xml',
-        'views/templates.xml',
         'views/etl_views.xml',
         'views/etl_menu.xml',
+        'views/templates.xml',
         'data/parameters.xml',
         'actions/etl_cronjob.xml',
 
