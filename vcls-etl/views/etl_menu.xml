@@ -20,6 +20,12 @@
 			action="action_etl_account" 
 			sequence="6" />
 		<menuitem 
+			name="Salesforce Opportunity" 
+			parent="menu_etl" 
+			id="menu_etl_opportunity" 
+			action="action_etl_opportunity" 
+			sequence="6" />
+		<menuitem 
 			name="Keys" 
 			parent="menu_etl" 
 			id="menu_etl_keys" 

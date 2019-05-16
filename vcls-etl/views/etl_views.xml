@@ -60,6 +60,11 @@
 			<field name="res_model">etl.sync.keys</field>
 			<field name="view_mode">kanban,tree,form,activity</field>
 		</record>
+	    <record model="ir.actions.act_window" id="action_etl_opportunity">
+            <field name="name">ETL Salesforce Opportunity</field>
+            <field name="res_model">etl.salesforce.opportunity</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+    	</record>
 		<record model="ir.actions.act_window" id="action_etl_map">
 			<field name="name">ETL Map Odoo</field>
 			<field name="res_model">map.odoo</field>
