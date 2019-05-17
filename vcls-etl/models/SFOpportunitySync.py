@@ -13,7 +13,7 @@ class SFOpportunitySync(models.Model):
     _name = 'etl.salesforce.opportunity'
     _inherit = 'etl.sync.mixin'
 
-    def run(self,isFullUpdate):
+    def run(self,isFullUpdate, createInOdoo, updateInOdoo):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
@@ -23,10 +23,10 @@ class SFOpportunitySync(models.Model):
         SF = self.env['etl.salesforce.opportunity'].search([])
         if not SF:
             SF = self.env['etl.salesforce.opportunity'].create({})
-        SF[0].getFromExternal(translator, sfInstance.getConnection(),isFullUpdate)
+        SF[0].getFromExternal(translator, sfInstance.getConnection(),isFullUpdate, createInOdoo, updateInOdoo)
         SF[0].setNextRun()
 
-    def getFromExternal(self, translator, externalInstance, fullUpdate):
+    def getFromExternal(self, translator, externalInstance, fullUpdate, createInOdoo, updateInOdoo):
         
         sql =  'SELECT O.Id, O.Name, O.AccountId, '
         sql += 'O.OwnerId, O.LastModifiedDate, O.ExpectedRevenue, O.Reasons_Lost_Comments__c, O.Probability, O.CloseDate, O.Deadline_for_Sending_Proposal__c, O.LeadSource, '
@@ -36,19 +36,21 @@ class SFOpportunitySync(models.Model):
         sql +=  'SELECT A.Id '
         sql +=  'FROM Account as A '
         sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
-        sql += ')'
+        sql += ') '
         
         if fullUpdate:
-            Modifiedrecords = externalInstance.query(sql)['records']
+            Modifiedrecords = externalInstance.query(sql + ' ORDER BY O.Name')['records']
         else:
-            Modifiedrecords = externalInstance.query(sql +' And O.LastModifiedDate > '+ self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000"))['records']
+            Modifiedrecords = externalInstance.query(sql +' And O.LastModifiedDate > '+ self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") + ' ORDER BY O.Name')['records']
         
         for SFrecord in Modifiedrecords:
             try:
                 if fullUpdate or not self.isDateOdooAfterExternal(self.getLastUpdate(self.toOdooId(SFrecord['Id'])), datetime.strptime(SFrecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")):
-                    self.update(SFrecord, translator, externalInstance)
+                    if updateInOdoo:
+                        self.update(SFrecord, translator, externalInstance)
             except (generalSync.KeyNotFoundError, ValueError):
-                self.createRecord(SFrecord, translator, externalInstance)
+                if createInOdoo:
+                    self.createRecord(SFrecord, translator, externalInstance)
                 
 
     def update(self, item, translator,externalInstance):

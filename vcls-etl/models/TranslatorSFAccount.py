@@ -79,22 +79,43 @@ class TranslatorSFAccount(ITranslator.ITranslator):
         result = {}
         # Modify the name with -test
         result['Name'] = Odoo_Contact.name
-        print(result['Name'])
 
-        #result['Supplier_Status__c'] = TranslatorSFAccount.revertStatus(Odoo_Contact.stage)
-        result['BillingAddress'] = {}
-        result['BillingAddress']['city'] = Odoo_Contact.city
-        result['BillingAddress']['postalCode'] = Odoo_Contact.zip
-        result['BillingAddress']['street'] = Odoo_Contact.street
-        result['Phone'] = Odoo_Contact.phone
-        result['Fax'] = Odoo_Contact.fax
-        # result['Sharepoint_Folder__c'] = TranslatorSFAccount.revertUrl(Odoo_Contact.sharepoint_folder)
-        # Ignore description
-        result['Website'] = Odoo_Contact.website
+        if Odoo_Contact.city:
+            result['BillingCity'] = Odoo_Contact.city
+        if Odoo_Contact.zip:
+            result['BillingPostalCode'] = Odoo_Contact.zip
+        if Odoo_Contact.street:
+            result['BillingStreet'] = Odoo_Contact.street
+        if Odoo_Contact.country_id:
+            result['BillingCountry'] = TranslatorSFAccount.revertCountry(Odoo_Contact.country_id.id, odoo)
 
-        # Ignore company_type
-        result['BillingCountry'] = TranslatorSFAccount.revertCountry(Odoo_Contact.country_id.id, odoo)
-        # result['user_id'] = TranslatorSFAccount.convertUserId(SF_Account['OwnerId'],odoo, SF)
+        if Odoo_Contact.altname:
+            result['VCLS_Alt_Name__c'] = Odoo_Contact.altname
+        if Odoo_Contact.user_id:
+            result['OwnerId'] = TranslatorSFAccount.revertOdooIdToSfId(Odoo_Contact.user_id, odoo)
+            
+        if Odoo_Contact.phone:
+            result['Phone'] = Odoo_Contact.phone
+        if Odoo_Contact.fax:
+            result['Fax'] = Odoo_Contact.fax
+        if Odoo_Contact.website:
+            result['Website'] = Odoo_Contact.website
+        
+        if Odoo_Contact.description:
+            result['Supplier_Description__c'] = Odoo_Contact.description
+        result['Create_Sharepoint_Folder__c'] = Odoo_Contact.create_folder
+        if Odoo_Contact.currency_id:
+            result['CurrencyIsoCode'] = Odoo_Contact.currency_id.name
+        if Odoo_Contact.expert_id:
+            result['Main_VCLS_Contact__c'] = TranslatorSFAccount.revertOdooIdToSfId(Odoo_Contact.expert_id, odoo)
+        if Odoo_Contact.assistant_id:
+            result['Project_Assistant__c'] = TranslatorSFAccount.revertOdooIdToSfId(Odoo_Contact.assistant_id, odoo)
+        if Odoo_Contact.controller_id:
+            result['Project_Controller__c'] = TranslatorSFAccount.revertOdooIdToSfId(Odoo_Contact.controller_id, odoo)
+        if Odoo_Contact.industry_id:
+            result['Industry'] = Odoo_Contact.industry_id.name
+        if Odoo_Contact.project_supplier_type_id:
+            result['project_supplier_type_id'] = Odoo_Contact.project_supplier_type_id
         return result
 
     @staticmethod
@@ -147,6 +168,10 @@ class TranslatorSFAccount(ITranslator.ITranslator):
     def convertUserId(ownerId, odoo, SF):
         mail = TranslatorSFAccount.getUserMail(ownerId,SF)
         return TranslatorSFAccount.getUserId(mail,odoo)
+    @staticmethod
+    def revertOdooIdToSfId(idodoo,odoo):
+        mail = TranslatorSFAccount.getUserMailOd(idodoo.id,odoo)
+        return TranslatorSFAccount.getUserIdSf(mail)
     
     @staticmethod
     def convertCategory(SFAccount, odoo):
