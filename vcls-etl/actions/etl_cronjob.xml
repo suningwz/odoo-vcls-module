@@ -12,18 +12,18 @@
             <field name="doall">1</field>
             <field name="model_id" ref="model_etl_salesforce_account" />
             <field name="state">code</field>
-            <field name="code">model.run(False)</field>
+            <field name="code">model.run(False, False, True, True, True, False)</field>
         </record>
 
         <record id="cron_etl_account_full_update" model="ir.cron">
-            <field name="name">ETL Odoo full update from Salesforce</field>
+            <field name="name">ETL Salesforce Account Full Update</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="numbercall">-1</field>
             <field name="doall">1</field>
             <field name="model_id" ref="model_etl_salesforce_account" />
             <field name="state">code</field>
-            <field name="code">model.run(True)</field>
+            <field name="code">model.run(True, False, True, True, True, False)</field>
         </record>
 
         <record id="cron_etl_contact" model="ir.cron">
@@ -36,7 +36,7 @@
             <field name="doall">1</field>
             <field name="model_id" ref="model_etl_salesforce_contact" />
             <field name="state">code</field>
-            <field name="code">model.run(False)</field>
+            <field name="code">model.run(False, False, True, True, True, False)</field>
         </record>
 
         <record id="cron_etl_contact_full_Update" model="ir.cron">
@@ -47,7 +47,31 @@
             <field name="doall">1</field>
             <field name="model_id" ref="model_etl_salesforce_contact" />
             <field name="state">code</field>
-            <field name="code">model.run(True)</field>
+            <field name="code">model.run(True, False, True, True, True, False)</field>
+        </record>
+        
+        <record id="cron_etl_Opportunity" model="ir.cron">
+            <field name="name">ETL Saleforce / Odoo Opportunity</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="doall">1</field>
+            <field name="model_id" ref="model_etl_salesforce_opportunity" />
+            <field name="state">code</field>
+            <field name="code">model.run(False, True, True)</field>
+        </record>
+
+        <record id="cron_etl_opportunity_full_Update" model="ir.cron">
+            <field name="name">ETL Saleforce Opportunity full update</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="doall">1</field>
+            <field name="model_id" ref="model_etl_salesforce_opportunity" />
+            <field name="state">code</field>
+            <field name="code">model.run(True, True, True)</field>
         </record>
 
     </data>
