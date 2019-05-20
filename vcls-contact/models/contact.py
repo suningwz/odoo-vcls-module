@@ -93,11 +93,6 @@ class ContactExt(models.Model):
         string = "Geographic Area",
         compute = '_compute_country_group',
     )
-
-    currency_id = fields.Many2one(
-        'res.currency',
-        string="Currency",
-        )
     
     client_activity_ids = fields.Many2many(
         'client.activity',
