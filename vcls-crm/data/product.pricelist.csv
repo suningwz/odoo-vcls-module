@@ -1,3 +1,5 @@
 id,name,sequence,currency_id,company_id:id
 pricelist_std_EUR,Standard EUR,1,EUR,
 pricelist_std_USD,Standard USD,2,USD,
+pricelist_std_CHF,Standard CHF,3,CHF,
+pricelist_std_GBP,Standard GBP,4,GBP,

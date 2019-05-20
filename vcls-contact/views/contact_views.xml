@@ -201,6 +201,14 @@
                                 </page>
 
                                 <page name="financials" string="Financials" attrs="{'invisible': [('see_segmentation', '=', False)]}">
+                                   <group>
+                                        <group>
+                                            <field name="property_product_pricelist" string="Trading Pricelist"/>
+                                        </group>
+                                        <group>
+                                            
+                                        </group>
+                                    </group> 
                                 </page>
                                 
                             </notebook>       
