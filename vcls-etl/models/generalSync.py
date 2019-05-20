@@ -15,8 +15,17 @@ class ETLMap(models.Model):
     # Helsinki
     odooId = fields.Char(readonly = True)
     externalId = fields.Char(readonly = True)
-    isUpdate = fields.Boolean(default = False)
     syncRecordId = fields.Many2one('etl.sync.mixin', readonly = True)
+
+    state = fields.Selection([
+        ('upToDate', 'Up To Date'),
+        ('needUpdateOdoo', 'Need Update In Odoo'),
+        ('needUpdateExternal', 'Need Update In External'),
+        ('needCreateOdoo', 'Need To Be Created In Odoo'),
+        ('needCreateExternal', 'Need To Be Created In External')],
+        string='State',
+        default='upToDate' # For existing keys
+    )
 
     # foutre les fonctions de mappage ici
 
