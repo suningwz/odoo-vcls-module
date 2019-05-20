@@ -49,12 +49,12 @@ class SFAccountSync(models.Model):
         sql += 'FROM Account '
         sql += 'WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null)) '
         
-        Modifiedrecords = externalInstance.query(sql + ' ORDER BY Name')['records'] #All records
-        keysTable = self.env['etl.salesforce.account'].keys
-
+        Modifiedrecords = externalInstance.getConnection().query(sql + ' ORDER BY Name')['records'] #All records
+        keysTable = self.keys
         if not nbMaxRecords:
             #if nbMaxRecords == None / no limit
             nbMaxRecords = len(keysTable)
+            print("Max Nb Records")
         print(nbMaxRecords)
         i = 0
         for key in keysTable:
@@ -65,11 +65,14 @@ class SFAccountSync(models.Model):
                             item = record
                     if item:
                         odooAttributes = translator.translateToOdoo(item, self, externalInstance)
+                        print(key.odooId)
                         record = self.env['res.partner'].browse(key.odooId)
+                        print(record)
                         record.image=record._get_default_image(False, odooAttributes.get('is_company'), False)
+                        print('HERE')
                         record.write(odooAttributes)
                         print('Updated record in Odoo: {}'.format(item['Name']))
-                        key.state =' upToDate'
+                        key.state ='upToDate'
                         i += 1
                 elif key.state == 'needCreateOdoo':
                     for record in Modifiedrecords:
@@ -77,9 +80,11 @@ class SFAccountSync(models.Model):
                             item = record
                     if item:
                         odooAttributes = translator.translateToOdoo(item, self, externalInstance)
+                        print('OR HERE')
                         partner_id = self.env['res.partner'].create(odooAttributes).id
                         print('Create new record in Odoo: {}'.format(item['Name']))
                         key.odooId = partner_id
+                        key.state ='upToDate'
                         i += 1
     
     def needUpdateExternal(self, translator, externalInstance, nbMaxRecords):
@@ -94,10 +99,10 @@ class SFAccountSync(models.Model):
                     item = self.env['res.partner'].browse(key.odooId)
                     sfAttributes = translator.translateToSF(item, self)
                     _logger.debug(sfAttributes)
-                    sfRecord = externalInstance.Account.update(key.externalId,sfAttributes)
+                    sfRecord = externalInstance.getConnection().Account.update(key.externalId,sfAttributes)
                     print('Update record in Salesforce: {}'.format(item.name))
                     _logger.debug('Update record in Salesforce: {}'.format(item.name))
-                    key.state =' upToDate'
+                    key.state ='upToDate'
                     i += 1
                 elif key.state == 'needCreateExternal':
                     try:
@@ -106,10 +111,11 @@ class SFAccountSync(models.Model):
                             sfAttributes = translator.translateToSF(item, self)
                             _logger.debug(sfAttributes)
                             _logger.debug("This dictionnary will be create in Account")
-                            sfRecord = externalInstance.Account.create(sfAttributes)
+                            sfRecord = externalInstance.getConnection().Account.create(sfAttributes)
                             print('Create new record in Salesforce: {}'.format(item.name))
                             _logger.debug("This dictionnary will be create in Account")
                             key.externalId = sfRecord['id']
+                            key.state ='upToDate'
                             i += 1
                     except SalesforceMalformedRequest: 
                         print('Duplicate : '+ item.name)
@@ -207,25 +213,27 @@ class SFAccountSync(models.Model):
                 if self.isDateOdooAfterExternal(lastModifiedOdoo, lastModifiedExternal):
                     # Exist in Odoo & External
                     # Odoo is more recent
-                    self.getKeyFromExtId(extRecord['Id']).setState('needUpdateExternal')
+                    self.getKeyFromExtId(extRecord['Id'])[0].setState('needUpdateExternal')
                 else:
                     # Exist in Odoo & External
                     # External is more recent
-                    self.getKeyFromExtId(extRecord['Id']).setState('needUpdateOdoo')
+                    self.getKeyFromExtId(extRecord['Id'])[0].setState('needUpdateOdoo')
             except (generalSync.KeyNotFoundError, ValueError):
                 # Exist in External but not in Odoo
                 self.addKeys(externalId = extRecord['Id'], odooId = None, state = 'needCreateOdoo')
         
         for odooRecord in modifiedRecordsOdoo:
             try:
-                key = self.getKeyFromOdooId(odooRecord.id)
+                key = self.getKeyFromOdooId(str(odooRecord.id))[0]
                 # Exist in Odoo & External
                 # Odoo is more recent
                 if key.state == 'upToDate':
+                    print("GO HERE")
                     key.setState('needUpdateExternal')
             except (generalSync.KeyNotFoundError, ValueError):
                 # Exist in Odoo but not in External
-                self.addKeys(externalId = None, odooId = odooRecord.id, state = 'needCreateExternal')
+                print("AND HERE")
+                self.addKeys(externalId = None, odooId = str(odooRecord.id), state = 'needCreateExternal')
 
 
     
@@ -236,17 +244,18 @@ class SFAccountSync(models.Model):
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
         sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
-
+        translator = TranslatorSFAccount.TranslatorSFAccount(sfInstance.getConnection())
         SF = self.env['etl.salesforce.account'].search([])
         if not SF:
             SF = self.env['etl.salesforce.account'].create({})
         
         ##### CODE HERE #####
-
+        
         SF.updateKeyTable(sfInstance)
-
+        print('Updated key table done')
+        SF.updateOdooInstance(translator,sfInstance,None)
         ##### CODE HERE #####
 
-        SF[0].setNextRun()
+        SF.setNextRun()
 
 
