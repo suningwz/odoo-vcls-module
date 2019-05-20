@@ -34,6 +34,7 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         result['date_deadline'] = SF_Opportunity['Deadline_for_Sending_Proposal__c'] 
         result['source_id'] = mapOdoo.convertRef(SF_Opportunity['LeadSource'],odoo,'utm.source',False)
         result['date_closed'] = SF_Opportunity['CloseDate']
+        result['type'] = 'opportunity'
         result.update(odoo.env['crm.lead']._onchange_partner_id_values(int(result['partner_id']) if result['partner_id'] else False))
         result['message_ids'] = [(0, 0, TranslatorSFOpportunity.generateLog(SF_Opportunity))]
         return result
