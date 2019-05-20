@@ -86,16 +86,17 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         if Odoo_Contact.description:
             result['Description'] = Odoo_Contact.description
         result['AccountId'] = TranslatorSFContact.toSfId(Odoo_Contact.parent_id.id,odoo)
-        if Odoo_Contact.country_id:
-            result['MailingCountry'] = TranslatorSFContact.revertCountry(Odoo_Contact.country_id.id, odoo)
-        if Odoo_Contact.currency_id:
-            result['CurrencyIsoCode'] = Odoo_Contact.currency_id.name
-        if Odoo_Contact.user_id:
-            result['OwnerId'] = TranslatorSFContact.revertOdooIdToSfId(Odoo_Contact.user_id,odoo)
-        if Odoo_Contact.title:
-            result['Salutation'] = odoo.env['map.odoo'].search([('odModelName','=','res.partner.title'),('odooId','=',Odoo_Contact.title.id)]).externalName
-        if Odoo_Contact.function:
-            result['Title'] = Odoo_Contact.function
+
+        # Ignore company_type
+        result['MailingCountry'] = TranslatorSFContact.revertCountry(Odoo_Contact.country_id.id, odoo)
+        result['CurrencyIsoCode'] = Odoo_Contact.currency_id.name
+        result['OwnerId'] = TranslatorSFContact.revertOdooIdToSfId(Odoo_Contact.user_id,odoo)
+        """ for c in Odoo_Contact.category_id:
+            category += c.name 
+        result['Category__c'] = category""" 
+        result['Salutation'] = TranslatorSFContact.revertSalutation(Odoo_Contact.title.name)
+        result['Title'] = Odoo_Contact.function
+
 
         return result
 

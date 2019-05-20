@@ -218,7 +218,7 @@ class PayrollExport(models.Model):
         
         # LINES CREATION #
         #we search for elligible employees, i.e. the ones that were active at the export end_date 
-        export.employee_ids = self.env['hr.employee'].search([('company_id.id','=',company_id),('employee_start_date','<=',export.end_date),('employee_start_date','!=',False),'|',('employee_end_date','=',False),('employee_end_date','>=',export.end_date)])
+        export.employee_ids = self.env['hr.employee'].with_context(active_test=False).search([('company_id.id','=',company_id),('employee_start_date','<=',export.end_date),('employee_start_date','!=',False),'|',('employee_end_date','=',False),('employee_end_date','>=',export.end_date)])
         
         #Raise error if an employee has no contract
         no_contract = export.employee_ids.filtered(lambda r: not r.contract_id.id > 0)
