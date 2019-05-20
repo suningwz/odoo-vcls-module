@@ -239,6 +239,8 @@
                 <separator/>
                 <filter string="Individuals" name="type_person" domain="[('is_company','=',False)]"/>
                 <filter string="Companies" name="type_company" domain="[('is_company','=',True)]"/>
+                <filter string="Customers" name="customer" domain="[('customer','=',True)]"/>
+                <filter string="Vendors" name="supplier" domain="[('supplier','=',True)]"/>
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
                 <separator/>
