@@ -1,13 +1,13 @@
-from . import ITranslator
+from . import TranslatorSFGeneral
 
-class TranslatorSFAccount(ITranslator.ITranslator):
+class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
     
     def __init__(self,SF):
-        queryUser = "Select Username,Id FROM User"
-        TranslatorSFAccount.usersSF = SF.query(queryUser)['records']
+        super().__init__(SF)
 
     @staticmethod
     def translateToOdoo(SF_Account, odoo, SF):
+        mapOdoo = odoo.env['map.odoo']
         result = {}
         # Modify the name with -test
         result['name'] = SF_Account['Name'] #+ '-test'
@@ -23,12 +23,12 @@ class TranslatorSFAccount(ITranslator.ITranslator):
             result['street'] = SF_Account['BillingAddress']['street']
         
         if SF_Account['BillingCountry']:
-            result['country_id'] = TranslatorSFAccount.convertId(SF_Account['BillingCountry'],odoo,'res.country',False)
+            result['country_id'] = mapOdoo.convertRef(SF_Account['BillingCountry'],odoo,'res.country',False)
         
         result['phone'] = SF_Account['Phone']
         result['fax'] = SF_Account['Fax']
         # Ignore Area_of_expertise__c
-        result['sharepoint_folder'] = TranslatorSFAccount.convertUrl(SF_Account['Sharepoint_Folder__c']) # /!\
+        result['sharepoint_folder'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUrl(SF_Account['Sharepoint_Folder__c']) # /!\
         result['description'] = ''
         result['description'] += 'Supplier description : ' + str(SF_Account['Supplier_Description__c']) + '\n'
         result['description'] += 'Key Information : {}\n'.format(SF_Account['Key_Information__c'])
@@ -38,28 +38,28 @@ class TranslatorSFAccount(ITranslator.ITranslator):
         result['company_type'] = 'company'
         #documented to trigger proper default image loaded
         result['is_company'] = 'True'
-        result['currency_id'] = TranslatorSFAccount.convertCurrency(SF_Account['CurrencyIsoCode'],odoo)
+        result['currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Account['CurrencyIsoCode'],odoo)
         result['altname'] = SF_Account['VCLS_Alt_Name__c']
-        result['user_id'] = TranslatorSFAccount.convertUserId(SF_Account['OwnerId'],odoo, SF)
+        result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['OwnerId'],odoo, SF)
 
         if SF_Account['Invoice_Administrator__c']:
-           result['invoice_admin_id'] = TranslatorSFAccount.convertId(SF_Account['Invoice_Administrator__c'],odoo,'res.users',False)
+           result['invoice_admin_id'] = mapOdoo.convertRef(SF_Account['Invoice_Administrator__c'],odoo,'res.users',False)
         if SF_Account['Main_VCLS_Contact__c']:
-            result['expert_id'] = TranslatorSFAccount.convertUserId(SF_Account['Main_VCLS_Contact__c'],odoo, SF)
+            result['expert_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['Main_VCLS_Contact__c'],odoo, SF)
         if SF_Account['Project_Assistant__c']:
-            result['assistant_id'] = TranslatorSFAccount.convertUserId(SF_Account['Project_Assistant__c'],odoo, SF)
+            result['assistant_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['Project_Assistant__c'],odoo, SF)
         if SF_Account['Project_Controller__c']:
-            result['controller_id'] = TranslatorSFAccount.convertUserId(SF_Account['Project_Controller__c'],odoo, SF)
+            result['controller_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['Project_Controller__c'],odoo, SF)
         if SF_Account['Industry']:
-            result['industry_id'] = TranslatorSFAccount.convertId(SF_Account['Industry'],odoo,'res.partner.industry',False)
+            result['industry_id'] = mapOdoo.convertRef(SF_Account['Industry'],odoo,'res.partner.industry',False)
         if SF_Account['Area_of_expertise__c']:
-            result['expertise_area_ids'] = [(6, 0, TranslatorSFAccount.convertId(SF_Account['Area_of_expertise__c'],odoo,'expertise.area',True))]
+            result['expertise_area_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Area_of_expertise__c'],odoo,'expertise.area',True))]
         if SF_Account['Supplier_Project__c']:
-            result['project_supplier_type_id'] = TranslatorSFAccount.convertId(SF_Account['Supplier_Project__c'],odoo,'project.supplier.type',False)
+            result['project_supplier_type_id'] = mapOdoo.convertRef(SF_Account['Supplier_Project__c'],odoo,'project.supplier.type',False)
         if SF_Account['Activity__c']:
-            result['client_activity_ids'] = [(6, 0, TranslatorSFAccount.convertId(SF_Account['Activity__c'],odoo,'client.activity',True))]
+            result['client_activity_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Activity__c'],odoo,'client.activity',True))]
         if SF_Account['Product_Type__c']:
-            result['client_product_ids'] = [(6, 0, TranslatorSFAccount.convertId(SF_Account['Product_Type__c'],odoo,'client.product',True))]
+            result['client_product_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Product_Type__c'],odoo,'client.product',True))]
         result['category_id'] =  [(6, 0, TranslatorSFAccount.convertCategory(SF_Account,odoo))]
         result['message_ids'] = [(0, 0, TranslatorSFAccount.generateLog(SF_Account))]
 
@@ -79,22 +79,43 @@ class TranslatorSFAccount(ITranslator.ITranslator):
         result = {}
         # Modify the name with -test
         result['Name'] = Odoo_Contact.name
-        print(result['Name'])
 
-        #result['Supplier_Status__c'] = TranslatorSFAccount.revertStatus(Odoo_Contact.stage)
-        result['BillingAddress'] = {}
-        result['BillingAddress']['city'] = Odoo_Contact.city
-        result['BillingAddress']['postalCode'] = Odoo_Contact.zip
-        result['BillingAddress']['street'] = Odoo_Contact.street
-        result['Phone'] = Odoo_Contact.phone
-        result['Fax'] = Odoo_Contact.fax
-        # result['Sharepoint_Folder__c'] = TranslatorSFAccount.revertUrl(Odoo_Contact.sharepoint_folder)
-        # Ignore description
-        result['Website'] = Odoo_Contact.website
+        if Odoo_Contact.city:
+            result['BillingCity'] = Odoo_Contact.city
+        if Odoo_Contact.zip:
+            result['BillingPostalCode'] = Odoo_Contact.zip
+        if Odoo_Contact.street:
+            result['BillingStreet'] = Odoo_Contact.street
+        if Odoo_Contact.country_id:
+            result['BillingCountry'] = TranslatorSFAccount.revertCountry(Odoo_Contact.country_id.id, odoo)
 
-        # Ignore company_type
-        result['BillingCountry'] = TranslatorSFAccount.revertCountry(Odoo_Contact.country_id.id, odoo)
-        # result['user_id'] = TranslatorSFAccount.convertUserId(SF_Account['OwnerId'],odoo, SF)
+        if Odoo_Contact.altname:
+            result['VCLS_Alt_Name__c'] = Odoo_Contact.altname
+        if Odoo_Contact.user_id:
+            result['OwnerId'] = TranslatorSFAccount.revertOdooIdToSfId(Odoo_Contact.user_id, odoo)
+            
+        if Odoo_Contact.phone:
+            result['Phone'] = Odoo_Contact.phone
+        if Odoo_Contact.fax:
+            result['Fax'] = Odoo_Contact.fax
+        if Odoo_Contact.website:
+            result['Website'] = Odoo_Contact.website
+        
+        if Odoo_Contact.description:
+            result['Supplier_Description__c'] = Odoo_Contact.description
+        result['Create_Sharepoint_Folder__c'] = Odoo_Contact.create_folder
+        if Odoo_Contact.currency_id:
+            result['CurrencyIsoCode'] = Odoo_Contact.currency_id.name
+        if Odoo_Contact.expert_id:
+            result['Main_VCLS_Contact__c'] = TranslatorSFAccount.revertOdooIdToSfId(Odoo_Contact.expert_id, odoo)
+        if Odoo_Contact.assistant_id:
+            result['Project_Assistant__c'] = TranslatorSFAccount.revertOdooIdToSfId(Odoo_Contact.assistant_id, odoo)
+        if Odoo_Contact.controller_id:
+            result['Project_Controller__c'] = TranslatorSFAccount.revertOdooIdToSfId(Odoo_Contact.controller_id, odoo)
+        if Odoo_Contact.industry_id:
+            result['Industry'] = Odoo_Contact.industry_id.name
+        if Odoo_Contact.project_supplier_type_id:
+            result['project_supplier_type_id'] = Odoo_Contact.project_supplier_type_id
         return result
 
     @staticmethod
@@ -121,32 +142,8 @@ class TranslatorSFAccount(ITranslator.ITranslator):
             return 'Inactive - reason mentioned'
         else: # Undefined
             return 'Undefined - to fill'
-    
-    @staticmethod
-    def convertUrl(url):
-        if url == "No link for this relationship":
-            return None
-        startIndex = url.find('http://')>0
-        endIndex = url.find('target')-2
-        return url[startIndex:endIndex]
-    
-    @staticmethod
-    def revertUrl(url):
-        if not url:
-            return "No link for this relationship"
-        else:
-            return '<a href="{}" target="_blank">Supplier Folder</a>'.format(url)
 
-    @staticmethod
-    def revertCountry(country, odoo):
-        if country:
-            return odoo.env['res.country'].browse(country).name
-        return None
-
-    @staticmethod
-    def convertUserId(ownerId, odoo, SF):
-        mail = TranslatorSFAccount.getUserMail(ownerId,SF)
-        return TranslatorSFAccount.getUserId(mail,odoo)
+    
     
     @staticmethod
     def convertCategory(SFAccount, odoo):
@@ -165,53 +162,5 @@ class TranslatorSFAccount(ITranslator.ITranslator):
                 result += [odoo.env.ref('vcls-contact.category_partner').id]
         return result
     
-    @staticmethod
-    def getUserMail(userId, SF):
-        for user in TranslatorSFAccount.usersSF:
-            if user['Id'] == userId:
-                return user['Username']
-            else:
-                return None
 
-    @staticmethod
-    def getUserId(mail, odoo):
-        result = odoo.env['res.users'].search([('email','=',mail)])
-        if result:
-            return result[0].id
-        else:
-            return None
     
-    @staticmethod
-    def getUserIdSf(mail):
-        for user in TranslatorSFAccount.usersSF:
-            if user['Username'] == mail:
-                return user['Id']
-            else:
-                return None
-    @staticmethod
-    def getUserMailOd(userId,odoo):
-        result = odoo.env['res.users'].search([('id','=',userId)])
-        if result:
-            return result[0].email
-        else:
-            return None
-
-    @staticmethod
-    def convertCurrency(SfCurrency,odoo):
-        odooCurr = odoo.env['res.currency'].search([('name','=',SfCurrency)]).id
-        if odooCurr:
-            return odooCurr
-        else:
-            return None
-    @staticmethod
-    def toOdooId(externalId, odoo):
-        for key in odoo.env['etl.salesforce.account'].search([]).keys:
-            if key.externalId == externalId:
-                return key.odooId
-        return None
-    @staticmethod
-    def toSfId(odooId,odoo):
-        for key in odoo.env['etl.salesforce.account'].search([]).keys:
-            if key.odooId == odooId:
-                return key.externalId
-        return None

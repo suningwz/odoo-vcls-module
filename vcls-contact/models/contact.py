@@ -190,18 +190,18 @@ class ContactExt(models.Model):
     
     @api.depends('category_id')
     def _compute_visibility(self):
-        for contact in self:
+        """ for contact in self:
             contact.see_segmentation = False
             if self.env.ref('vcls-contact.category_account') in contact.category_id:
                 contact.see_segmentation = True
             
             contact.see_supplier = False
             if self.env.ref('vcls-contact.category_PS') in contact.category_id:
-                contact.see_supplier = True
+                contact.see_supplier = True """
     
     @api.onchange('category_id')
     def _update_booleans(self):
-        for contact in self:
+        """ for contact in self:
             if self.env.ref('vcls-contact.category_account') in contact.category_id:
                 contact.customer = True
             else:
@@ -210,7 +210,7 @@ class ContactExt(models.Model):
             if self.env.ref('vcls-contact.category_suppliers') in contact.category_id or self.env.ref('vcls-contact.category_PS') in contact.category_id or self.env.ref('vcls-contact.category_AS') in contact.category_id:
                 contact.supplier = True
             else:
-                contact.supplier = False
+                contact.supplier = False """
 
     @api.depends('employee')
     def _compute_is_internal(self):
