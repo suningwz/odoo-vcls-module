@@ -14,3 +14,5 @@ class mapOdoo(models.Model):
         default=1,
     )
     #toReviewed = fields.Selection()
+
+    # foutre les fonctions dans cette tables

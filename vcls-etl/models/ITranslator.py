@@ -16,7 +16,7 @@ class ITranslator(ABC):
         pass
 
     @staticmethod
-    def convertId(SF,odoo,model,forMany):
+    def convertId(SF,odoo,model,forMany): # convertRef
         element = []
         SF = SF.split(';')
         for sfname in SF:
@@ -39,7 +39,7 @@ class ITranslator(ABC):
         return element[0]
 
     @staticmethod
-    def toOD_id(SFName,odoo,model):
+    def toOD_id(SFName,odoo,model): # getRef
         result = []
         mapping = odoo.env['map.odoo'].search([('externalName','=ilike',SFName),('odModelName','=',model)])
         if mapping:

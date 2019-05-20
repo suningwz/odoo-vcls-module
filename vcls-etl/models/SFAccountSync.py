@@ -20,13 +20,17 @@ class SFAccountSync(models.Model):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
+
         time = datetime.now(pytz.timezone("GMT"))
         print('Connecting to the Saleforce Database')
+
         sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
         translator = TranslatorSFAccount.TranslatorSFAccount(sfInstance.getConnection())
+
         SF = self.env['etl.salesforce.account'].search([])
         if not SF:
             SF = self.env['etl.salesforce.account'].create({})
+        
         SF[0].getFromExternal(translator, sfInstance.getConnection(),isFullUpdate, updateKeyTables,createInOdoo, updateInOdoo)
         SF[0].setToExternal(translator, sfInstance.getConnection(), time, createRevert, updateRevert)
         SF[0].setNextRun()
@@ -44,7 +48,7 @@ class SFAccountSync(models.Model):
         sql += 'Supplier_Project__c, Activity__c, Product_Type__c, Industry, CurrencyIsoCode, Invoice_Administrator__c '
         sql += 'FROM Account '
         sql += 'WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null)) '
-        launchMod = 'Get From External : \n'
+        launchMod = 'Get From External : \n' # func
         if nbMaxRecords:
             launchMod += '-Max records : '+ str(nbMaxRecords)
         if updateKeyTables:
@@ -57,7 +61,7 @@ class SFAccountSync(models.Model):
             launchMod += '-Update In Odoo \n'
         print(launchMod)
         
-        if updateKeyTables:
+        if updateKeyTables: # to change
             modifiedRecordsSF = externalInstance.query(sql + ' ORDER BY Name')['records']
             modifiedRecordsOD = self.env['res.partner'].search([('is_company','=',True)])
             self.updateKeys(modifiedRecordsSF, modifiedRecordsOD)

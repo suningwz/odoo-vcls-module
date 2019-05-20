@@ -11,20 +11,22 @@ class KeyNotFoundError(Exception):
 
 class ETLMap(models.Model):
     _name = 'etl.sync.keys'
-    _description = 'tbd'
+    _description = 'Mapping table to link Odoo ID with external ID'
     # Helsinki
     odooId = fields.Char(readonly = True)
     externalId = fields.Char(readonly = True)
     isUpdate = fields.Boolean(default = False)
-    existInExternal = fields.Boolean(default = False)
-    existInOdoo = fields.Boolean(default = False)
-    syncRecordId = fields.Many2one('etl.sync.mixin', readonly = True) # -> need testing
+    # existInExternal = fields.Boolean(default = False)
+    # existInOdoo = fields.Boolean(default = False)
+    syncRecordId = fields.Many2one('etl.sync.mixin', readonly = True)
+
+    # foutre les fonctions de mappage ici
 
 class GeneralSync(models.AbstractModel):
     _name = 'etl.sync.mixin'
     _description = 'This model represents an abstract parent class used to manage ETL'
     
-    keys = fields.One2many('etl.sync.keys','syncRecordId', readonly = True) # Not rightly declared -> error
+    keys = fields.One2many('etl.sync.keys','syncRecordId', readonly = True)
     lastRun = fields.Datetime(readonly = True)
 
     def setNextRun(self):
@@ -50,24 +52,24 @@ class GeneralSync(models.AbstractModel):
     @api.one
     def addKeys(self, externalId, odooId):
         self.keys = [(0, 0,  { 'odooId': odooId, 'externalId': externalId })]
-    # need test
+
     @api.one
-    def updateKey(self, externalId):
+    def updateKey(self, externalId): # change name
         for key in self.keys:
             if key.externalId == externalId:
                 key.isUpdate = True
     @api.one
-    def allIsUpdated(self):
+    def allIsUpdated(self): # change name
         for key in self.keys:
             if not key.isUpdate:
                 return False
         return True
     @api.one
-    def allNotIsUpdate(self):
+    def allNotIsUpdate(self): # change name
         for key in self.keys:
             key.isUpdate = False
     @api.one
-    def getisUpdate(self, externalId):
+    def getisUpdate(self, externalId): # change name
         for key in self.keys:
             if key.externalId == externalId:
                 return key.isUpdate
@@ -86,7 +88,7 @@ class GeneralSync(models.AbstractModel):
             if key.odooId == odooId:
                 return key.externalId
         raise KeyNotFoundError
-    
+    '''
     @api.one
     def initExistField(self):
         for key in self.keys:
@@ -109,7 +111,7 @@ class GeneralSync(models.AbstractModel):
         for key in self.keys:
             if not key.existInOdoo or not key.existInExternal:
                 key.unlink()
-
+    '''
     # Abstract method not implementable
     @abstractmethod
     def getFromExternal(self, translator, externalInstance, fullUpdate,updateKeyTables, createInOdoo, updateInOdoo):
