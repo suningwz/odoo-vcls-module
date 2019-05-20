@@ -109,3 +109,64 @@ class SFAccountSync(models.Model):
             self.addKeys(sfRecord['id'], item.id)
         except SalesforceMalformedRequest: 
             print('Duplicate : '+ item.name)
+    
+    def updateKeyTable(self, externalInstance):
+        # put logger here
+        sql = 'SELECT Id, LastModifiedDate FROM Account WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null))'
+        sql += ' AND LastModifiedDate > ' + self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") + ' ORDER BY Name'
+        print('Execute QUERY: {}'.format(sql))
+        modifiedRecordsExt = externalInstance.getConnection().query(sql)['records'] # Get modified records in External Instance
+        modifiedRecordsOdoo = self.env['res.partner'].search([('write_date','>', self.getStrLastRun()),('is_company','=',True)])
+        
+
+        for extRecord in modifiedRecordsExt:
+            try:
+                lastModifiedExternal = datetime.strptime(extRecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")
+                lastModifiedOdoo = self.getLastUpdate(self.toOdooId(extRecord['Id']))
+                
+                if self.isDateOdooAfterExternal(lastModifiedOdoo, lastModifiedExternal):
+                    # Exist in Odoo & External
+                    # Odoo is more recent
+                    self.getKeyFromExtId(extRecord['Id']).setState('needUpdateExternal')
+                else:
+                    # Exist in Odoo & External
+                    # External is more recent
+                    self.getKeyFromExtId(extRecord['Id']).setState('needUpdateOdoo')
+            except (generalSync.KeyNotFoundError, ValueError):
+                # Exist in External but not in Odoo
+                self.addKeys(externalId = extRecord['Id'], odooId = None, state = 'needCreateOdoo')
+        
+        for odooRecord in modifiedRecordsOdoo:
+            try:
+                key = self.getKeyFromOdooId(odooRecord.id)
+                # Exist in Odoo & External
+                # Odoo is more recent
+                if key.state == 'upToDate':
+                    key.setState('needUpdateExternal')
+            except (generalSync.KeyNotFoundError, ValueError):
+                # Exist in Odoo but not in External
+                self.addKeys(externalId = None, odooId = odooRecord.id, state = 'needCreateExternal')
+
+
+    
+    # TO DELETE ONCE OK
+    @api.model
+    def runRunRun(self):
+        userSF = self.env.ref('vcls-etl.SF_mail').value
+        passwordSF = self.env.ref('vcls-etl.SF_password').value
+        token = self.env.ref('vcls-etl.SF_token').value
+        sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
+
+        SF = self.env['etl.salesforce.account'].search([])
+        if not SF:
+            SF = self.env['etl.salesforce.account'].create({})
+        
+        ##### CODE HERE #####
+
+        SF.updateKeyTable(sfInstance)
+
+        ##### CODE HERE #####
+
+        SF[0].setNextRun()
+
+

@@ -27,6 +27,10 @@ class ETLMap(models.Model):
         default='upToDate' # For existing keys
     )
 
+    @api.one
+    def setState(self, state):
+        self.state = state
+
     # foutre les fonctions de mappage ici
 
 class GeneralSync(models.AbstractModel):
@@ -38,6 +42,7 @@ class GeneralSync(models.AbstractModel):
 
     def setNextRun(self):
         self.lastRun = fields.Datetime.from_string(datetime.datetime.now(pytz.timezone("GMT")).strftime("%Y-%m-%d %H:%M:%S.00+0000"))
+        print(self.lastRun)
     
     def getStrLastRun(self):
         if not self.lastRun:
@@ -57,8 +62,8 @@ class GeneralSync(models.AbstractModel):
         return dateOdoo >= dateExternal
     
     @api.one
-    def addKeys(self, externalId, odooId):
-        self.keys = [(0, 0,  { 'odooId': odooId, 'externalId': externalId })]
+    def addKeys(self, externalId, odooId, state):
+        self.keys = [(0, 0,  { 'odooId': odooId, 'externalId': externalId, 'state': state })]
 
     @api.one
     def toOdooId(self, externalId):
@@ -72,6 +77,20 @@ class GeneralSync(models.AbstractModel):
         for key in self.keys:
             if key.odooId == odooId:
                 return key.externalId
+        raise KeyNotFoundError
+    
+    @api.one
+    def getKeyFromOdooId(self, odooId):
+        for key in self.keys:
+            if key.odooId == odooId:
+                return key
+        raise KeyNotFoundError
+    
+    @api.one
+    def getKeyFromExtId(self, externalId):
+        for key in self.keys:
+            if key.externalId == externalId:
+                return key
         raise KeyNotFoundError
 
     # Abstract method not implementable
@@ -90,7 +109,12 @@ class GeneralSync(models.AbstractModel):
     @abstractmethod
     def createRecord(self, item, translator):
         pass
+    
+    ####################
 
+    @abstractmethod
+    def updateKeyTable(self, externalInstance):
+        pass
 
 
 
