@@ -11,17 +11,20 @@ class KeyNotFoundError(Exception):
 
 class ETLMap(models.Model):
     _name = 'etl.sync.keys'
-    _description = 'tbd'
+    _description = 'Mapping table to link Odoo ID with external ID'
     # Helsinki
     odooId = fields.Char(readonly = True)
     externalId = fields.Char(readonly = True)
-    syncRecordId = fields.Many2one('etl.sync.mixin', readonly = True) # -> need testing
+    isUpdate = fields.Boolean(default = False)
+    syncRecordId = fields.Many2one('etl.sync.mixin', readonly = True)
+
+    # foutre les fonctions de mappage ici
 
 class GeneralSync(models.AbstractModel):
     _name = 'etl.sync.mixin'
     _description = 'This model represents an abstract parent class used to manage ETL'
     
-    keys = fields.One2many('etl.sync.keys','syncRecordId', readonly = True) # Not rightly declared -> error
+    keys = fields.One2many('etl.sync.keys','syncRecordId', readonly = True)
     lastRun = fields.Datetime(readonly = True)
 
     def setNextRun(self):
@@ -42,16 +45,11 @@ class GeneralSync(models.AbstractModel):
 
     @staticmethod
     def isDateOdooAfterExternal(dateOdoo, dateExternal):
-        print("compare")
-        print(dateOdoo >= dateExternal)
-        print(type(dateOdoo))
-        print(type(dateExternal))
         return dateOdoo >= dateExternal
     
     @api.one
     def addKeys(self, externalId, odooId):
         self.keys = [(0, 0,  { 'odooId': odooId, 'externalId': externalId })]
-    # need test
 
     @api.one
     def toOdooId(self, externalId):
@@ -62,19 +60,18 @@ class GeneralSync(models.AbstractModel):
     
     @api.one
     def toExternalId(self, odooId):
-
         for key in self.keys:
             if key.odooId == odooId:
                 return key.externalId
         raise KeyNotFoundError
-    
+
     # Abstract method not implementable
     @abstractmethod
-    def getFromExternal(self, translator, externalInstance):
+    def getFromExternal(self, translator, externalInstance, fullUpdate,updateKeyTables, createInOdoo, updateInOdoo):
         pass
 
     @abstractmethod
-    def setToExternal(self, translator, externalInstance):
+    def setToExternal(self, translator, externalInstance, time, createRevert, updateRevert):
         pass
 
     @abstractmethod

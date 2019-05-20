@@ -17,7 +17,13 @@
 			name="Salesforce Contact" 
 			parent="menu_etl" 
 			id="menu_etl_contact" 
-			action="action_etl_account" 
+			action="action_etl_contact" 
+			sequence="6" />
+		<menuitem 
+			name="Salesforce Opportunity" 
+			parent="menu_etl" 
+			id="menu_etl_opportunity" 
+			action="action_etl_opportunity" 
 			sequence="6" />
 		<menuitem 
 			name="Keys" 
