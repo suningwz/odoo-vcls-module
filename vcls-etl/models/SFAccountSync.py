@@ -36,7 +36,7 @@ class SFAccountSync(models.Model):
         SF[0].setNextRun()
 
 
-    def updateOdooInstance(self, translator,externalInstance):
+    def updateOdooInstance(self, translator,externalInstance, nbMaxRecords):
         sql = 'SELECT Id, Name, Supplier_Category__c, '
         sql += 'Supplier_Status__c, Account_Level__c, LastModifiedDate, '
         sql += 'BillingCountry, BillingState, BillingAddress, BillingStreet, '
@@ -48,52 +48,71 @@ class SFAccountSync(models.Model):
         sql += 'Supplier_Project__c, Activity__c, Product_Type__c, Industry, CurrencyIsoCode, Invoice_Administrator__c '
         sql += 'FROM Account '
         sql += 'WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null)) '
+        
         Modifiedrecords = externalInstance.query(sql + ' ORDER BY Name')['records'] #All records
         keysTable = self.env['etl.salesforce.account'].keys
 
+        if not nbMaxRecords:
+            #if nbMaxRecords == None / no limit
+            nbMaxRecords = len(keysTable)
+        print(nbMaxRecords)
+        i = 0
         for key in keysTable:
-            if key.state == 'needUpdateOdoo':
-                for record in Modifiedrecords:
-                    if record['Id'] == key.externalId:
-                        item = record
-                if item:
-                    odooAttributes = translator.translateToOdoo(item, self, externalInstance)
-                    record = self.env['res.partner'].browse(key.odooId)
-                    record.image=record._get_default_image(False, odooAttributes.get('is_company'), False)
-                    record.write(odooAttributes)
-                    print('Updated record in Odoo: {}'.format(item['Name']))
-                    key.state =' upToDate'
-            elif key.state == 'needCreateOdoo':
-                for record in Modifiedrecords:
-                    if record['Id'] == key.externalId:
-                        item = record
-                if item:
-                    odooAttributes = translator.translateToOdoo(item, self, externalInstance)
-                    partner_id = self.env['res.partner'].create(odooAttributes).id
-                    print('Create new record in Odoo: {}'.format(item['Name']))
-                    self.addKeys(item['Id'], partner_id) #remplacer car existe deja
-    
-    def needUpdateExternal(self, translator, externalInstance):
-         keysTable = self.env['etl.salesforce.account'].keys
-         for key in keysTable:
-            if key.state == 'needUpdateExternal':
-                item = self.env['res.partner'].browse(key.odooId)
-                sfAttributes = translator.translateToSF(item, self)
-                _logger.debug(sfAttributes)
-                sfRecord = externalInstance.Account.update(key.externalId,sfAttributes)
-                print('Update record in Salesforce: {}'.format(item.name))
-            elif key.state == 'needCreateExternal':
-                try:
-                    item = self.env['res.partner'].browse(key.odooId)
+            if i < nbMaxRecords:
+                if key.state == 'needUpdateOdoo':
+                    for record in Modifiedrecords:
+                        if record['Id'] == key.externalId:
+                            item = record
                     if item:
-                        sfAttributes = translator.translateToSF(item, self)
-                        _logger.debug(sfAttributes)
-                        _logger.debug("This dictionnary will be create in Account")
-                        sfRecord = externalInstance.Account.create(sfAttributes)
-                        print('Create new record in Salesforce: {}'.format(item.name))
-                        self.addKeys(sfRecord['id'], item.id)
-                except SalesforceMalformedRequest: 
-                    print('Duplicate : '+ item.name)
+                        odooAttributes = translator.translateToOdoo(item, self, externalInstance)
+                        record = self.env['res.partner'].browse(key.odooId)
+                        record.image=record._get_default_image(False, odooAttributes.get('is_company'), False)
+                        record.write(odooAttributes)
+                        print('Updated record in Odoo: {}'.format(item['Name']))
+                        key.state =' upToDate'
+                        i += 1
+                elif key.state == 'needCreateOdoo':
+                    for record in Modifiedrecords:
+                        if record['Id'] == key.externalId:
+                            item = record
+                    if item:
+                        odooAttributes = translator.translateToOdoo(item, self, externalInstance)
+                        partner_id = self.env['res.partner'].create(odooAttributes).id
+                        print('Create new record in Odoo: {}'.format(item['Name']))
+                        key.odooId = partner_id
+                        i += 1
+    
+    def needUpdateExternal(self, translator, externalInstance, nbMaxRecords):
+        keysTable = self.env['etl.salesforce.account'].keys
+        if not nbMaxRecords:
+            nbMaxRecords = len(keysTable)
+        print(nbMaxRecords)
+        i = 0
+        for key in keysTable:
+            if i < nbMaxRecords:
+                if key.state == 'needUpdateExternal':
+                    item = self.env['res.partner'].browse(key.odooId)
+                    sfAttributes = translator.translateToSF(item, self)
+                    _logger.debug(sfAttributes)
+                    sfRecord = externalInstance.Account.update(key.externalId,sfAttributes)
+                    print('Update record in Salesforce: {}'.format(item.name))
+                    _logger.debug('Update record in Salesforce: {}'.format(item.name))
+                    key.state =' upToDate'
+                    i += 1
+                elif key.state == 'needCreateExternal':
+                    try:
+                        item = self.env['res.partner'].browse(key.odooId)
+                        if item:
+                            sfAttributes = translator.translateToSF(item, self)
+                            _logger.debug(sfAttributes)
+                            _logger.debug("This dictionnary will be create in Account")
+                            sfRecord = externalInstance.Account.create(sfAttributes)
+                            print('Create new record in Salesforce: {}'.format(item.name))
+                            _logger.debug("This dictionnary will be create in Account")
+                            key.externalId = sfRecord['id']
+                            i += 1
+                    except SalesforceMalformedRequest: 
+                        print('Duplicate : '+ item.name)
             
 
     def getFromExternal(self, translator, externalInstance, fullUpdate,updateKeyTables, createInOdoo, updateInOdoo):
