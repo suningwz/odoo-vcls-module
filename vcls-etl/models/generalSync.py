@@ -74,21 +74,15 @@ class GeneralSync(models.AbstractModel):
                 return key.externalId
         raise KeyNotFoundError
 
-    # Abstract method not implementable
     @abstractmethod
-    def getFromExternal(self, translator, externalInstance, fullUpdate,updateKeyTables, createInOdoo, updateInOdoo):
+    def updateKeyTables(self):
         pass
-
     @abstractmethod
-    def setToExternal(self, translator, externalInstance, time, createRevert, updateRevert):
+    def updateOdooInstance(self):
         pass
-
+    
     @abstractmethod
-    def update(self, item, translator):
-        pass
-
-    @abstractmethod
-    def createRecord(self, item, translator):
+    def needUpdateExternal(self):
         pass
 
 
