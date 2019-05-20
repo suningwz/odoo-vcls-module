@@ -64,7 +64,10 @@ class SFContactSync(models.Model):
     def setToExternal(self, translator, externalInstance, time, createRevert, updateRevert):
         time1 = self.getStrLastRun()
         print(time1)
-        time = time.replace(second = time.second - 1)
+        if time.second >=1:
+            time = time.replace(second = time.second - 1)
+        else:
+            time = time.replace(second = 59)
         print(time)
         modifiedRecords = self.env['res.partner'].search([('write_date','>',time1),('write_date','<',time),('is_company','=',False)])
         print(modifiedRecords)
@@ -97,8 +100,9 @@ class SFContactSync(models.Model):
             sfAttributes = translator.translateToSF(item, self)
             _logger.debug(sfAttributes)
             _logger.debug("This dictionnary will be create in Account")
-            sfRecord = externalInstance.Account.create(sfAttributes)
+            sfRecord = externalInstance.Contact.create(sfAttributes)
             print('Create new record in Salesforce: {}'.format(item.name))
             self.addKeys(sfRecord['id'], item.id)
         except SalesforceMalformedRequest: 
-            print('Malformed Query'+ item.name)
+            print('Duplicate : '+ item.name)
+

@@ -16,8 +16,6 @@ class ETLMap(models.Model):
     odooId = fields.Char(readonly = True)
     externalId = fields.Char(readonly = True)
     isUpdate = fields.Boolean(default = False)
-    # existInExternal = fields.Boolean(default = False)
-    # existInOdoo = fields.Boolean(default = False)
     syncRecordId = fields.Many2one('etl.sync.mixin', readonly = True)
 
     # foutre les fonctions de mappage ici
@@ -54,27 +52,6 @@ class GeneralSync(models.AbstractModel):
         self.keys = [(0, 0,  { 'odooId': odooId, 'externalId': externalId })]
 
     @api.one
-    def updateKey(self, externalId): # change name
-        for key in self.keys:
-            if key.externalId == externalId:
-                key.isUpdate = True
-    @api.one
-    def allIsUpdated(self): # change name
-        for key in self.keys:
-            if not key.isUpdate:
-                return False
-        return True
-    @api.one
-    def allNotIsUpdate(self): # change name
-        for key in self.keys:
-            key.isUpdate = False
-    @api.one
-    def getisUpdate(self, externalId): # change name
-        for key in self.keys:
-            if key.externalId == externalId:
-                return key.isUpdate
-
-    @api.one
     def toOdooId(self, externalId):
         for key in self.keys:
             if key.externalId == externalId:
@@ -83,35 +60,11 @@ class GeneralSync(models.AbstractModel):
     
     @api.one
     def toExternalId(self, odooId):
-
         for key in self.keys:
             if key.odooId == odooId:
                 return key.externalId
         raise KeyNotFoundError
-    '''
-    @api.one
-    def initExistField(self):
-        for key in self.keys:
-            key.existInExternal = False
-            key.existInOdoo = False
-    
-    @api.one
-    def externalExist(self,externalId):
-        for key in self.keys:
-            if key.externalId == externalId:
-                key.existInExternal = True
-    @api.one
-    def odooExist(self,odooId):
-        for key in self.keys:
-            if key.odooId == odooId:
-                key.existInOdoo = True
 
-    @api.one
-    def deleteKeys(self):
-        for key in self.keys:
-            if not key.existInOdoo or not key.existInExternal:
-                key.unlink()
-    '''
     # Abstract method not implementable
     @abstractmethod
     def getFromExternal(self, translator, externalInstance, fullUpdate,updateKeyTables, createInOdoo, updateInOdoo):

@@ -36,7 +36,6 @@ class SFAccountSync(models.Model):
         SF[0].setNextRun()
 
     def getFromExternal(self, translator, externalInstance, fullUpdate,updateKeyTables, createInOdoo, updateInOdoo):
-        nbMaxRecords = None
         sql = 'SELECT Id, Name, Supplier_Category__c, '
         sql += 'Supplier_Status__c, Account_Level__c, LastModifiedDate, '
         sql += 'BillingCountry, BillingState, BillingAddress, BillingStreet, '
@@ -48,80 +47,31 @@ class SFAccountSync(models.Model):
         sql += 'Supplier_Project__c, Activity__c, Product_Type__c, Industry, CurrencyIsoCode, Invoice_Administrator__c '
         sql += 'FROM Account '
         sql += 'WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null)) '
-        launchMod = 'Get From External : \n' # func
-        if nbMaxRecords:
-            launchMod += '-Max records : '+ str(nbMaxRecords)
-        if updateKeyTables:
-            launchMod += '-Update Key Tables \n'
-        if fullUpdate:
-            launchMod += '-FullUpdate \n'
-        if createInOdoo:
-            launchMod += '-Create In Odoo \n'
-        if updateInOdoo:
-            launchMod += '-Update In Odoo \n'
-        print(launchMod)
-        
-        if updateKeyTables: # to change
-            modifiedRecordsSF = externalInstance.query(sql + ' ORDER BY Name')['records']
-            modifiedRecordsOD = self.env['res.partner'].search([('is_company','=',True)])
-            self.updateKeys(modifiedRecordsSF, modifiedRecordsOD)
+
         if fullUpdate:
             Modifiedrecords = externalInstance.query(sql + ' ORDER BY Name')['records']
         else:
             Modifiedrecords = externalInstance.query(sql +' AND LastModifiedDate > '+ self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000")+ ' ORDER BY Name')['records']
-        if nbMaxRecords != None:
-            i = 0
-            for SFrecord in Modifiedrecords:
-                if i < nbMaxRecords:
-                    try:
-                        if fullUpdate or not self.isDateOdooAfterExternal(self.getLastUpdate(self.toOdooId(SFrecord['Id'])), datetime.strptime(SFrecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")):
-                            if updateInOdoo:
-                                if self.update(SFrecord, translator, externalInstance):
-                                    i += 1
-                    except (generalSync.KeyNotFoundError, ValueError):
-                        if createInOdoo:
-                            self.createRecord(SFrecord, translator, externalInstance)
-                            i += 1
-                    
-        else: 
-            for SFrecord in Modifiedrecords:
-                try:
-                    if fullUpdate or not self.isDateOdooAfterExternal(self.getLastUpdate(self.toOdooId(SFrecord['Id'])), datetime.strptime(SFrecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")):
-                        if updateInOdoo:
-                            self.update(SFrecord, translator, externalInstance)
-                except (generalSync.KeyNotFoundError, ValueError):
-                    if createInOdoo:
-                        self.createRecord(SFrecord, translator, externalInstance)
-
-    def updateKeys(self, recordsSf, recordsOd):
-        print("Update Keys")
-        self.initExistField()
-        for SFrecord in recordsSf:
+        
+        for SFrecord in Modifiedrecords:
             try:
-                self.toOdooId(SFrecord['Id'])
-                self.externalExist(SFrecord['Id'])
-            except generalSync.KeyNotFoundError:
-                ("Does not exist in odoo")
-        for recordOd in recordsOd:
-            try:
-                self.toExternalId(str(recordOd.id))
-                self.odooExist(str(recordOd.id))
-            except generalSync.KeyNotFoundError:
-                ("Does not exist in SalesForce")
-        self.deleteKeys()
+                if fullUpdate or not self.isDateOdooAfterExternal(self.getLastUpdate(self.toOdooId(SFrecord['Id'])), datetime.strptime(SFrecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")):
+                    if updateInOdoo:
+                        self.update(SFrecord, translator, externalInstance)
+            except (generalSync.KeyNotFoundError, ValueError):
+                if createInOdoo:
+                    self.createRecord(SFrecord, translator, externalInstance)
 
     def setToExternal(self, translator, externalInstance, time, createRevert, updateRevert):
-        launchMod = 'Get From External : \n'
-        if createRevert:
-            launchMod += '-Create Revert'
-        if updateRevert:
-            launchMod += '-Update Revert'
-        print(launchMod)
         time1 = self.getStrLastRun()
         print(time1)
-        time = time.replace(second = time.second - 1)
+        """ if time.second >=1:
+            time = time.replace(second = time.second - 1)
+        else:
+            time = time.replace(second = 59) """
         print('{} < record < {}'.format(time1, time))
         modifiedRecords = self.env['res.partner'].search([('write_date','>',time1),('write_date','<',time),('is_company','=',True)])
+        print(modifiedRecords)
         for record in modifiedRecords:
             try:
                 self.toExternalId(str(record.id))
@@ -134,33 +84,20 @@ class SFAccountSync(models.Model):
 
     def update(self, item, translator,externalInstance):
         OD_id = self.toOdooId(item['Id'])
-        if not self.getisUpdate(item['Id'])[0]:
-            odooAttributes = translator.translateToOdoo(item, self, externalInstance)
-            partner = self.env['res.partner']
-            odid = int(OD_id[0])
-            record = partner.browse([odid])
-            record.image=record._get_default_image(False, odooAttributes.get('is_company'), False)
-            record.write(odooAttributes)
-            self.updateKey(item['Id'])
-            print('Updated record in Odoo: {}'.format(item['Name']))
-            if self.allIsUpdated()[0]:
-                self.allNotIsUpdate()
-                print('all')
-            return True
-        if self.allIsUpdated()[0]:
-                self.allNotIsUpdate()
-                print('all')
-        return False
+        odooAttributes = translator.translateToOdoo(item, self, externalInstance)
+        partner = self.env['res.partner']
+        odid = int(OD_id[0])
+        record = partner.browse([odid])
+        record.image=record._get_default_image(False, odooAttributes.get('is_company'), False)
+        record.write(odooAttributes)
+        print('Updated record in Odoo: {}'.format(item['Name']))
+
 
     def createRecord(self, item, translator,externalInstance):
         odooAttributes = translator.translateToOdoo(item, self, externalInstance)
         partner_id = self.env['res.partner'].create(odooAttributes).id
         print('Create new record in Odoo: {}'.format(item['Name']))
         self.addKeys(item['Id'], partner_id)
-        self.updateKey(item['Id'])
-        if self.allIsUpdated()[0]:
-            self.allNotIsUpdate()
-            print('all')
 
     def createSF(self,item,translator,externalInstance):
         try:
@@ -171,4 +108,4 @@ class SFAccountSync(models.Model):
             print('Create new record in Salesforce: {}'.format(item.name))
             self.addKeys(sfRecord['id'], item.id)
         except SalesforceMalformedRequest: 
-            print('Malformed Query'+ item.name)
+            print('Duplicate : '+ item.name)

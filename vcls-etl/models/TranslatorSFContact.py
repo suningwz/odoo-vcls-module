@@ -1,15 +1,12 @@
-from . import ITranslator
-class KeyNotFoundError(Exception):
-    pass
+from . import TranslatorSFGeneral
 
-class TranslatorSFContact(ITranslator.ITranslator):
-
+class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
     def __init__(self,SF):
-        queryUser = "Select Username,Id FROM User"
-        TranslatorSFContact.usersSF = SF.query(queryUser)['records']
-    
+        super().__init__(SF)
+
     @staticmethod
     def translateToOdoo(SF_Contact, odoo, SF):
+        mapOdoo = odoo.env['map.odoo']
         result = {}
         # Modify the name with -test
         result['name'] = SF_Contact['Name'] #+ '-test'
@@ -34,20 +31,20 @@ class TranslatorSFContact(ITranslator.ITranslator):
         result['description'] += 'Contact description : ' + str(SF_Contact['Description']) + '\n'
         # Ignore Supplier_Selection_Form_completed__c
         result['website'] = SF_Contact['AccountWebsite__c']
-        result['parent_id'] = TranslatorSFContact.toOdooId(SF_Contact['AccountId'],odoo)
+        result['parent_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Contact['AccountId'],odoo)
         result['company_type'] = 'person'
         #documented to trigger proper default image loaded
         result['is_company'] = False
         
         if SF_Contact['MailingCountry']:
-            result['country_id'] = TranslatorSFContact.convertId(SF_Contact['MailingCountry'],odoo,'res.country',False)
+            result['country_id'] = mapOdoo.convertRef(SF_Contact['MailingCountry'],odoo,'res.country',False)
         
-        result['currency_id'] = TranslatorSFContact.convertCurrency(SF_Contact['CurrencyIsoCode'],odoo)        
-        result['user_id'] = TranslatorSFContact.convertUserId(SF_Contact['OwnerId'],odoo, SF)
+        result['currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Contact['CurrencyIsoCode'],odoo)        
+        result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contact['OwnerId'],odoo, SF)
        
         result['category_id'] =  [(6, 0, TranslatorSFContact.convertCategory(SF_Contact['Supplier__c'],SF_Contact['Category__c'],odoo))]
         if SF_Contact['Salutation']:
-            result['title'] = TranslatorSFContact.convertId(SF_Contact['Salutation'], odoo,'res.partner.title',False)
+            result['title'] = mapOdoo.convertRef(SF_Contact['Salutation'], odoo,'res.partner.title',False)
 
         result['function'] = SF_Contact['Title']
         result['message_ids'] = [(0, 0, TranslatorSFContact.generateLog(SF_Contact))]
@@ -119,36 +116,7 @@ class TranslatorSFContact(ITranslator.ITranslator):
             return 'Inactive - reason mentioned'
         else: # Undefined
             return 'Undefined - to fill'
-    
-    @staticmethod
-    def convertUrl(url):
-        if url == "No link for this relationship":
-            return None
-        startIndex = url.find('http://')>0
-        endIndex = url.find('target')-2
-        return url[startIndex:endIndex]
-    
-    @staticmethod
-    def revertUrl(url):
-        if not url:
-            return "No link for this relationship"
-        else:
-            return '<a href="{}" target="_blank">Supplier Folder</a>'.format(url)
-    
-    @staticmethod
-    def revertCountry(country, odoo):
-        if country:
-            return odoo.env['res.country'].browse(country).name
-        return None
 
-    @staticmethod
-    def convertUserId(ownerId, odoo, SF):
-        mail = TranslatorSFContact.getUserMail(ownerId,SF)
-        return TranslatorSFContact.getUserId(mail,odoo)
-    @staticmethod
-    def revertOdooIdToSfId(idodoo,odoo):
-        mail = TranslatorSFContact.getUserMailOd(idodoo.id,odoo)
-        return TranslatorSFContact.getUserIdSf(mail)
     @staticmethod
     def convertCategory(isSupplier, SFtype, odoo):
         result = []
@@ -162,57 +130,6 @@ class TranslatorSFContact(ITranslator.ITranslator):
             if 'partner' in SFtype.lower():
                 result += [odoo.env.ref('vcls-contact.category_partner').id] """
         return result
-    
-    @staticmethod
-    def getUserMail(userId, SF):
-        for user in TranslatorSFContact.usersSF:
-            if user['Id'] == userId:
-                return user['Username']
-            else:
-                return None
-
-    @staticmethod
-    def getUserId(mail, odoo):
-        result = odoo.env['res.users'].search([('email','=',mail)])
-        if result:
-            return result[0].id
-        else:
-            return None
-    @staticmethod
-    def getUserIdSf(mail):
-        for user in TranslatorSFContact.usersSF:
-            if user['Username'] == mail:
-                return user['Id']
-            else:
-                return None
-    @staticmethod
-    def getUserMailOd(userId,odoo):
-        result = odoo.env['res.users'].search([('id','=',userId)])
-        if result:
-            return result[0].email
-        else:
-            return None
-
     @staticmethod
     def revertSalutation(OdooSalutation, odoo):
         return odoo
-
-    @staticmethod
-    def toOdooId(externalId, odoo):
-        for key in odoo.env['etl.salesforce.account'].search([]).keys:
-            if key.externalId == externalId:
-                return key.odooId
-        return None
-    @staticmethod
-    def toSfId(odooId,odoo):
-        for key in odoo.env['etl.salesforce.account'].search([]).keys:
-            if key.odooId == odooId:
-                return key.externalId
-        return None
-    @staticmethod
-    def convertCurrency(SfCurrency,odoo):
-        odooCurr = odoo.env['res.currency'].search([('name','=',SfCurrency)]).id
-        if odooCurr:
-            return odooCurr
-        else:
-            return None
