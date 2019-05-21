@@ -28,9 +28,11 @@ class SFContactSync(models.Model):
         SF = self.env['etl.salesforce.contact'].search([])
         if not SF:
             SF = self.env['etl.salesforce.contact'].create({})
-        SF[0].getFromExternal(translator, sfInstance.getConnection(),isFullUpdate, createInOdoo, updateInOdoo)
-        SF[0].setToExternal(translator, sfInstance.getConnection(), time, createRevert, updateRevert)
+        SF[0].getFromExternal(translator, sfInstance.getConnection(),isFullUpdate, createInOdoo, updateInOdoo)B
+        #SF[0].setToExternal(translator, sfInstance.getConnection(), time, createRevert, updateRevert)
         SF[0].setNextRun()
+        #
+
 
     def getFromExternal(self, translator, externalInstance, fullUpdate, createInOdoo, updateInOdoo):
         
@@ -38,7 +40,9 @@ class SFContactSync(models.Model):
         sql += 'C.OwnerId, C.LastModifiedDate, C.LinkedIn_Profile__c, '
         sql += 'C.Category__c, C.Supplier__c, Salutation, C.Email, '
         sql += 'C.Title, C.MobilePhone, C.MailingAddress, C.AccountWebsite__c, '
-        sql += 'C.Description, C.MailingCountry, C.Inactive_Contact__c, C.CurrencyIsoCode '
+        sql += 'C.Description, C.MailingCountry, C.Inactive_Contact__c, C.CurrencyIsoCode, '
+        sql += 'C.Opted_In__c, C.VCLS_Main_Contact__c, C.Unsubscribed_from_Marketing_Comms__c, '
+        sql += 'C.VCLS_Initial_Contact__c '
         sql += 'FROM Contact as C '
         sql += 'Where C.AccountId In ('
         sql +=  'SELECT A.Id '
@@ -59,6 +63,7 @@ class SFContactSync(models.Model):
             except (generalSync.KeyNotFoundError, ValueError):
                 if createInOdoo:
                     self.createRecord(SFrecord, translator, externalInstance)
+        #here
 
 
     def setToExternal(self, translator, externalInstance, time, createRevert, updateRevert):
