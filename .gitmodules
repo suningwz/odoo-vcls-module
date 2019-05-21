@@ -1,6 +1,4 @@
-[submodule "OCA/crm"]
-	path = OCA/crm
-	url = https://github.com/VCLS-org/crm.git
+
 
 [submodule "OCA/timesheet"]
 	path = OCA/timesheet
