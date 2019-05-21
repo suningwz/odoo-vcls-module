@@ -13,6 +13,11 @@
                         <field name="stage" widget="statusbar"  options="{'clickable': '1'}"/>
                     </header>
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive" invisible="1">
+                            <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
+                        </button>
+                        </div>
                         <div id="o_contact_container">
                             <div id="o_contact_main">
                                 <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;:&quot;image_medium&quot;}"/>
