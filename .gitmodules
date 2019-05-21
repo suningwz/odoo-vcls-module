@@ -1,0 +1,4 @@
+[submodule "VCLS-org/crm"]
+	path = VCLS-org/crm
+	url = git@github.com:VCLS-org/crm.git
+	branch = 12.0
