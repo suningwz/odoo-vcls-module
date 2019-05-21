@@ -133,4 +133,4 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         return result
     @staticmethod
     def revertSalutation(OdooSalutation, odoo):
-        return odoo
+        return odoo.env['res.partner.title'].search([('name','ilike',OdooSalutation)])
