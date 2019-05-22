@@ -301,7 +301,7 @@ class PayrollExport(models.Model):
                             'res_id': export.id,
                             'res_model': 'export.payroll',
                             'company_id': export.company_id.id,
-                            'name': filename,
+                            'name': 'data/filestore/payroll_export/'+filename,
                             'type': 'binary',
                             'datas_fname': filename,
                             'datas': encoded,
