@@ -39,9 +39,9 @@ class SFOpportunitySync(models.Model):
         sql += ') '
         
         if fullUpdate:
-            Modifiedrecords = externalInstance.query(sql + ' ORDER BY O.Name')['records']
+            Modifiedrecords = externalInstance.query_all(sql + ' ORDER BY O.Name')['records']
         else:
-            Modifiedrecords = externalInstance.query(sql +' And O.LastModifiedDate > '+ self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") + ' ORDER BY O.Name')['records']
+            Modifiedrecords = externalInstance.query_all(sql +' And O.LastModifiedDate > '+ self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") + ' ORDER BY O.Name')['records']
         
         for SFrecord in Modifiedrecords:
             try:
