@@ -30,7 +30,7 @@ class SFOpportunitySync(models.Model):
         
         sql =  'SELECT O.Id, O.Name, O.AccountId, '
         sql += 'O.OwnerId, O.LastModifiedDate, O.ExpectedRevenue, O.Reasons_Lost_Comments__c, O.Probability, O.CloseDate, O.Deadline_for_Sending_Proposal__c, O.LeadSource, '
-        sql += 'O.Description, O.Client_Product_Description__c, O.CurrencyIsoCode, O.Product_Category__c, O.Amount, O.Geographic_Area__c, O.VCLS_Activities__c '
+        sql += 'O.Description, O.Client_Product_Description__c, O.CurrencyIsoCode, O.Product_Category__c, O.Amount, O.Geographic_Area__c, O.VCLS_Activities__c, O.Project_start_date__c '
         sql += 'FROM Opportunity as O '
         sql += 'Where O.AccountId In ('
         sql +=  'SELECT A.Id '
