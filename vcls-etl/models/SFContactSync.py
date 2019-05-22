@@ -28,7 +28,7 @@ class SFContactSync(models.Model):
         SF = self.env['etl.salesforce.contact'].search([])
         if not SF:
             SF = self.env['etl.salesforce.contact'].create({})
-        SF[0].getFromExternal(translator, sfInstance.getConnection(),isFullUpdate, createInOdoo, updateInOdoo)B
+        SF[0].getFromExternal(translator, sfInstance.getConnection(),isFullUpdate, createInOdoo, updateInOdoo)
         #SF[0].setToExternal(translator, sfInstance.getConnection(), time, createRevert, updateRevert)
         SF[0].setNextRun()
         #
