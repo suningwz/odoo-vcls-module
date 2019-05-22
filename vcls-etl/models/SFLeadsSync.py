@@ -1,4 +1,4 @@
-from . import TranslatorSFOpportunity
+from . import TranslatorSFLeads
 from . import ETL_SF
 from . import generalSync
 
@@ -9,7 +9,7 @@ from datetime import datetime
 
 from odoo import models, fields, api
 
-class SFOpportunitySync(models.Model):
+class SFLeadsSync(models.Model):
     _name = 'etl.salesforce.leads'
     _inherit = 'etl.sync.mixin'
 
@@ -19,7 +19,7 @@ class SFOpportunitySync(models.Model):
         token = self.env.ref('vcls-etl.SF_token').value
         print('Connecting to the Saleforce Database')
         sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
-        translator = TranslatorSFOpportunity.TranslatorSFOpportunity(sfInstance.getConnection())
+        translator = TranslatorSFLeads.TranslatorSFLeads(sfInstance.getConnection())
         SF = self.env['etl.salesforce.leads'].search([])
         if not SF:
             SF = self.env['etl.salesforce.leads'].create({})
@@ -28,20 +28,15 @@ class SFOpportunitySync(models.Model):
 
     def getFromExternal(self, translator, externalInstance, fullUpdate, createInOdoo, updateInOdoo):
         
-        sql =  'SELECT O.Id, O.Name, O.AccountId, '
-        sql += 'O.OwnerId, O.LastModifiedDate, O.ExpectedRevenue, O.Reasons_Lost_Comments__c, O.Probability, O.CloseDate, O.Deadline_for_Sending_Proposal__c, O.LeadSource, '
-        sql += 'O.Description, O.Client_Product_Description__c, O.CurrencyIsoCode, O.Product_Category__c, O.Amount, O.Geographic_Area__c, O.VCLS_Activities__c, O.Project_start_date__c '
-        sql += 'FROM Lead as O '
-        sql += 'Where O.AccountId In ('
-        sql +=  'SELECT A.Id '
-        sql +=  'FROM Account as A '
-        sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
-        sql += ') '
+        sql = 'Select Id, Name, OwnerId, Activity__c, Address, City, Company, Content_Name__c, Country,PostalCode, Street, '
+        sql += 'CurrencyIsoCode, Email,First_VCLS_Contact_Point__c, '
+        sql += 'External_Referee__c, Fax, Functional_Focus__c, Inactive_Lead__c, Industry, Contact_us_Message__c, Initial_Product_Interest__c, '
+        sql += 'LastModifiedDate, Title, Seniority__c, Phone, Website, Description, LeadSource From Lead'
         
         if fullUpdate:
-            Modifiedrecords = externalInstance.query(sql + ' ORDER BY O.Name')['records']
+            Modifiedrecords = externalInstance.query(sql + ' ORDER BY Name')['records']
         else:
-            Modifiedrecords = externalInstance.query(sql +' And O.LastModifiedDate > '+ self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") + ' ORDER BY O.Name')['records']
+            Modifiedrecords = externalInstance.query(sql +' And LastModifiedDate > '+ self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") + ' ORDER BY O.Name')['records']
         
         for SFrecord in Modifiedrecords:
             try:
