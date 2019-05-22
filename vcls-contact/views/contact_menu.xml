@@ -20,13 +20,28 @@
 			<field name="active" eval="False"/>
 		</record>
 
+		<!-- All Externals -->
+		<menuitem 
+			name="Externals" 
+			parent="contacts.menu_contacts" 
+			id="menu_externals" 
+			action="" 
+			sequence="1" />
+		
+		<menuitem 
+			name="All"
+			parent="menu_externals" 
+			id="menu_all_externals" 
+			action="action_contact_all_externals" 
+			sequence="1" />
+
 		<!-- Client Menus -->
 		<menuitem 
 			name="Clients" 
-			parent="contacts.menu_contacts" 
+			parent="menu_externals" 
 			id="menu_accounts" 
 			action="" 
-			sequence="1" />
+			sequence="3" />
 
 		<menuitem 
 			name="Companies" 
@@ -45,7 +60,7 @@
 		<!-- Suppliers Menus -->
 		<menuitem 
 			name="Suppliers" 
-			parent="contacts.menu_contacts" 
+			parent="menu_externals" 
 			id="menu_suppliers" 
 			action="" 
 			sequence="5" />
