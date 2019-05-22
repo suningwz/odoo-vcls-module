@@ -81,7 +81,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
             result['Fax'] = Odoo_Contact.fax
         if Odoo_Contact.mobile:
             result['MobilePhone'] = Odoo_Contact.mobile
-        if '@' in Odoo_Contact.email:
+        if '@' in str(Odoo_Contact.email):
             result['Email'] = Odoo_Contact.email
         if Odoo_Contact.description:
             result['Description'] = Odoo_Contact.description
@@ -94,7 +94,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         """ for c in Odoo_Contact.category_id:
             category += c.name 
         result['Category__c'] = category""" 
-        result['Salutation'] = TranslatorSFContact.revertSalutation(Odoo_Contact.title.name)
+        #result['Salutation'] = TranslatorSFContact.revertSalutation(Odoo_Contact.title.name, odoo)
         result['Title'] = Odoo_Contact.function
 
 
@@ -133,4 +133,4 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         return result
     @staticmethod
     def revertSalutation(OdooSalutation, odoo):
-        return odoo
+        pass

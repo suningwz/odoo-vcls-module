@@ -12,7 +12,7 @@
             <field name="doall">1</field>
             <field name="model_id" ref="model_etl_salesforce_account" />
             <field name="state">code</field>
-            <field name="code">model.run(False, False, True, True, True, False)</field>
+            <field name="code">model.run(False, True, True, True, True, False, None)</field>
         </record>
 
         <record id="cron_etl_account_full_update" model="ir.cron">
@@ -23,7 +23,7 @@
             <field name="doall">1</field>
             <field name="model_id" ref="model_etl_salesforce_account" />
             <field name="state">code</field>
-            <field name="code">model.run(True, False, True, True, True, False)</field>
+            <field name="code">model.run(True, True, True, True, True, False, None)</field>
         </record>
 
         <record id="cron_etl_contact" model="ir.cron">
@@ -36,7 +36,7 @@
             <field name="doall">1</field>
             <field name="model_id" ref="model_etl_salesforce_contact" />
             <field name="state">code</field>
-            <field name="code">model.run(False, False, True, True, True, False)</field>
+            <field name="code">model.run(False, True, True, True, True, False, None)</field>
         </record>
 
         <record id="cron_etl_contact_full_Update" model="ir.cron">
@@ -47,7 +47,7 @@
             <field name="doall">1</field>
             <field name="model_id" ref="model_etl_salesforce_contact" />
             <field name="state">code</field>
-            <field name="code">model.run(True, False, True, True, True, False)</field>
+            <field name="code">model.run(True, True, True, True, True, False, None)</field>
         </record>
         
         <record id="cron_etl_Opportunity" model="ir.cron">
@@ -60,7 +60,7 @@
             <field name="doall">1</field>
             <field name="model_id" ref="model_etl_salesforce_opportunity" />
             <field name="state">code</field>
-            <field name="code">model.run(False, True, True)</field>
+            <field name="code">model.run(False, True, True, True, None)</field>
         </record>
 
         <record id="cron_etl_opportunity_full_Update" model="ir.cron">
@@ -71,20 +71,8 @@
             <field name="doall">1</field>
             <field name="model_id" ref="model_etl_salesforce_opportunity" />
             <field name="state">code</field>
-            <field name="code">model.run(True, True, True)</field>
+            <field name="code">model.run(True, True, True, True, None)</field>
         </record>
-
-        <!-- TO DELETE -->
-        <record id="runRunRun" model="ir.cron">
-            <field name="name">RUN RUN RUN</field>
-            <field name="active" eval="True" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="numbercall">-1</field>
-            <field name="doall">1</field>
-            <field name="model_id" ref="model_etl_salesforce_account" />
-            <field name="state">code</field>
-            <field name="code">model.runRunRun()</field>
-        </record>
-
+        
     </data>
 </odoo>

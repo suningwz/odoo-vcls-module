@@ -16,24 +16,84 @@ class SFContactSync(models.Model):
     _name = 'etl.salesforce.contact'
     _inherit = 'etl.sync.mixin'
 
-    def run(self,isFullUpdate, updateKeyTables, createInOdoo, updateInOdoo, createRevert, updateRevert):
+    def run(self,isFullUpdate, updateKeyTables, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
-        
-        time = datetime.now(pytz.timezone("GMT"))
-        print('Connecting to the Saleforce Database')
         sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
         translator = TranslatorSFContact.TranslatorSFContact(sfInstance.getConnection())
         SF = self.env['etl.salesforce.contact'].search([])
         if not SF:
             SF = self.env['etl.salesforce.contact'].create({})
-        SF[0].getFromExternal(translator, sfInstance.getConnection(),isFullUpdate, createInOdoo, updateInOdoo)
-        SF[0].setToExternal(translator, sfInstance.getConnection(), time, createRevert, updateRevert)
-        SF[0].setNextRun()
 
-    def getFromExternal(self, translator, externalInstance, fullUpdate, createInOdoo, updateInOdoo):
+        ##### CODE HERE #####
+        if updateKeyTables:
+            SF.updateKeyTable(sfInstance, isFullUpdate)
+        print('Updated key table done')
+        if createInOdoo or updateInOdoo:
+            SF.updateOdooInstance(translator,sfInstance, createInOdoo, updateInOdoo,nbMaxRecords)
+        print('Updated odoo instance done')
+        if createRevert or updateRevert:
+            SF.updateExternalInstance(translator,sfInstance, createRevert, updateRevert, nbMaxRecords)
+        print('Updated sf instance done')
+        ##### CODE HERE #####
+        SF.setNextRun()
+    
+    def updateKeyTable(self, externalInstance, isFullUpdate):
+        # put logger here
+        sql =  'SELECT C.Id, C.LastModifiedDate '
+        sql += 'FROM Contact as C '
+        sql += 'Where C.AccountId In ('
+        sql +=  'SELECT A.Id '
+        sql +=  'FROM Account as A '
+        sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
+        sql += ') '
+
+        if not isFullUpdate:
+            sql += ' AND C.LastModifiedDate > ' + self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000")
+        sql += ' LIMIT 10'
+        print('Execute QUERY: {}'.format(sql))
+        modifiedRecordsExt = externalInstance.getConnection().query(sql)['records'] # Get modified records in External Instance
+        modifiedRecordsOdoo = self.env['res.partner'].search([('write_date','>', self.getStrLastRun()),('is_company','=',False)])
+        i = 0
+        nbMaxRecords = len(modifiedRecordsExt)
+        for extRecord in modifiedRecordsExt:
+            try:
+                lastModifiedExternal = datetime.strptime(extRecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")
+                lastModifiedOdoo = self.getLastUpdate(self.toOdooId(extRecord['Id']))
+                
+                if isFullUpdate or not self.isDateOdooAfterExternal(lastModifiedOdoo, lastModifiedExternal):
+                    # Exist in Odoo & External
+                    # External is more recent
+                    self.getKeyFromExtId(extRecord['Id'])[0].setState('needUpdateOdoo')
+                    print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                else:
+                    # Exist in Odoo & External
+                    # Odoo is more recent
+                    self.getKeyFromExtId(extRecord['Id'])[0].setState('needUpdateExternal')
+                    print('Update Key Table needUpdateExternal, ExternalId :{}'.format(extRecord['Id']))
+            except (generalSync.KeyNotFoundError, ValueError):
+                # Exist in External but not in Odoo
+                self.addKeys(externalId = extRecord['Id'], odooId = None, state = 'needCreateOdoo')
+               #self.env.cr.commit()
+                print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+            i += 1
+            print(str(i) +' / '+ str(nbMaxRecords))
         
+        for odooRecord in modifiedRecordsOdoo:
+            try:
+                key = self.getKeyFromOdooId(str(odooRecord.id))[0]
+                # Exist in Odoo & External
+                # Odoo is more recent
+                if key.state == 'upToDate':
+                    key.setState('needUpdateExternal')
+                    print('Update Key Table needUpdateExternal, OdooId :{}'.format(str(odooRecord.id)))
+            except (generalSync.KeyNotFoundError, ValueError):
+                # Exist in Odoo but not in External
+                self.addKeys(externalId = None, odooId = str(odooRecord.id), state = 'needCreateExternal')
+                print('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
+
+    def updateOdooInstance(self, translator,externalInstance, createInOdoo, updateInOdoo, nbMaxRecords):
         sql =  'SELECT C.Id, C.Name, C.AccountId, C.Phone, C.Fax, '
         sql += 'C.OwnerId, C.LastModifiedDate, C.LinkedIn_Profile__c, '
         sql += 'C.Category__c, C.Supplier__c, Salutation, C.Email, '
@@ -46,63 +106,78 @@ class SFContactSync(models.Model):
         sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
         sql += ') '
         
-        if fullUpdate:
-            Modifiedrecords = externalInstance.query(sql+' ORDER BY C.Name')['records']
-        else:
-            Modifiedrecords = externalInstance.query(sql +' And C.LastModifiedDate > '+ self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000")+' ORDER BY C.Name')['records']
+        Modifiedrecords = externalInstance.getConnection().query(sql + ' ORDER BY C.Name')['records'] #All records
+        keysTable = self.keys
+        if not nbMaxRecords:
+            #if nbMaxRecords == None / no limit
+            nbMaxRecords = len(keysTable)
+        i = 0
         
-        for SFrecord in Modifiedrecords:
-            try:
-                if fullUpdate or not self.isDateOdooAfterExternal(self.getLastUpdate(self.toOdooId(SFrecord['Id'])), datetime.strptime(SFrecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")):
-                    if updateInOdoo:
-                        self.update(SFrecord, translator, externalInstance)
-            except (generalSync.KeyNotFoundError, ValueError):
-                if createInOdoo:
-                    self.createRecord(SFrecord, translator, externalInstance)
+        for key in keysTable:
+            
+            item = None
+            if i < nbMaxRecords:
+                if key.state == 'needUpdateOdoo' and updateInOdoo:
+                    print(key.externalId)
+                    for record in Modifiedrecords:
+                        if record['Id'] == str(key.externalId):
+                            print("pareil")
+                            item = record
+                    if item:
+                        odooAttributes = translator.translateToOdoo(item, self, externalInstance)
+                        record = self.env['res.partner'].search([('id','=',key.odooId)], limit=1)
+                        record.write(odooAttributes)
+                        print('Updated record in Odoo: {}'.format(item['Name']))
+                        key.state ='upToDate'
+                        i += 1
+                        print(str(i)+' / '+str(nbMaxRecords))
+                elif key.state == 'needCreateOdoo' and createInOdoo:
+                    for record in Modifiedrecords:
+                        if record['Id'] == key.externalId:
+                            item = record
+                    if item:
+                        odooAttributes = translator.translateToOdoo(item, self, externalInstance)
+                        print(odooAttributes)
+                        partner_id = self.env['res.partner'].create(odooAttributes).id
+                        print('Create new record in Odoo: {}'.format(item['Name']))
+                        key.odooId = partner_id
+                        key.state ='upToDate'
+                        i += 1
+                        print(str(i)+' / '+str(nbMaxRecords))
+                
+               
 
-
-    def setToExternal(self, translator, externalInstance, time, createRevert, updateRevert):
-        time1 = self.getStrLastRun()
-        print(time1)
-        if time.second >=1:
-            time = time.replace(second = time.second - 1)
-        else:
-            time = time.replace(second = 59)
-        print(time)
-        modifiedRecords = self.env['res.partner'].search([('write_date','>',time1),('write_date','<',time),('is_company','=',False)])
-        print(modifiedRecords)
-        for record in modifiedRecords:
-            try:
-                self.toExternalId(str(record.id))
-                if updateRevert:
-                    self.updateSF(record,translator,externalInstance)
-            except (generalSync. KeyNotFoundError, ValueError):
-                if createRevert:
-                    self.createSF(record,translator,externalInstance)
-
-    def update(self, item, translator,externalInstance):
-        OD_id = self.toOdooId(item['Id'])
-        odooAttributes = translator.translateToOdoo(item, self, externalInstance)
-        partner = self.env['res.partner']
-        odid = int(OD_id[0])
-        record = partner.browse([odid])
-        record.write(odooAttributes)
-        print('Updated record in Odoo: {}'.format(item['Name']))
-
-    def createRecord(self, item, translator,externalInstance):
-        odooAttributes = translator.translateToOdoo(item, self, externalInstance)
-        partner_id = self.env['res.partner'].create(odooAttributes).id
-        print('Create new record in Odoo: {}'.format(item['Name']))
-        self.addKeys(item['Id'], partner_id)
-    
-    def createSF(self,item,translator,externalInstance):
-        try:
-            sfAttributes = translator.translateToSF(item, self)
-            _logger.debug(sfAttributes)
-            _logger.debug("This dictionnary will be create in Account")
-            sfRecord = externalInstance.Contact.create(sfAttributes)
-            print('Create new record in Salesforce: {}'.format(item.name))
-            self.addKeys(sfRecord['id'], item.id)
-        except SalesforceMalformedRequest: 
-            print('Duplicate : '+ item.name)
-
+    def updateExternalInstance(self, translator, externalInstance, createRevert, updateRevert, nbMaxRecords):
+        keysTable = self.keys
+        if not nbMaxRecords:
+            nbMaxRecords = len(keysTable)
+        i = 0
+        for key in keysTable:
+            item = None
+            if i < nbMaxRecords:
+                if key.state == 'needUpdateExternal' and updateRevert:
+                    item = self.env['res.partner'].search([('id','=',key.odooId)])
+                    sfAttributes = translator.translateToSF(item, self)
+                    _logger.debug(sfAttributes)
+                    sfRecord = externalInstance.getConnection().Contact.update(key.externalId,sfAttributes)
+                    print('Update record in Salesforce: {}'.format(item.name))
+                    _logger.debug('Update record in Salesforce: {}'.format(item.name))
+                    key.state ='upToDate'
+                    i += 1
+                    print(str(i)+' / '+str(nbMaxRecords))
+                elif key.state == 'needCreateExternal' and createRevert:
+                    try:
+                        item = self.env['res.partner'].search([('id','=',key.odooId)])
+                        if item:
+                            sfAttributes = translator.translateToSF(item, self)
+                            _logger.debug(sfAttributes)
+                            _logger.debug("This dictionnary will be create in Contact")
+                            sfRecord = externalInstance.getConnection().Contact.create(sfAttributes)
+                            print('Create new record in Salesforce: {}'.format(item.name))
+                            _logger.debug("This dictionnary will be create in Contact")
+                            key.externalId = sfRecord['id']
+                            key.state ='upToDate'
+                            i += 1
+                            print(str(i)+' / '+str(nbMaxRecords))
+                    except SalesforceMalformedRequest: 
+                        print('Duplicate : '+ item.name)

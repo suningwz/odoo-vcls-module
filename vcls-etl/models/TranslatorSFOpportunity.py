@@ -16,6 +16,7 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         result['partner_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Opportunity['AccountId'],odoo)
         result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertSfIdToOdooId(SF_Opportunity['OwnerId'],odoo,SF)
         result['expected_revenue'] = SF_Opportunity['ExpectedRevenue']
+        result['type'] = 'opportunity'
         if SF_Opportunity['Reasons_Lost_Comments__c']:
             result['lost_reason'] = mapOdoo.convertRef(SF_Opportunity['Reasons_Lost_Comments__c'],odoo,'crm.lost.reason',False)
         result['probability'] = SF_Opportunity['Probability']
