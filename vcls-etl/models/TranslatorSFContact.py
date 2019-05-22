@@ -66,9 +66,13 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         result = {}
         # Modify the name with -test
         if ' ' in Odoo_Contact.name:
-            result['FirstName'], result['lastName'] = Odoo_Contact.name.split(' ')
+            name = Odoo_Contact.name.split(" ")
+            if len(name) > 2:
+                result['LastName'] = Odoo_Contact.name
+            else:
+                result['FirstName'], result['LastName'] = name
         else:
-            result['lastName'] = Odoo_Contact.name
+            result['LastName'] = Odoo_Contact.name
         if Odoo_Contact.city:
             result['MailingCity'] = Odoo_Contact.city
         if Odoo_Contact.zip:

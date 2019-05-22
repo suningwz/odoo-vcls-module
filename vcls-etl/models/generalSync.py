@@ -89,7 +89,7 @@ class GeneralSync(models.AbstractModel):
     @api.one
     def getKeyFromExtId(self, externalId):
         for key in self.keys:
-            if key.externalId == externalId:
+            if key.externalId == externalId: 
                 return key
         raise KeyNotFoundError
 

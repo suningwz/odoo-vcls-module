@@ -16,7 +16,7 @@ class SFContactSync(models.Model):
     _name = 'etl.salesforce.contact'
     _inherit = 'etl.sync.mixin'
 
-    def run(self,isFullUpdate, updateKeyTables, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
+    def run(self,isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
@@ -27,8 +27,7 @@ class SFContactSync(models.Model):
             SF = self.env['etl.salesforce.contact'].create({})
 
         ##### CODE HERE #####
-        if updateKeyTables:
-            SF.updateKeyTable(sfInstance, isFullUpdate)
+        SF.updateKeyTable(sfInstance, isFullUpdate)
         print('Updated key table done')
         if createInOdoo or updateInOdoo:
             SF.updateOdooInstance(translator,sfInstance, createInOdoo, updateInOdoo,nbMaxRecords)
@@ -38,7 +37,7 @@ class SFContactSync(models.Model):
         print('Updated sf instance done')
         ##### CODE HERE #####
         SF.setNextRun()
-    
+
     def updateKeyTable(self, externalInstance, isFullUpdate):
         # put logger here
         sql =  'SELECT C.Id, C.LastModifiedDate '
@@ -48,15 +47,14 @@ class SFContactSync(models.Model):
         sql +=  'FROM Account as A '
         sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
         sql += ') '
-
         if not isFullUpdate:
-            sql += ' AND C.LastModifiedDate > ' + self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000")
-        sql += ' LIMIT 10'
+            sql += ' AND LastModifiedDate > ' + self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") 
+        sql += ' ORDER BY Name'
         print('Execute QUERY: {}'.format(sql))
-        modifiedRecordsExt = externalInstance.getConnection().query(sql)['records'] # Get modified records in External Instance
+        modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records'] # Get modified records in External Instance
         modifiedRecordsOdoo = self.env['res.partner'].search([('write_date','>', self.getStrLastRun()),('is_company','=',False)])
-        i = 0
-        nbMaxRecords = len(modifiedRecordsExt)
+        
+
         for extRecord in modifiedRecordsExt:
             try:
                 lastModifiedExternal = datetime.strptime(extRecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")
@@ -65,21 +63,28 @@ class SFContactSync(models.Model):
                 if isFullUpdate or not self.isDateOdooAfterExternal(lastModifiedOdoo, lastModifiedExternal):
                     # Exist in Odoo & External
                     # External is more recent
-                    self.getKeyFromExtId(extRecord['Id'])[0].setState('needUpdateOdoo')
-                    print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                    keyFromExt = self.getKeyFromExtId(extRecord['Id'])[0]
+                    if keyFromExt.odooId:
+                        keyFromExt.setState('needUpdateOdoo')
+                        print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                    else:
+                        keyFromExt.setState('needCreateOdoo')
+                        print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                    
                 else:
                     # Exist in Odoo & External
                     # Odoo is more recent
-                    self.getKeyFromExtId(extRecord['Id'])[0].setState('needUpdateExternal')
-                    print('Update Key Table needUpdateExternal, ExternalId :{}'.format(extRecord['Id']))
+                    keyFromExt = self.getKeyFromExtId(extRecord['Id'])[0]
+                    if keyFromExt.externalId:
+                        keyFromExt.setState('needUpdateExternal')
+                        print('Update Key Table needUpdateExternal, ExternalId :{}'.format(extRecord['Id']))
+                    else:
+                        keyFromExt.setState('needCreateExternal')
+                        print('Update Key Table needCreateExternal, ExternalId :{}'.format(keyFromExt.externalId))
             except (generalSync.KeyNotFoundError, ValueError):
                 # Exist in External but not in Odoo
                 self.addKeys(externalId = extRecord['Id'], odooId = None, state = 'needCreateOdoo')
-               #self.env.cr.commit()
                 print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
-            i += 1
-            print(str(i) +' / '+ str(nbMaxRecords))
-        
         for odooRecord in modifiedRecordsOdoo:
             try:
                 key = self.getKeyFromOdooId(str(odooRecord.id))[0]
@@ -92,6 +97,7 @@ class SFContactSync(models.Model):
                 # Exist in Odoo but not in External
                 self.addKeys(externalId = None, odooId = str(odooRecord.id), state = 'needCreateExternal')
                 print('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
+
 
     def updateOdooInstance(self, translator,externalInstance, createInOdoo, updateInOdoo, nbMaxRecords):
         sql =  'SELECT C.Id, C.Name, C.AccountId, C.Phone, C.Fax, '
@@ -106,22 +112,16 @@ class SFContactSync(models.Model):
         sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
         sql += ') '
         
-        Modifiedrecords = externalInstance.getConnection().query(sql + ' ORDER BY C.Name')['records'] #All records
-        keysTable = self.keys
+        Modifiedrecords = externalInstance.getConnection().query_all(sql + ' ORDER BY Name')['records'] #All records
         if not nbMaxRecords:
-            #if nbMaxRecords == None / no limit
-            nbMaxRecords = len(keysTable)
+            nbMaxRecords = len(self.keys)
         i = 0
-        
-        for key in keysTable:
-            
+        for key in self.keys:
             item = None
             if i < nbMaxRecords:
                 if key.state == 'needUpdateOdoo' and updateInOdoo:
-                    print(key.externalId)
                     for record in Modifiedrecords:
-                        if record['Id'] == str(key.externalId):
-                            print("pareil")
+                        if record['Id'] == key.externalId:
                             item = record
                     if item:
                         odooAttributes = translator.translateToOdoo(item, self, externalInstance)
@@ -130,20 +130,18 @@ class SFContactSync(models.Model):
                         print('Updated record in Odoo: {}'.format(item['Name']))
                         key.state ='upToDate'
                         i += 1
-                        print(str(i)+' / '+str(nbMaxRecords))
                 elif key.state == 'needCreateOdoo' and createInOdoo:
                     for record in Modifiedrecords:
                         if record['Id'] == key.externalId:
                             item = record
                     if item:
                         odooAttributes = translator.translateToOdoo(item, self, externalInstance)
-                        print(odooAttributes)
                         partner_id = self.env['res.partner'].create(odooAttributes).id
                         print('Create new record in Odoo: {}'.format(item['Name']))
                         key.odooId = partner_id
                         key.state ='upToDate'
                         i += 1
-                        print(str(i)+' / '+str(nbMaxRecords))
+                print(str(i)+' / '+str(nbMaxRecords))
                 
                
 

@@ -46,7 +46,7 @@ class SFOpportunitySync(models.Model):
         if not isFullUpdate:
             sql += ' AND O.LastModifiedDate > ' + self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") 
         print('Execute QUERY: {}'.format(sql))
-        modifiedRecordsExt = externalInstance.getConnection().query(sql)['records'] # Get modified records in External Instance
+        modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records'] # Get modified records in External Instance
         modifiedRecordsOdoo = self.env['crm.lead'].search([('write_date','>', self.getStrLastRun()),('type','=','opportunity')])
         
 
@@ -94,7 +94,7 @@ class SFOpportunitySync(models.Model):
         sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
         sql += ') '
         
-        Modifiedrecords = externalInstance.getConnection().query(sql + ' ORDER BY O.Name')['records'] #All records
+        Modifiedrecords = externalInstance.getConnection().query_all(sql + ' ORDER BY O.Name')['records'] #All records
         keysTable = self.keys
         if not nbMaxRecords:
             #if nbMaxRecords == None / no limit

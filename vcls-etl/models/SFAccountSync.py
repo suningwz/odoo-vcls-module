@@ -16,7 +16,7 @@ class SFAccountSync(models.Model):
     _name = 'etl.salesforce.account'
     _inherit = 'etl.sync.mixin'
 
-    def run(self,isFullUpdate, updateKeyTables, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
+    def run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
@@ -27,11 +27,10 @@ class SFAccountSync(models.Model):
             SF = self.env['etl.salesforce.account'].create({})
 
         ##### CODE HERE #####
-        if updateKeyTables:
-            SF.updateKeyTable(sfInstance, isFullUpdate)
+        SF.updateKeyTable(sfInstance, isFullUpdate)
         print('Updated key table done')
         if createInOdoo or updateInOdoo:
-            SF.updateOdooInstance(translator,sfInstance, createInOdoo, updateInOdoo,nbMaxRecords)
+            SF.updateOdooInstance(translator,sfInstance, createInOdoo, updateInOdoo, nbMaxRecords)
         print('Updated odoo instance done')
         if createRevert or updateRevert:
             SF.updateExternalInstance(translator,sfInstance, createRevert, updateRevert, nbMaxRecords)
@@ -46,7 +45,7 @@ class SFAccountSync(models.Model):
             sql += ' AND LastModifiedDate > ' + self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") 
         sql += ' ORDER BY Name'
         print('Execute QUERY: {}'.format(sql))
-        modifiedRecordsExt = externalInstance.getConnection().query(sql)['records'] # Get modified records in External Instance
+        modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records'] # Get modified records in External Instance
         modifiedRecordsOdoo = self.env['res.partner'].search([('write_date','>', self.getStrLastRun()),('is_company','=',True)])
         
 
@@ -58,13 +57,24 @@ class SFAccountSync(models.Model):
                 if isFullUpdate or not self.isDateOdooAfterExternal(lastModifiedOdoo, lastModifiedExternal):
                     # Exist in Odoo & External
                     # External is more recent
-                    self.getKeyFromExtId(extRecord['Id'])[0].setState('needUpdateOdoo')
-                    print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                    keyFromExt = self.getKeyFromExtId(extRecord['Id'])[0]
+                    if keyFromExt.odooId:
+                        keyFromExt.setState('needUpdateOdoo')
+                        print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                    else:
+                        keyFromExt.setState('needCreateOdoo')
+                        print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                    
                 else:
                     # Exist in Odoo & External
                     # Odoo is more recent
-                    self.getKeyFromExtId(extRecord['Id'])[0].setState('needUpdateExternal')
-                    print('Update Key Table needUpdateExternal, ExternalId :{}'.format(extRecord['Id']))
+                    keyFromExt = self.getKeyFromExtId(extRecord['Id'])[0]
+                    if keyFromExt.externalId:
+                        keyFromExt.setState('needUpdateExternal')
+                        print('Update Key Table needUpdateExternal, ExternalId :{}'.format(extRecord['Id']))
+                    else:
+                        keyFromExt.setState('needCreateExternal')
+                        print('Update Key Table needCreateExternal, ExternalId :{}'.format(keyFromExt.externalId))
             except (generalSync.KeyNotFoundError, ValueError):
                 # Exist in External but not in Odoo
                 self.addKeys(externalId = extRecord['Id'], odooId = None, state = 'needCreateOdoo')
@@ -95,13 +105,11 @@ class SFAccountSync(models.Model):
         sql += 'FROM Account '
         sql += 'WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null)) '
         
-        Modifiedrecords = externalInstance.getConnection().query(sql + ' ORDER BY Name')['records'] #All records
-        keysTable = self.keys
+        Modifiedrecords = externalInstance.getConnection().query_all(sql + ' ORDER BY Name')['records'] #All records
         if not nbMaxRecords:
-            #if nbMaxRecords == None / no limit
-            nbMaxRecords = len(keysTable)
+            nbMaxRecords = len(self.keys)
         i = 0
-        for key in keysTable:
+        for key in self.keys:
             item = None
             if i < nbMaxRecords:
                 if key.state == 'needUpdateOdoo' and updateInOdoo:
@@ -130,11 +138,10 @@ class SFAccountSync(models.Model):
                 print(str(i)+' / '+str(nbMaxRecords))
     
     def updateExternalInstance(self, translator, externalInstance, createRevert, updateRevert, nbMaxRecords):
-        keysTable = self.keys
         if not nbMaxRecords:
-            nbMaxRecords = len(keysTable)
+            nbMaxRecords = len(self.keys)
         i = 0
-        for key in keysTable:
+        for key in self.keys:
             item = None
             if i < nbMaxRecords:
                 if key.state == 'needUpdateExternal' and updateRevert:
