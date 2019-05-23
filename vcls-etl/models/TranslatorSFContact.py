@@ -23,6 +23,8 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         result['fax'] = SF_Contact['Fax']
         result['mobile'] = SF_Contact['MobilePhone']
         result['email'] = SF_Contact['Email']
+        result['ezfae'] = 'ok' 
+
         # Ignore Area_of_expertise__c
         result['description'] = ''
         result['description'] += 'Contact description : ' + str(SF_Contact['Description']) + '\n'
@@ -41,7 +43,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
        
         result['category_id'] =  [(6, 0, TranslatorSFContact.convertCategory(SF_Contact, odoo))]
         if SF_Contact['Salutation']:
-            result['title'] = mapOdoo.convertRef(SF_Contact['Salutation'], odoo,'res.partner.title',False)
+            result['title'] = 'balbalblbal'
 
         result['function'] = SF_Contact['Title']
         result['message_ids'] = [(0, 0, TranslatorSFContact.generateLog(SF_Contact))]
