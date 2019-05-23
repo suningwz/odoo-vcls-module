@@ -39,7 +39,7 @@ class Client(models.Model):
     _inherit = 'res.partner'
 
     program_ids = fields.One2many(
-        comodel_name = 'project.program',
+        'project.program',
         'client_id',
         string = 'Client Programs',
         readonly = True,

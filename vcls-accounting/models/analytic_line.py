@@ -5,7 +5,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class AccountAnalyticLine(models.Model):
     _inherit = 'account.analytic.line'
-
+    
     @api.multi
     @api.constrains('company_id', 'account_id')
     def _check_company_id(self):
