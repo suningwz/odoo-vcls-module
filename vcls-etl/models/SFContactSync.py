@@ -1,14 +1,14 @@
 from . import TranslatorSFContact
 from . import ETL_SF
 from . import generalSync
-import logging
-_logger = logging.getLogger(__name__)
 
 import pytz
 from simple_salesforce import Salesforce
 from simple_salesforce.exceptions import SalesforceMalformedRequest
 from tzlocal import get_localzone
 from datetime import datetime
+import logging
+_logger = logging.getLogger(__name__)
 
 from odoo import models, fields, api
 
@@ -16,7 +16,8 @@ class SFContactSync(models.Model):
     _name = 'etl.salesforce.contact'
     _inherit = 'etl.sync.mixin'
 
-    def run(self,isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
+    def run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
+        # run the ETL 
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
@@ -26,23 +27,26 @@ class SFContactSync(models.Model):
         if not SF:
             SF = self.env['etl.salesforce.contact'].create({})
 
-        ##### CODE HERE #####
         SF.updateKeyTable(sfInstance, isFullUpdate)
+        
         print('Updated key table done')
         _logger.info('Updated key table done')
+        
         if createInOdoo or updateInOdoo:
             SF.updateOdooInstance(translator,sfInstance, createInOdoo, updateInOdoo,nbMaxRecords)
+        
         print('Updated odoo instance done')
         _logger.info('Updated odoo instance done')
+        
         if createRevert or updateRevert:
             SF.updateExternalInstance(translator,sfInstance, createRevert, updateRevert, nbMaxRecords)
+        
         print('Updated sf instance done')
         _logger.info('Updated sf instance done')
-        ##### CODE HERE #####
+        
         SF.setNextRun()
 
     def updateKeyTable(self, externalInstance, isFullUpdate):
-        # put logger here
         sql =  'SELECT C.Id, C.LastModifiedDate '
         sql += 'FROM Contact as C '
         sql += 'Where C.AccountId In ('
@@ -54,7 +58,9 @@ class SFContactSync(models.Model):
             sql += ' AND LastModifiedDate > ' + self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") 
         sql += ' ORDER BY Name'
         print('Execute QUERY: {}'.format(sql))
-        modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records'] # Get modified records in External Instance
+        _logger.info('Execute QUERY: {}'.format(sql))
+        
+        modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
         modifiedRecordsOdoo = self.env['res.partner'].search([('write_date','>', self.getStrLastRun()),('is_company','=',False)])
 
         for extRecord in modifiedRecordsExt:
@@ -129,13 +135,16 @@ class SFContactSync(models.Model):
                         if record['Id'] == key.externalId:
                             item = record
                     if item:
-                        odooAttributes = translator.translateToOdoo(item, self, externalInstance)
-                        record = self.env['res.partner'].search([('id','=',key.odooId)], limit=1)
-                        record.write(odooAttributes)
-                        print('Updated record in Odoo: {}'.format(item['Name']))
-                        key.state ='upToDate'
-                        i += 1
-                        print(str(i)+' / '+str(nbMaxRecords))
+                        try:
+                            odooAttributes = translator.translateToOdoo(item, self, externalInstance)
+                            record = self.env['res.partner'].search([('id','=',key.odooId)], limit=1)
+                            record.write(odooAttributes)
+                            print('Updated record in Odoo: {}'.format(item['Name']))
+                            key.state ='upToDate'
+                            i += 1
+                            print(str(i)+' / '+str(nbMaxRecords))
+                        except ValueError as error:
+                            _logger.error(error)
                 elif key.state == 'needCreateOdoo' and createInOdoo:
                     for record in Modifiedrecords:
                         if record['Id'] == key.externalId:

@@ -117,26 +117,40 @@ class SFAccountSync(models.Model):
                         if record['Id'] == key.externalId:
                             item = record
                     if item:
-                        odooAttributes = translator.translateToOdoo(item, self, externalInstance)
-                        record = self.env['res.partner'].search([('id','=',key.odooId)], limit=1)
-                        record.image=record._get_default_image(False, odooAttributes.get('is_company'), False)
-                        record.write(odooAttributes)
-                        print('Updated record in Odoo: {}'.format(item['Name']))
-                        key.state ='upToDate'
-                        i += 1
-                        print(str(i)+' / '+str(nbMaxRecords))
+                        try:
+                            odooAttributes = translator.translateToOdoo(item, self, externalInstance)
+                            record = self.env['res.partner'].search([('id','=',key.odooId)], limit=1)
+                            record.image=record._get_default_image(False, odooAttributes.get('is_company'), False)
+                            record.write(odooAttributes)
+                            print('Updated record in Odoo: {}'.format(item['Name']))
+                            key.state ='upToDate'
+                            i += 1
+                            print(str(i)+' / '+str(nbMaxRecords))
+                        except ValueError as error:
+                            print("Error when writing in Odoo")
+                            _logger.error("Error when writing in Odoo")
+                            print(error)
+                            _logger.error(error)
+
+
                 elif key.state == 'needCreateOdoo' and createInOdoo:
                     for record in Modifiedrecords:
                         if record['Id'] == key.externalId:
                             item = record
                     if item:
-                        odooAttributes = translator.translateToOdoo(item, self, externalInstance)
-                        partner_id = self.env['res.partner'].create(odooAttributes).id
-                        print('Create new record in Odoo: {}'.format(item['Name']))
-                        key.odooId = partner_id
-                        key.state ='upToDate'
-                        i += 1
-                        print(str(i)+' / '+str(nbMaxRecords))
+                        try:
+                            odooAttributes = translator.translateToOdoo(item, self, externalInstance)
+                            partner_id = self.env['res.partner'].create(odooAttributes).id
+                            print('Create new record in Odoo: {}'.format(item['Name']))
+                            key.odooId = partner_id
+                            key.state ='upToDate'
+                            i += 1
+                            print(str(i)+' / '+str(nbMaxRecords))
+                        except ValueError as error:
+                            print("Error when creating in Odoo")
+                            _logger.error("Error when creating in Odoo")
+                            print(error)
+                            _logger.error(error)
     
     def updateExternalInstance(self, translator, externalInstance, createRevert, updateRevert, nbMaxRecords):
         if not nbMaxRecords:
