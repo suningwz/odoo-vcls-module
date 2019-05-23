@@ -28,13 +28,21 @@ class SFAccountSync(models.Model):
 
         ##### CODE HERE #####
         SF.updateKeyTable(sfInstance, isFullUpdate)
+        
         print('Updated key table done')
+        _logger.info('Updated key table done')
+
         if createInOdoo or updateInOdoo:
             SF.updateOdooInstance(translator,sfInstance, createInOdoo, updateInOdoo, nbMaxRecords)
+        
         print('Updated odoo instance done')
+        _logger.info('Updated odoo instance done')
+        
         if createRevert or updateRevert:
             SF.updateExternalInstance(translator,sfInstance, createRevert, updateRevert, nbMaxRecords)
+        
         print('Updated sf instance done')
+        _logger.info('Updated sf instance done')
         ##### CODE HERE #####
         SF.setNextRun()
 
@@ -123,6 +131,7 @@ class SFAccountSync(models.Model):
                             record.image=record._get_default_image(False, odooAttributes.get('is_company'), False)
                             record.write(odooAttributes)
                             print('Updated record in Odoo: {}'.format(item['Name']))
+                            _logger.info('Updated record in Odoo: {}'.format(item['Name']))
                             key.state ='upToDate'
                             i += 1
                             print(str(i)+' / '+str(nbMaxRecords))
@@ -142,6 +151,7 @@ class SFAccountSync(models.Model):
                             odooAttributes = translator.translateToOdoo(item, self, externalInstance)
                             partner_id = self.env['res.partner'].create(odooAttributes).id
                             print('Create new record in Odoo: {}'.format(item['Name']))
+                            _logger.info('Create new record in Odoo: {}'.format(item['Name']))
                             key.odooId = partner_id
                             key.state ='upToDate'
                             i += 1
@@ -160,14 +170,22 @@ class SFAccountSync(models.Model):
             item = None
             if i < nbMaxRecords:
                 if key.state == 'needUpdateExternal' and updateRevert:
-                    item = self.env['res.partner'].search([('id','=',key.odooId)])
-                    sfAttributes = translator.translateToSF(item, self)
-                    _logger.debug(sfAttributes)
-                    sfRecord = externalInstance.getConnection().Account.update(key.externalId,sfAttributes)
-                    print('Update record in Salesforce: {}'.format(item.name))
-                    _logger.debug('Update record in Salesforce: {}'.format(item.name))
-                    key.state ='upToDate'
-                    i += 1
+                    try:
+                        item = self.env['res.partner'].search([('id','=',key.odooId)])
+                        if item:
+                            sfAttributes = translator.translateToSF(item, self)
+                            _logger.debug(sfAttributes)
+                            sfRecord = externalInstance.getConnection().Account.update(key.externalId,sfAttributes)
+                            print('Update record in Salesforce: {}'.format(item.name))
+                            _logger.info('Update record in Salesforce: {}'.format(item.name))
+                            key.state ='upToDate'
+                            i += 1
+                    except SalesforceMalformedRequest as error: 
+                        print('Error : '+ item.name)
+                        print(error.url)
+                        print(error.content)
+                        _logger.error(error.content)
+
                 elif key.state == 'needCreateExternal' and createRevert:
                     try:
                         item = self.env['res.partner'].search([('id','=',key.odooId)])
@@ -177,12 +195,15 @@ class SFAccountSync(models.Model):
                             _logger.debug("This dictionnary will be create in Account")
                             sfRecord = externalInstance.getConnection().Account.create(sfAttributes)
                             print('Create new record in Salesforce: {}'.format(item.name))
-                            _logger.debug("This dictionnary will be create in Account")
+                            _logger.info('Create new record in Salesforce: {}'.format(item.name))
                             key.externalId = sfRecord['id']
                             key.state ='upToDate'
                             i += 1
                             print(str(i)+' / '+str(nbMaxRecords))
-                    except SalesforceMalformedRequest: 
-                        print('Duplicate : '+ item.name)
+                    except SalesforceMalformedRequest as error: 
+                        print('Error : '+ item.name)
+                        print(error.url)
+                        print(error.content)
+                        _logger.error(error.content)
 
 

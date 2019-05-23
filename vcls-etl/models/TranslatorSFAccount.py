@@ -51,7 +51,6 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
             result['controller_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['Project_Controller__c'],odoo, SF)
         if SF_Account['Industry']:
             result['industry_id'] = mapOdoo.convertRef(SF_Account['Industry'],odoo,'res.partner.industry',False)
-            """ result['industry_id'] = mapOdoo.convertRef(SF_Account['Industry'],odoo,'res.partner.industry',False) """
         if SF_Account['Area_of_expertise__c']:
             result['expertise_area_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Area_of_expertise__c'],odoo,'expertise.area',True))]
         if SF_Account['Supplier_Project__c']:

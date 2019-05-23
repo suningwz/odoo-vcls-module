@@ -140,6 +140,7 @@ class SFContactSync(models.Model):
                             record = self.env['res.partner'].search([('id','=',key.odooId)], limit=1)
                             record.write(odooAttributes)
                             print('Updated record in Odoo: {}'.format(item['Name']))
+                            _logger.info('Updated record in Odoo: {}'.format(item['Name']))
                             key.state ='upToDate'
                             i += 1
                             print(str(i)+' / '+str(nbMaxRecords))
@@ -153,6 +154,7 @@ class SFContactSync(models.Model):
                         odooAttributes = translator.translateToOdoo(item, self, externalInstance)
                         partner_id = self.env['res.partner'].create(odooAttributes).id
                         print('Create new record in Odoo: {}'.format(item['Name']))
+                        _logger.info('Create new record in Odoo: {}'.format(item['Name']))
                         key.odooId = partner_id
                         key.state ='upToDate'
                         i += 1
@@ -169,17 +171,19 @@ class SFContactSync(models.Model):
             item = None
             if i < nbMaxRecords:
                 if key.state == 'needUpdateExternal' and updateRevert:
-                    try:    
+                    try:   
                         item = self.env['res.partner'].search([('id','=',key.odooId)])
-                        sfAttributes = translator.translateToSF(item, self)
-                        sfRecord = externalInstance.getConnection().Contact.update(key.externalId,sfAttributes)
-                        print('Update record in Salesforce: {}'.format(item.name))
-                        _logger.debug('Update record in Salesforce: {}'.format(item.name))
-                        key.state ='upToDate'
-                        i += 1
-                        print(str(i)+' / '+str(nbMaxRecords))
-                        _logger.info(str(i)+' / '+str(nbMaxRecords))
+                        if item:
+                            sfAttributes = translator.translateToSF(item, self)
+                            sfRecord = externalInstance.getConnection().Contact.update(key.externalId,sfAttributes)
+                            print('Update record in Salesforce: {}'.format(item.name))
+                            _logger.info('Update record in Salesforce: {}'.format(item.name))
+                            key.state ='upToDate'
+                            i += 1
+                            print(str(i)+' / '+str(nbMaxRecords))
+                            _logger.info(str(i)+' / '+str(nbMaxRecords))
                     except SalesforceMalformedRequest as error:
+                        print('Error : '+ item.name)
                         print(error.url)
                         print(error.content)
                         _logger.error(error.content)
@@ -189,16 +193,16 @@ class SFContactSync(models.Model):
                         if item:
                             sfAttributes = translator.translateToSF(item, self)
                             _logger.debug(sfAttributes)
-                            _logger.debug("This dictionnary will be create in Contact")
                             sfRecord = externalInstance.getConnection().Contact.create(sfAttributes)
                             print('Create new record in Salesforce: {}'.format(item.name))
+                            _logger.info('Create new record in Salesforce: {}'.format(item.name))
                             key.externalId = sfRecord['id']
                             key.state ='upToDate'
                             i += 1
                             print(str(i)+' / '+str(nbMaxRecords))
                             _logger.info(str(i)+' / '+str(nbMaxRecords))
                     except SalesforceMalformedRequest as error: 
-                        print('Duplicate : '+ item.name)
+                        print('Error : '+ item.name)
                         print(error.url)
                         print(error.content)
                         _logger.error(error.content)
