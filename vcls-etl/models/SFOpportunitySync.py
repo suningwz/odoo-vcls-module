@@ -15,7 +15,7 @@ class SFOpportunitySync(models.Model):
     _name = 'etl.salesforce.opportunity'
     _inherit = 'etl.sync.mixin'
 
-    def run(self,isFullUpdate, updateKeyTables, createInOdoo, updateInOdoo, nbMaxRecords):
+    def run(self,isFullUpdate, createInOdoo, updateInOdoo, nbMaxRecords):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
@@ -26,8 +26,7 @@ class SFOpportunitySync(models.Model):
             SF = self.env['etl.salesforce.opportunity'].create({})
 
         ##### CODE HERE #####
-        if updateKeyTables:
-            SF.updateKeyTable(sfInstance, isFullUpdate)
+        SF.updateKeyTable(sfInstance, isFullUpdate)
         print('Updated key table done')
         if createInOdoo or updateInOdoo:
             SF.updateOdooInstance(translator,sfInstance, createInOdoo, updateInOdoo,nbMaxRecords)
@@ -50,8 +49,12 @@ class SFOpportunitySync(models.Model):
         print('Execute QUERY: {}'.format(sql))
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records'] # Get modified records in External Instance
         modifiedRecordsOdoo = self.env['crm.lead'].search([('write_date','>', self.getStrLastRun()),('type','=','opportunity')])
-        
+        i = 0
+
         for extRecord in modifiedRecordsExt:
+            if i % 100 == 0:
+                self.env.cr.commit()
+                print("commit")
             try:
                 lastModifiedExternal = datetime.strptime(extRecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")
                 lastModifiedOdoo = self.getLastUpdate(self.toOdooId(extRecord['Id']))
@@ -63,9 +66,11 @@ class SFOpportunitySync(models.Model):
                     if keyFromExt.odooId:
                         keyFromExt.setState('needUpdateOdoo')
                         print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                        i += 1 
                     else:
                         keyFromExt.setState('needCreateOdoo')
                         print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                        i += 1
                     
                 else:
                     # Exist in Odoo & External
@@ -74,15 +79,21 @@ class SFOpportunitySync(models.Model):
                     if keyFromExt.externalId:
                         keyFromExt.setState('needUpdateExternal')
                         print('Update Key Table needUpdateExternal, ExternalId :{}'.format(extRecord['Id']))
+                        i += 1 
                     else:
                         keyFromExt.setState('needCreateExternal')
                         print('Update Key Table needCreateExternal, ExternalId :{}'.format(keyFromExt.externalId))
+                        i += 1
             except (generalSync.KeyNotFoundError, ValueError):
                 # Exist in External but not in Odoo
                 self.addKeys(externalId = extRecord['Id'], odooId = None, state = 'needCreateOdoo')
                 print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                i += 1
         
         for odooRecord in modifiedRecordsOdoo:
+            if i % 100 == 0:
+                self.env.cr.commit()
+                print("commit")
             try:
                 key = self.getKeyFromOdooId(str(odooRecord.id))[0]
                 # Exist in Odoo & External
@@ -90,16 +101,18 @@ class SFOpportunitySync(models.Model):
                 if key.state == 'upToDate':
                     key.setState('needUpdateExternal')
                     print('Update Key Table needUpdateExternal, OdooId :{}'.format(str(odooRecord.id)))
+                    i+=1
             except (generalSync.KeyNotFoundError, ValueError):
                 # Exist in Odoo but not in External
                 self.addKeys(externalId = None, odooId = str(odooRecord.id), state = 'needCreateExternal')
                 print('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
+                i+=1
 
 
     def updateOdooInstance(self, translator,externalInstance, createInOdoo, updateInOdoo, nbMaxRecords):
         sql =  'SELECT O.Id, O.Name, O.AccountId, '
         sql += 'O.OwnerId, O.LastModifiedDate, O.ExpectedRevenue, O.Reasons_Lost_Comments__c, O.Probability, O.CloseDate, O.Deadline_for_Sending_Proposal__c, O.LeadSource, '
-        sql += 'O.Description, O.Client_Product_Description__c, O.CurrencyIsoCode, O.Product_Category__c, O.Amount, O.Geographic_Area__c, O.VCLS_Activities__c '
+        sql += 'O.Description, O.Client_Product_Description__c, O.CurrencyIsoCode, O.Product_Category__c, O.Amount, O.Geographic_Area__c, O.VCLS_Activities__c,Project_start_date__c '
         sql += 'FROM Opportunity as O '
         sql += 'Where O.AccountId In ('
         sql +=  'SELECT A.Id '

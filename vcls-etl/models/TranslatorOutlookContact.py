@@ -11,9 +11,19 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         if Contact['Title']:
             result['title'] = mapOdoo.convertRef(Contact['Title'], odoo,'res.partner.title',False)
         result['name'] = Contact['First Name'] + Contact['Last Name']
-        #Contact['Sufix]
+        #Contact['Sufix']
         #result['parent_id'] = Contact['Company"]
-
+        #Contcat['Department'] Paris OR RENNES
+        result['function'] = Contact['Job Title']
+        result['street'] = Contact['Business Street']
+        result['city'] = Contact['Business City']
+        result['state'] = Contact['Business State']
+        result['zip'] = Contact['Business Postal Code']
+        if Contact['Business Country/Region']:
+            result['country_id'] = mapOdoo.convertRef(Contact['Business Country/Region'],odoo,'res.country',False)
+        result['description'] = 'Home Address : ' + Contact['Home Street'] + Contact['Home City'] + Contact['Home State'] + Contact['Home Postal Code']
+        + Contact['Home Country']
+        result['description'] += 'Other Address : ' + Contact['Other Street']
 
         result['stage'] = TranslatorSFContact.convertStatus(SF_Contact)
         # Ignore  Contact_Level__c
