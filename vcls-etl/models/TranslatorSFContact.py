@@ -95,7 +95,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         if Odoo_Contact.mobile:
             result['MobilePhone'] = Odoo_Contact.mobile
         if '@' in str(Odoo_Contact.email):
-            result['Email'] = Odoo_Contact.email
+           result['Email'] = Odoo_Contact.email
         if Odoo_Contact.description:
             result['Description'] = Odoo_Contact.description
         result['AccountId'] = TranslatorSFContact.toSfId(Odoo_Contact.parent_id.id,odoo)
@@ -146,4 +146,8 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         return result
     @staticmethod
     def revertSalutation(OdooSalutation, odoo):
-        return odoo.env['res.partner.title'].search([('name','ilike',OdooSalutation)])
+        salut = odoo.env['res.partner.title'].search([('name','ilike',OdooSalutation)],limit = 1)
+        if salut:
+            return salut
+        else:
+            return None

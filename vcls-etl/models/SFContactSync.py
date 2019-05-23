@@ -160,15 +160,20 @@ class SFContactSync(models.Model):
             item = None
             if i < nbMaxRecords:
                 if key.state == 'needUpdateExternal' and updateRevert:
-                    item = self.env['res.partner'].search([('id','=',key.odooId)])
-                    sfAttributes = translator.translateToSF(item, self)
-                    sfRecord = externalInstance.getConnection().Contact.update(key.externalId,sfAttributes)
-                    print('Update record in Salesforce: {}'.format(item.name))
-                    _logger.debug('Update record in Salesforce: {}'.format(item.name))
-                    key.state ='upToDate'
-                    i += 1
-                    print(str(i)+' / '+str(nbMaxRecords))
-                    _logger.info(str(i)+' / '+str(nbMaxRecords))
+                    try:    
+                        item = self.env['res.partner'].search([('id','=',key.odooId)])
+                        sfAttributes = translator.translateToSF(item, self)
+                        sfRecord = externalInstance.getConnection().Contact.update(key.externalId,sfAttributes)
+                        print('Update record in Salesforce: {}'.format(item.name))
+                        _logger.debug('Update record in Salesforce: {}'.format(item.name))
+                        key.state ='upToDate'
+                        i += 1
+                        print(str(i)+' / '+str(nbMaxRecords))
+                        _logger.info(str(i)+' / '+str(nbMaxRecords))
+                    except SalesforceMalformedRequest as error:
+                        print(error.url)
+                        print(error.content)
+                        _logger.error(error.content)
                 elif key.state == 'needCreateExternal' and createRevert:
                     try:
                         item = self.env['res.partner'].search([('id','=',key.odooId)])
@@ -185,5 +190,6 @@ class SFContactSync(models.Model):
                             _logger.info(str(i)+' / '+str(nbMaxRecords))
                     except SalesforceMalformedRequest as error: 
                         print('Duplicate : '+ item.name)
-                        print(error.message)
-                        _logger.error(error.message)
+                        print(error.url)
+                        print(error.content)
+                        _logger.error(error.content)
