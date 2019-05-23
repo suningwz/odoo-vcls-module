@@ -15,8 +15,21 @@ class ETLMap(models.Model):
     # Helsinki
     odooId = fields.Char(readonly = True)
     externalId = fields.Char(readonly = True)
-    isUpdate = fields.Boolean(default = False)
     syncRecordId = fields.Many2one('etl.sync.mixin', readonly = True)
+
+    state = fields.Selection([
+        ('upToDate', 'Up To Date'),
+        ('needUpdateOdoo', 'Need Update In Odoo'),
+        ('needUpdateExternal', 'Need Update In External'),
+        ('needCreateOdoo', 'Need To Be Created In Odoo'),
+        ('needCreateExternal', 'Need To Be Created In External')],
+        string='State',
+        default='upToDate' # For existing keys
+    )
+
+    @api.one
+    def setState(self, state):
+        self.state = state
 
     # foutre les fonctions de mappage ici
 
@@ -29,6 +42,7 @@ class GeneralSync(models.AbstractModel):
 
     def setNextRun(self):
         self.lastRun = fields.Datetime.from_string(datetime.datetime.now(pytz.timezone("GMT")).strftime("%Y-%m-%d %H:%M:%S.00+0000"))
+        print(self.lastRun)
     
     def getStrLastRun(self):
         if not self.lastRun:
@@ -48,8 +62,8 @@ class GeneralSync(models.AbstractModel):
         return dateOdoo >= dateExternal
     
     @api.one
-    def addKeys(self, externalId, odooId):
-        self.keys = [(0, 0,  { 'odooId': odooId, 'externalId': externalId })]
+    def addKeys(self, externalId, odooId, state):
+        self.keys = [(0, 0,  { 'odooId': odooId, 'externalId': externalId, 'state': state })]
 
     @api.one
     def toOdooId(self, externalId):
@@ -64,24 +78,37 @@ class GeneralSync(models.AbstractModel):
             if key.odooId == odooId:
                 return key.externalId
         raise KeyNotFoundError
+    
+    @api.one
+    def getKeyFromOdooId(self, odooId):
+        for key in self.keys:
+            if key.odooId == odooId:
+                return key
+        raise KeyNotFoundError
+    
+    @api.one
+    def getKeyFromExtId(self, externalId):
+        for key in self.keys:
+            if key.externalId == externalId: 
+                return key
+        raise KeyNotFoundError
 
-    # Abstract method not implementable
     @abstractmethod
-    def getFromExternal(self, translator, externalInstance, fullUpdate,updateKeyTables, createInOdoo, updateInOdoo):
+    def updateKeyTables(self):
         pass
+    @abstractmethod
+    def updateOdooInstance(self):
+        pass
+    
+    @abstractmethod
+    def needUpdateExternal(self):
+        pass
+    
+    ####################
 
     @abstractmethod
-    def setToExternal(self, translator, externalInstance, time, createRevert, updateRevert):
+    def updateKeyTable(self, externalInstance):
         pass
-
-    @abstractmethod
-    def update(self, item, translator):
-        pass
-
-    @abstractmethod
-    def createRecord(self, item, translator):
-        pass
-
 
 
 

@@ -10,11 +10,8 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         result = {}
         # Modify the name with -test
         result['name'] = SF_Contact['Name'] #+ '-test'
-
-        # result['category_id'] = reference Supplier_Category__c
         result['stage'] = TranslatorSFContact.convertStatus(SF_Contact)
         # Ignore  Contact_Level__c
-
         # result['state_id'] = reference  BillingState
         if SF_Contact['MailingAddress']:
             result['city'] = SF_Contact['MailingAddress']['city']
@@ -26,6 +23,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         result['fax'] = SF_Contact['Fax']
         result['mobile'] = SF_Contact['MobilePhone']
         result['email'] = SF_Contact['Email']
+
         # Ignore Area_of_expertise__c
         result['description'] = ''
         result['description'] += 'Contact description : ' + str(SF_Contact['Description']) + '\n'
@@ -42,12 +40,24 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         result['currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Contact['CurrencyIsoCode'],odoo)        
         result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contact['OwnerId'],odoo, SF)
        
-        result['category_id'] =  [(6, 0, TranslatorSFContact.convertCategory(SF_Contact['Supplier__c'],SF_Contact['Category__c'],odoo))]
+        result['category_id'] =  [(6, 0, TranslatorSFContact.convertCategory(SF_Contact, odoo))]
         if SF_Contact['Salutation']:
             result['title'] = mapOdoo.convertRef(SF_Contact['Salutation'], odoo,'res.partner.title',False)
 
         result['function'] = SF_Contact['Title']
         result['message_ids'] = [(0, 0, TranslatorSFContact.generateLog(SF_Contact))]
+
+        if SF_Contact['Opted_In__c']:
+            result['opted_in'] = SF_Contact['Opted_In__c']
+
+        if SF_Contact['Unsubscribed_from_Marketing_Comms__c']:
+            result['opted_out'] = True if SF_Contact['Unsubscribed_from_Marketing_Comms__c'] == 'Unsubscribed' else False
+
+        if SF_Contact['VCLS_Initial_Contact__c']:
+            result['vcls_contact_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contact['VCLS_Initial_Contact__c'],odoo, SF)
+
+        if SF_Contact['VCLS_Main_Contact__c']:
+            result['expert_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contact['VCLS_Main_Contact__c'],odoo, SF)
 
         return result
     
@@ -66,9 +76,13 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         result = {}
         # Modify the name with -test
         if ' ' in Odoo_Contact.name:
-            result['FirstName'], result['lastName'] = Odoo_Contact.name.split(' ')
+            name = Odoo_Contact.name.split(" ")
+            if len(name) > 2:
+                result['LastName'] = Odoo_Contact.name
+            else:
+                result['FirstName'], result['LastName'] = name
         else:
-            result['lastName'] = Odoo_Contact.name
+            result['LastName'] = Odoo_Contact.name
         if Odoo_Contact.city:
             result['MailingCity'] = Odoo_Contact.city
         if Odoo_Contact.zip:
@@ -81,20 +95,24 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
             result['Fax'] = Odoo_Contact.fax
         if Odoo_Contact.mobile:
             result['MobilePhone'] = Odoo_Contact.mobile
-        if '@' in Odoo_Contact.email:
-            result['Email'] = Odoo_Contact.email
+        if '@' in str(Odoo_Contact.email):
+           result['Email'] = Odoo_Contact.email
         if Odoo_Contact.description:
             result['Description'] = Odoo_Contact.description
-        result['AccountId'] = TranslatorSFContact.toSfId(Odoo_Contact.parent_id.id,odoo)
-
+            
+        result['AccountId'] = TranslatorSFGeneral.TranslatorSFGeneral.toSfId(Odoo_Contact.parent_id.id,odoo)
+        
         # Ignore company_type
-        result['MailingCountry'] = TranslatorSFContact.revertCountry(Odoo_Contact.country_id.id, odoo)
+        result['MailingCountry'] = TranslatorSFGeneral.TranslatorSFGeneral.revertCountry(Odoo_Contact.country_id.id, odoo)
         result['CurrencyIsoCode'] = Odoo_Contact.currency_id.name
-        result['OwnerId'] = TranslatorSFContact.revertOdooIdToSfId(Odoo_Contact.user_id,odoo)
+        if Odoo_Contact.user_id:
+            result['OwnerId'] = TranslatorSFGeneral.TranslatorSFGeneral.revertOdooIdToSfId(Odoo_Contact.user_id,odoo)
+        elif Odoo_Contact.parent_id:
+            result['OwnerId'] = TranslatorSFGeneral.TranslatorSFGeneral.revertOdooIdToSfId(Odoo_Contact.parent_id.user_id,odoo)
         """ for c in Odoo_Contact.category_id:
             category += c.name 
-        result['Category__c'] = category""" 
-        result['Salutation'] = TranslatorSFContact.revertSalutation(Odoo_Contact.title.name)
+        result['Category__c'] = category"""
+        result['Salutation'] = Odoo_Contact.title.name
         result['Title'] = Odoo_Contact.function
 
 
@@ -119,9 +137,9 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
             return 'Undefined - to fill'
 
     @staticmethod
-    def convertCategory(isSupplier, SFtype, odoo):
+    def convertCategory(SF, odoo):
         result = []
-        if isSupplier:
+        if SF['Supplier__c']:
             result += [odoo.env.ref('vcls-contact.category_PS').id]
         """ if SFtype:
             if (not isSupplier) and 'supplier' in SFtype.lower():
@@ -131,6 +149,3 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
             if 'partner' in SFtype.lower():
                 result += [odoo.env.ref('vcls-contact.category_partner').id] """
         return result
-    @staticmethod
-    def revertSalutation(OdooSalutation, odoo):
-        return odoo

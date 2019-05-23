@@ -31,11 +31,10 @@ class TranslatorSFGeneral(ITranslator.ITranslator):
 
     @staticmethod
     def getUserMail(userId, SF):
-        for user in TranslatorSFGeneral.usersSF:
+        for user in TranslatorSFGeneral.usersSF: 
             if user['Id'] == userId:
                 return user['Username']
-            else:
-                return None
+        return None
 
     @staticmethod
     def getUserId(mail, odoo):
@@ -49,8 +48,7 @@ class TranslatorSFGeneral(ITranslator.ITranslator):
         for user in TranslatorSFGeneral.usersSF:
             if user['Username'] == mail:
                 return user['Id']
-            else:
-                return None
+        return None
     @staticmethod
     def getUserMailOd(userId,odoo):
         result = odoo.env['res.users'].search([('id','=',userId)])
@@ -69,13 +67,15 @@ class TranslatorSFGeneral(ITranslator.ITranslator):
     @staticmethod
     def toOdooId(externalId, odoo):
         for key in odoo.env['etl.salesforce.account'].search([]).keys:
-            if key.externalId == externalId:
+            if key.externalId == str(externalId):
                 return key.odooId
         return None
     @staticmethod
     def toSfId(odooId,odoo):
         for key in odoo.env['etl.salesforce.account'].search([]).keys:
-            if key.odooId == odooId:
+            print("test for")
+            if key.odooId == str(odooId):
+                print("get")
                 return key.externalId
         return None
     @staticmethod

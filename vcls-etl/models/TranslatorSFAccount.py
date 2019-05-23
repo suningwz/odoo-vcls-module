@@ -41,7 +41,6 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         result['currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Account['CurrencyIsoCode'],odoo)
         result['altname'] = SF_Account['VCLS_Alt_Name__c']
         result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['OwnerId'],odoo, SF)
-
         if SF_Account['Invoice_Administrator__c']:
            result['invoice_admin_id'] = mapOdoo.convertRef(SF_Account['Invoice_Administrator__c'],odoo,'res.users',False)
         if SF_Account['Main_VCLS_Contact__c']:

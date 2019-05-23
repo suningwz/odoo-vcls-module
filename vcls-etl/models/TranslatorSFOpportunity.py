@@ -16,6 +16,7 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         result['partner_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Opportunity['AccountId'],odoo)
         result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertSfIdToOdooId(SF_Opportunity['OwnerId'],odoo,SF)
         result['expected_revenue'] = SF_Opportunity['ExpectedRevenue']
+        result['type'] = 'opportunity'
         if SF_Opportunity['Reasons_Lost_Comments__c']:
             result['lost_reason'] = mapOdoo.convertRef(SF_Opportunity['Reasons_Lost_Comments__c'],odoo,'crm.lost.reason',False)
         result['probability'] = SF_Opportunity['Probability']
@@ -34,9 +35,17 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         result['date_deadline'] = SF_Opportunity['Deadline_for_Sending_Proposal__c'] 
         result['source_id'] = mapOdoo.convertRef(SF_Opportunity['LeadSource'],odoo,'utm.source',False)
         result['date_closed'] = SF_Opportunity['CloseDate']
+        result['type'] = 'opportunity'
+        #need test
+        result['amount_customer_currency'] = SF_Opportunity['Amount'] #need try catch
+        result['customer_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Opportunity['CurrencyIsoCode'],odoo)#need try catch
+        if SF_Opportunity['Project_start_date__c']:
+            result['expected_start_date'] = SF_Opportunity['Project_start_date__c']
+
         result.update(odoo.env['crm.lead']._onchange_partner_id_values(int(result['partner_id']) if result['partner_id'] else False))
         result['message_ids'] = [(0, 0, TranslatorSFOpportunity.generateLog(SF_Opportunity))]
-        result['type'] = 'opportunity'
+
+
         return result
     
     @staticmethod

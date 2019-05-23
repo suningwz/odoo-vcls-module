@@ -21,5 +21,4 @@ class ETL_SF:
             ETL_SF.instance = Salesforce(username=userSF, password=passwordSF, security_token=token ,version='41.0')
 
     def getConnection(self):
-        print('Successful connection to Salesforce.')
         return ETL_SF.instance
