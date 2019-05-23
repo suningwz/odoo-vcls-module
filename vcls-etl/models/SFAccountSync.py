@@ -10,7 +10,7 @@ from tzlocal import get_localzone
 import pytz
 from datetime import datetime
 
-from odoo import models, fields, api
+from odoo import exceptions, models, fields, api
 
 class SFAccountSync(models.Model):
     _name = 'etl.salesforce.account'

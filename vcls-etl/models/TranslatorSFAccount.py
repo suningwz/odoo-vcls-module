@@ -41,7 +41,6 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         result['currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Account['CurrencyIsoCode'],odoo)
         result['altname'] = SF_Account['VCLS_Alt_Name__c']
         result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['OwnerId'],odoo, SF)
-        result['ezfae'] = 'ok' 
         if SF_Account['Invoice_Administrator__c']:
            result['invoice_admin_id'] = mapOdoo.convertRef(SF_Account['Invoice_Administrator__c'],odoo,'res.users',False)
         if SF_Account['Main_VCLS_Contact__c']:
@@ -51,7 +50,8 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         if SF_Account['Project_Controller__c']:
             result['controller_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['Project_Controller__c'],odoo, SF)
         if SF_Account['Industry']:
-            result['industry_id'] = "blabla"
+            result['industry_id'] = mapOdoo.convertRef(SF_Account['Industry'],odoo,'res.partner.industry',False)
+            """ result['industry_id'] = mapOdoo.convertRef(SF_Account['Industry'],odoo,'res.partner.industry',False) """
         if SF_Account['Area_of_expertise__c']:
             result['expertise_area_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Area_of_expertise__c'],odoo,'expertise.area',True))]
         if SF_Account['Supplier_Project__c']:
