@@ -13,6 +13,11 @@
                         <field name="stage" widget="statusbar"  options="{'clickable': '1'}"/>
                     </header>
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive" invisible="1">
+                            <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
+                        </button>
+                        </div>
                         <div id="o_contact_container">
                             <div id="o_contact_main">
                                 <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;:&quot;image_medium&quot;}"/>
@@ -201,6 +206,14 @@
                                 </page>
 
                                 <page name="financials" string="Financials" attrs="{'invisible': [('see_segmentation', '=', False)]}">
+                                   <group>
+                                        <group>
+                                            <field name="property_product_pricelist" string="Trading Pricelist"/>
+                                        </group>
+                                        <group>
+                                            
+                                        </group>
+                                    </group> 
                                 </page>
                                 
                             </notebook>       
@@ -239,6 +252,8 @@
                 <separator/>
                 <filter string="Individuals" name="type_person" domain="[('is_company','=',False)]"/>
                 <filter string="Companies" name="type_company" domain="[('is_company','=',True)]"/>
+                <filter string="Customers" name="customer" domain="[('customer','=',True)]"/>
+                <filter string="Vendors" name="supplier" domain="[('supplier','=',True)]"/>
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
                 <separator/>
@@ -336,6 +351,14 @@
                 </kanban>
         </field>
     </record>
+
+        <!-- used to visualize all externals -->
+        <record model="ir.actions.act_window" id="action_contact_all_externals">
+            <field name="name">All</field>
+            <field name="domain" eval="[('is_internal','=',False),('stage','in',[2,3,4])]"/>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+        </record>
 
         <!-- used to visualize All Contacts -->
         <record model="ir.actions.act_window" id="action_all_contacts">

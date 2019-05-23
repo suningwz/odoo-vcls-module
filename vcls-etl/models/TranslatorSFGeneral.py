@@ -31,7 +31,7 @@ class TranslatorSFGeneral(ITranslator.ITranslator):
 
     @staticmethod
     def getUserMail(userId, SF):
-        for user in TranslatorSFGeneral.usersSF:
+        for user in TranslatorSFGeneral.usersSF: 
             if user['Id'] == userId:
                 return user['Username']
         return None

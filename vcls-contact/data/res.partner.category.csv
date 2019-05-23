@@ -10,3 +10,6 @@ category_regulator,Regulator,,8
 category_conference_org,Conference Organisation,,9
 category_vcls,VCLS,,10
 category_vcls_office,Office,category_vcls,11
+category_role_does,Does,,12
+category_role_influencer,Influencer,,13
+category_role_decision,Decision Maker,,14
