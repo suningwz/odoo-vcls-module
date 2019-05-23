@@ -252,8 +252,9 @@
                 <separator/>
                 <filter string="Individuals" name="type_person" domain="[('is_company','=',False)]"/>
                 <filter string="Companies" name="type_company" domain="[('is_company','=',True)]"/>
-                <filter string="Customers" name="customer" domain="[('customer','=',True)]"/>
-                <filter string="Vendors" name="supplier" domain="[('supplier','=',True)]"/>
+                <separator/>
+                <filter string="Clients" name="customer" domain="[('customer','=',True)]"/>
+                <filter string="Suppliers" name="supplier" domain="[('supplier','=',True)]"/>
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
                 <separator/>
@@ -354,7 +355,7 @@
 
         <!-- used to visualize all externals -->
         <record model="ir.actions.act_window" id="action_contact_all_externals">
-            <field name="name">All</field>
+            <field name="name">All External Contacts</field>
             <field name="domain" eval="[('is_internal','=',False),('stage','in',[2,3,4])]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
