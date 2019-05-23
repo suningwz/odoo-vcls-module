@@ -8,6 +8,8 @@ from tzlocal import get_localzone
 from datetime import datetime
 
 from odoo import models, fields, api
+import logging
+_logger = logging.getLogger(__name__)
 
 class SFOpportunitySync(models.Model):
     _name = 'etl.salesforce.opportunity'
@@ -35,7 +37,7 @@ class SFOpportunitySync(models.Model):
     
     def updateKeyTable(self, externalInstance, isFullUpdate):
         # put logger here
-        sql =  'SELECT O.Id, O.LastModifiedDate'
+        sql =  'SELECT O.Id, O.LastModifiedDate '
         sql += 'FROM Opportunity as O '
         sql += 'Where O.AccountId In ('
         sql +=  'SELECT A.Id '
@@ -58,13 +60,24 @@ class SFOpportunitySync(models.Model):
                 if isFullUpdate or not self.isDateOdooAfterExternal(lastModifiedOdoo, lastModifiedExternal):
                     # Exist in Odoo & External
                     # External is more recent
-                    self.getKeyFromExtId(extRecord['Id'])[0].setState('needUpdateOdoo')
-                    print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                    keyFromExt = self.getKeyFromExtId(extRecord['Id'])[0]
+                    if keyFromExt.odooId:
+                        keyFromExt.setState('needUpdateOdoo')
+                        print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                    else:
+                        keyFromExt.setState('needCreateOdoo')
+                        print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                    
                 else:
                     # Exist in Odoo & External
                     # Odoo is more recent
-                    self.getKeyFromExtId(extRecord['Id'])[0].setState('needUpdateExternal')
-                    print('Update Key Table needUpdateExternal, ExternalId :{}'.format(extRecord['Id']))
+                    keyFromExt = self.getKeyFromExtId(extRecord['Id'])[0]
+                    if keyFromExt.externalId:
+                        keyFromExt.setState('needUpdateExternal')
+                        print('Update Key Table needUpdateExternal, ExternalId :{}'.format(extRecord['Id']))
+                    else:
+                        keyFromExt.setState('needCreateExternal')
+                        print('Update Key Table needCreateExternal, ExternalId :{}'.format(keyFromExt.externalId))
             except (generalSync.KeyNotFoundError, ValueError):
                 # Exist in External but not in Odoo
                 self.addKeys(externalId = extRecord['Id'], odooId = None, state = 'needCreateOdoo')
@@ -83,6 +96,7 @@ class SFOpportunitySync(models.Model):
                 self.addKeys(externalId = None, odooId = str(odooRecord.id), state = 'needCreateExternal')
                 print('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
 
+
     def updateOdooInstance(self, translator,externalInstance, createInOdoo, updateInOdoo, nbMaxRecords):
         sql =  'SELECT O.Id, O.Name, O.AccountId, '
         sql += 'O.OwnerId, O.LastModifiedDate, O.ExpectedRevenue, O.Reasons_Lost_Comments__c, O.Probability, O.CloseDate, O.Deadline_for_Sending_Proposal__c, O.LeadSource, '
@@ -95,12 +109,10 @@ class SFOpportunitySync(models.Model):
         sql += ') '
         
         Modifiedrecords = externalInstance.getConnection().query_all(sql + ' ORDER BY O.Name')['records'] #All records
-        keysTable = self.keys
         if not nbMaxRecords:
-            #if nbMaxRecords == None / no limit
-            nbMaxRecords = len(keysTable)
+            nbMaxRecords = len(self.keys)
         i = 0
-        for key in keysTable:
+        for key in self.keys:
             item = None
             if i < nbMaxRecords:
                 if key.state == 'needUpdateOdoo' and updateInOdoo:
@@ -108,20 +120,27 @@ class SFOpportunitySync(models.Model):
                         if record['Id'] == key.externalId:
                             item = record
                     if item:
-                        odooAttributes = translator.translateToOdoo(item, self, externalInstance)
-                        record = self.env['crm.lead'].search([('id','=',key.odooId)], limit=1)
-                        record.write(odooAttributes)
-                        print('Updated record in Odoo: {}'.format(item['Name']))
-                        key.state ='upToDate'
-                        i += 1
+                        try:
+                            odooAttributes = translator.translateToOdoo(item, self, externalInstance)
+                            record = self.env['crm.lead'].search([('id','=',key.odooId)], limit=1)
+                            record.write(odooAttributes)
+                            print('Updated record in Odoo: {}'.format(item['Name']))
+                            _logger.info('Updated record in Odoo: {}'.format(item['Name']))
+                            key.state ='upToDate'
+                            i += 1
+                            print(str(i)+' / '+str(nbMaxRecords))
+                        except ValueError as error:
+                            _logger.error(error)
                 elif key.state == 'needCreateOdoo' and createInOdoo:
                     for record in Modifiedrecords:
                         if record['Id'] == key.externalId:
                             item = record
                     if item:
                         odooAttributes = translator.translateToOdoo(item, self, externalInstance)
-                        crm_id = self.env['crm.lead'].create(odooAttributes).id
+                        lead_id = self.env['crm.lead'].create(odooAttributes).id
                         print('Create new record in Odoo: {}'.format(item['Name']))
-                        key.odooId = crm_id
+                        _logger.info('Create new record in Odoo: {}'.format(item['Name']))
+                        key.odooId = lead_id
                         key.state ='upToDate'
                         i += 1
+                        print(str(i)+' / '+str(nbMaxRecords))
