@@ -4,3 +4,5 @@ from . import partner_relation
 from . import overriden_classes
 from . import contact
 from . import lead
+from . import sale_order
+from . import quotation_template
