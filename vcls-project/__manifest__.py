@@ -29,7 +29,7 @@
 
         ### SECURITY ###
         'security/vcls_groups.xml',
-        'security/ir.model.access.csv',
+        #'security/ir.model.access.csv',
 
         ### VIEWS ###
         'views/dev_project_views.xml',
