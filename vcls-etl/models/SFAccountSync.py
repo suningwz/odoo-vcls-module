@@ -56,8 +56,12 @@ class SFAccountSync(models.Model):
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records'] # Get modified records in External Instance
         modifiedRecordsOdoo = self.env['res.partner'].search([('write_date','>', self.getStrLastRun()),('is_company','=',True)])
         
-
+        i = 0
         for extRecord in modifiedRecordsExt:
+            if i%100 == 0:
+                self.env.cr.commit()
+                print("commiting")
+            i+=1
             try:
                 lastModifiedExternal = datetime.strptime(extRecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")
                 lastModifiedOdoo = self.getLastUpdate(self.toOdooId(extRecord['Id']))
@@ -69,9 +73,11 @@ class SFAccountSync(models.Model):
                     if keyFromExt.odooId:
                         keyFromExt.setState('needUpdateOdoo')
                         print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                        _logger.info('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
                     else:
                         keyFromExt.setState('needCreateOdoo')
                         print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                        _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
                     
                 else:
                     # Exist in Odoo & External
@@ -80,14 +86,23 @@ class SFAccountSync(models.Model):
                     if keyFromExt.externalId:
                         keyFromExt.setState('needUpdateExternal')
                         print('Update Key Table needUpdateExternal, ExternalId :{}'.format(extRecord['Id']))
+                        _logger.info('Update Key Table needUpdateExternal, ExternalId :{}'.format(extRecord['Id']))
                     else:
                         keyFromExt.setState('needCreateExternal')
                         print('Update Key Table needCreateExternal, ExternalId :{}'.format(keyFromExt.externalId))
+                        _logger.info('Update Key Table needCreateExternal, ExternalId :{}'.format(keyFromExt.externalId))
             except (generalSync.KeyNotFoundError, ValueError):
                 # Exist in External but not in Odoo
                 self.addKeys(externalId = extRecord['Id'], odooId = None, state = 'needCreateOdoo')
                 print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+        
+        i=0
         for odooRecord in modifiedRecordsOdoo:
+            if i%100 == 0:
+                self.env.cr.commit()
+                print("commiting")
+            i+=1
             try:
                 key = self.getKeyFromOdooId(str(odooRecord.id))[0]
                 # Exist in Odoo & External
@@ -95,10 +110,12 @@ class SFAccountSync(models.Model):
                 if key.state == 'upToDate':
                     key.setState('needUpdateExternal')
                     print('Update Key Table needUpdateExternal, OdooId :{}'.format(str(odooRecord.id)))
+                    _logger.info('Update Key Table needUpdateExternal, OdooId :{}'.format(str(odooRecord.id)))
             except (generalSync.KeyNotFoundError, ValueError):
                 # Exist in Odoo but not in External
                 self.addKeys(externalId = None, odooId = str(odooRecord.id), state = 'needCreateExternal')
                 print('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
+                _logger.info('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
 
     def updateOdooInstance(self, translator,externalInstance, createInOdoo, updateInOdoo, nbMaxRecords):
         sql = 'SELECT Id, Name, Supplier_Category__c, '
@@ -135,6 +152,7 @@ class SFAccountSync(models.Model):
                             key.state ='upToDate'
                             i += 1
                             print(str(i)+' / '+str(nbMaxRecords))
+                            _logger.info(str(i)+' / '+str(nbMaxRecords))
                         except ValueError as error:
                             print("Error when writing in Odoo")
                             _logger.error("Error when writing in Odoo")
