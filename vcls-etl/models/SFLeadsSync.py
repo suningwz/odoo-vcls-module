@@ -41,16 +41,16 @@ class SFLeadsSync(models.Model):
         sql += 'FROM Lead'
 
         if not isFullUpdate:
-            sql += ' LastModifiedDate > ' + self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") 
+            sql += ' Where LastModifiedDate > ' + self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") 
         print('Execute QUERY: {}'.format(sql))
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records'] # Get modified records in External Instance
         modifiedRecordsOdoo = self.env['crm.lead'].search([('write_date','>', self.getStrLastRun()),('type','=','lead')])
         
         i = 0 
         for extRecord in modifiedRecordsExt:
-            if i%100:
+            if i%100 == 0:
                 self.env.cr.commit()
-                print("committ")
+                print("commiting")
             try:
                 lastModifiedExternal = datetime.strptime(extRecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")
                 lastModifiedOdoo = self.getLastUpdate(self.toOdooId(extRecord['Id']))
@@ -87,9 +87,9 @@ class SFLeadsSync(models.Model):
                 i += 1
         
         for odooRecord in modifiedRecordsOdoo:
-            if i%100:
+            if i%100 == 0:
                 self.env.cr.commit()
-                print("committ")
+                print("commiting")
             try:
                 key = self.getKeyFromOdooId(str(odooRecord.id))[0]
                 # Exist in Odoo & External
@@ -111,7 +111,7 @@ class SFLeadsSync(models.Model):
         sql += 'External_Referee__c, Fax, Functional_Focus__c, Inactive_Lead__c, Industry, Contact_us_Message__c, Initial_Product_Interest__c, '
         sql += 'LastModifiedDate, Title, Seniority__c, Phone, Website, Description, LeadSource From Lead'
         
-        Modifiedrecords = externalInstance.getConnection().query_all(sql + ' ORDER BY O.Name')['records'] #All records
+        Modifiedrecords = externalInstance.getConnection().query_all(sql + ' ORDER BY Name')['records'] #All records
         if not nbMaxRecords:
             nbMaxRecords = len(self.keys)
         i = 0
