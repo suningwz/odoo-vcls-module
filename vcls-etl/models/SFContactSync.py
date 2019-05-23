@@ -144,6 +144,7 @@ class SFContactSync(models.Model):
                             key.state ='upToDate'
                             i += 1
                             print(str(i)+' / '+str(nbMaxRecords))
+                            _logger.info(str(i)+' / '+str(nbMaxRecords))
                         except ValueError as error:
                             _logger.error(error)
                 elif key.state == 'needCreateOdoo' and createInOdoo:
@@ -159,6 +160,7 @@ class SFContactSync(models.Model):
                         key.state ='upToDate'
                         i += 1
                         print(str(i)+' / '+str(nbMaxRecords))
+                        _logger.info(str(i)+' / '+str(nbMaxRecords))
                 
                
 
