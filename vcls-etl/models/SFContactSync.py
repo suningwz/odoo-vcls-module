@@ -29,12 +29,15 @@ class SFContactSync(models.Model):
         ##### CODE HERE #####
         SF.updateKeyTable(sfInstance, isFullUpdate)
         print('Updated key table done')
+        _logger.info('Updated key table done')
         if createInOdoo or updateInOdoo:
             SF.updateOdooInstance(translator,sfInstance, createInOdoo, updateInOdoo,nbMaxRecords)
         print('Updated odoo instance done')
+        _logger.info('Updated odoo instance done')
         if createRevert or updateRevert:
             SF.updateExternalInstance(translator,sfInstance, createRevert, updateRevert, nbMaxRecords)
         print('Updated sf instance done')
+        _logger.info('Updated sf instance done')
         ##### CODE HERE #####
         SF.setNextRun()
 
@@ -53,7 +56,6 @@ class SFContactSync(models.Model):
         print('Execute QUERY: {}'.format(sql))
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records'] # Get modified records in External Instance
         modifiedRecordsOdoo = self.env['res.partner'].search([('write_date','>', self.getStrLastRun()),('is_company','=',False)])
-        
 
         for extRecord in modifiedRecordsExt:
             try:
@@ -85,6 +87,7 @@ class SFContactSync(models.Model):
                 # Exist in External but not in Odoo
                 self.addKeys(externalId = extRecord['Id'], odooId = None, state = 'needCreateOdoo')
                 print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+        
         for odooRecord in modifiedRecordsOdoo:
             try:
                 key = self.getKeyFromOdooId(str(odooRecord.id))[0]
@@ -130,6 +133,7 @@ class SFContactSync(models.Model):
                         print('Updated record in Odoo: {}'.format(item['Name']))
                         key.state ='upToDate'
                         i += 1
+                        print(str(i)+' / '+str(nbMaxRecords))
                 elif key.state == 'needCreateOdoo' and createInOdoo:
                     for record in Modifiedrecords:
                         if record['Id'] == key.externalId:
@@ -141,7 +145,7 @@ class SFContactSync(models.Model):
                         key.odooId = partner_id
                         key.state ='upToDate'
                         i += 1
-                print(str(i)+' / '+str(nbMaxRecords))
+                        print(str(i)+' / '+str(nbMaxRecords))
                 
                
 
@@ -156,13 +160,13 @@ class SFContactSync(models.Model):
                 if key.state == 'needUpdateExternal' and updateRevert:
                     item = self.env['res.partner'].search([('id','=',key.odooId)])
                     sfAttributes = translator.translateToSF(item, self)
-                    _logger.debug(sfAttributes)
                     sfRecord = externalInstance.getConnection().Contact.update(key.externalId,sfAttributes)
                     print('Update record in Salesforce: {}'.format(item.name))
                     _logger.debug('Update record in Salesforce: {}'.format(item.name))
                     key.state ='upToDate'
                     i += 1
                     print(str(i)+' / '+str(nbMaxRecords))
+                    _logger.info(str(i)+' / '+str(nbMaxRecords))
                 elif key.state == 'needCreateExternal' and createRevert:
                     try:
                         item = self.env['res.partner'].search([('id','=',key.odooId)])
@@ -172,10 +176,12 @@ class SFContactSync(models.Model):
                             _logger.debug("This dictionnary will be create in Contact")
                             sfRecord = externalInstance.getConnection().Contact.create(sfAttributes)
                             print('Create new record in Salesforce: {}'.format(item.name))
-                            _logger.debug("This dictionnary will be create in Contact")
                             key.externalId = sfRecord['id']
                             key.state ='upToDate'
                             i += 1
                             print(str(i)+' / '+str(nbMaxRecords))
-                    except SalesforceMalformedRequest: 
+                            _logger.info(str(i)+' / '+str(nbMaxRecords))
+                    except SalesforceMalformedRequest as error: 
                         print('Duplicate : '+ item.name)
+                        print(error.message)
+                        _logger.error(error.message)

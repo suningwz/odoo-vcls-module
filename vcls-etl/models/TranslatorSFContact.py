@@ -97,8 +97,8 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         result['OwnerId'] = TranslatorSFContact.revertOdooIdToSfId(Odoo_Contact.user_id,odoo)
         """ for c in Odoo_Contact.category_id:
             category += c.name 
-        result['Category__c'] = category""" 
-        #result['Salutation'] = TranslatorSFContact.revertSalutation(Odoo_Contact.title.name, odoo)
+        result['Category__c'] = category"""
+        result['Salutation'] = TranslatorSFContact.revertSalutation(Odoo_Contact.title.name, odoo)
         result['Title'] = Odoo_Contact.function
 
 

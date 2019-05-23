@@ -124,6 +124,7 @@ class SFAccountSync(models.Model):
                         print('Updated record in Odoo: {}'.format(item['Name']))
                         key.state ='upToDate'
                         i += 1
+                        print(str(i)+' / '+str(nbMaxRecords))
                 elif key.state == 'needCreateOdoo' and createInOdoo:
                     for record in Modifiedrecords:
                         if record['Id'] == key.externalId:
@@ -135,7 +136,7 @@ class SFAccountSync(models.Model):
                         key.odooId = partner_id
                         key.state ='upToDate'
                         i += 1
-                print(str(i)+' / '+str(nbMaxRecords))
+                        print(str(i)+' / '+str(nbMaxRecords))
     
     def updateExternalInstance(self, translator, externalInstance, createRevert, updateRevert, nbMaxRecords):
         if not nbMaxRecords:
@@ -166,8 +167,8 @@ class SFAccountSync(models.Model):
                             key.externalId = sfRecord['id']
                             key.state ='upToDate'
                             i += 1
+                            print(str(i)+' / '+str(nbMaxRecords))
                     except SalesforceMalformedRequest: 
                         print('Duplicate : '+ item.name)
-                print(str(i)+' / '+str(nbMaxRecords))
 
 
