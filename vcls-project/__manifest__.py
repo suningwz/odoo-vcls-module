@@ -21,7 +21,7 @@
     'depends': [
         'base',
         'project',
-        #'vcls-crm',
+        'vcls-crm',
         ],
 
     # always loaded
@@ -37,7 +37,7 @@
 
         ### MENUS ###
         'views/dev_project_menu.xml',
-        #'views/program_views_menu.xml',
+        'views/program_views_menu.xml',
 
     ],
 
