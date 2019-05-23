@@ -9,7 +9,7 @@
                     <field name="name"/>
                     <field name="client_id"/>
                     <field name="product_name"/>
-                    <field name="application"/> 
+                    <field name="indication"/> 
                     <field name="leader_id"/>
                 </tree>
             </field>
