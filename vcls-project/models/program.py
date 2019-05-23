@@ -5,7 +5,8 @@ from odoo.exceptions import UserError, ValidationError
 
 class ProjectProgram(models.Model):
 
-    _inherit = 'project.program'
+    _name = 'project.program'
+    _description = 'A Program of Projects'
 
     name = fields.Char()
 
