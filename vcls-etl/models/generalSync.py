@@ -15,7 +15,7 @@ class ETLMap(models.Model):
     # Helsinki
     odooId = fields.Char(readonly = True)
     externalId = fields.Char(readonly = True)
-    syncRecordId = fields.Many2one('etl.sync.mixin', readonly = True)
+    syncRecordId = fields.Many2one('?etl.sync.mixin', readonly = True)
 
     state = fields.Selection([
         ('upToDate', 'Up To Date'),

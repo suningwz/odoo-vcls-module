@@ -25,7 +25,7 @@ class SFContactSync(models.Model):
         token = self.env.ref('vcls-etl.SF_token').value
         sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
         translator = TranslatorSFContact.TranslatorSFContact(sfInstance.getConnection())
-        SF = self.env['etl.salesforce.contact'].search([])
+        SF = self.env['etl.salesforce.contact'].search([], limit = 1)
         if not SF:
             SF = self.env['etl.salesforce.contact'].create({})
 
@@ -98,7 +98,8 @@ class SFContactSync(models.Model):
                             keyFromExt.setState('needUpdateOdoo')
                             print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
                             _logger.info('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
-                        elif keyFromExt.state != 'needCreateOdoo':
+                        else:
+                            #if keyFromExt.state != 'needCreateOdoo'
                             keyFromExt.setState('needCreateOdoo')
                             print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
                             _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))

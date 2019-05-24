@@ -114,7 +114,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         if Odoo_Contact.industry_id:
             result['Industry'] = Odoo_Contact.industry_id.name
         if Odoo_Contact.project_supplier_type_id:
-            result['project_supplier_type_id'] = Odoo_Contact.project_supplier_type_id
+            result['project_supplier_type_id'] = Odoo_Contact.project_supplier_type_id.name
         return result
 
     @staticmethod

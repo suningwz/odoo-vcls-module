@@ -192,7 +192,7 @@ class SFAccountSync(models.Model):
                             _logger.info('Update record in Salesforce: {}'.format(item.name))
                             key.state ='upToDate'
                             i += 1
-                    except SalesforceMalformedRequest as error: 
+                    except (SalesforceMalformedRequest,ValueError) as error: 
                         print('Error : '+ item.name)
                         print(error.url)
                         print(error.content)
@@ -212,7 +212,7 @@ class SFAccountSync(models.Model):
                             key.state ='upToDate'
                             i += 1
                             print(str(i)+' / '+str(nbMaxRecords))
-                    except SalesforceMalformedRequest as error: 
+                    except (SalesforceMalformedRequest,ValueError) as error: 
                         print('Error : '+ item.name)
                         print(error.url)
                         print(error.content)

@@ -22,7 +22,7 @@ class SFLeadsSync(models.Model):
         token = self.env.ref('vcls-etl.SF_token').value
         sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
         translator = TranslatorSFLeads.TranslatorSFLeads(sfInstance.getConnection())
-        SF = self.env['etl.salesforce.leads'].search([])
+        SF = self.env['etl.salesforce.leads'].search([], limit = 1)
         if not SF:
             SF = self.env['etl.salesforce.leads'].create({})
         
