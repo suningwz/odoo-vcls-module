@@ -39,6 +39,9 @@ class SFOpportunitySync(models.Model):
                 SF.updateOdooInstance(translator,sfInstance, createInOdoo, updateInOdoo,nbMaxRecords)
             print('Updated odoo instance done')
             _logger.info('Updated odoo instance done')
+
+            print('ETL IS FINISHED')
+            _logger.info('ETL IS FINISHED')
             ##### CODE HERE #####
             SF.setNextRun()
 
@@ -105,9 +108,9 @@ class SFOpportunitySync(models.Model):
                     print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
                     _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
                     i += 1
+                    print(str(i)+' / 200')
+                    _logger.info(str(i)+' / 200')
                 j += 1
-                print(str(j%200)+' / 200')
-                _logger.info(str(j%200)+' / 200')
             else:
                 break
         
@@ -126,9 +129,9 @@ class SFOpportunitySync(models.Model):
                     self.addKeys(externalId = None, odooId = str(odooRecord.id), state = 'needCreateExternal')
                     _logger.info('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
                     i += 1
+                    print(str(i)+' / 200')
+                    _logger.info(str(i)+' / 200')
                 j += 1
-                print(str(j%200)+' / 200')
-                _logger.info(str(j%200)+' / 200')
             else:
                 break
         

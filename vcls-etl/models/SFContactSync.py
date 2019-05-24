@@ -50,6 +50,9 @@ class SFContactSync(models.Model):
             
             print('Updated sf instance done')
             _logger.info('Updated sf instance done')
+
+            print('ETL IS FINISHED')
+            _logger.info('ETL IS FINISHED')
             
             SF.setNextRun()
             
@@ -117,9 +120,9 @@ class SFContactSync(models.Model):
                     print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
                     _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
                     i += 1
+                    print(str(i)+' / 200')
+                    _logger.info(str(i)+' / 200')
                 j += 1
-                print(str(j%200)+' / 200')
-                _logger.info(str(j%200)+' / 200')
             else:
                 break
         for odooRecord in modifiedRecordsOdoo:
@@ -138,14 +141,14 @@ class SFContactSync(models.Model):
                     print('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
                     _logger.info('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
                     i += 1
+                    print(str(i)+' / 200')
+                    _logger.info(str(i)+' / 200')
                 j += 1
-                print(str(j%200)+' / 200')
-                _logger.info(str(j%200)+' / 200')
             else:
                 break
 
-        print(str(j%200)+' / '+str(len(modifiedRecordsExt) + len(modifiedRecordsOdoo)) )
-        _logger.info(str(j%200)+' / '+str(len(modifiedRecordsExt) + len(modifiedRecordsOdoo)) )
+        print(str(j)+' / '+str(len(modifiedRecordsExt) + len(modifiedRecordsOdoo)) )
+        _logger.info(str(j)+' / '+str(len(modifiedRecordsExt) + len(modifiedRecordsOdoo)) )
         if j == (len(modifiedRecordsExt) + len(modifiedRecordsOdoo)):
             return True
         return False
