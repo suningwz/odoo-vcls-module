@@ -55,9 +55,10 @@ class SFContactSync(models.Model):
             SF.setNextRun()
             
             Cron = self.env['ir.cron'].search([('name','ilike','relauncher')])
-            Cron.write({'active': False, 'name': 'relauncher'})
-
+            Cron.write({'active': False,'nextcall': datetime.now()})
+            
         else:
+
             Cron = self.env['ir.cron'].with_context(active_test=False).search([('name','ilike','relauncher')]) 
             Cron.write({'active':True, 'name': 'relauncher {}'.format(cronName), 'nextcall': (datetime.now() + timedelta(seconds=15))})
             #+datetime.timedelta(seconds=5)
