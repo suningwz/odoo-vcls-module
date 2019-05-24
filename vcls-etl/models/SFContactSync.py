@@ -7,6 +7,7 @@ from simple_salesforce import Salesforce
 from simple_salesforce.exceptions import SalesforceMalformedRequest
 from tzlocal import get_localzone
 from datetime import datetime
+from datetime import timedelta
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -17,7 +18,8 @@ class SFContactSync(models.Model):
     _inherit = 'etl.sync.mixin'
 
     def run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
-        # run the ETL 
+        # run the ETL
+
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
@@ -27,24 +29,40 @@ class SFContactSync(models.Model):
         if not SF:
             SF = self.env['etl.salesforce.contact'].create({})
 
-        SF.updateKeyTable(sfInstance, isFullUpdate)
+
+        isFinished = SF.updateKeyTable(sfInstance, isFullUpdate)
         
-        print('Updated key table done')
-        _logger.info('Updated key table done')
-        
-        if createInOdoo or updateInOdoo:
-            SF.updateOdooInstance(translator,sfInstance, createInOdoo, updateInOdoo,nbMaxRecords)
-        
-        """ print('Updated odoo instance done')
-        _logger.info('Updated odoo instance done')
-        
-        if createRevert or updateRevert:
-            SF.updateExternalInstance(translator,sfInstance, createRevert, updateRevert, nbMaxRecords)
-        
-        print('Updated sf instance done')
-        _logger.info('Updated sf instance done') """
-        
-        SF.setNextRun()
+        cronName = 'etl salesforce contact'
+        if isFullUpdate:
+            cronName += ' full update'
+        if isFinished :
+            print('Updated key table done')
+            _logger.info('Updated key table done')
+            
+            if createInOdoo or updateInOdoo:
+                SF.updateOdooInstance(translator,sfInstance, createInOdoo, updateInOdoo,nbMaxRecords)
+            
+            print('Updated odoo instance done')
+            _logger.info('Updated odoo instance done')
+            
+            if createRevert or updateRevert:
+                SF.updateExternalInstance(translator,sfInstance, createRevert, updateRevert, nbMaxRecords)
+            
+            print('Updated sf instance done')
+            _logger.info('Updated sf instance done')
+            
+            SF.setNextRun()
+             
+            Cron = self.env['ir.cron'].search([('name','ilike',cronName)])
+            Cron.write({'active': False })
+            Cron = self.env['ir.cron'].search([('name','ilike','relauncher')])
+            Cron.write({'active': False, 'name': 'relauncher'})
+
+        else:
+
+            Cron = self.env['ir.cron'].with_context(active_test=False).search([('name','ilike','relauncher')]) 
+            Cron.write({'active':True, 'name': 'relauncher {}'.format(cronName), 'nextcall': (datetime.now() + timedelta(seconds=60))})
+            #+datetime.timedelta(seconds=5)
 
     def updateKeyTable(self, externalInstance, isFullUpdate):
         sql =  'SELECT C.Id, C.LastModifiedDate '
@@ -62,10 +80,12 @@ class SFContactSync(models.Model):
         
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
         modifiedRecordsOdoo = self.env['res.partner'].search([('write_date','>', self.getStrLastRun()),('is_company','=',False)])
+        
+        j = 0
         i = 0
 
         for extRecord in modifiedRecordsExt:
-            if i < 100:
+            if i < 200:
                 try:
                     lastModifiedExternal = datetime.strptime(extRecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")
                     lastModifiedOdoo = self.getLastUpdate(self.toOdooId(extRecord['Id']))
@@ -78,7 +98,7 @@ class SFContactSync(models.Model):
                             keyFromExt.setState('needUpdateOdoo')
                             print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
                             _logger.info('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
-                        else:
+                        elif keyFromExt.state != 'needCreateOdoo':
                             keyFromExt.setState('needCreateOdoo')
                             print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
                             _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
@@ -100,7 +120,11 @@ class SFContactSync(models.Model):
                     print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
                     _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
                     i += 1
-            for odooRecord in modifiedRecordsOdoo:
+                j += 1
+            else:
+                break
+        for odooRecord in modifiedRecordsOdoo:
+            if i < 200:
                 try:
                     key = self.getKeyFromOdooId(str(odooRecord.id))[0]
                     # Exist in Odoo & External
@@ -108,13 +132,20 @@ class SFContactSync(models.Model):
                     if key.state == 'upToDate':
                         key.setState('needUpdateExternal')
                         print('Update Key Table needUpdateExternal, OdooId :{}'.format(str(odooRecord.id)))
-                        _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                        _logger.info('Update Key Table needUpdateExternal, ExternalId :{}'.format(extRecord['Id']))
                 except (generalSync.KeyNotFoundError, ValueError):
                     # Exist in Odoo but not in External
                     self.addKeys(externalId = None, odooId = str(odooRecord.id), state = 'needCreateExternal')
                     print('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
                     _logger.info('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
                     i += 1
+                j+=1
+            else:
+                break
+
+        if j == (len(modifiedRecordsExt) + len(modifiedRecordsOdoo)):
+            return True
+        return False
             
 
 

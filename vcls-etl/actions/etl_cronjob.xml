@@ -3,7 +3,7 @@
     <data>
     
         <record id="cron_etl_account" model="ir.cron">
-            <field name="name">ETL Saleforce / Odoo Account</field>
+            <field name="name">ETL Salesforce Account</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="interval_number">1</field>
@@ -29,7 +29,7 @@
         </record>
 
         <record id="cron_etl_contact" model="ir.cron">
-            <field name="name">ETL Saleforce / Odoo Contact</field>
+            <field name="name">ETL Salesforce Contact</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="interval_number">1</field>
@@ -43,7 +43,7 @@
         </record>
 
         <record id="cron_etl_contact_full_Update" model="ir.cron">
-            <field name="name">ETL Saleforce Contact full update</field>
+            <field name="name">ETL Salesforce Contact Full Update</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="numbercall">-1</field>
@@ -55,7 +55,7 @@
         </record>
         
        <record id="cron_etl_Opportunity" model="ir.cron">
-            <field name="name">ETL Saleforce / Odoo Opportunity</field>
+            <field name="name">ETL Salesforce Opportunity</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="interval_number">1</field>
@@ -69,7 +69,7 @@
         </record>
 
         <record id="cron_etl_opportunity_full_Update" model="ir.cron">
-            <field name="name">ETL Saleforce Opportunity full update</field>
+            <field name="name">ETL Salesforce Opportunity Full Update</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="numbercall">-1</field>
@@ -81,7 +81,7 @@
         </record>
 
         <record id="cron_etl_Leads" model="ir.cron">
-            <field name="name">ETL Saleforce / Odoo Leads</field>
+            <field name="name">ETL Salesforce Leads</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="interval_number">1</field>
@@ -94,7 +94,7 @@
 #run(self,isFullUpdate, createInOdoo, updateInOdoo, nbMaxRecords)</field>
         </record>
         <record id="cron_etl_leads_full_Update" model="ir.cron">
-            <field name="name">ETL Saleforce Leads full update</field>
+            <field name="name">ETL Salesforce Leads Full Update</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="numbercall">-1</field>

@@ -58,10 +58,6 @@ class SFAccountSync(models.Model):
         
         i = 0
         for extRecord in modifiedRecordsExt:
-            if i%100 == 0:
-                self.env.cr.commit()
-                print("commiting")
-            i+=1
             try:
                 lastModifiedExternal = datetime.strptime(extRecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")
                 lastModifiedOdoo = self.getLastUpdate(self.toOdooId(extRecord['Id']))
@@ -96,13 +92,9 @@ class SFAccountSync(models.Model):
                 self.addKeys(externalId = extRecord['Id'], odooId = None, state = 'needCreateOdoo')
                 print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
                 _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
-        
-        i=0
-        for odooRecord in modifiedRecordsOdoo:
-            if i%100 == 0:
-                self.env.cr.commit()
-                print("commiting")
-            i+=1
+                i += 1
+
+        for odooRecord in modifiedRecordsOdoo:    
             try:
                 key = self.getKeyFromOdooId(str(odooRecord.id))[0]
                 # Exist in Odoo & External
@@ -116,7 +108,9 @@ class SFAccountSync(models.Model):
                 self.addKeys(externalId = None, odooId = str(odooRecord.id), state = 'needCreateExternal')
                 print('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
                 _logger.info('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
+                i += 1
 
+                
     def updateOdooInstance(self, translator,externalInstance, createInOdoo, updateInOdoo, nbMaxRecords):
         sql = 'SELECT Id, Name, Supplier_Category__c, '
         sql += 'Supplier_Status__c, Account_Level__c, LastModifiedDate, '
