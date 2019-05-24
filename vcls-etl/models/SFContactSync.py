@@ -20,7 +20,6 @@ class SFContactSync(models.Model):
 
     def run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
         # run the ETL
-
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
@@ -54,7 +53,7 @@ class SFContactSync(models.Model):
             
             SF.setNextRun()
             
-            Cron = self.env['ir.cron'].search([('name','ilike','relauncher')])
+            Cron = self.env['ir.cron'].with_context(active_test=False).search([('name','ilike','relauncher')])
             Cron.write({'active': False,'nextcall': datetime.now()})
             
         else:
@@ -119,6 +118,8 @@ class SFContactSync(models.Model):
                     _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
                     i += 1
                 j += 1
+                print(str(j%200)+' / 200')
+                _logger.info(str(j%200)+' / 200')
             else:
                 break
         for odooRecord in modifiedRecordsOdoo:
@@ -137,7 +138,9 @@ class SFContactSync(models.Model):
                     print('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
                     _logger.info('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
                     i += 1
-                j+=1
+                j += 1
+                print(str(j%200)+' / 200')
+                _logger.info(str(j%200)+' / 200')
             else:
                 break
 
