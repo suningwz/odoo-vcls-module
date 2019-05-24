@@ -35,14 +35,14 @@ class SFContactSync(models.Model):
         if createInOdoo or updateInOdoo:
             SF.updateOdooInstance(translator,sfInstance, createInOdoo, updateInOdoo,nbMaxRecords)
         
-        print('Updated odoo instance done')
+        """ print('Updated odoo instance done')
         _logger.info('Updated odoo instance done')
         
         if createRevert or updateRevert:
             SF.updateExternalInstance(translator,sfInstance, createRevert, updateRevert, nbMaxRecords)
         
         print('Updated sf instance done')
-        _logger.info('Updated sf instance done')
+        _logger.info('Updated sf instance done') """
         
         SF.setNextRun()
 
@@ -62,50 +62,60 @@ class SFContactSync(models.Model):
         
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
         modifiedRecordsOdoo = self.env['res.partner'].search([('write_date','>', self.getStrLastRun()),('is_company','=',False)])
+        i = 0
 
         for extRecord in modifiedRecordsExt:
-            try:
-                lastModifiedExternal = datetime.strptime(extRecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")
-                lastModifiedOdoo = self.getLastUpdate(self.toOdooId(extRecord['Id']))
-                
-                if isFullUpdate or not self.isDateOdooAfterExternal(lastModifiedOdoo, lastModifiedExternal):
-                    # Exist in Odoo & External
-                    # External is more recent
-                    keyFromExt = self.getKeyFromExtId(extRecord['Id'])[0]
-                    if keyFromExt.odooId:
-                        keyFromExt.setState('needUpdateOdoo')
-                        print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
-                    else:
-                        keyFromExt.setState('needCreateOdoo')
-                        print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+            if i < 100:
+                try:
+                    lastModifiedExternal = datetime.strptime(extRecord['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")
+                    lastModifiedOdoo = self.getLastUpdate(self.toOdooId(extRecord['Id']))
                     
-                else:
+                    if isFullUpdate or not self.isDateOdooAfterExternal(lastModifiedOdoo, lastModifiedExternal):
+                        # Exist in Odoo & External
+                        # External is more recent
+                        keyFromExt = self.getKeyFromExtId(extRecord['Id'])[0]
+                        if keyFromExt.odooId:
+                            keyFromExt.setState('needUpdateOdoo')
+                            print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                            _logger.info('Update Key Table needUpdateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                        else:
+                            keyFromExt.setState('needCreateOdoo')
+                            print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                            _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                    else:
+                        # Exist in Odoo & External
+                        # Odoo is more recent
+                        keyFromExt = self.getKeyFromExtId(extRecord['Id'])[0]
+                        if keyFromExt.externalId:
+                            keyFromExt.setState('needUpdateExternal')
+                            print('Update Key Table needUpdateExternal, ExternalId :{}'.format(extRecord['Id']))
+                            _logger.info('Update Key Table needUpdateExternal, ExternalId :{}'.format(extRecord['Id']))
+                        else:
+                            keyFromExt.setState('needCreateExternal')
+                            print('Update Key Table needCreateExternal, ExternalId :{}'.format(keyFromExt.externalId))
+                            _logger.info('Update Key Table needCreateExternal, ExternalId :{}'.format(keyFromExt.externalId))
+                except (generalSync.KeyNotFoundError, ValueError):
+                    # Exist in External but not in Odoo
+                    self.addKeys(externalId = extRecord['Id'], odooId = None, state = 'needCreateOdoo')
+                    print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                    _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                    i += 1
+            for odooRecord in modifiedRecordsOdoo:
+                try:
+                    key = self.getKeyFromOdooId(str(odooRecord.id))[0]
                     # Exist in Odoo & External
                     # Odoo is more recent
-                    keyFromExt = self.getKeyFromExtId(extRecord['Id'])[0]
-                    if keyFromExt.externalId:
-                        keyFromExt.setState('needUpdateExternal')
-                        print('Update Key Table needUpdateExternal, ExternalId :{}'.format(extRecord['Id']))
-                    else:
-                        keyFromExt.setState('needCreateExternal')
-                        print('Update Key Table needCreateExternal, ExternalId :{}'.format(keyFromExt.externalId))
-            except (generalSync.KeyNotFoundError, ValueError):
-                # Exist in External but not in Odoo
-                self.addKeys(externalId = extRecord['Id'], odooId = None, state = 'needCreateOdoo')
-                print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
-        
-        for odooRecord in modifiedRecordsOdoo:
-            try:
-                key = self.getKeyFromOdooId(str(odooRecord.id))[0]
-                # Exist in Odoo & External
-                # Odoo is more recent
-                if key.state == 'upToDate':
-                    key.setState('needUpdateExternal')
-                    print('Update Key Table needUpdateExternal, OdooId :{}'.format(str(odooRecord.id)))
-            except (generalSync.KeyNotFoundError, ValueError):
-                # Exist in Odoo but not in External
-                self.addKeys(externalId = None, odooId = str(odooRecord.id), state = 'needCreateExternal')
-                print('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
+                    if key.state == 'upToDate':
+                        key.setState('needUpdateExternal')
+                        print('Update Key Table needUpdateExternal, OdooId :{}'.format(str(odooRecord.id)))
+                        _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
+                except (generalSync.KeyNotFoundError, ValueError):
+                    # Exist in Odoo but not in External
+                    self.addKeys(externalId = None, odooId = str(odooRecord.id), state = 'needCreateExternal')
+                    print('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
+                    _logger.info('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
+                    i += 1
+            
 
 
     def updateOdooInstance(self, translator,externalInstance, createInOdoo, updateInOdoo, nbMaxRecords):
