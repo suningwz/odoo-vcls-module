@@ -20,7 +20,6 @@ class SFContactSync(models.Model):
 
     def run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
         # run the ETL
-
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
@@ -51,17 +50,19 @@ class SFContactSync(models.Model):
             
             print('Updated sf instance done')
             _logger.info('Updated sf instance done')
+
+            print('ETL IS FINISHED')
+            _logger.info('ETL IS FINISHED')
             
             SF.setNextRun()
             
-            Cron = self.env['ir.cron'].search([('name','ilike','relauncher')])
+            Cron = self.env['ir.cron'].with_context(active_test=False).search([('name','ilike','relauncher')])
             Cron.write({'active': False,'nextcall': datetime.now()})
             
         else:
 
             Cron = self.env['ir.cron'].with_context(active_test=False).search([('name','ilike','relauncher')]) 
             Cron.write({'active':True, 'name': 'relauncher {}'.format(cronName), 'nextcall': (datetime.now() + timedelta(seconds=15))})
-            #+datetime.timedelta(seconds=5)
 
     def updateKeyTable(self, externalInstance, isFullUpdate):
         sql =  'SELECT C.Id, C.LastModifiedDate '
@@ -119,6 +120,8 @@ class SFContactSync(models.Model):
                     print('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
                     _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(extRecord['Id']))
                     i += 1
+                    print(str(i)+' / 200')
+                    _logger.info(str(i)+' / 200')
                 j += 1
             else:
                 break
@@ -138,10 +141,14 @@ class SFContactSync(models.Model):
                     print('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
                     _logger.info('Update Key Table needCreateExternal, OdooId :{}'.format(str(odooRecord.id)))
                     i += 1
-                j+=1
+                    print(str(i)+' / 200')
+                    _logger.info(str(i)+' / 200')
+                j += 1
             else:
                 break
 
+        print(str(j)+' / '+str(len(modifiedRecordsExt) + len(modifiedRecordsOdoo)) )
+        _logger.info(str(j)+' / '+str(len(modifiedRecordsExt) + len(modifiedRecordsOdoo)) )
         if j == (len(modifiedRecordsExt) + len(modifiedRecordsOdoo)):
             return True
         return False
