@@ -16,7 +16,7 @@ class SFLeadsSync(models.Model):
     _name = 'etl.salesforce.leads'
     _inherit = 'etl.sync.mixin'
 
-    def run(self,isFullUpdate, updateKeyTables, createInOdoo, updateInOdoo, nbMaxRecords):
+    def run(self,isFullUpdate, createInOdoo, updateInOdoo, nbMaxRecords):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
@@ -26,8 +26,7 @@ class SFLeadsSync(models.Model):
         if not SF:
             SF = self.env['etl.salesforce.leads'].create({})
         
-        if updateKeyTables:
-            SF.updateKeyTable(sfInstance, isFullUpdate)
+        SF.updateKeyTable(sfInstance, isFullUpdate)
         print('Updated key table done')
         
         if createInOdoo or updateInOdoo:

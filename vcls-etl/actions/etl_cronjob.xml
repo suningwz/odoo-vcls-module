@@ -64,7 +64,8 @@
             <field name="doall">1</field>
             <field name="model_id" ref="model_etl_salesforce_opportunity" />
             <field name="state">code</field>
-            <field name="code">model.run(False, True, True, True, None)</field>
+            <field name="code">model.run(False, True, True, None)
+#run(self,isFullUpdate, createInOdoo, updateInOdoo, nbMaxRecords)</field>
         </record>
 
         <record id="cron_etl_opportunity_full_Update" model="ir.cron">
@@ -75,7 +76,8 @@
             <field name="doall">1</field>
             <field name="model_id" ref="model_etl_salesforce_opportunity" />
             <field name="state">code</field>
-            <field name="code">model.run(True, True, True, True, None)</field>
+            <field name="code">model.run(True, True, True, None)
+#run(self,isFullUpdate, createInOdoo, updateInOdoo, nbMaxRecords)</field>
         </record>
 
         <record id="cron_etl_Leads" model="ir.cron">
@@ -88,7 +90,8 @@
             <field name="doall">1</field>
             <field name="model_id" ref="model_etl_salesforce_leads" />
             <field name="state">code</field>
-            <field name="code">model.run(False, True, True, True, None)</field>
+            <field name="code">model.run(False, True, True, None)
+#run(self,isFullUpdate, createInOdoo, updateInOdoo, nbMaxRecords)</field>
         </record>
         <record id="cron_etl_leads_full_Update" model="ir.cron">
             <field name="name">ETL Saleforce Leads full update</field>
@@ -98,7 +101,8 @@
             <field name="doall">1</field>
             <field name="model_id" ref="model_etl_salesforce_leads" />
             <field name="state">code</field>
-            <field name="code">model.run(True, True, True, True, None)</field>
+            <field name="code">model.run(True, True, True, None)
+#run(self,isFullUpdate, createInOdoo, updateInOdoo, nbMaxRecords)</field>
         </record>
 
     </data>
