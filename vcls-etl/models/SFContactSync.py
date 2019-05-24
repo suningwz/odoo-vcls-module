@@ -52,9 +52,7 @@ class SFContactSync(models.Model):
             _logger.info('Updated sf instance done')
             
             SF.setNextRun()
-             
-            Cron = self.env['ir.cron'].search([('name','ilike',cronName)])
-            Cron.write({'active': False })
+            
             Cron = self.env['ir.cron'].search([('name','ilike','relauncher')])
             Cron.write({'active': False, 'name': 'relauncher'})
 
