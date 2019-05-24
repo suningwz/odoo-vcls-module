@@ -125,5 +125,17 @@ else:
             </field>
         </record>
 
+        <record id="cron_outlook_contact_full_Update" model="ir.cron">
+            <field name="name">ETL Outlook Contact Full Update</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="doall">False</field>
+            <field name="model_id" ref="model_etl_outlook_contact" />
+            <field name="state">code</field>
+            <field name="code">model.run(True, True, None)
+#run(self, createInOdoo, updateInOdoo, nbMaxRecords)</field>
+        </record>
+
     </data>
 </odoo>
