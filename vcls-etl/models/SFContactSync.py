@@ -61,7 +61,6 @@ class SFContactSync(models.Model):
 
             Cron = self.env['ir.cron'].with_context(active_test=False).search([('name','ilike','relauncher')]) 
             Cron.write({'active':True, 'name': 'relauncher {}'.format(cronName), 'nextcall': (datetime.now() + timedelta(seconds=15))})
-            #+datetime.timedelta(seconds=5)
 
     def updateKeyTable(self, externalInstance, isFullUpdate):
         sql =  'SELECT C.Id, C.LastModifiedDate '
@@ -142,6 +141,8 @@ class SFContactSync(models.Model):
             else:
                 break
 
+        print(str(j%200)+' / '+str(len(modifiedRecordsExt) + len(modifiedRecordsOdoo)) )
+        _logger.info(str(j%200)+' / '+str(len(modifiedRecordsExt) + len(modifiedRecordsOdoo)) )
         if j == (len(modifiedRecordsExt) + len(modifiedRecordsOdoo)):
             return True
         return False
