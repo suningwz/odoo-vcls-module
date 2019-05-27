@@ -37,7 +37,7 @@ class GeneralSync(models.AbstractModel):
     _name = 'etl.sync.mixin'
     _description = 'This model represents an abstract parent class used to manage ETL'
     
-    keys = fields.One2many('etl.sync.keys','syncRecordId', readonly = True)
+    keys = fields.One2many(comodel_name = 'etl.sync.keys', inverse_name ='syncRecordId', readonly = True)
     lastRun = fields.Datetime(readonly = True)
 
     def setNextRun(self):

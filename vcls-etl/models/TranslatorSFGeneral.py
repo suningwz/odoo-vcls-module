@@ -70,6 +70,7 @@ class TranslatorSFGeneral(ITranslator.ITranslator):
             if key.externalId == str(externalId):
                 return key.odooId
         return None
+    
     @staticmethod
     def toSfId(odooId,odoo):
         for key in odoo.env['etl.salesforce.account'].search([]).keys:

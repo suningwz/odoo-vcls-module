@@ -38,7 +38,7 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
         result['company_currency'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Leads['CurrencyIsoCode'],odoo)
         result['user_email'] = SF_Leads['Email']
         #First_VCLS_Contact_Point__c
-        result['referent_id'] = SF_Leads['External_Referee__c']
+        #result['referent_id'] = SF_Leads['External_Referee__c']
         #fax
         result['functional_focus_id'] = SF_Leads['Functional_Focus__c']
         #Inactive_Lead__c
