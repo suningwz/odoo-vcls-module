@@ -33,9 +33,9 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         if SF_Opportunity['VCLS_Activities__c']:
             result['client_activity_ids'] = [(6, 0,mapOdoo.convertRef(SF_Opportunity['VCLS_Activities__c'],odoo,'client.product',True))]
         result['date_deadline'] = SF_Opportunity['Deadline_for_Sending_Proposal__c'] 
-        if SF_Opportunity['LeadSource']:
+        """ if SF_Opportunity['LeadSource']:
             print(SF_Opportunity['LeadSource'])
-            result['source_id'] = mapOdoo.convertRef(SF_Opportunity['LeadSource'],odoo,'utm.source',False)
+            result['source_id'] = mapOdoo.convertRef(SF_Opportunity['LeadSource'],odoo,'utm.source',False) """
         result['date_closed'] = SF_Opportunity['CloseDate']
         result['type'] = 'opportunity'
         #need test
