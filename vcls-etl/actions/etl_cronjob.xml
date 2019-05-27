@@ -54,7 +54,7 @@
 #run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords)</field>
         </record>
         
-       <record id="cron_etl_Opportunity" model="ir.cron">
+       <record id="cron_etl_opportunity" model="ir.cron">
             <field name="name">ETL Salesforce Opportunity</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
@@ -80,7 +80,7 @@
 #run(self,isFullUpdate, createInOdoo, updateInOdoo, nbMaxRecords)</field>
         </record>
 
-        <record id="cron_etl_Leads" model="ir.cron">
+        <record id="cron_etl_leads" model="ir.cron">
             <field name="name">ETL Salesforce Leads</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
@@ -113,29 +113,15 @@
             <field name="doall">False</field>
             <field name="model_id" ref="base.model_ir_cron" />
             <field name="state">code</field>
-            <field name="code">relauncher = model.with_context(active_test=False).search([('name','ilike','relauncher')],limit=1)
-cronName = relauncher.name.split(' ',1)[1]
-toRelaunch = model.with_context(active_test=False).search([('name','ilike',cronName)],limit=1)
-
+            <field name="code">
+relauncher = env.ref('vcls-etl.etl_relauncher')
 if relauncher.active:
+    idToRelaunch = env.ref('vcls-etl.ETL_ToRelaunch')
+    toRelaunch = model.with_context(active_test=False).search([('id','=',idToRelaunch.value)],limit=1)
     toRelaunch.write({'active':True, 'nextcall': datetime.datetime.now()})
 else:
-    relauncher.write({'name':'relauncher'})
-    toRelaunch.write({'active':False})    
+    toRelaunch.write({'active':False})
             </field>
         </record>
-
-        <record id="cron_outlook_contact_full_Update" model="ir.cron">
-            <field name="name">ETL Outlook Contact Full Update</field>
-            <field name="active" eval="False" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="numbercall">-1</field>
-            <field name="doall">False</field>
-            <field name="model_id" ref="model_etl_outlook_contact" />
-            <field name="state">code</field>
-            <field name="code">model.run(True, True, None)
-#run(self, createInOdoo, updateInOdoo, nbMaxRecords)</field>
-        </record>
-
     </data>
 </odoo>
