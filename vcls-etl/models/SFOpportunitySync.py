@@ -29,9 +29,10 @@ class SFOpportunitySync(models.Model):
         ##### CODE HERE #####
         isFinished = SF.updateKeyTable(sfInstance, isFullUpdate)
         
-        cronName = 'etl salesforce opportunity'
         if isFullUpdate:
-            cronName += ' full update'
+            cronId = self.env.ref('vcls-etl.cron_etl_contact_full_Update').id
+        else:
+            cronId = self.env.ref('vcls-etl.cron_etl_contact').id
         if isFinished :
             print('Updated key table done')
             _logger.info('Updated key table done')
@@ -45,12 +46,15 @@ class SFOpportunitySync(models.Model):
             ##### CODE HERE #####
             SF.setNextRun()
 
-            Cron = self.env['ir.cron'].with_context(active_test=False).search([('name','ilike','relauncher')])
-            Cron.write({'active': False,'nextcall': datetime.now()})
+            relauncher = self.env.ref('vcls-etl.etl_relauncher')
+            relauncher.write({'active': False,'nextcall': datetime.now()})
+            self.env.ref('vcls-etl.ETL_ToRelaunch').write({'value':'ETL'})
+            
         else:
 
-            Cron = self.env['ir.cron'].with_context(active_test=False).search([('name','ilike','relauncher')]) 
-            Cron.write({'active':True, 'name': 'relauncher {}'.format(cronName), 'nextcall': (datetime.now() + timedelta(seconds=15))})
+            relauncher = self.env.ref('vcls-etl.etl_relauncher')
+            relauncher.write({'active':True, 'nextcall': (datetime.now() + timedelta(seconds=15))})
+            self.env.ref('vcls-etl.ETL_ToRelaunch').write({'value': cronId})
             
     
     def updateKeyTable(self, externalInstance, isFullUpdate):
