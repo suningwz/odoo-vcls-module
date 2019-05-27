@@ -1,9 +1,9 @@
 [submodule "VCLS-org/crm"]
 	path = VCLS-org/crm
-	url = git@github.com:VCLS-org/crm.git
+	url = https://github.com/VCLS-org/crm.git
 	branch = 12.0
 
 [submodule "VCLS-org/timesheet"]
 	path = VCLS-org/timesheet
-	url = git@github.com:VCLS-org/timesheet.git
+	url = https://github.com/VCLS-org/timesheet.git
 	branch = 12.0
