@@ -7,6 +7,7 @@ class QuotationTemplate(models.Model):
 
     _inherit = 'sale.order.template'
 
+
 class QuotationTemplateLine(models.Model):
 
     _inherit = 'sale.order.template.line'
