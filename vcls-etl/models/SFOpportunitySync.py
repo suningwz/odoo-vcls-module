@@ -139,8 +139,8 @@ class SFOpportunitySync(models.Model):
             else:
                 break
         
-        print(str(j%200)+' / '+str(len(modifiedRecordsExt) + len(modifiedRecordsOdoo)) )
-        _logger.info(str(j%200)+' / '+str(len(modifiedRecordsExt) + len(modifiedRecordsOdoo)) )
+        print(str(j)+' / '+str(len(modifiedRecordsExt) + len(modifiedRecordsOdoo)) )
+        _logger.info(str(j)+' / '+str(len(modifiedRecordsExt) + len(modifiedRecordsOdoo)) )
         if j == (len(modifiedRecordsExt) + len(modifiedRecordsOdoo)):
             return True
         return False
