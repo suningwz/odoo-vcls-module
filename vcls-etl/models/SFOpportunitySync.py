@@ -30,9 +30,9 @@ class SFOpportunitySync(models.Model):
         isFinished = SF.updateKeyTable(sfInstance, isFullUpdate)
         
         if isFullUpdate:
-            cronId = self.env.ref('vcls-etl.cron_etl_contact_full_Update').id
+            cronId = self.env.ref('vcls-etl.cron_etl_opportunity_full_Update').id
         else:
-            cronId = self.env.ref('vcls-etl.cron_etl_contact').id
+            cronId = self.env.ref('vcls-etl.cron_etl_opportunity').id
         if isFinished :
             print('Updated key table done')
             _logger.info('Updated key table done')

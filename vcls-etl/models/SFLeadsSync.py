@@ -30,9 +30,9 @@ class SFLeadsSync(models.Model):
         isFinished = SF.updateKeyTable(sfInstance, isFullUpdate)
         
         if isFullUpdate:
-            cronId = self.env.ref('vcls-etl.cron_etl_contact_full_Update').id
+            cronId = self.env.ref('vcls-etl.cron_etl_leads_full_Update').id
         else:
-            cronId = self.env.ref('vcls-etl.cron_etl_contact').id
+            cronId = self.env.ref('vcls-etl.cron_etl_leads').id
         if isFinished :
             print('Updated key table done')
             _logger.info('Updated key table done')
@@ -54,7 +54,7 @@ class SFLeadsSync(models.Model):
             relauncher = self.env.ref('vcls-etl.etl_relauncher')
             relauncher.write({'active':True, 'nextcall': (datetime.now() + timedelta(seconds=15))})
             self.env.ref('vcls-etl.ETL_ToRelaunch').write({'value': cronId})
-            
+
     def updateKeyTable(self, externalInstance, isFullUpdate):
         # put logger here
         sql =  'SELECT Id, LastModifiedDate '
