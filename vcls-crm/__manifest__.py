@@ -48,6 +48,7 @@
         ### MENUS ###
         'views/lead_menus.xml',
         'views/partner_relation_menus.xml',
+        'views/product_deliverable_view_menu.xml',
 
         ### RECORDS DATA ###
         'data/partner.relation.type.csv',
