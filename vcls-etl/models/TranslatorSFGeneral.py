@@ -79,6 +79,7 @@ class TranslatorSFGeneral(ITranslator.ITranslator):
                 print("get")
                 return key.externalId
         return None
+        
     @staticmethod
     def convertSfIdToOdooId(ownerId, odoo, SF):
         mail = TranslatorSFGeneral.getUserMail(ownerId,SF)

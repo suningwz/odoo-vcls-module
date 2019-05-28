@@ -15,10 +15,11 @@ class ETLMap(models.Model):
     # Helsinki
     odooId = fields.Char(readonly = True)
     externalId = fields.Char(readonly = True)
-    OdooModelName = fields.Char(readonly = True)
+    odooModelName = fields.Char(readonly = True)
     externalObjName = fields.Char(readonly = True)
+    lastModifiedExternal = fields.Datetime(readonly = True)
+    lastModifiedOdoo = fields.Datetime(readonly = True)
     
-
     state = fields.Selection([
         ('upToDate', 'Up To Date'),
         ('needUpdateOdoo', 'Need Update In Odoo'),
@@ -57,60 +58,15 @@ class GeneralSync(models.AbstractModel):
         record = partner.browse([odid])
         return str(record.write_date)
 
-    @staticmethod
-    def isDateOdooAfterExternal(dateOdoo, dateExternal):
-        return dateOdoo >= dateExternal
-    
-    @api.one
-    def addKeys(self, externalId, odooId, state):
-        self.keys = [(0, 0,  { 'odooId': odooId, 'externalId': externalId, 'state': state })]
+    """ @staticmethod
+    def isDateOdooAfterExternal(key):
+        return dateOdoo >= dateExternal """
 
-    @api.one
-    def toOdooId(self, externalId):
-        for key in self.keys:
-            if key.externalId == externalId:
-                return key.odooId
-        raise KeyNotFoundError
-    
-    @api.one
-    def toExternalId(self, odooId):
-        self.env['etl.sync.keys'].search([()])
-        for key in self.keys:
-            if key.odooId == odooId:
-                return key.externalId
-        raise KeyNotFoundError
-    
-    @api.one
-    def getKeyFromOdooId(self, odooId):
-        for key in self.keys:
-            if key.odooId == odooId:
-                return key
-        raise KeyNotFoundError
-    
-    @api.one
-    def getKeyFromExtId(self, externalId,modelName):
-        for key in self.keys:
-            if key.externalId == externalId:
-                return key
-        raise KeyNotFoundError
-
-    @abstractmethod
+    """ abstractmethods that need not be implemented in inherited Models
     def updateKeyTables(self):
-        pass
-    @abstractmethod
     def updateOdooInstance(self):
-        pass
-    
-    @abstractmethod
     def needUpdateExternal(self):
-        pass
-    
-    ####################
-
-    @abstractmethod
-    def updateKeyTable(self, externalInstance):
-        pass
-
+    def updateKeyTable(self, externalInstance): """
 
 
 
