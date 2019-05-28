@@ -69,8 +69,8 @@ class SFContactSync(models.Model):
         print('Updated odoo instance done')
         _logger.info('Updated odoo instance done')
         
-        if createRevert or updateRevert:
-            SF.updateExternalInstance(translator,sfInstance, createRevert, updateRevert, nbMaxRecords)
+        #if createRevert or updateRevert:
+            #SF.updateExternalInstance(translator,sfInstance, createRevert, updateRevert, nbMaxRecords)
         
         print('Updated sf instance done')
         _logger.info('Updated sf instance done')
@@ -211,7 +211,7 @@ class SFContactSync(models.Model):
                         item = self.env[key.odooModelName].search([('id','=',key.odooId)])
                         if item:
                             sfAttributes = translator.translateToSF(item, self)
-                            sfRecord = externalInstance.getConnection().Contact.update(key.externalId,sfAttributes)
+                            #sfRecord = externalInstance.getConnection().key.update(key.externalId,sfAttributes)
                             print('Update record in Salesforce: {}'.format(item.name))
                             _logger.info('Update record in Salesforce: {}'.format(item.name))
                             key.state ='upToDate'
@@ -228,7 +228,7 @@ class SFContactSync(models.Model):
                         item = self.env[key.odooModelName].search([('id','=',key.odooId)])
                         if item:
                             sfAttributes = translator.translateToSF(item, self)
-                            sfRecord = externalInstance.getConnection().Contact.create(sfAttributes)
+                            #sfRecord = externalInstance.getConnection().Contact.create(sfAttributes)
                             print('Create new record in Salesforce: {}'.format(item.name))
                             _logger.info('Create new record in Salesforce: {}'.format(item.name))
                             key.externalId = sfRecord['id']
