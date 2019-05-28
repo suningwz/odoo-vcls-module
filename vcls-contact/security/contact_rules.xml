@@ -33,6 +33,20 @@
         ]</field>
         <field name="groups" eval="[(4, ref('vcls-contact.vcls_group_ceo'))]"/>
     </record> 
+
+    <!-- We add a rule to authorize contact creation-->
+    <record id="res_partner_rule_contact_creation" model="ir.rule">
+        <field name="name">res_partner_rule_contact_creation: All non-private</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+        <field name="domain_force">[
+                ('hidden','=',False),
+        ]</field>
+        <field name="groups" eval="[(4, ref('base.group_partner_manager'))]"/>
+    </record> 
       
              
     </data>

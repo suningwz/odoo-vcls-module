@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- We Override the form view -->
+        <record model="ir.ui.view" id="view_order_form">
+            <field name="name">sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='pricelist_id']" position="after">
+                    <field name="product_category_id" required='True'/>
+                </xpath>
+
+            </field>
+        </record>
+        
+
+    </data>
+</odoo>
