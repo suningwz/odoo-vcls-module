@@ -3,7 +3,7 @@
 from odoo import models, fields, tools, api
 from odoo.exceptions import UserError, ValidationError
 
-class Deliverable(models.Models):
+class Deliverable(models.Model):
 
     _name = 'product.deliverable'
     _description = 'VCLS Deliverable'
@@ -31,4 +31,9 @@ class ProductTemplate(models.Model):
         'hr.department',
         domain = "[('parent_id.name','=','Operations')]",
         string = 'VCLS Activity',
+    )
+
+    deliverable_id = fields.Many2one(
+        'product.deliverable',
+        string = 'Deliverable',
     )

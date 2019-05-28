@@ -27,6 +27,7 @@
                 'website_crm_score',
                 'vcls-contact',
                 'sale_management',
+                'sale_crm',
                 ],
 
     # always loaded
@@ -44,6 +45,7 @@
         'views/lead_views.xml',
         'views/partner_relation.xml',
         'views/crm_contact_views.xml',
+        'views/product_deliverable_views_menu.xml',
 
         ### MENUS ###
         'views/lead_menus.xml',
