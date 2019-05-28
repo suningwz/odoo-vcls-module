@@ -17,6 +17,7 @@ class ETLMap(models.Model):
     externalId = fields.Char(readonly = True)
     OdooModelName = fields.Char(readonly = True)
     externalObjName = fields.Char(readonly = True)
+    
 
     state = fields.Selection([
         ('upToDate', 'Up To Date'),
