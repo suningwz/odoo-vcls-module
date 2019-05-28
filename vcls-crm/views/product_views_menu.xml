@@ -18,9 +18,10 @@
 
             </field>
         </record>
-
-        <record id="product_service_action" model="ir.actions.act_window">
-            <field name="name">VCLS Services</field>
+        
+        <!-- We Override the product action to start with Tree -->
+        <record id="sale.product_template_action" model="ir.actions.act_window">
+            <field name="name">Products</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">product.template</field>
             <field name="view_mode">kanban,tree,form,activity</field>
