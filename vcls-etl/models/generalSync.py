@@ -15,7 +15,8 @@ class ETLMap(models.Model):
     # Helsinki
     odooId = fields.Char(readonly = True)
     externalId = fields.Char(readonly = True)
-    syncRecordId = fields.Many2one('etl.sync.mixin', readonly = True)
+    OdooModelName = fields.Char(readonly = True)
+    externalObjName = fields.Char(readonly = True)
 
     state = fields.Selection([
         ('upToDate', 'Up To Date'),
@@ -37,7 +38,6 @@ class GeneralSync(models.AbstractModel):
     _name = 'etl.sync.mixin'
     _description = 'This model represents an abstract parent class used to manage ETL'
     
-    keys = fields.One2many(comodel_name = 'etl.sync.keys', inverse_name ='syncRecordId', readonly = True)
     lastRun = fields.Datetime(readonly = True)
 
     def setNextRun(self):
@@ -49,7 +49,6 @@ class GeneralSync(models.AbstractModel):
             return fields.Datetime.from_string('2000-01-01 00:00:00.000000+00:0')
         return self.lastRun
     
-
     @api.model
     def getLastUpdate(self, OD_id):
         partner = self.env['res.partner']
@@ -74,6 +73,7 @@ class GeneralSync(models.AbstractModel):
     
     @api.one
     def toExternalId(self, odooId):
+        self.env['etl.sync.keys'].search([()])
         for key in self.keys:
             if key.odooId == odooId:
                 return key.externalId
@@ -87,9 +87,9 @@ class GeneralSync(models.AbstractModel):
         raise KeyNotFoundError
     
     @api.one
-    def getKeyFromExtId(self, externalId):
+    def getKeyFromExtId(self, externalId,modelName):
         for key in self.keys:
-            if key.externalId == externalId: 
+            if key.externalId == externalId:
                 return key
         raise KeyNotFoundError
 
