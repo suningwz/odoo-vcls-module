@@ -46,6 +46,7 @@
         'views/partner_relation.xml',
         'views/crm_contact_views.xml',
         'views/product_deliverable_views_menu.xml',
+        'views/product_views_menu.xml',
 
         ### MENUS ###
         'views/lead_menus.xml',
