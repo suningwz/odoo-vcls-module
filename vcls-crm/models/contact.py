@@ -37,14 +37,18 @@ class ContactExt(models.Model):
         inverse='_set_default_currency',
     )
     
+    @api.depends('property_product_pricelist')
     def _get_default_currency(self):
         ### handle the case where the user's company was created after the currency was set
-        return self.property_product_pricelist.currency_id
+        for rec in self:
+            rec.default_currency_id = rec.property_product_pricelist.currency_id
     
     def _set_default_currency(self):
         self = self.sudo()
-        pricelist = self.env['product.pricelist'].search([('company_id', '=', False), ('currency_id', '=', self.default_currency_id)], limit=1)
-        if not pricelist:
-            raise UserError(('Please define a company independent pricelist with currency %s') % self.default_currency_id.name)
-        for company in self.env['res.company'].search():
-            self.with_context(force_company=company.id).property_product_pricelist = pricelist
+        #raise UserError('{}'.format(self.default_currency_id.name))
+        for rec in self:
+            pricelist = self.env['product.pricelist'].search([('company_id', '=', False), ('currency_id', '=', rec.default_currency_id.id)], limit=1)
+            if not pricelist:
+                raise UserError(('Please define a company independent pricelist with currency %s') % rec.default_currency_id.name)
+            for company in self.env['res.company'].search([]):
+                rec.with_context(force_company=company.id).property_product_pricelist = pricelist
