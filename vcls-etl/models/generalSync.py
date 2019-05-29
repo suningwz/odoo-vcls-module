@@ -12,7 +12,7 @@ class KeyNotFoundError(Exception):
 class ETLMap(models.Model):
     _name = 'etl.sync.keys'
     _description = 'Mapping table to link Odoo ID with external ID'
-    # Helsinki
+
     odooId = fields.Char(readonly = True)
     externalId = fields.Char(readonly = True)
     odooModelName = fields.Char(readonly = True)
@@ -33,8 +33,6 @@ class ETLMap(models.Model):
     @api.one
     def setState(self, state):
         self.state = state
-
-    # foutre les fonctions de mappage ici
 
 class GeneralSync(models.AbstractModel):
     _name = 'etl.sync.mixin'
@@ -58,9 +56,9 @@ class GeneralSync(models.AbstractModel):
         record = partner.browse([odid])
         return str(record.write_date)
 
-    """ @staticmethod
-    def isDateOdooAfterExternal(key):
-        return dateOdoo >= dateExternal """
+    @staticmethod
+    def isDateOdooAfterExternal(dateOdoo,dateExternal):
+        return dateOdoo >= dateExternal
 
     """ abstractmethods that need not be implemented in inherited Models
     def updateKeyTables(self):

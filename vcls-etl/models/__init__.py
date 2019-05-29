@@ -5,13 +5,11 @@ from . import salesforceSync
 from . import SFAccountSync
 from . import SFContactSync
 from . import SFOpportunitySync
-from . import OutlookContactSync
 from . import SFLeadsSync
 from . import ITranslator
 from . import TranslatorSFAccount
 from . import TranslatorSFContact
 from . import TranslatorSFOpportunity
 from . import TranslatorSFLeads
-from . import TranslatorOutlookContact
 from . import ETL_SF
 from . import mapOdoo

@@ -91,7 +91,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         if Odoo_Contact.altname:
             result['VCLS_Alt_Name__c'] = Odoo_Contact.altname
         if Odoo_Contact.user_id:
-            result['OwnerId'] = TranslatorSFAccount.revertOdooIdToSfId(Odoo_Contact.user_id, odoo)
+            result['OwnerId'] = TranslatorSFGeneral.TranslatorSFGeneral.revertOdooIdToSfId(Odoo_Contact.user_id, odoo)
             
         if Odoo_Contact.phone:
             result['Phone'] = Odoo_Contact.phone
@@ -106,11 +106,11 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         if Odoo_Contact.currency_id:
             result['CurrencyIsoCode'] = Odoo_Contact.currency_id.name
         if Odoo_Contact.expert_id:
-            result['Main_VCLS_Contact__c'] = TranslatorSFAccount.revertOdooIdToSfId(Odoo_Contact.expert_id, odoo)
+            result['Main_VCLS_Contact__c'] = TranslatorSFGeneral.TranslatorSFGeneral.revertOdooIdToSfId(Odoo_Contact.expert_id, odoo)
         if Odoo_Contact.assistant_id:
-            result['Project_Assistant__c'] = TranslatorSFAccount.revertOdooIdToSfId(Odoo_Contact.assistant_id, odoo)
+            result['Project_Assistant__c'] = TranslatorSFGeneral.TranslatorSFGeneral.revertOdooIdToSfId(Odoo_Contact.assistant_id, odoo)
         if Odoo_Contact.controller_id:
-            result['Project_Controller__c'] = TranslatorSFAccount.revertOdooIdToSfId(Odoo_Contact.controller_id, odoo)
+            result['Project_Controller__c'] = TranslatorSFGeneral.TranslatorSFGeneral.revertOdooIdToSfId(Odoo_Contact.controller_id, odoo)
         if Odoo_Contact.industry_id:
             result['Industry'] = Odoo_Contact.industry_id.name
         if Odoo_Contact.project_supplier_type_id:

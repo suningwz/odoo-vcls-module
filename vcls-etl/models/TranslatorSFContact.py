@@ -29,7 +29,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         result['description'] += 'Contact description : ' + str(SF_Contact['Description']) + '\n'
         # Ignore Supplier_Selection_Form_completed__c
         result['website'] = SF_Contact['AccountWebsite__c']
-        result['parent_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Contact['AccountId'],odoo)
+        result['parent_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Contact['AccountId'],"res.partner","Account",odoo)
         result['company_type'] = 'person'
         #documented to trigger proper default image loaded
         result['is_company'] = False
@@ -100,7 +100,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         if Odoo_Contact.description:
             result['Description'] = Odoo_Contact.description
             
-        result['AccountId'] = TranslatorSFGeneral.TranslatorSFGeneral.toSfId(Odoo_Contact.parent_id.id,odoo)
+        result['AccountId'] = TranslatorSFGeneral.TranslatorSFGeneral.toSfId(Odoo_Contact.parent_id.id,"res.partner", "Account",odoo)
         
         # Ignore company_type
         result['MailingCountry'] = TranslatorSFGeneral.TranslatorSFGeneral.revertCountry(Odoo_Contact.country_id.id, odoo)

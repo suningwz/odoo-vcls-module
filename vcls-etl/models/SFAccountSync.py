@@ -21,9 +21,9 @@ class SFAccountSync(models.Model):
 
     """ def getCronId(self, isFullUpdate):
         if isFullUpdate:
-            return self.env.ref('vcls-etl.cron_etl_contact_full_Update').id
+            return self.env.ref('vcls-etl.cron_etl_account_full_Update').id
         else:
-            return self.env.ref('vcls-etl.cron_etl_contact').id
+            return self.env.ref('vcls-etl.cron_etl_account').id
     """
     def getSQLForKeys(self):
         sql = 'SELECT Id, LastModifiedDate FROM Account WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null))'
@@ -49,10 +49,20 @@ class SFAccountSync(models.Model):
     def getKeysFromOdoo(self):                
         return self.env['etl.sync.keys'].search([('odooModelName','=','res.partner'),('externalObjName','=','Account')])
     
+    def getKeysToUpdateOdoo(self):
+        return self.env['etl.sync.keys'].search([('odooModelName','=','res.partner'),('externalObjName','=','Account'),'|',('state','=','needCreateOdoo'),('state','=','needUpdateOdoo')])
+    
+    def getKeysToUpdateExternal(self):
+        return self.env['etl.sync.keys'].search([('odooModelName','=','res.partner'),('externalObjName','=','Account'),'|',('state','=','needCreateExternal'),('state','=','needUpdateExternal')])
+
+    
     def createKey(self, odooId, externalId):
         values = {'odooModelName':'res.partner','externalObjName':'Account'}
         if odooId:
-            values.update({'odooId': odooId})
+            values.update({'odooId': odooId, 'state':'needCreateExternal'})
         elif externalId:
-            values.update({'externalId':externalId})
+            values.update({'externalId':externalId, 'state':'needCreateOdoo'})
         self.env['etl.sync.keys'].create(values)
+
+    def getExtModelName(self):
+        return "Account"

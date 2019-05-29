@@ -38,9 +38,10 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
         result['company_currency'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Leads['CurrencyIsoCode'],odoo)
         result['user_email'] = SF_Leads['Email']
         #First_VCLS_Contact_Point__c
-        #result['referent_id'] = SF_Leads['External_Referee__c']
+        result['referent_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Leads['External_Referee__c'], "res.partner", "Contact", odoo)
         #fax
-        result['functional_focus_id'] = SF_Leads['Functional_Focus__c']
+        if SF_Leads['Functional_Focus__c']:
+            result['functional_focus_id'] = mapOdoo.convertRef(SF_Leads['Functional_Focus__c'],odoo,'partner.functional.focus',False)
         #Inactive_Lead__c
         if SF_Leads['Industry']:
             result['industry_id'] = mapOdoo.convertRef(SF_Leads['Industry'],odoo,'res.partner.industry',False)
@@ -49,7 +50,6 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
         if SF_Leads['Seniority__c']:
             result['partner_seniority_id'] = mapOdoo.convertRef(SF_Leads['Seniority__c'], odoo,'res.country',False)
         result['message_ids'] = [(0, 0, TranslatorSFLeads.generateLog(SF_Leads))]
-
 
         return result
     

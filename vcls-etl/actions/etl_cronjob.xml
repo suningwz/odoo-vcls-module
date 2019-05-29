@@ -64,8 +64,8 @@
             <field name="doall">False</field>
             <field name="model_id" ref="model_etl_salesforce_opportunity" />
             <field name="state">code</field>
-            <field name="code">model.run(False, True, True, None)
-#run(self,isFullUpdate, createInOdoo, updateInOdoo, nbMaxRecords)</field>
+            <field name="code">model.run(False, True, True, False, False, None)
+#run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords)</field>
         </record>
 
         <record id="cron_etl_opportunity_full_Update" model="ir.cron">
@@ -76,8 +76,8 @@
             <field name="doall">False</field>
             <field name="model_id" ref="model_etl_salesforce_opportunity" />
             <field name="state">code</field>
-            <field name="code">model.run(True, True, True, None)
-#run(self,isFullUpdate, createInOdoo, updateInOdoo, nbMaxRecords)</field>
+            <field name="code">model.run(True, True, True, False, False, None)
+#run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords)</field>
         </record>
 
         <record id="cron_etl_leads" model="ir.cron">
@@ -90,8 +90,8 @@
             <field name="doall">False</field>
             <field name="model_id" ref="model_etl_salesforce_leads" />
             <field name="state">code</field>
-            <field name="code">model.run(False, True, True, None)
-#run(self,isFullUpdate, createInOdoo, updateInOdoo, nbMaxRecords)</field>
+            <field name="code">model.run(False, True, True, False, False, None)
+#run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords)</field>
         </record>
         <record id="cron_etl_leads_full_Update" model="ir.cron">
             <field name="name">ETL Salesforce Leads Full Update</field>
@@ -101,8 +101,8 @@
             <field name="doall">False</field>
             <field name="model_id" ref="model_etl_salesforce_leads" />
             <field name="state">code</field>
-            <field name="code">model.run(True, True, True, None)
-#run(self,isFullUpdate, createInOdoo, updateInOdoo, nbMaxRecords)</field>
+            <field name="code">model.run(True, True, True, False, False, None)
+#run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords)</field>
         </record>
 
         <record id="etl_relauncher" model="ir.cron">
