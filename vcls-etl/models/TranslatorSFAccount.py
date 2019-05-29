@@ -38,7 +38,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         result['company_type'] = 'company'
         #documented to trigger proper default image loaded
         result['is_company'] = 'True'
-        result['currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Account['CurrencyIsoCode'],odoo)
+        #result['default_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Account['CurrencyIsoCode'],odoo)
         result['altname'] = SF_Account['VCLS_Alt_Name__c']
         result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['OwnerId'],odoo, SF)
         if SF_Account['Invoice_Administrator__c']:
