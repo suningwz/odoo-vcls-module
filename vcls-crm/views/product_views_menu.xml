@@ -2,6 +2,25 @@
 <odoo>
     <data>
 
+        <!-- New product tree view -->
+        <record model="ir.ui.view" id="product_tree_view">
+            <field name="name">product_tree_view</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+
+                <tree string="Product" default_order='categ_id,deliverable_id,list_price desc'>
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="list_price" string="Sales Price"/>
+                    <field name="categ_id"/>
+                    <field name="deliverable_id"/>
+                    <field name="uom_id" options="{'no_open': True, 'no_create': True}" groups="uom.group_uom"/>
+                    <field name="active" invisible="1"/>
+                </tree>
+
+            </field>
+        </record>
+
         <!-- We Override the search view to add deliverables -->
         <record model="ir.ui.view" id="product_template_search_view">
             <field name="name">product.template.search</field>
@@ -26,7 +45,7 @@
             <field name="res_model">product.template</field>
             <field name="view_mode">kanban,tree,form,activity</field>
             <field name="view_type">form</field>
-            <field name="view_id" ref="product.product_template_tree_view"/>
+            <field name="view_id" ref="vcls-crm.product_tree_view"/>
             <field name="search_view_id" ref="product.product_template_search_view"/>
             <field name="context">{
                 "search_default_filter_to_sell":1,
