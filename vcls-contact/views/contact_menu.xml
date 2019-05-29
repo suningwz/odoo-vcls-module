@@ -102,6 +102,10 @@
 			id="menu_VCLS_employees" 
 			action="action_vcls_employees" 
 			sequence="3" />
+
+		<record id="vcls-hr.menu_VCLS_employees" model="ir.ui.menu">
+			<field name="active" eval="False"/>
+		</record>
 		
 		<menuitem 
 			name="VCLS Offices" 
