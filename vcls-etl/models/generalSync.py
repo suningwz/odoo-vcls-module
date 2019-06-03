@@ -48,7 +48,7 @@ class ETLMap(models.Model):
         self.updateOpportunityKey(sfInstance)
         
     def updateAccountKey(self, externalInstance):
-        sql = 'Select Id From Account WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null))'
+        sql = 'Select Id From Account'
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
 
         for item in modifiedRecordsExt:
@@ -58,13 +58,8 @@ class ETLMap(models.Model):
                 print("Update Key Account externalId :{}".format(item['Id']))
 
     def updateContactKey(self, externalInstance):
-        sql =  'SELECT C.Id, C.LastModifiedDate '
-        sql += 'FROM Contact as C '
-        sql += 'Where C.AccountId In ('
-        sql +=  'SELECT A.Id '
-        sql +=  'FROM Account as A '
-        sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
-        sql += ') '
+        sql =  'SELECT Id '
+        sql += 'FROM Contact'
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
 
         for item in modifiedRecordsExt:
@@ -74,13 +69,8 @@ class ETLMap(models.Model):
                 print("Update Key Account externalId :{}".format(item['Id']))
 
     def updateOpportunityKey(self, externalInstance):
-        sql =  'SELECT O.Id, O.LastModifiedDate '
-        sql += 'FROM Opportunity as O '
-        sql += 'Where O.AccountId In ('
-        sql +=  'SELECT A.Id '
-        sql +=  'FROM Account as A '
-        sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
-        sql += ') '
+        sql =  'SELECT Id'
+        sql += 'FROM Opportunity'
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
 
         for item in modifiedRecordsExt:
