@@ -101,7 +101,9 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
             result['Website'] = Odoo_Contact.website
         
         if Odoo_Contact.description:
-            result['Supplier_Description__c'] = Odoo_Contact.description
+            if len(Odoo_Contact.description):   
+                result['Supplier_Description__c'] = Odoo_Contact.description
+
         result['Create_Sharepoint_Folder__c'] = Odoo_Contact.create_folder
         if Odoo_Contact.currency_id:
             result['CurrencyIsoCode'] = Odoo_Contact.currency_id.name
@@ -114,7 +116,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         if Odoo_Contact.industry_id:
             result['Industry'] = Odoo_Contact.industry_id.name
         if Odoo_Contact.project_supplier_type_id:
-            result['project_supplier_type_id'] = Odoo_Contact.project_supplier_type_id.name
+            result['Supplier_Project__c'] = Odoo_Contact.project_supplier_type_id.name
         return result
 
     @staticmethod
