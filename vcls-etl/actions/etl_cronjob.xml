@@ -129,7 +129,7 @@ else:
             <field name="user_id" ref="base.user_admin" />
             <field name="numbercall">-1</field>
             <field name="doall">False</field>
-            <field name="model_id" ref="model_etl_update_keys" />
+            <field name="model_id" ref="model_etl_sync_keys" />
             <field name="state">code</field>
             <field name="code">model.run()
             </field>

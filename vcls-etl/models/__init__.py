@@ -13,4 +13,3 @@ from . import TranslatorSFOpportunity
 from . import TranslatorSFLeads
 from . import ETL_SF
 from . import mapOdoo
-from . import updateKeysTable

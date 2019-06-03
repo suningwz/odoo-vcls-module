@@ -7,4 +7,3 @@ access_etl_salesforce_contact_admin,access_etl_salesforce_contact_admin,vcls-etl
 access_etl_salesforce_opportunity_admin,access_etl_salesforce_opportunity_admin,vcls-etl.model_etl_salesforce_opportunity,base.group_system,1,1,1,1
 access_etl_salesforce_leads_admin,access_etl_salesforce_leads_admin,vcls-etl.model_etl_salesforce_leads,base.group_system,1,1,1,1
 access_map_odoo_admin,access_map_odoo_admin,vcls-etl.model_map_odoo,base.group_system,1,1,1,1
-access_etl_update_keys_admin,access_etl_update_keys_admin,vcls-etl.model_etl_update_keys,base.group_system,1,1,1,1
