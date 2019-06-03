@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from . import generalSync
+from . import salesforceSync
 from . import SFAccountSync
 from . import SFContactSync
 from . import SFOpportunitySync
