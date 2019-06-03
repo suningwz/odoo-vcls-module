@@ -101,7 +101,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
             result['Website'] = Odoo_Contact.website
         
         if Odoo_Contact.description:
-            if len(Odoo_Contact.description):   
+            if len(Odoo_Contact.description) < 255:   
                 result['Supplier_Description__c'] = Odoo_Contact.description
 
         result['Create_Sharepoint_Folder__c'] = Odoo_Contact.create_folder
