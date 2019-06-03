@@ -123,5 +123,18 @@ else:
     toRelaunch.write({'active':False})
             </field>
         </record>
+        <record id="cron_Update" model="ir.cron">
+            <field name="name">ETL Update Object</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="doall">False</field>
+            <field name="model_id" ref="model_etl_update_keys" />
+            <field name="state">code</field>
+            <field name="code">model.run()
+            </field>
+        </record>
+
+        
     </data>
 </odoo>
