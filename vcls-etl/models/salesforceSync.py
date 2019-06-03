@@ -118,8 +118,11 @@ class salesforceSync(models.Model):
                             key.lastModifiedOdoo = self.getLastUpdate(item.id)
 
             for key in keys:
-                idKeysExt.append(key.externalId)
-                idKeysOdoo.append(key.odooId)
+                if key.externalId:
+                    idKeysExt.append(key.externalId)
+                if key.odooId:
+                    idKeysOdoo.append(key.odooId)
+
                 if isFullUpdate or not self.isDateOdooAfterExternal(key.lastModifiedOdoo, key.lastModifiedExternal):
                     # Exist in Odoo & External
                     # External is more recent
@@ -146,7 +149,8 @@ class salesforceSync(models.Model):
         idsListFromExt = []
         for record in modifiedRecordsExt:
             idsListFromExt.append(record['Id'])
-        #this regroup keys that are present in Salesforce but were not created in Odoo yet        
+        #this regroup keys that are present in Salesforce but were not created in Odoo yet
+
         keysToCreate = list(set(idsListFromExt) - set(idKeysExt))
         
         for key in keysToCreate:
@@ -156,7 +160,7 @@ class salesforceSync(models.Model):
         
         idsListFromOdoo = []
         for record in modifiedRecordsOdoo:
-            idsListFromOdoo.append(record.id)
+            idsListFromOdoo.append(str(record.id))
         #this regroup keys that are present in Odoo but were not created in Odoo yet        
         keysToCreate = list(set(idsListFromOdoo) - set(idKeysOdoo))
         
