@@ -12,11 +12,14 @@ class KeyNotFoundError(Exception):
 class ETLMap(models.Model):
     _name = 'etl.sync.keys'
     _description = 'Mapping table to link Odoo ID with external ID'
-    # Helsinki
+
     odooId = fields.Char(readonly = True)
     externalId = fields.Char(readonly = True)
-    syncRecordId = fields.Many2one('etl.sync.mixin', readonly = True)
-
+    odooModelName = fields.Char(readonly = True)
+    externalObjName = fields.Char(readonly = True)
+    lastModifiedExternal = fields.Datetime(readonly = True)
+    lastModifiedOdoo = fields.Datetime(readonly = True)
+    
     state = fields.Selection([
         ('upToDate', 'Up To Date'),
         ('needUpdateOdoo', 'Need Update In Odoo'),
@@ -31,13 +34,10 @@ class ETLMap(models.Model):
     def setState(self, state):
         self.state = state
 
-    # foutre les fonctions de mappage ici
-
 class GeneralSync(models.AbstractModel):
     _name = 'etl.sync.mixin'
     _description = 'This model represents an abstract parent class used to manage ETL'
     
-    keys = fields.One2many('etl.sync.keys','syncRecordId', readonly = True)
     lastRun = fields.Datetime(readonly = True)
 
     def setNextRun(self):
@@ -49,7 +49,6 @@ class GeneralSync(models.AbstractModel):
             return fields.Datetime.from_string('2000-01-01 00:00:00.000000+00:0')
         return self.lastRun
     
-
     @api.model
     def getLastUpdate(self, OD_id):
         partner = self.env['res.partner']
@@ -58,58 +57,14 @@ class GeneralSync(models.AbstractModel):
         return str(record.write_date)
 
     @staticmethod
-    def isDateOdooAfterExternal(dateOdoo, dateExternal):
+    def isDateOdooAfterExternal(dateOdoo,dateExternal):
         return dateOdoo >= dateExternal
-    
-    @api.one
-    def addKeys(self, externalId, odooId, state):
-        self.keys = [(0, 0,  { 'odooId': odooId, 'externalId': externalId, 'state': state })]
 
-    @api.one
-    def toOdooId(self, externalId):
-        for key in self.keys:
-            if key.externalId == externalId:
-                return key.odooId
-        raise KeyNotFoundError
-    
-    @api.one
-    def toExternalId(self, odooId):
-        for key in self.keys:
-            if key.odooId == odooId:
-                return key.externalId
-        raise KeyNotFoundError
-    
-    @api.one
-    def getKeyFromOdooId(self, odooId):
-        for key in self.keys:
-            if key.odooId == odooId:
-                return key
-        raise KeyNotFoundError
-    
-    @api.one
-    def getKeyFromExtId(self, externalId):
-        for key in self.keys:
-            if key.externalId == externalId: 
-                return key
-        raise KeyNotFoundError
-
-    @abstractmethod
+    """ abstractmethods that need not be implemented in inherited Models
     def updateKeyTables(self):
-        pass
-    @abstractmethod
     def updateOdooInstance(self):
-        pass
-    
-    @abstractmethod
     def needUpdateExternal(self):
-        pass
-    
-    ####################
-
-    @abstractmethod
-    def updateKeyTable(self, externalInstance):
-        pass
-
+    def updateKeyTable(self, externalInstance): """
 
 
 

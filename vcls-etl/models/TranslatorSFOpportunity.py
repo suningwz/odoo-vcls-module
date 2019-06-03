@@ -13,7 +13,7 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         result = {}
         result['name'] = SF_Opportunity['Name']
         #ignore stage
-        result['partner_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Opportunity['AccountId'],odoo)
+        result['partner_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Opportunity['AccountId'],"res.partner","Account",odoo)
         result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertSfIdToOdooId(SF_Opportunity['OwnerId'],odoo,SF)
         result['expected_revenue'] = SF_Opportunity['ExpectedRevenue']
         result['type'] = 'opportunity'
@@ -33,7 +33,9 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         if SF_Opportunity['VCLS_Activities__c']:
             result['client_activity_ids'] = [(6, 0,mapOdoo.convertRef(SF_Opportunity['VCLS_Activities__c'],odoo,'client.product',True))]
         result['date_deadline'] = SF_Opportunity['Deadline_for_Sending_Proposal__c'] 
-        result['source_id'] = mapOdoo.convertRef(SF_Opportunity['LeadSource'],odoo,'utm.source',False)
+        """ if SF_Opportunity['LeadSource']:
+            print(SF_Opportunity['LeadSource'])
+            result['source_id'] = mapOdoo.convertRef(SF_Opportunity['LeadSource'],odoo,'utm.source',False) """
         result['date_closed'] = SF_Opportunity['CloseDate']
         result['type'] = 'opportunity'
         #need test
@@ -47,7 +49,7 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
 
 
         return result
-    
+
     @staticmethod
     def generateLog(SF_Opportunity):
         result = {

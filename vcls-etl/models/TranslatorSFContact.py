@@ -29,7 +29,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         result['description'] += 'Contact description : ' + str(SF_Contact['Description']) + '\n'
         # Ignore Supplier_Selection_Form_completed__c
         result['website'] = SF_Contact['AccountWebsite__c']
-        result['parent_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Contact['AccountId'],odoo)
+        result['parent_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Contact['AccountId'],"res.partner","Account",odoo)
         result['company_type'] = 'person'
         #documented to trigger proper default image loaded
         result['is_company'] = False
@@ -37,7 +37,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         if SF_Contact['MailingCountry']:
             result['country_id'] = mapOdoo.convertRef(SF_Contact['MailingCountry'],odoo,'res.country',False)
         
-        result['currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Contact['CurrencyIsoCode'],odoo)        
+        #result['default_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Contact['CurrencyIsoCode'],odoo)        
         result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contact['OwnerId'],odoo, SF)
        
         result['category_id'] =  [(6, 0, TranslatorSFContact.convertCategory(SF_Contact, odoo))]
@@ -100,7 +100,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         if Odoo_Contact.description:
             result['Description'] = Odoo_Contact.description
             
-        result['AccountId'] = TranslatorSFGeneral.TranslatorSFGeneral.toSfId(Odoo_Contact.parent_id.id,odoo)
+        result['AccountId'] = TranslatorSFGeneral.TranslatorSFGeneral.toSfId(Odoo_Contact.parent_id.id,"res.partner", "Account",odoo)
         
         # Ignore company_type
         result['MailingCountry'] = TranslatorSFGeneral.TranslatorSFGeneral.revertCountry(Odoo_Contact.country_id.id, odoo)

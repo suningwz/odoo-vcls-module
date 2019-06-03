@@ -26,6 +26,12 @@
 			action="action_etl_opportunity" 
 			sequence="6" />
 		<menuitem 
+			name="Salesforce Leads" 
+			parent="menu_etl" 
+			id="menu_etl_leads" 
+			action="action_etl_leads" 
+			sequence="6" />	
+		<menuitem 
 			name="Keys" 
 			parent="menu_etl" 
 			id="menu_etl_keys" 

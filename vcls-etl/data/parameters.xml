@@ -14,5 +14,11 @@
             <field name="key">sf.token</field>
             <field name="value">token</field>
         </record>
+
+        <record id="ETL_ToRelaunch" model="ir.config_parameter">
+            <field name="key">sf.toRelauch</field>
+            <field name="value">ETL</field>
+        </record>
+
     </data>
 </odoo>

@@ -65,19 +65,19 @@ class TranslatorSFGeneral(ITranslator.ITranslator):
         else:
             return None
     @staticmethod
-    def toOdooId(externalId, odoo):
-        for key in odoo.env['etl.salesforce.account'].search([]).keys:
-            if key.externalId == str(externalId):
-                return key.odooId
+    def toOdooId(externalId, odooModelName, externalObjName, odoo):
+        keyodooId = odoo.env['etl.sync.keys'].search([('odooModelName','=',odooModelName),('externalObjName','=',externalObjName),('externalId','=',str(externalId))])
+        if keyodooId:
+            return keyodooId.odooId
         return None
+    
     @staticmethod
-    def toSfId(odooId,odoo):
-        for key in odoo.env['etl.salesforce.account'].search([]).keys:
-            print("test for")
-            if key.odooId == str(odooId):
-                print("get")
-                return key.externalId
+    def toSfId(odooId, odooModelName, externalObjName, odoo):
+        keyExtId = odoo.env['etl.sync.keys'].search([('odooModelName','=',odooModelName),('externalObjName','=',externalObjName),('odooId','=',str(odooId))])
+        if keyExtId:
+            return keyExtId.externalId
         return None
+        
     @staticmethod
     def convertSfIdToOdooId(ownerId, odoo, SF):
         mail = TranslatorSFGeneral.getUserMail(ownerId,SF)
