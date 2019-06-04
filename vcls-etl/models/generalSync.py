@@ -45,7 +45,7 @@ class ETLMap(models.Model):
         sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
         self.updateAccountKey(sfInstance)
         self.updateContactKey(sfInstance)
-        #self.updateOpportunityKey(sfInstance)
+        self.updateOpportunityKey(sfInstance)
         
     def updateAccountKey(self, externalInstance):
         sql = 'Select Id From Account'
