@@ -15,13 +15,15 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.3.2',
+    'version': '0.4',
 
     # any module necessary for this one to work correctly
     'depends': [
         'base',
         'project',
         'vcls-crm',
+        'vcls-hr',
+        'sale_project_timesheet_by_seniority',
         ],
 
     # always loaded
@@ -34,6 +36,7 @@
         ### VIEWS ###
         'views/dev_project_views.xml',
         'views/dev_task_views.xml',
+        'views/employee_views.xml',
 
         ### MENUS ###
         'views/dev_project_menu.xml',

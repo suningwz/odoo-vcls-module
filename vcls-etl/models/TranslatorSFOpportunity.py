@@ -38,9 +38,11 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
             result['source_id'] = mapOdoo.convertRef(SF_Opportunity['LeadSource'],odoo,'utm.source',False) """
         result['date_closed'] = SF_Opportunity['CloseDate']
         result['type'] = 'opportunity'
+        if(SF_Opportunity['StageName']):
+            result['stage_id'] = mapOdoo.convertRef(SF_Opportunity['StageName'],odoo,'crm.stage',False)
         #need test
-        result['amount_customer_currency'] = SF_Opportunity['Amount'] #need try catch
-        result['customer_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Opportunity['CurrencyIsoCode'],odoo)#need try catch
+        result['amount_customer_currency'] = SF_Opportunity['Amount']
+        result['customer_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Opportunity['CurrencyIsoCode'],odoo)
         if SF_Opportunity['Project_start_date__c']:
             result['expected_start_date'] = SF_Opportunity['Project_start_date__c']
 

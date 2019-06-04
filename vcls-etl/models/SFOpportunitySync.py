@@ -44,7 +44,7 @@ class SFOpportunitySync(models.Model):
         return sql
     
     def getSQLForRecord(self):
-        sql =  'SELECT O.Id, O.Name, O.AccountId, '
+        sql =  'SELECT O.Id, O.Name, O.AccountId, O.StageName, '
         sql += 'O.OwnerId, O.LastModifiedDate, O.ExpectedRevenue, O.Reasons_Lost_Comments__c, O.Probability, O.CloseDate, O.Deadline_for_Sending_Proposal__c, O.LeadSource, '
         sql += 'O.Description, O.Client_Product_Description__c, O.CurrencyIsoCode, O.Product_Category__c, O.Amount, O.Geographic_Area__c, O.VCLS_Activities__c,Project_start_date__c '
         sql += 'FROM Opportunity as O '
@@ -58,6 +58,9 @@ class SFOpportunitySync(models.Model):
 
     def getModifiedRecordsOdoo(self):
         return self.env['crm.lead'].search([('write_date','>', self.getStrLastRun()),('type','=','opportunity')])
+    
+    def getAllRecordsOdoo(self):
+        return self.env['crm.lead'].search([('type','=','opportunity')])
 
     def getKeysFromOdoo(self):                
         return self.env['etl.sync.keys'].search([('odooModelName','=','crm.lead'),('externalObjName','=','Opportunity')])

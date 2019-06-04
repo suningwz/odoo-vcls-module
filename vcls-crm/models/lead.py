@@ -58,10 +58,18 @@ class Leads(models.Model):
         string = "Industry",
     )
 
+    product_category_id = fields.Many2one(
+        'product.category',
+        string = 'Business Line',
+        domain = "[('parent_id','=',False)]"
+    )
+
     #date fields
     expected_start_date = fields.Date(
         string="Expected Project Start Date",
     )
+
+    won_reason = fields.Many2one('crm.won.reason', string='Won Reason', index=True, track_visibility='onchange')
 
     ###################
     # COMPUTE METHODS #
@@ -125,5 +133,6 @@ class Leads(models.Model):
         data['industry_id'] = self.industry_id
         data['client_activity_ids'] = self.client_activity_ids
         data['client_product_ids'] = self.client_product_ids
+        data['product_category_id'] = self.product_category_id
         
         return data

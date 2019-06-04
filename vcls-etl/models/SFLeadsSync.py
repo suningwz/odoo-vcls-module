@@ -40,6 +40,9 @@ class SFLeadsSync(models.Model):
 
     def getModifiedRecordsOdoo(self):
         return self.env['crm.lead'].search([('write_date','>', self.getStrLastRun()),('type','=','lead')])
+    
+    def getAllRecordsOdoo(self):
+        return self.env['crm.lead'].search([('type','=','lead')])
 
     def getKeysFromOdoo(self):                
         return self.env['etl.sync.keys'].search([('odooModelName','=','crm.lead'),('externalObjName','=','Lead')])

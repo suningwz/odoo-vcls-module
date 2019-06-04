@@ -10,6 +10,9 @@ from simple_salesforce import Salesforce
 from simple_salesforce.exceptions import SalesforceMalformedRequest
 from . import ETL_SF
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class KeyNotFoundError(Exception):
     pass
 
@@ -45,7 +48,7 @@ class ETLMap(models.Model):
         sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
         self.updateAccountKey(sfInstance)
         self.updateContactKey(sfInstance)
-        #self.updateOpportunityKey(sfInstance)
+        self.updateOpportunityKey(sfInstance)
         
     def updateAccountKey(self, externalInstance):
         sql = 'Select Id From Account'
@@ -56,6 +59,8 @@ class ETLMap(models.Model):
             if odooAccount:
                 odooAccount.write({'odooModelName':'res.partner','externalObjName':'Account'})
                 print("Update Key Account externalId :{}".format(item['Id']))
+                _logger.info("Update Key Account externalId :{}".format(item['Id']))
+
 
     def updateContactKey(self, externalInstance):
         sql =  'SELECT Id '
@@ -66,10 +71,11 @@ class ETLMap(models.Model):
             odooContact = self.env['etl.sync.keys'].search([('externalId','=',item['Id'])], limit=1)
             if odooContact:
                 odooContact.write({'odooModelName':'res.partner','externalObjName':'Contact'})
-                print("Update Key Account externalId :{}".format(item['Id']))
+                print("Update Key Contact externalId :{}".format(item['Id']))
+                _logger.info("Update Key Contact externalId :{}".format(item['Id']))
 
     def updateOpportunityKey(self, externalInstance):
-        sql =  'SELECT Id'
+        sql =  'SELECT Id '
         sql += 'FROM Opportunity'
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
 
@@ -77,6 +83,8 @@ class ETLMap(models.Model):
             odooOpportunity = self.env['etl.sync.keys'].search([('externalId','=',item['Id'])], limit=1)
             if odooOpportunity:
                 odooOpportunity.write({'odooModelName':'crm.lead','externalObjName':'Opportunity'})
+                print("Update Key Opportunity externalId :{}".format(item['Id']))
+                _logger.info("Update Key Opportunity externalId :{}".format(item['Id']))
 
 class GeneralSync(models.AbstractModel):
     _name = 'etl.sync.mixin'
