@@ -12,3 +12,5 @@ class SaleOrder(models.Model):
         string = 'Business Line',
         domain = "[('parent_id','=',False)]"
     )
+
+    
