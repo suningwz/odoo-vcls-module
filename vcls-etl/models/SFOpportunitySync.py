@@ -58,6 +58,9 @@ class SFOpportunitySync(models.Model):
 
     def getModifiedRecordsOdoo(self):
         return self.env['crm.lead'].search([('write_date','>', self.getStrLastRun()),('type','=','opportunity')])
+    
+    def getAllRecordsOdoo(self):
+        return self.env['crm.lead'].search([('type','=','opportunity')])
 
     def getKeysFromOdoo(self):                
         return self.env['etl.sync.keys'].search([('odooModelName','=','crm.lead'),('externalObjName','=','Opportunity')])

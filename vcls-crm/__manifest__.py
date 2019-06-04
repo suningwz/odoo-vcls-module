@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.10',
+    'version': '0.11',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -44,6 +44,7 @@
         'security/lead_rules.xml',
 
         ### VIEWS ###
+        'views/crm_lead_won_views.xml',
         'views/lead_views.xml',
         'views/partner_relation.xml',
         'views/crm_contact_views.xml',
