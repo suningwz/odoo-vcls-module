@@ -22,4 +22,13 @@ class CrmLeadWon(models.TransientModel):
     def action_won_reason_apply(self):
         leads = self.env['crm.lead'].browse(self.env.context.get('active_ids'))
         leads.write({'won_reason': self.won_reason_id.id})
-        return leads.action_set_won()
+        result = leads.action_set_won()
+        if result:
+            return {
+                    'effect': {
+                        'fadeout': 'slow',
+                        'message': 'Congrats !',
+                        'img_url': '/web/static/src/img/smile.svg',
+                        'type': 'rainbow_man',
+                    }
+                }
