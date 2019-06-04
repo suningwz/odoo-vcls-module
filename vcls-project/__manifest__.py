@@ -22,6 +22,8 @@
         'base',
         'project',
         'vcls-crm',
+        'vcls-hr',
+        'sale_project_timesheet_by_seniority',
         ],
 
     # always loaded
@@ -34,6 +36,7 @@
         ### VIEWS ###
         'views/dev_project_views.xml',
         'views/dev_task_views.xml',
+        'views/employee_views.xml',
 
         ### MENUS ###
         'views/dev_project_menu.xml',
