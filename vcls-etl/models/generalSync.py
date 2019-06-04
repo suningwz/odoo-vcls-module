@@ -69,7 +69,7 @@ class ETLMap(models.Model):
                 print("Update Key Account externalId :{}".format(item['Id']))
 
     def updateOpportunityKey(self, externalInstance):
-        sql =  'SELECT Id'
+        sql =  'SELECT Id '
         sql += 'FROM Opportunity'
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
 
