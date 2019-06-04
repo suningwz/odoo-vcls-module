@@ -44,6 +44,7 @@
         'security/lead_rules.xml',
 
         ### VIEWS ###
+        'views/crm_lead_won_views.xml',
         'views/lead_views.xml',
         'views/partner_relation.xml',
         'views/crm_contact_views.xml',

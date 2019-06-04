@@ -63,6 +63,8 @@ class Leads(models.Model):
         string="Expected Project Start Date",
     )
 
+    won_reason = fields.Many2one('crm.won.reason', string='Won Reason', index=True, track_visibility='onchange')
+
     ###################
     # COMPUTE METHODS #
     ###################
