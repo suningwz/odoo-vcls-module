@@ -68,7 +68,7 @@ class TranslatorSFGeneral(ITranslator.ITranslator):
     def toOdooId(externalId, odooModelName, externalObjName, odoo):
         keyodooId = odoo.env['etl.sync.keys'].search([('odooModelName','=',odooModelName),('externalObjName','=',externalObjName),('externalId','=',str(externalId))])
         if keyodooId:
-            return keyodooId.odooId
+            return int(keyodooId.odooId)
         return None
     
     @staticmethod

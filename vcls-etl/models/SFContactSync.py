@@ -55,6 +55,9 @@ class SFContactSync(models.Model):
 
     def getModifiedRecordsOdoo(self):
         return self.env['res.partner'].search([('write_date','>', self.getStrLastRun()),('is_company','=',False)])
+    
+    def getAllRecordsOdoo(self):
+        return self.env['res.partner'].search([('is_company','=',False)])
 
     def getKeysFromOdoo(self):                
         return self.env['etl.sync.keys'].search([('odooModelName','=','res.partner'),('externalObjName','=','Contact')])
