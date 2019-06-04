@@ -35,7 +35,7 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
         
         #result[''] = SF_Leads['Company']
         #Content_Name__c
-        result['company_currency'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Leads['CurrencyIsoCode'],odoo)
+        result['customer_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Leads['CurrencyIsoCode'],odoo)
         result['user_email'] = SF_Leads['Email']
         #First_VCLS_Contact_Point__c
         result['referent_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Leads['External_Referee__c'], "res.partner", "Contact", odoo)

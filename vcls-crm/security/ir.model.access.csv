@@ -8,3 +8,6 @@ access_partner_relation_admin,access_partner_relation_admin,vcls-crm.model_res_p
 
 access_partner_relation_type_default,access_partner_relation_type_default,vcls-crm.model_res_partner_relation,base.group_user,1,0,0,0
 access_partner_relation_type_admin,access_partner_relation_type_admin,vcls-crm.model_partner_relation_type,base.group_system,1,1,1,1
+
+access_product_delivrable_default,access_product_delivrable_default,vcls-crm.model_product_deliverable,base.group_user,1,0,0,0
+access_product_delivrable_sales,access_product_delivrable_sales,vcls-crm.model_product_deliverable,sales_team.group_sale_salesman,1,1,1,1

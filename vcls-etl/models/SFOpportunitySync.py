@@ -32,7 +32,15 @@ class SFOpportunitySync(models.Model):
         sql +=  'SELECT A.Id '
         sql +=  'FROM Account as A '
         sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
-        sql += ') '
+        sql += ')'
+
+        sql = """
+            SELECT O.Id, O.LastModifiedDate FROM Opportunity as O 
+            WHERE O.AccountId In (
+                SELECT A.Id FROM Account as A 
+                WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)
+                )
+        """
         return sql
     
     def getSQLForRecord(self):
@@ -45,6 +53,7 @@ class SFOpportunitySync(models.Model):
         sql +=  'FROM Account as A '
         sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
         sql += ') '
+        
         return sql
 
     def getModifiedRecordsOdoo(self):

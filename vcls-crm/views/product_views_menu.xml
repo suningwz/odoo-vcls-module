@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- New product tree view -->
+        <record model="ir.ui.view" id="product_tree_view">
+            <field name="name">product_tree_view</field>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+
+                <tree string="Product" default_order='categ_id,grouping_info,list_price desc'>
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="list_price" string="Sales Price"/>
+                    <field name="categ_id"/>
+                    <field name="grouping_info" string="Info"/>
+                    <field name="uom_id" options="{'no_open': True, 'no_create': True}" groups="uom.group_uom"/>
+                    <field name="active" invisible="1"/>
+                </tree>
+
+            </field>
+        </record>
+
+        <!-- We Override the search view to add deliverables -->
+        <record model="ir.ui.view" id="product_template_search_view">
+            <field name="name">product.template.search</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//filter[@name='activities_upcoming_all']" position="after">
+                    <group expand="0" string="Group By">
+                        <filter name="group_category" string="Category" domain="[]" context="{'group_by':'categ_id'}"/>
+                        <filter name="group_deliverable" string="Deliverable" domain="[]" context="{'group_by':'deliverable_id'}"/>
+                        <filter name="group_seniority" string="Seniority" domain="[]" context="{'group_by':'seniority_level_id'}"/>
+                        <filter name="group_info" string="Info" domain="[]" context="{'group_by':'grouping_info'}"/>
+                        <filter name="group_price" string="Sales Price" domain="[]" context="{'group_by':'list_price'}"/>
+                    </group>   
+                </xpath>
+
+            </field>
+        </record>
+        
+        <!-- We Override the product action to start with Tree -->
+        <record id="sale.product_template_action" model="ir.actions.act_window">
+            <field name="name">Products</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.template</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="vcls-crm.product_tree_view"/>
+            <field name="search_view_id" ref="product.product_template_search_view"/>
+            <field name="context">{
+                "search_default_filter_to_sell":1,
+                "sale_multi_pricelist_product_template": 1,
+                "search_default_group_category":1,
+                "search_default_group_info":1,
+                }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new product
+                </p><p>
+                    You must define a product for everything you purchase,
+                    whether it's a physical product, a consumable or services.
+                </p>
+            </field>
+        </record>
+
+        <!-- We Override the search view to add deliverables 
+        <record model="ir.actions.act_window" id="action_partner_relation">
+            <field name="name">Partner Relations</field>
+            <field name="res_model">res.partner.relation</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_partner_relation_type">
+            <field name="name">Partner Relation Types</field>
+            <field name="res_model">partner.relation.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_partner_relation_type_tree"/>
+        </record>
+        -->
+
+    </data>
+</odoo>

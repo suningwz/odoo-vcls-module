@@ -3,6 +3,7 @@
 from datetime import date, datetime, time
 import xlsxwriter
 import base64
+import os
 
 #Odoo Imports
 from . import payroll_constants
@@ -308,6 +309,7 @@ class PayrollExport(models.Model):
                         }
                 export.attachment_id = self.env['ir.attachment'].create(attachment_data)
                 export.is_generated = True
+        os.remove(filename)
 
     def build_worksheet(self, workbook):
         

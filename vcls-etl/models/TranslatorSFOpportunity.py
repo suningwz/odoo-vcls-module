@@ -25,7 +25,7 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
             result['description'] +='Description : ' + str(SF_Opportunity['Description']) + '\n'
         if SF_Opportunity['Client_Product_Description__c']:
             result['description'] +='Client Product Description : ' +  str(SF_Opportunity['Client_Product_Description__c'])
-        result['company_currency'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Opportunity['CurrencyIsoCode'],odoo)
+        result['customer_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Opportunity['CurrencyIsoCode'],odoo)
         if SF_Opportunity['Product_Category__c']:
             result['client_product_ids'] =[(6, 0, mapOdoo.convertRef(SF_Opportunity['Product_Category__c'],odoo,'client.product',True))]
         if SF_Opportunity['Geographic_Area__c']:

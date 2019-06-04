@@ -44,7 +44,7 @@ class SFAccountSync(models.Model):
         return sql
 
     def getModifiedRecordsOdoo(self):
-        return self.env['res.partner'].search([('write_date','>', self.getStrLastRun()),('is_company','=',True)])
+        return self.env['res.partner'].search([('write_date','>', self.getStrLastRun()),('is_company','=',True),('is_internal','=',False)])
 
     def getAllRecordsOdoo(self):
         return self.env['res.partner'].search([('is_company','=',True)])

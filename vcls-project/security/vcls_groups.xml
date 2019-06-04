@@ -28,6 +28,17 @@
         <record id="vcls-project.vcls_group_dev_manager" model="res.groups">
             <field name="implied_ids" eval="[(4,ref('vcls_group_dev_user'))]"/>
         </record>
+
+        <!-- Create the operational config group -->
+        <record id="vcls_group_op_config" model="res.groups">
+            <field name="name">VCLS Operational Config</field>
+            <field name="category_id" ref=""/>
+        </record>
+
+        <!-- Extend admin group inheritance -->
+        <record id="base.group_system" model="res.groups">
+            <field name="implied_ids" eval="[(4,ref('vcls_group_op_config'))]"/>
+        </record>
         
     </data>
 </odoo>
