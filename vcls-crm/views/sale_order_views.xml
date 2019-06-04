@@ -8,11 +8,16 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-
-                <xpath expr="//field[@name='pricelist_id']" position="after">
+                <field name="pricelist_id" position="after">
                     <field name="product_category_id" required='True'/>
-                </xpath>
+                </field>
 
+                <field name="partner_invoice_id" position="replace">
+                    <field name="partner_invoice_id" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'invoice'}" options="{&quot;always_reload&quot;: True}"/>
+                </field>
+                <field name="partner_shipping_id" position="replace">    
+                    <field name="partner_shipping_id" invisible="1" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'delivery'}" options="{&quot;always_reload&quot;: True}"/>
+                </field>
             </field>
         </record>
         
