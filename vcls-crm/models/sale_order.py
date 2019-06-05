@@ -12,23 +12,19 @@ class SaleOrder(models.Model):
         string = 'Business Line',
         domain = "[('parent_id','=',False)]"
     )
-
     name = fields.Char(readonly=False)
+    
     default_name = fields.Char(readonly=True, compute='_compute_default_name', default="New")
+    
 
-    @api.onchange('partner_id')
     def _compute_default_name(self):
-        res = super(SaleOrder, self).onchange_partner_id()
         if self.partner_id:
             if self.partner_id.altname:
-                self.partner_id.nb_quotation += 1
                 self.default_name = self.partner_id.altname + "-" + str(self.partner_id.nb_quotation) + "| "
                 if self.opportunity_id.name:
                     self.default_name += self.opportunity_id.name
             else:
                 raise UserError("Can you please document an ALTNAME for the related partner")
-        return res
-
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
@@ -38,8 +34,10 @@ class SaleOrder(models.Model):
                 if self.partner_id.altname:
                     self.partner_id.nb_quotation += 1
                     self.name = self.partner_id.altname + "-" + str(self.partner_id.nb_quotation) + "| "
+                    self.default_name = self.partner_id.altname + "-" + str(self.partner_id.nb_quotation) + "| "
                     if self.opportunity_id.name:
                         self.name += self.opportunity_id.name
+                        self.default_name += self.opportunity_id.name
                 else:
                     raise UserError("Can you please document an ALTNAME for the related partner")
         return res
