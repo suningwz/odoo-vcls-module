@@ -3,13 +3,13 @@
     <data>
     
         <record id="cron_etl_account" model="ir.cron">
-            <field name="name">ETL Saleforce / Odoo Account</field>
+            <field name="name">ETL Salesforce Account</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="interval_number">1</field>
             <field name="interval_type">hours</field>
             <field name="numbercall">-1</field>
-            <field name="doall">1</field>
+            <field name="doall">False</field>
             <field name="model_id" ref="model_etl_salesforce_account" />
             <field name="state">code</field>
             <field name="code">model.run(False, True, True, True, False, None) 
@@ -21,7 +21,7 @@
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="numbercall">-1</field>
-            <field name="doall">1</field>
+            <field name="doall">False</field>
             <field name="model_id" ref="model_etl_salesforce_account" />
             <field name="state">code</field>
             <field name="code">model.run(True, True, True, True, False, None)
@@ -29,13 +29,13 @@
         </record>
 
         <record id="cron_etl_contact" model="ir.cron">
-            <field name="name">ETL Saleforce / Odoo Contact</field>
+            <field name="name">ETL Salesforce Contact</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="interval_number">1</field>
             <field name="interval_type">hours</field>
             <field name="numbercall">-1</field>
-            <field name="doall">1</field>
+            <field name="doall">False</field>
             <field name="model_id" ref="model_etl_salesforce_contact" />
             <field name="state">code</field>
             <field name="code">model.run(False, True, True, True, False, None)
@@ -43,63 +43,98 @@
         </record>
 
         <record id="cron_etl_contact_full_Update" model="ir.cron">
-            <field name="name">ETL Saleforce Contact full update</field>
+            <field name="name">ETL Salesforce Contact Full Update</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="numbercall">-1</field>
-            <field name="doall">1</field>
+            <field name="doall">False</field>
             <field name="model_id" ref="model_etl_salesforce_contact" />
             <field name="state">code</field>
             <field name="code">model.run(True, True, True, True, False, None)
 #run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords)</field>
         </record>
         
-       <record id="cron_etl_Opportunity" model="ir.cron">
-            <field name="name">ETL Saleforce / Odoo Opportunity</field>
+       <record id="cron_etl_opportunity" model="ir.cron">
+            <field name="name">ETL Salesforce Opportunity</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="interval_number">1</field>
             <field name="interval_type">hours</field>
             <field name="numbercall">-1</field>
-            <field name="doall">1</field>
+            <field name="doall">False</field>
             <field name="model_id" ref="model_etl_salesforce_opportunity" />
             <field name="state">code</field>
-            <field name="code">model.run(False, True, True, True, None)</field>
+            <field name="code">model.run(False, True, True, False, False, None)
+#run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords)</field>
         </record>
 
         <record id="cron_etl_opportunity_full_Update" model="ir.cron">
-            <field name="name">ETL Saleforce Opportunity full update</field>
+            <field name="name">ETL Salesforce Opportunity Full Update</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="numbercall">-1</field>
-            <field name="doall">1</field>
+            <field name="doall">False</field>
             <field name="model_id" ref="model_etl_salesforce_opportunity" />
             <field name="state">code</field>
-            <field name="code">model.run(True, True, True, True, None)</field>
+            <field name="code">model.run(True, True, True, False, False, None)
+#run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords)</field>
         </record>
 
-        <record id="cron_etl_Leads" model="ir.cron">
-            <field name="name">ETL Saleforce / Odoo Leads</field>
+        <record id="cron_etl_leads" model="ir.cron">
+            <field name="name">ETL Salesforce Leads</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="interval_number">1</field>
             <field name="interval_type">hours</field>
             <field name="numbercall">-1</field>
-            <field name="doall">1</field>
+            <field name="doall">False</field>
             <field name="model_id" ref="model_etl_salesforce_leads" />
             <field name="state">code</field>
-            <field name="code">model.run(False, True, True)</field>
+            <field name="code">model.run(False, True, True, False, False, None)
+#run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords)</field>
         </record>
         <record id="cron_etl_leads_full_Update" model="ir.cron">
-            <field name="name">ETL Saleforce Leads full update</field>
+            <field name="name">ETL Salesforce Leads Full Update</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="numbercall">-1</field>
-            <field name="doall">1</field>
+            <field name="doall">False</field>
             <field name="model_id" ref="model_etl_salesforce_leads" />
             <field name="state">code</field>
-            <field name="code">model.run(True, True, True)</field>
+            <field name="code">model.run(True, True, True, False, False, None)
+#run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords)</field>
         </record>
 
+        <record id="etl_relauncher" model="ir.cron">
+            <field name="name">relauncher</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="doall">False</field>
+            <field name="model_id" ref="base.model_ir_cron" />
+            <field name="state">code</field>
+            <field name="code">
+relauncher = env.ref('vcls-etl.etl_relauncher')
+if relauncher.active:
+    idToRelaunch = env.ref('vcls-etl.ETL_ToRelaunch')
+    toRelaunch = model.with_context(active_test=False).search([('id','=',idToRelaunch.value)],limit=1)
+    toRelaunch.write({'active':True, 'nextcall': datetime.datetime.now()})
+else:
+    toRelaunch.write({'active':False})
+            </field>
+        </record>
+        <record id="cron_Update" model="ir.cron">
+            <field name="name">ETL Update Object</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="doall">False</field>
+            <field name="model_id" ref="model_etl_sync_keys" />
+            <field name="state">code</field>
+            <field name="code">model.run()
+            </field>
+        </record>
+
+        
     </data>
 </odoo>

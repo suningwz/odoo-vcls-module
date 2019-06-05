@@ -1,0 +1,30 @@
+<odoo>
+    <data>
+        <!-- INHERIT THE EMPLOYEE FORM VIEW TO ADD OPERATIONAL CONFIG -->
+        <record id="employee_view_form_all_ops" model="ir.ui.view">
+            <field name="name">employee_view_form_all_ops</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="vcls-hr.employee_view_form_all"/>
+
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/notebook/page[6]" position="after">
+                    <page name="operations" string="Operational Info" groups="vcls-project.vcls_group_op_config">
+                    
+                        <group string="Default Rates">
+                            <field name="default_rate_ids" string="">
+                                <tree string="Default Rates">
+                                    <field name="categ_id"/>
+                                    <field name="name"/>
+                                    <field name="seniority_level_id"/>
+                                </tree>
+                            </field>
+                            <field name="seniority_level_id"/>
+                        </group>
+                    </page>
+            
+                </xpath>
+            </field>
+        </record>
+       
+    </data>
+</odoo>

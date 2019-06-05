@@ -65,6 +65,11 @@
             <field name="res_model">etl.salesforce.opportunity</field>
             <field name="view_mode">kanban,tree,form,activity</field>
     	</record>
+	    <record model="ir.actions.act_window" id="action_etl_leads">
+            <field name="name">ETL Salesforce Lead</field>
+            <field name="res_model">etl.salesforce.leads</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+    	</record>
 		<record model="ir.actions.act_window" id="action_etl_map">
 			<field name="name">ETL Map Odoo</field>
 			<field name="res_model">map.odoo</field>
