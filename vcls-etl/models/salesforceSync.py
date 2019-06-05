@@ -208,7 +208,7 @@ class salesforceSync(models.Model):
                             try:
                                 odooAttributes = translator.translateToOdoo(item, self, externalInstance)
                                 record = self.env[key.odooModelName].search([('id','=',key.odooId)], limit=1)
-                                record.write(odooAttributes)
+                                record.with_context(tracking_disable=1).write(odooAttributes)
                                 print('Updated record in Odoo: {}'.format(item['Name']))
                                 _logger.info('Updated record in Odoo: {}'.format(item['Name']))
                                 key.state ='upToDate'
@@ -223,7 +223,7 @@ class salesforceSync(models.Model):
                                 item = record
                         if item:
                             odooAttributes = translator.translateToOdoo(item, self, externalInstance)
-                            partner_id = self.env[key.odooModelName].create(odooAttributes).id
+                            partner_id = self.env[key.odooModelName].with_context(tracking_disable=1).create(odooAttributes).id
                             print('Create new record in Odoo: {}'.format(item['Name']))
                             _logger.info('Create new record in Odoo: {}'.format(item['Name']))
                             key.odooId = partner_id
