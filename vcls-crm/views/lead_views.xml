@@ -413,6 +413,20 @@
         </field>
         </record>
 
+        <!-- Override the search view -->
+        <record id="view_crm_case_opportunities_filter_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.search.opportunity.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//filter[@name='salesperson']" position="replace">
+                    <filter string="Account Manager" name="salesperson" context="{'group_by':'user_id'}"/>
+            </xpath>
+            
+        </field>
+        </record>
+
         <!-- we override the pipeline action -->
         <record model="ir.actions.act_window" id="crm.crm_lead_opportunities_tree_view">
             <field name="name">Pipeline</field>
