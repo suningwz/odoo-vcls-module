@@ -6,6 +6,7 @@
         <record model="ir.ui.view" id="view_order_form">
             <field name="name">sale.order.form</field>
             <field name="model">sale.order</field>
+            <field name="priority">3000</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <field name="pricelist_id" position="after">
@@ -20,7 +21,7 @@
                 </field>
 
                 <xpath expr="//field[@name='order_line']//tree/field[@name='product_id']" position="replace">
-                    <field name="product_id" string="TEST" attrs="{'readonly': [('product_updatable', '=', False)],'required': [('display_type', '=', False)],}" force_save="1" context="{'partner_id': parent.partner_id,'quantity': product_uom_qty,'pricelist': parent.pricelist_id,'uom':product_uom,'company_id': parent.company_id,'default_lst_price': price_unit,'default_description_sale': name}"/>
+                    <field name="product_id" domain="[('categ_id','child_of',parent.product_category_id)]" attrs="{'readonly': [('product_updatable', '=', False)],'required': [('display_type', '=', False)],}" force_save="1" context="{'tree_view_ref':'vcls-crm.product_tree_view','partner_id': parent.partner_id,'quantity': product_uom_qty,'pricelist': parent.pricelist_id,'uom':product_uom,'company_id': parent.company_id,'default_lst_price': price_unit,'default_description_sale': name}"/>
                 </xpath>
 
             </field>
