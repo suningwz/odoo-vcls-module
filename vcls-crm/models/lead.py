@@ -22,11 +22,11 @@ class Leads(models.Model):
         #default='_default_am',
         )
 
-    """name = fields.Char(
+    name = fields.Char(
         required = True,
         compute = '_compute_name',
         inverse = '_get_name',
-    )"""
+    )
 
     country_group_id = fields.Many2one(
         'res.country.group',
@@ -104,8 +104,7 @@ class Leads(models.Model):
             next_index = self.partner_id.core_process_index+1 or 1
             self.partner_id.core_process_index = next_index
             self.internal_ref = "{}-{:03}".format(self.partner_id.altname,next_index)
-
-    """
+    
     @api.depends('internal_ref')
     def _compute_name(self):
         for lead in self:
@@ -124,7 +123,7 @@ class Leads(models.Model):
 
             if lead.internal_ref and temp.find(lead.internal_ref)==-1: #if the ref is not yet in the name
                 return "{} | {}".format(lead.internal_ref,lead.name)
-    """
+
     
     """@api.onchange('partner_id','country_id')
     def _change_am(self):

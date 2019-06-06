@@ -37,12 +37,9 @@ class ContactExt(models.Model):
         inverse='_set_default_currency',
     )
     
-<<<<<<< HEAD
     #nb_quotation = fields.Integer(readonly=True, default=0)
     core_process_index = fields.Integer()
 
-=======
->>>>>>> parent of 40a0bf2... Merge pull request #60 from VCLS-org/12.0_vcls_quotation_default_name
     @api.depends('property_product_pricelist')
     def _get_default_currency(self):
         ### handle the case where the user's company was created after the currency was set
