@@ -421,7 +421,11 @@
         <field name="arch" type="xml">
 
             <xpath expr="//filter[@name='salesperson']" position="replace">
-                    <filter string="Account Manager" name="salesperson" context="{'group_by':'user_id'}"/>
+                <filter string="Account Manager" name="salesperson" context="{'group_by':'user_id'}"/>
+            </xpath>
+
+            <xpath expr="//filter[@name='won']" position="before">
+                <filter string="Open" name="open" domain="['&amp;', ('active', '=', True), ('is_won','=','pending')]"/>
             </xpath>
             
         </field>
@@ -442,6 +446,12 @@
                 (0, 0, {'view_mode': 'cohort', 'view_id': ref('crm_enterprise.crm_lead_view_cohort')}),
                 (0, 0, {'view_mode': 'dashboard', 'view_id': ref('crm_enterprise.crm_opportunity_view_dashboard')}),
             ]"/>
+            <field name="context">{
+                    'default_type': 'opportunity',
+                    'search_default_assigned_to_me': 1,
+                    'search_default_open': 1,
+                    }
+            </field>
         </record>
 
         <!-- used for the NEW CI menu in the contact app-->
