@@ -425,7 +425,7 @@
             </xpath>
 
             <xpath expr="//filter[@name='won']" position="before">
-                <filter string="Open" name="open" domain="['&amp;', ('active', '=', True), ('is_won','=','pending')]"/>
+                <filter string="Open" name="open" domain="['&amp;', ('active', '=', True), ('stage_id.probability','not in',[0,100])]"/>
             </xpath>
             
         </field>

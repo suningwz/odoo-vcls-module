@@ -19,18 +19,9 @@
                     <field name="partner_shipping_id" invisible="1" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'delivery'}" options="{&quot;always_reload&quot;: True}"/>
                 </field>
 
-                <!--
-                <field name="order_line">
-                    <tree>
-                        <field name="product_id" position="replace">
-                            <field name="product_id" string="TEST ME" attrs="{'readonly': [('product_updatable', '=', False)], 'required': [('display_type', '=', False)], 'default_lst_price': price_unit, 'default_description_sale': name}"/>
-                        </field>
-                    </tree>
-                </field>
-
-                <xpath expr="//form/sheet/notebook/page[@name='order_lines']/field[@name='order_line']/tree/field[@name='product_id']" position="replace">
-                    <field name="product_id" string="TEST ME" attrs="{'readonly': [('product_updatable', '=', False)], 'required': [('display_type', '=', False)], 'default_lst_price': price_unit, 'default_description_sale': name}"/>
-                </xpath>-->
+                <xpath expr="//field[@name='order_line']//tree/field[@name='product_id']" position="replace">
+                    <field name="product_id" string="TEST" attrs="{'readonly': [('product_updatable', '=', False)],'required': [('display_type', '=', False)],}" force_save="1" context="{'partner_id': parent.partner_id,'quantity': product_uom_qty,'pricelist': parent.pricelist_id,'uom':product_uom,'company_id': parent.company_id,'default_lst_price': price_unit,'default_description_sale': name}"/>
+                </xpath>
 
             </field>
         </record>
