@@ -22,6 +22,12 @@ class Leads(models.Model):
         #default='_default_am',
         )
 
+    name = fields.Char(
+        required = True,
+        compute = '_compute_name',
+        inverse = '_get_name',
+    )
+
     country_group_id = fields.Many2one(
         'res.country.group',
         string = "Geographic Area",
@@ -71,6 +77,13 @@ class Leads(models.Model):
 
     won_reason = fields.Many2one('crm.won.reason', string='Won Reason', index=True, track_visibility='onchange')
 
+    internal_ref = fields.Char(
+        string="Ref",
+        readonly = True,
+        store = True,
+        compute = '_compute_internal_ref',
+    )
+
     ###################
     # COMPUTE METHODS #
     ###################
@@ -81,6 +94,36 @@ class Leads(models.Model):
             groups = lead.country_id.country_group_ids
             if groups:
                 lead.country_group_id = groups[0]
+    
+    @api.depends('partner_id')
+    def _compute_internal_ref(self):
+        if self.partner_id:
+            if not self.partner_id.altname:
+                raise UserError("Please document ALTNAME for the client {}".format(self.partner_id.name))
+
+            next_index = self.partner_id.core_process_index+1 or 1
+            self.partner_id.core_process_index = next_index
+            self.internal_ref = "{}-{:03}".format(self.partner_id.altname,next_index)
+    
+    @api.depends('internal_ref')
+    def _compute_name(self):
+        for lead in self:
+            lead.name = lead.build_name()
+
+    @api.onchange('name')
+    def _get_name(self):
+        self.name = self.build_name()
+
+    def build_name(self):
+        for lead in self:
+            if not lead.name:
+                temp = ""
+            else:
+                temp = lead.name
+
+            if lead.internal_ref and temp.find(lead.internal_ref)==-1: #if the ref is not yet in the name
+                return "{} | {}".format(lead.internal_ref,lead.name)
+
     
     """@api.onchange('partner_id','country_id')
     def _change_am(self):
@@ -136,3 +179,47 @@ class Leads(models.Model):
         data['product_category_id'] = self.product_category_id
         
         return data
+
+    
+    """
+    @api.multi
+    def _set_op_ref(self,partner_id=False):
+        partner = partner_id or self.partner_id
+
+        if not partner.altname:
+            raise UserError("Please document ALTNAME for the client {}".format(partner.name))
+
+        next_index = partner.core_process_index+1 or 1
+        partner.core_process_index = next_index
+        return "{}-{:03}".format(partner.altname,next_index)
+    """
+
+    
+    ###############
+    # ORM METHODS #
+    ###############
+
+    """
+    @api.model
+    def name_create(self, name):
+
+        context = dict(self._context or {})
+        raise UserError("{}".format(context))
+
+        res = super(Lead, self).name_create(name)
+        return res
+    """
+    """
+    @api.model
+    def create(self, vals):
+        context = dict(self._context or {})
+
+        #If we have a partner
+        partner_id = vals.get('partner_id') or context.get('default_partner_id')
+        if partner_id and vals.get('type') == 'opportunity':
+            vals['internal_ref'] = self._set_op_ref(self.env['res.partner'].browse(partner_id))
+
+        # context: no_log, because subtype already handle this
+        return super(Leads, self.with_context(context, mail_create_nolog=True)).create(vals)
+    """
+    

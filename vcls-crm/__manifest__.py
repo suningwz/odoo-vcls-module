@@ -35,6 +35,10 @@
     # always loaded
     'data': [
 
+        ### RECORDS DATA ###
+        'data/partner.relation.type.csv',
+        'data/product.pricelist.csv',
+
         ## ACTIONS ##
         # 'actions/cronjob.xml',
 
@@ -56,9 +60,7 @@
         'views/lead_menus.xml',
         'views/partner_relation_menus.xml',
 
-        ### RECORDS DATA ###
-        'data/partner.relation.type.csv',
-        'data/product.pricelist.csv',
+        
 
     ],
     # only loaded in demonstration mode
