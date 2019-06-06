@@ -91,13 +91,14 @@ class Leads(models.Model):
     
     @api.depends('partner_id')
     def _compute_internal_ref(self):
-        if self.partner_id:
-            if not self.partner_id.altname:
-                raise UserError("Please document ALTNAME for the client {}".format(self.partner_id.name))
+        for lead in self:
+            if lead.partner_id.altname:
+                #if not lead.partner_id.altname:
+                    #raise UserError("Please document ALTNAME for the client {}".format(lead.partner_id.name))
 
-            next_index = self.partner_id.core_process_index+1 or 1
-            self.partner_id.core_process_index = next_index
-            self.internal_ref = "{}-{:03}".format(self.partner_id.altname,next_index)
+                next_index = lead.partner_id.core_process_index+1 or 1
+                lead.partner_id.core_process_index = next_index
+                lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname,next_index)
     
     """@api.onchange('partner_id','country_id')
     def _change_am(self):
