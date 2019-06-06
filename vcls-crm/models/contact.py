@@ -37,8 +37,7 @@ class ContactExt(models.Model):
         inverse='_set_default_currency',
     )
     
-    #nb_quotation = fields.Integer(readonly=True, default=0)
-    core_process_index = fields.Integer()
+    nb_quotation = fields.Integer(readonly=True, default=0)
 
     @api.depends('property_product_pricelist')
     def _get_default_currency(self):

@@ -12,7 +12,7 @@ class SaleOrder(models.Model):
         string = 'Business Line',
         domain = "[('parent_id','=',False)]"
     )
-    """name = fields.Char(readonly=False)
+    name = fields.Char(readonly=False)
     
     default_name = fields.Char(readonly=True, compute='_compute_default_name', default="New")
     
@@ -52,6 +52,6 @@ class SaleOrder(models.Model):
                 result.name += result.opportunity_id.name
         else:
             raise UserError("Can you please document an ALTNAME for the related partner")
-        return result"""
+        return result
 
     
