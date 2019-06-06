@@ -2,7 +2,6 @@
 	path = VCLS-org/crm
 	url = https://github.com/VCLS-org/crm.git
 	branch = 12.0
-
 [submodule "VCLS-org/timesheet"]
 	path = VCLS-org/timesheet
 	url = https://github.com/VCLS-org/timesheet.git
@@ -10,3 +9,6 @@
 [submodule "VCLS-org/sale-workflow"]
 	path = VCLS-org/sale-workflow
 	url = https://github.com/VCLS-org/sale-workflow.git
+[submodule "VCLS-org/project"]
+	path = VCLS-org/project
+	url = https://github.com/VCLS-org/project.git
