@@ -169,6 +169,10 @@
                 <field name="won_reason" attrs="{'invisible': ['|', ('active', '=', False), ('probability', '&lt;', 100)]}"/>
             </field>
 
+            <field name="team_id" position="after">
+                <field name="internal_ref" readonly="1"/>
+            </field>
+
             <xpath expr="//page[@name='lead']" position="after">
                 <page name="segmentation" string="Business Segmentation">
                     <group>

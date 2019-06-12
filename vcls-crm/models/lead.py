@@ -3,6 +3,9 @@
 from odoo import models, fields, tools, api
 from odoo.exceptions import UserError, ValidationError, Warning
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class Leads(models.Model):
 
     _inherit = 'crm.lead'
@@ -73,9 +76,10 @@ class Leads(models.Model):
 
     internal_ref = fields.Char(
         string="Ref",
-        readonly = True,
+        #readonly = True,
         store = True,
         compute = '_compute_internal_ref',
+        inverse = '_set_internal_ref',
     )
 
     ###################
@@ -97,13 +101,33 @@ class Leads(models.Model):
     @api.depends('partner_id','partner_id.altname','type')
     def _compute_internal_ref(self):
         for lead in self:
-            if lead.partner_id and lead.type=='opportunity' and lead.partner_id.altname: #we compute a ref only for opportunities with altname, not lead
-                #if not lead.partner_id.altname:
-                    #raise Warning("Please document ALTNAME for the client {}".format(lead.partner_id.name))
+            if lead.partner_id and lead.type=='opportunity': #we compute a ref only for opportunities, not lead
+                if not lead.partner_id.altname:
+                    _logger.warning("Please document ALTNAME for the client {}".format(lead.partner_id.name))
+                else:
+                    next_index = lead.partner_id.core_process_index+1 or 1
+                    lead.partner_id.core_process_index = next_index
+                    lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname,next_index)
+    
+    def _set_internal_ref(self):
+        for lead in self:
+            #format checking
+            try:
+                ref_alt = lead.internal_ref[:-4]
+                ref_index = int(lead.internal_ref[-3:])
+                if ref_alt.upper() != lead.partner_id.altname.upper():
+                    _logger.warning("ALTNAME MISMATCH:{} in company and {} in opportunity {}".format(lead.partner_id.altname.upper(),ref_alt.upper(),lead.name))
+                    return
+                    #lead.internal_ref = False
+                
+                if ref_index > lead.partner_id.core_process_index:
+                    lead.partner_id.core_process_index = ref_index
 
-                next_index = lead.partner_id.core_process_index+1 or 1
-                lead.partner_id.core_process_index = next_index
-                lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname,next_index)
+            except:
+                _logger.warning("Bad Lead Reference syntax: {}".format(lead.internal_ref))
+                #lead.internal_ref = False
+
+
 
     ################
     # TOOL METHODS #
