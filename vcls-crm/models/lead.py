@@ -94,12 +94,12 @@ class Leads(models.Model):
         for lead in self:
             lead.user_id = lead.guess_am()"""
     
-    @api.depends('partner_id')
+    @api.depends('partner_id','partner_id.altname','type')
     def _compute_internal_ref(self):
         for lead in self:
-            if lead.partner_id:
-                if not lead.partner_id.altname:
-                    raise Warning("Please document ALTNAME for the client {}".format(lead.partner_id.name))
+            if lead.partner_id and lead.type=='opportunity' and lead.partner_id.altname: #we compute a ref only for opportunities with altname, not lead
+                #if not lead.partner_id.altname:
+                    #raise Warning("Please document ALTNAME for the client {}".format(lead.partner_id.name))
 
                 next_index = lead.partner_id.core_process_index+1 or 1
                 lead.partner_id.core_process_index = next_index
