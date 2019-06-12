@@ -142,6 +142,20 @@ class Leads(models.Model):
         else:
             return False
 
+    def name_to_internal_ref(self):
+        for lead in self:
+            #we verify if the format is matching expectations
+            try:
+                offset = lead.name.upper().find(lead.partner_id.altname.upper())
+                if offset != -1:
+                    index = int(lead.name[offset+len(lead.partner_id.altname)+1:offset+len(lead.partner_id.altname)+4])
+                    lead.name = "{}-{:03}{}".format(lead.partner_id.altname.upper(),index,lead.name[offset+len(lead.partner_id.altname)+4:])
+                    lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname.upper(),index)
+
+            except:
+                _logger.info("Unable to extract ref from opp name {}".format(lead.name))
+
+
     @api.multi
     def _create_lead_partner_data(self, name, is_company, parent_id=False):
         """ extract data from lead to create a partner
