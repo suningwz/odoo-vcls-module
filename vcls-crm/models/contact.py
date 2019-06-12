@@ -33,11 +33,15 @@ class ContactExt(models.Model):
 
     default_currency_id = fields.Many2one(
         'res.currency',
-        compute='_get_default_currency',
-        inverse='_set_default_currency',
+        #compute='_get_default_currency',
+        #inverse='_set_default_currency',
     )
+
+    core_process_index = fields.Integer(
+        default = 1,
+        )
     
-    @api.depends('property_product_pricelist')
+    """@api.depends('property_product_pricelist')
     def _get_default_currency(self):
         ### handle the case where the user's company was created after the currency was set
         for rec in self:
@@ -70,4 +74,4 @@ class ContactExt(models.Model):
                 self._name,
                 {self.id: self.property_product_pricelist or default_for_country.id},
                 default_value=default_for_country.id
-            )
+            )"""

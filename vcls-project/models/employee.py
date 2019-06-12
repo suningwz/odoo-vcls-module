@@ -6,13 +6,6 @@ class Employee(models.Model):
     
     _inherit = 'hr.employee'
 
-    """#we add the default rate product
-    rate_id = fields.Many2one(
-        comodel_name = 'product.template',
-        string = 'Default Rate',
-        domain = "[('seniority_level_id','!=',False)]",
-    )"""
-
     default_rate_ids = fields.Many2many(
         'product.template',
         string = 'Default Rates',

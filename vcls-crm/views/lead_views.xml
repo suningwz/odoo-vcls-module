@@ -61,7 +61,7 @@
                         </div>
                         <group>
                             <group>
-                                <field name="partner_id" widget="res_partner_many2one" string="Client" domain="[('customer', '=', True)]" context="{'search_default_customer': 1,                                         'default_name': partner_name, 'default_street': street,                                         'default_street2': street2, 'default_city': city,                                         'default_state_id': state_id, 'default_zip': zip,                                         'default_country_id': country_id, 'default_function': function,                                         'default_phone': phone, 'default_mobile': mobile,                                         'default_email': email_from,                                         'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website,                                         'show_vat': True,                                     }"/>
+                                <field name="partner_id" widget="res_partner_many2one" string="Client" domain="[('customer', '=', True),('company_type', '=','company')]" context="{'search_default_customer': 1,                                         'default_name': partner_name, 'default_street': street,                                         'default_street2': street2, 'default_city': city,                                         'default_state_id': state_id, 'default_zip': zip,                                         'default_country_id': country_id, 'default_function': function,                                         'default_phone': phone, 'default_mobile': mobile,                                         'default_email': email_from,                                         'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website,                                         'show_vat': True,                                     }"/>
                                 <field name="is_blacklisted" invisible="1"/>
                                 <field name="partner_is_blacklisted" invisible="1"/>
                                 <label for="email_from" class="oe_inline"/>
@@ -167,6 +167,10 @@
 
             <field name="lost_reason" position="after">
                 <field name="won_reason" attrs="{'invisible': ['|', ('active', '=', False), ('probability', '&lt;', 100)]}"/>
+            </field>
+
+            <field name="team_id" position="after">
+                <field name="internal_ref" readonly="1"/>
             </field>
 
             <xpath expr="//page[@name='lead']" position="after">
@@ -413,6 +417,24 @@
         </field>
         </record>
 
+        <!-- Override the search view -->
+        <record id="view_crm_case_opportunities_filter_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.search.opportunity.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//filter[@name='salesperson']" position="replace">
+                <filter string="Account Manager" name="salesperson" context="{'group_by':'user_id'}"/>
+            </xpath>
+
+            <xpath expr="//filter[@name='won']" position="before">
+                <filter string="Open" name="open" domain="['&amp;', ('active', '=', True), ('stage_id.probability','not in',[0,100])]"/>
+            </xpath>
+            
+        </field>
+        </record>
+
         <!-- we override the pipeline action -->
         <record model="ir.actions.act_window" id="crm.crm_lead_opportunities_tree_view">
             <field name="name">Pipeline</field>
@@ -428,6 +450,12 @@
                 (0, 0, {'view_mode': 'cohort', 'view_id': ref('crm_enterprise.crm_lead_view_cohort')}),
                 (0, 0, {'view_mode': 'dashboard', 'view_id': ref('crm_enterprise.crm_opportunity_view_dashboard')}),
             ]"/>
+            <field name="context">{
+                    'default_type': 'opportunity',
+                    'search_default_assigned_to_me': 1,
+                    'search_default_open': 1,
+                    }
+            </field>
         </record>
 
         <!-- used for the NEW CI menu in the contact app-->

@@ -3,7 +3,7 @@
 from odoo import api, fields, models
 
 # Basic copy of crm.lost.reason
-class LostReason(models.Model):
+class WonReason(models.Model):
     _name = "crm.won.reason"
     _description = 'Opp. Won Reason'
 

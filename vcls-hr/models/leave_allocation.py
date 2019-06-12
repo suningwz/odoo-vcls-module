@@ -124,6 +124,7 @@ class LeaveAllocation(models.Model):
         month_end = today.replace(day=1,month=(today.month + 1)) - relativedelta(days=1)
         debug['start'] = month_start
         debug['end'] = month_end
+        vcls_accrual_bool = False
         
         #GET VALID ALLOCATIONS
         holidays = self.search([('accrual', '=', True), ('state', '=', 'validate'), ('holiday_type', '=', 'employee'),
@@ -139,7 +140,7 @@ class LeaveAllocation(models.Model):
 
             ### NEXTCALL UPDATE: To the end of the current month if interval is month.
             if holiday.interval_unit == 'months' and holiday.interval_number==1:
-                vcls_accrual = True
+                vcls_accrual_bool = True
                 values['nextcall'] = month_end
                 period_start = datetime.combine(month_start, time(0, 0, 0))
                 period_end = datetime.combine(month_end, time(0, 0, 0))
@@ -183,7 +184,7 @@ class LeaveAllocation(models.Model):
                 days_to_give = holiday.number_per_interval
                 
                 #we add one more month to the nextcall because we have executed the accrual
-                if vcls_accrual:
+                if vcls_accrual_bool:
                     values['nextcall'] = today.replace(day=1,month=(today.month + 2)) - relativedelta(days=1)
 
                 if holiday.unit_per_interval == 'hours':
