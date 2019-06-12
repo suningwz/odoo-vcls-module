@@ -136,3 +136,25 @@ class Leads(models.Model):
         data['product_category_id'] = self.product_category_id
         
         return data
+
+    @api.model
+    def create(self, vals):
+        result = super(Leads, self).create(vals)
+        if vals.get('partner_id'):
+            values = self._onchange_partner_id_values(vals['partner_id'])
+            result.update(values)
+        return result
+
+
+    def _onchange_partner_id_values(self, partner_id):
+        result = super(Leads, self)._onchange_partner_id_values(partner_id)
+        if partner_id:
+            partner = self.env["res.partner"].browse(partner_id)
+            if not partner.is_company:
+                result.update({
+                    "country_group_id": partner.country_group_id,
+                    "industry_id": partner.industry_id,
+                    "client_activity_ids": partner.client_activity_ids,
+                    "client_product_ids": partner.client_product_ids
+                })
+        return result
