@@ -93,6 +93,14 @@ class Leads(models.Model):
             if groups:
                 lead.country_group_id = groups[0]
     
+    @api.onchange('name')
+    def _onchange_name(self):
+        for lead in self:
+            if lead.type == 'opportunity' and lead.internal_ref:
+                lead.name_to_internal_ref(False)
+
+
+    
     """@api.onchange('partner_id','country_id')
     def _change_am(self):
         for lead in self:
@@ -108,6 +116,7 @@ class Leads(models.Model):
                     next_index = lead.partner_id.core_process_index+1 or 1
                     lead.partner_id.core_process_index = next_index
                     lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname,next_index)
+                    
     
     def _set_internal_ref(self):
         for lead in self:
@@ -142,18 +151,23 @@ class Leads(models.Model):
         else:
             return False
 
-    def name_to_internal_ref(self):
+    def name_to_internal_ref(self,write_ref = False):
         for lead in self:
-            #we verify if the format is matching expectations
-            try:
-                offset = lead.name.upper().find(lead.partner_id.altname.upper())
-                if offset != -1:
-                    index = int(lead.name[offset+len(lead.partner_id.altname)+1:offset+len(lead.partner_id.altname)+4])
-                    lead.name = "{}-{:03}{}".format(lead.partner_id.altname.upper(),index,lead.name[offset+len(lead.partner_id.altname)+4:])
-                    lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname.upper(),index)
+            if lead.type == 'opportunity':
+                #we verify if the format is matching expectations
+                try:
+                    #if the name already contains the ref
+                    offset = lead.name.upper().find(lead.partner_id.altname.upper())
+                    if offset != -1:
+                        index = int(lead.name[offset+len(lead.partner_id.altname)+1:offset+len(lead.partner_id.altname)+4])
+                        lead.name = "{}-{:03}{}".format(lead.partner_id.altname.upper(),index,lead.name[offset+len(lead.partner_id.altname)+4:])
+                        lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname.upper(),index)
+                        _logger.info("Updated Lead Ref: {}".format(lead.internal_ref))
+                    elif lead.internal_ref:
+                        lead.name = "{} | {}".format(lead.internal_ref,lead.name)
 
-            except:
-                _logger.info("Unable to extract ref from opp name {}".format(lead.name))
+                except:
+                    _logger.info("Unable to extract ref from opp name {}".format(lead.name))
 
 
     @api.multi
