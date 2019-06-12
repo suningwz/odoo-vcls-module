@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, tools, api
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError, ValidationError, Warning
 
 class Leads(models.Model):
 
@@ -71,6 +71,13 @@ class Leads(models.Model):
 
     won_reason = fields.Many2one('crm.won.reason', string='Won Reason', index=True, track_visibility='onchange')
 
+    internal_ref = fields.Char(
+        string="Ref",
+        readonly = True,
+        store = True,
+        compute = '_compute_internal_ref',
+    )
+
     ###################
     # COMPUTE METHODS #
     ###################
@@ -86,6 +93,16 @@ class Leads(models.Model):
     def _change_am(self):
         for lead in self:
             lead.user_id = lead.guess_am()"""
+    
+    @api.depends('partner_id')
+    def _compute_internal_ref(self):
+        if self.partner_id:
+            if not self.partner_id.altname:
+                raise Warning("Please document ALTNAME for the client {}".format(self.partner_id.name))
+
+            next_index = self.partner_id.core_process_index+1 or 1
+            self.partner_id.core_process_index = next_index
+            self.internal_ref = "{}-{:03}".format(self.partner_id.altname,next_index)
 
     ################
     # TOOL METHODS #
