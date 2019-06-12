@@ -141,10 +141,9 @@ class Leads(models.Model):
         result = super(Leads, self)._onchange_partner_id_values(partner_id)
         if partner_id:
             partner = self.env["res.partner"].browse(partner_id)
-            if not partner.is_company:
-                result.update({
-                    "industry_id": partner.industry_id,
-                    "client_activity_ids": partner.client_activity_ids,
-                    "client_product_ids": partner.client_product_ids
-                })
+            result.update({
+                "industry_id": partner.industry_id,
+                "client_activity_ids": partner.client_activity_ids,
+                "client_product_ids": partner.client_product_ids
+            })
         return result
