@@ -1,7 +1,6 @@
 <odoo>
     <data>
         <!-- VIEWS -->
-<<<<<<< HEAD
         
         <record model="ir.actions.act_window" id="program_view_tree">
             <field name="name">Programs</field>
@@ -28,8 +27,6 @@
             </field>
         </record>
 
-=======
->>>>>>> parent of ca139e4... Merge branch '12.0_vcls_master' of https://github.com/VCLS-org/odoo-vcls-module into 12.0_vcls_master
         <record model="ir.ui.view" id="view_project_program_tree">
             <field name="name">view_project_program_tree</field>
             <field name="model">project.program</field>
@@ -63,6 +60,6 @@
             sequence="3"
             action="vcls-project.action_program"
         />
-       
+
     </data>
 </odoo>
