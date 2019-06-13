@@ -27,7 +27,7 @@
             </field>
         </record>
 
-        <!-- Same for the quotaion template -->
+        <!-- Same for the quotaion template 
         <record model="ir.ui.view" id="view_order_template_form">
             <field name="name">sale.order.template.form</field>
             <field name="model">sale.order.template</field>
@@ -41,6 +41,7 @@
 
             </field>
         </record>
+        -->
         
     </data>
 </odoo>
