@@ -30,6 +30,7 @@
                 'sale_crm',
                 'crm_lead_currency',
                 'sale_project_timesheet_by_seniority',
+                'sale_management',
                 'crm_lead_product',
                 ],
 
