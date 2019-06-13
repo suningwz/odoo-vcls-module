@@ -1,19 +1,16 @@
 <odoo>
     <data>
         <!-- VIEWS -->
+        
         <record model="ir.actions.act_window" id="program_view_tree">
             <field name="name">Programs</field>
-            <field name="res_model">res.partner</field>
+            <field name="res_model">project.program</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,graph</field>
-            <field name="context">{'search_default_partner_id': active_id}</field>
-            <field name="arch" type="xml">
-                <tree>
-                    <field name="program_ids"/>
-                </tree>
-            </field>
+            <field name="domain">[('client_id.id','=', active_id)]</field>
+            <field name="view_id" ref="view_project_program_tree"></field>
         </record>
-
+        
         <record id="view_partner_form_program2" model="ir.ui.view">
             <field name="name">view.res.partner.form.program.inherited</field>
             <field name="model">res.partner</field>
