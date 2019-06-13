@@ -19,7 +19,6 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         result['type'] = 'opportunity'
         if SF_Opportunity['Reasons_Lost_Comments__c']:
             result['lost_reason'] = mapOdoo.convertRef(SF_Opportunity['Reasons_Lost_Comments__c'],odoo,'crm.lost.reason',False)
-        result['probability'] = SF_Opportunity['Probability']
         result['description'] = ''
         if SF_Opportunity['Description']:
             result['description'] +='Description : ' + str(SF_Opportunity['Description']) + '\n'
@@ -39,7 +38,9 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         result['date_closed'] = SF_Opportunity['CloseDate']
         result['type'] = 'opportunity'
         if(SF_Opportunity['StageName']):
-            result['stage_id'] = mapOdoo.convertRef(SF_Opportunity['StageName'],odoo,'crm.stage',False)
+            result = TranslatorSFOpportunity.convertStageName(SF_Opportunity['StageName'],odoo,mapOdoo,result)
+        if not 'probability' in result:
+            result['probability'] = SF_Opportunity['Probability']
         #need test
         result['amount_customer_currency'] = SF_Opportunity['Amount']
         result['customer_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Opportunity['CurrencyIsoCode'],odoo)
@@ -64,4 +65,25 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
     @staticmethod
     def translateToSF(Odoo_Account):
         pass
+    
+    @staticmethod
+    def convertStageName(StageName,odoo,mapOdoo,result):
+        if StageName == 'Closed Won':
+            result['won_status'] = 'won'
+            result['probability'] = 100
+            stage_id = odoo.env['crm.stage'].search([('name','=','Closed Won')]).id
+            if stage_id:
+                result['stage_id'] = stage_id
+        elif StageName == 'Closed Lost':
+            result['won_status'] = 'lost'
+            result['probability'] = 0
+            result['active'] = False
+        else:
+            result['won_status'] = 'pending'
+            result['stage_id'] = mapOdoo.convertRef(StageName,odoo,'crm.stage',False)
+
+        return result
+
+
+
     
