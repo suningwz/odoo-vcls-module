@@ -64,6 +64,8 @@ class Lead(models.Model):
         string = 'Related Program',
     )
 
+
+
 class SaleOrder(models.Model):
 
     _inherit = 'sale.order'
@@ -71,7 +73,7 @@ class SaleOrder(models.Model):
     program_id = fields.Many2one(
         comodel_name = 'project.program',
         string = 'Related Program',
-    )
+    )    
 
 class Project(models.Model):
 

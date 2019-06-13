@@ -199,6 +199,20 @@ class Leads(models.Model):
             :param team_id : identifier of the Sales Team to determine the stage
         """
         data = super()._convert_opportunity_data(customer, team_id)
+        
+        """#program integration
+        if customer:
+            isFirstOpportunity = True if len(self.env['crm.lead'].search([('partner_id','=',customer.id)])) < 0 else False
+            if isFirstOpportunity :
+                values = {'name': "Opportunity's program for client : {}".format(customer.altName),'client_id':customer.id}
+                if customer.expert_id:
+                    values = values.update({'leader_id':customer.expert_id}) 
+                elif customer.user_id:
+                    values = values.update({'leader_id':customer.user_id})
+                    
+                new_program = self.env['project.program'].create(values)
+                data['program_id'] = new_program.id"""
+        
         data['country_group_id'] = self.country_group_id
         data['referent_id'] = self.referent_id
         data['functional_focus_id'] = self.functional_focus_id
