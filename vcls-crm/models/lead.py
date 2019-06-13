@@ -116,6 +116,7 @@ class Leads(models.Model):
                     next_index = lead.partner_id.core_process_index+1 or 1
                     lead.partner_id.core_process_index = next_index
                     lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname,next_index)
+                    lead.name_to_internal_ref(False)
                     
     
     def _set_internal_ref(self):
@@ -161,8 +162,10 @@ class Leads(models.Model):
                     if offset != -1:
                         index = int(lead.name[offset+len(lead.partner_id.altname)+1:offset+len(lead.partner_id.altname)+4])
                         lead.name = "{}-{:03}{}".format(lead.partner_id.altname.upper(),index,lead.name[offset+len(lead.partner_id.altname)+4:])
-                        lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname.upper(),index)
-                        _logger.info("Updated Lead Ref: {}".format(lead.internal_ref))
+                        if write_ref:
+                            lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname.upper(),index)
+                            _logger.info("Updated Lead Ref: {}".format(lead.internal_ref))
+
                     elif lead.internal_ref:
                         lead.name = "{} | {}".format(lead.internal_ref,lead.name)
 
