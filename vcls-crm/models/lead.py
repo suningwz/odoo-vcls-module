@@ -131,7 +131,13 @@ class Leads(models.Model):
         if customer:
             isFirstOpportunity = True if len(self.env['crm.lead'].search([('partner_id','=',customer.id)])) < 0 else False
             if isFirstOpportunity :
-                new_program = self.env['project.program'].create({'name': "Opportunity's program for client : {}".format(customer.altName),'client_id':customer.id})
+                values = {'name': "Opportunity's program for client : {}".format(customer.altName),'client_id':customer.id}
+                if customer.expert_id:
+                    values = values.update({'leader_id':customer.expert_id}) 
+                elif customer.user_id:
+                    values = values.update({'leader_id':customer.user_id})
+                    
+                new_program = self.env['project.program'].create(values)
                 data['program_id'] = new_program.id
         
         data['country_group_id'] = self.country_group_id
