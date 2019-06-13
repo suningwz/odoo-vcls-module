@@ -52,6 +52,7 @@
         'views/product_deliverable_views_menu.xml',
         'views/product_views_menu.xml',
         'views/sale_order_views.xml',
+        #'views/sale_order_template_views.xml',
 
         ### MENUS ###
         'views/lead_menus.xml',

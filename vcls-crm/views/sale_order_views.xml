@@ -26,22 +26,7 @@
 
             </field>
         </record>
-
-        <!-- Same for the quotaion template 
-        <record model="ir.ui.view" id="view_order_template_form">
-            <field name="name">sale.order.template.form</field>
-            <field name="model">sale.order.template</field>
-            <field name="priority">3000</field>
-            <field name="inherit_id" ref="sale_management.sale_order_template_view_form"/>
-            <field name="arch" type="xml">
-
-                <xpath expr="//field[@name='sale_order_template_line_ids']//tree/field[@name='product_id']" position="replace">
-                    <field name="product_id" options="{'no_create_edit':True}" context="{'search_default_group_category':1,'search_default_group_info':1,'tree_view_ref':'vcls-crm.product_tree_view'}"/>
-                </xpath>
-
-            </field>
-        </record>
-        -->
+        
         
     </data>
 </odoo>
