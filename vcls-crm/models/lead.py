@@ -209,3 +209,14 @@ class Leads(models.Model):
         data['product_category_id'] = self.product_category_id
         
         return data
+
+    def _onchange_partner_id_values(self, partner_id):
+        result = super(Leads, self)._onchange_partner_id_values(partner_id)
+        if partner_id:
+            partner = self.env["res.partner"].browse(partner_id)
+            result.update({
+                "industry_id": partner.industry_id,
+                "client_activity_ids": partner.client_activity_ids,
+                "client_product_ids": partner.client_product_ids
+            })
+        return result
