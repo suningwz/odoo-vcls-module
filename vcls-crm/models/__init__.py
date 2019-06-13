@@ -9,3 +9,4 @@ from . import sale_order
 from . import quotation_template
 from . import product_template
 from . import crm_lead_won
+from . import sale_order_template
