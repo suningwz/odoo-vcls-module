@@ -52,6 +52,22 @@
             ]"/>
         </record>
 
+        <record id="vcls-project.action_client" model="ir.actions.act_window">
+            <field name="name">Client Projects</field>
+            <field name="res_model">project.project</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('project_type','=', 'client')]</field>
+        </record>
+
+        <record id="vcls-project.action_internal" model="ir.actions.act_window">
+            <field name="name">Internal Projects</field>
+            <field name="res_model">project.project</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('project_type','!=', 'client')]</field>
+        </record>
+
         <!-- Menu -->
         <menuitem
             id="menu_program"
@@ -60,6 +76,26 @@
             sequence="3"
             action="vcls-project.action_program"
         />
+
+        <menuitem
+            id="menu_client"
+            name="Client Projects"
+            parent="project.menu_main_pm"
+            sequence="4"
+            action="vcls-project.action_client"
+        />
+
+        <menuitem
+            id="menu_internal"
+            name="Internal Projects"
+            parent="project.menu_main_pm"
+            sequence="4"
+            action="vcls-project.action_internal"
+        />
+
+        <menuitem name="All Tasks" id="project.menu_project_management" parent="project.menu_main_pm"
+            action="project.action_view_task" sequence="2" groups="base.group_no_one,project.group_project_user"
+            active="False"/>
 
     </data>
 </odoo>
