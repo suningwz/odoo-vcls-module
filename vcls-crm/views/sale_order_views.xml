@@ -11,7 +11,7 @@
             <field name="arch" type="xml">
 
                 <field name="sale_order_template_id" position="replace">
-                    <field name="sale_order_template_id"  invisible='1/>
+                    <field name="sale_order_template_id"  invisible='1'/>
                 </field>
 
                 <field name="pricelist_id" position="after">
