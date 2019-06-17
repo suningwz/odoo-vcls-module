@@ -98,6 +98,7 @@
 
                     <filter string="Open Tickets" domain="[('stage_id.is_close','=',False)]" name="is_open"/>
                     <filter string="Closed Tickets" domain="[('stage_id.is_close','=',True)]" name="is_close"/>
+                    <filter string="VCLS Employees" domain="[('partner_id.employee','=',True)]" name="is_employee"/>
                     <separator/>
                     <group expand="0" string="Group By">
                        <filter string="Category" name="team" context="{'group_by':'team_id'}"/>

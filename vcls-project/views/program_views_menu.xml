@@ -1,7 +1,21 @@
 <odoo>
     <data>
         <!-- VIEWS -->
-        
+
+        <record model="ir.ui.view" id="view_project_program_tree">
+            <field name="name">view_project_program_tree</field>
+            <field name="model">project.program</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="client_id"/>
+                    <field name="product_name"/>
+                    <field name="indication"/> 
+                    <field name="leader_id"/>
+                </tree>
+            </field>
+        </record>
+
         <record model="ir.actions.act_window" id="program_view_tree">
             <field name="name">Programs</field>
             <field name="res_model">project.program</field>
@@ -10,7 +24,7 @@
             <field name="domain">[('client_id.id','=', active_id)]</field>
             <field name="view_id" ref="view_project_program_tree"></field>
         </record>
-        
+
         <record id="view_partner_form_program2" model="ir.ui.view">
             <field name="name">view.res.partner.form.program.inherited</field>
             <field name="model">res.partner</field>
@@ -27,21 +41,9 @@
             </field>
         </record>
 
-        <record model="ir.ui.view" id="view_project_program_tree">
-            <field name="name">view_project_program_tree</field>
-            <field name="model">project.program</field>
-            <field name="arch" type="xml">
-                <tree>
-                    <field name="name"/>
-                    <field name="client_id"/>
-                    <field name="product_name"/>
-                    <field name="indication"/> 
-                    <field name="leader_id"/>
-                </tree>
-            </field>
-        </record>
-
         <!-- Action -->
+        
+
         <record id="vcls-project.action_program" model="ir.actions.act_window">
             <field name="name">Project Programs</field>
             <field name="res_model">project.program</field>
@@ -56,7 +58,9 @@
             <field name="name">Client Projects</field>
             <field name="res_model">project.project</field>
             <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">kanban,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('project.view_project_kanban')})]"/>
             <field name="domain">[('project_type','=', 'client')]</field>
         </record>
 
@@ -64,37 +68,47 @@
             <field name="name">Internal Projects</field>
             <field name="res_model">project.project</field>
             <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[('project_type','!=', 'client')]</field>
+            <field name="view_mode">kanban,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('project.view_project_kanban')})]"/>
+            <field name="domain">[('project_type','=', 'internal')]</field>
         </record>
 
         <!-- Menu -->
         <menuitem
-            id="menu_program"
-            name="Project Programs"
-            parent="project.menu_main_pm"
-            sequence="3"
-            action="vcls-project.action_program"
-        />
-
-        <menuitem
             id="menu_client"
             name="Client Projects"
             parent="project.menu_main_pm"
-            sequence="4"
+            sequence="1"
             action="vcls-project.action_client"
+        />
+
+        <menuitem
+            id="menu_program"
+            name="Project Programs"
+            parent="project.menu_main_pm"
+            sequence="2"
+            action="vcls-project.action_program"
         />
 
         <menuitem
             id="menu_internal"
             name="Internal Projects"
             parent="project.menu_main_pm"
-            sequence="4"
+            sequence="3"
             action="vcls-project.action_internal"
         />
 
+        <menuitem id="project_forecast.project_forecast_menu"
+            name="Forecast"
+            parent="project.menu_main_pm"
+            sequence="4"/>
+
         <menuitem name="All Tasks" id="project.menu_project_management" parent="project.menu_main_pm"
             action="project.action_view_task" sequence="2" groups="base.group_no_one,project.group_project_user"
+            active="False"/>
+            
+        <menuitem action="project.open_view_project_all" id="project.menu_projects" name="Projects" parent="project.menu_main_pm" sequence="1" 
             active="False"/>
 
     </data>

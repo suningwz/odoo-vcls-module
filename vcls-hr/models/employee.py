@@ -386,7 +386,7 @@ class Employee(models.Model):
     ################
     # CRUD Methods #
     ################
-    
+
     #At Employee creation, create a default contract
     @api.model
     def create(self,vals):
@@ -759,6 +759,23 @@ class Employee(models.Model):
             #we create a modif only if a contract already exists
             if employee.contract_id:
                 employee.create_IT_ticket('modify')
+
+    @api.onchange('parent_id')
+    def _ticket_onchange_LM(self):
+        ''' trigger in order to send ticket when an existing employee is modified
+        When:
+            used when Line Manager is changed
+        Args:
+            self: only old LM is needed
+        Raises:
+            Nothing
+        Returns:
+            Nothing
+        '''
+        for employee in self:
+            #we create a modif only if a contract already exists
+            if self._origin.parent_id:
+                employee.create_IT_ticket('newLM')
     
     def generate_ticket_description(self, typeOfTicket):
         
@@ -780,12 +797,16 @@ class Employee(models.Model):
         
         if typeOfTicket == 'join':
             description = '<h2>New employee : {} </h2><h3>Date of arrival : {}'.format(self.name,self.employee_start_date)
+
+        elif typeOfTicket == 'newLM':
+            description = '<h2>Line Manager updated : {} </h2> <h3>'.format(self.parent_id.name)
+            return description
             
         elif typeOfTicket == 'departed':
             description = '<h2>Leaving employee : {} </h2><h3>Date of departure : {}'.format(self.name,self.employee_end_date)
             
         elif typeOfTicket == 'modify':
-            description = '<h2>Modified employee : {}'.format(self.name)
+            description = '<h2>Modified employee : {} </h2><h3>'.format(self.name)
            
         else:
             raise ValidationError("{}: Unknow type of ticket".format(typeOfTicket))
