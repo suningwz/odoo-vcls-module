@@ -10,6 +10,8 @@ class Leads(models.Model):
 
     _inherit = 'crm.lead'
 
+    company_id = fields.Many2one(string = 'Trading Entity', default = lambda self: self.env.ref('vcls-hr.company_VCFR'))
+
     ###################
     # DEFAULT METHODS #
     ###################

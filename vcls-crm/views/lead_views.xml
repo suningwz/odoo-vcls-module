@@ -172,6 +172,7 @@
 
             <field name="team_id" position="after">
                 <field name="internal_ref" readonly="1"/>
+                <field name="company_id"/>
             </field>
 
             <xpath expr="//page[@name='lead']" position="after">
