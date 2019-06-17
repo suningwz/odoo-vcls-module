@@ -69,6 +69,7 @@ class Leads(models.Model):
         domain = "[('parent_id','=',False)]"
     )
 
+    
     #date fields
     expected_start_date = fields.Date(
         string="Expected Project Start Date",
