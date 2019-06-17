@@ -1,0 +1,15 @@
+<odoo>
+    <data>
+        <record id="view_project_formm_inherit" model="ir.ui.view">
+            <field name="name">project.form</field>
+            <field name="model">project.project</field>
+            <field name="priority" eval="1"/>
+            <field name="inherit_id" ref="project.edit_project"/>
+            <field name="arch" type="xml">
+                <div name="options_active" position="before">
+                    <field name="project_type" readonly="1"/>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>
