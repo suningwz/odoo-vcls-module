@@ -71,7 +71,7 @@
             <field name="view_mode">kanban,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('project.view_project_kanban')})]"/>
-            <field name="domain">[('project_type','=', 'internal')]</field>
+            <field name="domain">['|',('project_type','!=', 'client'),('project_type','=',False)]</field>
         </record>
 
         <!-- Menu -->
