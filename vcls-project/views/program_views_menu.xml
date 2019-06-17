@@ -99,6 +99,11 @@
             action="vcls-project.action_internal"
         />
 
+        <menuitem id="project_forecast.project_forecast_menu"
+            name="Forecast"
+            parent="project.menu_main_pm"
+            sequence="4"/>
+
         <menuitem name="All Tasks" id="project.menu_project_management" parent="project.menu_main_pm"
             action="project.action_view_task" sequence="2" groups="base.group_no_one,project.group_project_user"
             active="False"/>
