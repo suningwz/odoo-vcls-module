@@ -26,3 +26,11 @@ class SaleOrderLine(models.Model):
                 line.product_uom_qty = 0
 
         return lines
+
+    def _timesheet_create_project(self):
+        project = super(SaleOrderLine, self)._timesheet_create_project()
+        project.update({'project_type': 'client'})
+        return project
+    
+
+    
