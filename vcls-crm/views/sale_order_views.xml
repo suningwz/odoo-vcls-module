@@ -11,6 +11,7 @@
             <field name="arch" type="xml">
                 <field name="pricelist_id" position="after">
                     <field name="product_category_id" required='True'/>
+                    <field name="sale_order_template_id"  domain="[('product_category_id','=',product_category_id)]"/>
                 </field>
 
                 <field name="partner_invoice_id" position="replace">
