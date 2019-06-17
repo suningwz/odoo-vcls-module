@@ -9,6 +9,11 @@
             <field name="priority">3000</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
+
+                <field name="sale_order_template_id" position="replace">
+                    <field name="sale_order_template_id"  invisible='1/>
+                </field>
+
                 <field name="pricelist_id" position="after">
                     <field name="product_category_id" required='True'/>
                     <field name="sale_order_template_id"  domain="[('product_category_id','=',product_category_id)]"/>
