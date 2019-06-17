@@ -114,7 +114,8 @@ class Leads(models.Model):
                     _logger.warning("Please document ALTNAME for the client {}".format(lead.partner_id.name))
                 else:
                     next_index = lead.partner_id.core_process_index+1 or 1
-                    lead.partner_id.core_process_index = next_index
+                    _logger.info("_compute_internal_ref: Core Process increment for {} from {} to {}".format(lead.partner_id.name,lead.partner_id.core_process_index,next_index))
+                    lead.partner_id.write({'core_process_index': next_index})
                     lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname,next_index)
                     lead.name_to_internal_ref(False)
                     
@@ -131,12 +132,12 @@ class Leads(models.Model):
                     #lead.internal_ref = False
                 
                 if ref_index > lead.partner_id.core_process_index:
-                    lead.partner_id.core_process_index = ref_index
+                    lead.partner_id.write({'core_process_index': ref_index})
+                    _logger.info("_set_internal_ref: Core Process update for {} to {}".format(lead.partner_id.name,ref_index))
 
             except:
                 _logger.warning("Bad Lead Reference syntax: {}".format(lead.internal_ref))
                 #lead.internal_ref = False
-
 
 
     ################
