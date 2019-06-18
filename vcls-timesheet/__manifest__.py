@@ -24,10 +24,14 @@
     'data': [
         ### SECURITY ###
         'security/vcls_groups.xml',
-        # 'security/ir.model.access.csv',
+        'security/record_rule.xml',
 
+        # 'security/ir.model.access.csv',
+        'data/parameters.xml',
         ### VIEWS ###
         'views/timesheets_views.xml',
+        'actions/timesheet_cron.xml',
+        'actions/timesheet_server_action.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

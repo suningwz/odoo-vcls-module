@@ -1,0 +1,6 @@
+<odoo>
+    <record id="vcls-timesheet.last_timesheet_lock" model="ir.config_parameter">
+            <field name="key">last_timesheet_lock</field>
+            <field name="value">datetime</field>
+    </record>
+</odoo>
