@@ -107,7 +107,7 @@ class Leads(models.Model):
         for lead in self:
             lead.user_id = lead.guess_am()"""
     
-    @api.depends('partner_id','partner_id.altname','type')
+    @api.depends('partner_id','type')
     def _compute_internal_ref(self):
         for lead in self:
             if lead.partner_id and lead.type=='opportunity': #we compute a ref only for opportunities, not lead
@@ -116,11 +116,11 @@ class Leads(models.Model):
                 else:
                     next_index = lead.partner_id.core_process_index+1 or 1
                     _logger.info("_compute_internal_ref: Core Process increment for {} from {} to {}".format(lead.partner_id.name,lead.partner_id.core_process_index,next_index))
-                    lead.partner_id.write({'core_process_index': next_index})
+                    #lead.partner_id.write({'core_process_index': next_index})
                     lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname,next_index)
                     lead.name_to_internal_ref(False)
                     
-    
+    @api.onchange('internal_ref')
     def _set_internal_ref(self):
         for lead in self:
             #format checking
