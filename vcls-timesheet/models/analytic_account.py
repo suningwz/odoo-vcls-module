@@ -6,9 +6,9 @@ from odoo.exceptions import UserError, ValidationError
 import logging
 _logger = logging.getLogger(__name__)
 
-class AnalyticAccount(models.Model):
+class AnalyticLine(models.Model):
 
-    _inherit = 'account.analytic.account'
+    _inherit = 'account.analytic.line'
 
     stage_id = fields.Selection([
         ('draft', 'Draft'), 
@@ -17,13 +17,17 @@ class AnalyticAccount(models.Model):
         ('invoiceable', 'Invoiceable') 
         ], default='draft')
 
-class AnalyticLine(models.Model):
-
-    _inherit = 'account.analytic.line'
-
     @api.model
     def create(self, vals):
         if 'unit_amount' in vals:
             if vals['unit_amount'] % 0.25 != 0:
                 vals['unit_amount'] = round(vals['unit_amount']*4)/4
         return super(AnalyticLine, self).create(vals)
+
+
+
+
+
+    
+
+    
