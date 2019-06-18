@@ -23,7 +23,10 @@
         'project',
         'vcls-crm',
         'vcls-hr',
+        'project_forecast',
         'sale_project_timesheet_by_seniority',
+        'project_task_stage_allow_timesheet',
+        'project_task_default_stage',
         ],
 
     # always loaded
@@ -34,6 +37,7 @@
         'security/ir.model.access.csv',
 
         ### VIEWS ###
+        'views/task_type_views.xml',
         'views/dev_project_views.xml',
         'views/dev_task_views.xml',
         'views/employee_views.xml',
@@ -42,7 +46,6 @@
         'views/dev_project_menu.xml',
         'views/program_views_menu.xml',
         'views/project_views.xml',
-
     ],
 
     # only loaded in demonstration mode

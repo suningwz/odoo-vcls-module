@@ -1,0 +1,18 @@
+<odoo>
+    <data>
+
+        <!-- Project Task Kanban View -->
+        <record model="ir.ui.view" id="task_type_edit_inherit">
+            <field name="name">project.task_type_edit_inherit</field>
+            <field name="model">project.task.type</field>
+            <field name="inherit_id" ref="project.task_type_edit"/>
+            <field name="arch" type="xml">
+                <field name="project_ids" position="before">
+                    <field name="project_type_default"/>
+                    <field name="completion_ratio"/>
+                </field>
+            </field>
+         </record>
+       
+    </data>
+</odoo>
