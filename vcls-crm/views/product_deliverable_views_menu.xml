@@ -15,6 +15,18 @@
             </field>
         </record>
 
+        <!-- We Override product category view -->
+        <record model="ir.ui.view" id="product_category_list_view">
+            <field name="name">product_category_list_view</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_list_view"/>
+            <field name="arch" type="xml">
+                <field name="display_name" position="after">
+                    <field name="is_business_line"/>
+                </field>
+            </field>
+        </record>
+
         <!-- Action -->
         <record id="vcls-crm.action_deliverable" model="ir.actions.act_window">
             <field name="name">Product Deliverables</field>
