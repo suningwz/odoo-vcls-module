@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.3',
+    'version': '0.4',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -31,7 +31,7 @@
                 'crm_lead_currency',
                 'sale_project_timesheet_by_seniority',
                 'sale_management',
-                'crm_lead_product',
+                #'crm_lead_product',
                 ],
 
     # always loaded
