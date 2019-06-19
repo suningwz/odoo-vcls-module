@@ -44,12 +44,17 @@ class AnalyticLine(models.Model):
     def _finalize_lc_review(self):
         context = self.env.context
         timesheet_ids = context.get('active_ids',[])
-        for timesheet_id in timesheet_ids:
+        timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
+        timesheets.filtered(lambda r: (r.stage_id=='draft',r.lc_comment==True)).write({'stage_id':'pc_review'})
+        timesheets.filtered(lambda r: (r.stage_id=='draft',r.lc_comment==False)).write({'stage_id':'invoiceable'})
+
+
+        """for timesheet_id in timesheet_ids:
             timesheet = self.env['account.analytic.line'].browse(timesheet_id)
             if timesheet.lc_comment != False:
                 timesheet.write({'stage_id':'pc_review'})
             else:
-                timesheet.write({'stage_id':'invoiceable'})
+                timesheet.write({'stage_id':'invoiceable'})"""
     
 
     
