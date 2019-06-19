@@ -10,5 +10,5 @@ class SaleOrderTemplate(models.Model):
     product_category_id = fields.Many2one(
         'product.category',
         string = 'Business Line',
-        domain = "[('parent_id','=',False)]"
+        domain = "[('is_business_line','=',True)]"
     )

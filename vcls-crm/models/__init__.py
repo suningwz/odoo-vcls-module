@@ -3,6 +3,7 @@
 from . import partner_relation
 from . import overriden_classes
 from . import contact
+from . import product_category
 from . import lead
 from . import sale_order_line
 from . import sale_order
