@@ -99,6 +99,7 @@
                                 <page name="contact" string="Communication &amp; Address">
                                 <group>
                                     <group>
+                                        <field name="type" attrs="{'invisible': [('is_company', '=', True)]}"/>
                                         <field name="email" widget="email"/>    
                                         <field name="phone" widget="phone"/>
                                         <field name="mobile" widget="phone"/>

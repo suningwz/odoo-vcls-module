@@ -9,15 +9,21 @@
             <field name="priority">3000</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
+
+                <field name="sale_order_template_id" position="replace">
+                    <field name="sale_order_template_id"  invisible='1'/>
+                </field>
+
                 <field name="pricelist_id" position="after">
                     <field name="product_category_id" required='True'/>
+                    <field name="sale_order_template_id"  domain="[('product_category_id','=',product_category_id)]"/>
                 </field>
 
                 <field name="partner_invoice_id" position="replace">
                     <field name="partner_invoice_id" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'invoice'}" options="{&quot;always_reload&quot;: True}"/>
                 </field>
                 <field name="partner_shipping_id" position="replace">    
-                    <field name="partner_shipping_id" invisible="1" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'delivery'}" options="{&quot;always_reload&quot;: True}"/>
+                    <field name="partner_shipping_id" string="Deliverable Address" invisible="0" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'delivery'}" options="{&quot;always_reload&quot;: True}"/>
                 </field>
 
                 <xpath expr="//field[@name='order_line']//tree/field[@name='product_id']" position="replace">
@@ -27,6 +33,36 @@
             </field>
         </record>
         
+        <record id="sale_order_template_view_form" model="ir.ui.view">
+            <field name="name">sale.order.template.form</field>
+            <field name="model">sale.order.template</field>
+            <field name="priority">1</field>
+            <field name="inherit_id" ref="sale_management.sale_order_template_view_form"/>
+            <field name="arch" type="xml">
+                <notebook name="main_book" position="before">
+                    <group>
+                        <group>
+                            <label for="product_category_id"/>
+                            <div id="product_category_id">
+                                <field name="product_category_id" required='True'/>
+                            </div>
+                        </group>
+                    </group>
+                </notebook>
+            </field>
+        </record>
+
+        <record id="sale_order_template_view_tree" model="ir.ui.view">
+            <field name="name">sale.order.template.tree</field>
+            <field name="model">sale.order.template</field>
+            <field name="priority">1</field>
+            <field name="inherit_id" ref="sale_management.sale_order_template_view_tree"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="product_category_id"/>
+                </field>
+            </field>
+        </record>
 
     </data>
 </odoo>

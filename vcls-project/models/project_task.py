@@ -35,6 +35,11 @@ class ProjectTask(models.Model):
         store = True,
     )
 
+    completion_ratio = fields.Float(
+        string = "Completion Ratio",
+        related = 'stage_id.completion_ratio',
+    )
+
     ###################
     # COMPUTE METHODS #
     ###################

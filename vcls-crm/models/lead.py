@@ -10,6 +10,8 @@ class Leads(models.Model):
 
     _inherit = 'crm.lead'
 
+    company_id = fields.Many2one(string = 'Trading Entity', default = lambda self: self.env.ref('vcls-hr.company_VCFR'))
+
     ###################
     # DEFAULT METHODS #
     ###################
@@ -64,9 +66,10 @@ class Leads(models.Model):
     product_category_id = fields.Many2one(
         'product.category',
         string = 'Business Line',
-        domain = "[('parent_id','=',False)]"
+        domain = "[('is_business_line','=',True)]"
     )
 
+    
     #date fields
     expected_start_date = fields.Date(
         string="Expected Project Start Date",
@@ -106,7 +109,7 @@ class Leads(models.Model):
         for lead in self:
             lead.user_id = lead.guess_am()"""
     
-    @api.depends('partner_id','partner_id.altname','type')
+    @api.depends('partner_id','type')
     def _compute_internal_ref(self):
         for lead in self:
             if lead.partner_id and lead.type=='opportunity': #we compute a ref only for opportunities, not lead
@@ -114,10 +117,12 @@ class Leads(models.Model):
                     _logger.warning("Please document ALTNAME for the client {}".format(lead.partner_id.name))
                 else:
                     next_index = lead.partner_id.core_process_index+1 or 1
-                    lead.partner_id.core_process_index = next_index
+                    _logger.info("_compute_internal_ref: Core Process increment for {} from {} to {}".format(lead.partner_id.name,lead.partner_id.core_process_index,next_index))
+                    #lead.partner_id.write({'core_process_index': next_index})
                     lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname,next_index)
+                    lead.name_to_internal_ref(False)
                     
-    
+    @api.onchange('internal_ref')
     def _set_internal_ref(self):
         for lead in self:
             #format checking
@@ -130,12 +135,12 @@ class Leads(models.Model):
                     #lead.internal_ref = False
                 
                 if ref_index > lead.partner_id.core_process_index:
-                    lead.partner_id.core_process_index = ref_index
+                    lead.partner_id.write({'core_process_index': ref_index})
+                    _logger.info("_set_internal_ref: Core Process update for {} to {}".format(lead.partner_id.name,ref_index))
 
             except:
                 _logger.warning("Bad Lead Reference syntax: {}".format(lead.internal_ref))
                 #lead.internal_ref = False
-
 
 
     ################
@@ -161,8 +166,10 @@ class Leads(models.Model):
                     if offset != -1:
                         index = int(lead.name[offset+len(lead.partner_id.altname)+1:offset+len(lead.partner_id.altname)+4])
                         lead.name = "{}-{:03}{}".format(lead.partner_id.altname.upper(),index,lead.name[offset+len(lead.partner_id.altname)+4:])
-                        lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname.upper(),index)
-                        _logger.info("Updated Lead Ref: {}".format(lead.internal_ref))
+                        if write_ref:
+                            lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname.upper(),index)
+                            _logger.info("Updated Lead Ref: {}".format(lead.internal_ref))
+
                     elif lead.internal_ref:
                         lead.name = "{} | {}".format(lead.internal_ref,lead.name)
 
@@ -196,6 +203,20 @@ class Leads(models.Model):
             :param team_id : identifier of the Sales Team to determine the stage
         """
         data = super()._convert_opportunity_data(customer, team_id)
+        
+        """#program integration
+        if customer:
+            isFirstOpportunity = True if len(self.env['crm.lead'].search([('partner_id','=',customer.id)])) < 0 else False
+            if isFirstOpportunity :
+                values = {'name': "Opportunity's program for client : {}".format(customer.altName),'client_id':customer.id}
+                if customer.expert_id:
+                    values = values.update({'leader_id':customer.expert_id}) 
+                elif customer.user_id:
+                    values = values.update({'leader_id':customer.user_id})
+                    
+                new_program = self.env['project.program'].create(values)
+                data['program_id'] = new_program.id"""
+        
         data['country_group_id'] = self.country_group_id
         data['referent_id'] = self.referent_id
         data['functional_focus_id'] = self.functional_focus_id
@@ -206,3 +227,14 @@ class Leads(models.Model):
         data['product_category_id'] = self.product_category_id
         
         return data
+
+    def _onchange_partner_id_values(self, partner_id):
+        result = super(Leads, self)._onchange_partner_id_values(partner_id)
+        if partner_id:
+            partner = self.env["res.partner"].browse(partner_id)
+            result.update({
+                "industry_id": partner.industry_id,
+                "client_activity_ids": partner.client_activity_ids,
+                "client_product_ids": partner.client_product_ids
+            })
+        return result
