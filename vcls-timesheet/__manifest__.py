@@ -27,7 +27,7 @@
         'security/record_rule.xml',
 
         # 'security/ir.model.access.csv',
-        'data/parameters.xml',
+        #'data/parameters.xml',
         ### VIEWS ###
         'views/timesheets_views.xml',
         'actions/timesheet_cron.xml',

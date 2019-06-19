@@ -16,6 +16,7 @@ class AnalyticLine(models.Model):
         ('draft', 'Draft'), 
         ('lc_review', 'LC review'), 
         ('pc_review', 'PC review'), 
+        ('carry_forward', 'Carry Forward'),
         ('invoiceable', 'Invoiceable') 
         ], default='draft')
 
@@ -28,7 +29,8 @@ class AnalyticLine(models.Model):
                 vals['unit_amount'] = math.ceil(vals['unit_amount']*4)/4
         return super(AnalyticLine, self).create(vals)
 
-    @api.model
+    # Replaced by an approval at the employee level (timesheet_validated field)
+    """@api.model
     def approve_timesheets(self):
         last_timesheet_lock = datetime.datetime.now() - datetime.timedelta(days=1)
         timesheets = self.env['account.analytic.line'].search([('validated','=',False)])
@@ -36,7 +38,7 @@ class AnalyticLine(models.Model):
         #for ts in timesheets:
             #ts.write({'validated':True, 'stage_id':'lc_review'})
 
-        self.env.ref('vcls-timesheet.last_timesheet_lock').value = last_timesheet_lock
+        self.env.ref('vcls-timesheet.last_timesheet_lock').value = last_timesheet_lock"""
 
     @api.multi
     def _finalize_lc_review(self):

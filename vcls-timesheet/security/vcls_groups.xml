@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!-- NOT NEDEED ANYMORE | Timesheet manager already does that
         <record id="ts_lock_bypass" model="res.groups">
                 <field name="name">Timesheet Lock Bypass</field>
-        </record>
+        </record>-->
             
         <record id="vcls_pc" model="res.groups">
             <field name="name">VCLS Project Controller</field>
