@@ -15,13 +15,24 @@
             </field>
         </record>
 
-        <!-- We Override product category view -->
+        <!-- We Override product category views -->
         <record model="ir.ui.view" id="product_category_list_view">
             <field name="name">product_category_list_view</field>
             <field name="model">product.category</field>
             <field name="inherit_id" ref="product.product_category_list_view"/>
             <field name="arch" type="xml">
                 <field name="display_name" position="after">
+                    <field name="is_business_line"/>
+                </field>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="product_category_form_view">
+            <field name="name">product_category_form_view</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <field name="parent_id" position="after">
                     <field name="is_business_line"/>
                 </field>
             </field>
