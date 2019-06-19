@@ -23,7 +23,7 @@ class AnalyticLine(models.Model):
 
     @api.model
     def create(self, vals):
-        if 'unit_amount' in vals:
+        if 'unit_amount' in vals and is_timesheet: #do time ceiling for timesheets only
             if vals['unit_amount'] % 0.25 != 0:
                 vals['unit_amount'] = math.ceil(vals['unit_amount']*4)/4
         return super(AnalyticLine, self).create(vals)
