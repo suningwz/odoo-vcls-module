@@ -32,8 +32,9 @@ class AnalyticLine(models.Model):
     def approve_timesheets(self):
         last_timesheet_lock = datetime.datetime.now() - datetime.timedelta(days=1)
         timesheets = self.env['account.analytic.line'].search([('validated','=',False)])
-        for ts in timesheets:
-            ts.write({'validated':True, 'stage_id':'lc_review'})
+        timesheets.write({'validated':True, 'stage_id':'lc_review'})
+        #for ts in timesheets:
+            #ts.write({'validated':True, 'stage_id':'lc_review'})
 
         self.env.ref('vcls-timesheet.last_timesheet_lock').value = last_timesheet_lock
 
