@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="server_action_finalize_lc_review" model="ir.actions.server">
+            <field name="name">Finalize LC Review</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="model_account_analytic_line"/>
+            <field name="binding_model_id" ref="model_account_analytic_line"/>
+            <field name="state">code</field>
+            <field name="code">model._finalize_lc_review()</field>
+        </record> 
+    </data>
+</odoo>
