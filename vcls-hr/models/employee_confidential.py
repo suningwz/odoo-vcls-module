@@ -36,6 +36,8 @@ class EmployeeConfidential(models.Model):
     
     country_id = fields.Many2one(
         'res.country', String = 'Primary Citizenship')
+
+    place_of_birth = fields.Char(String='Place of Birth')
     
     country2_id = fields.Many2one(
         'res.country', String = 'Secondary Citizenship')
