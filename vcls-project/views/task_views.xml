@@ -27,7 +27,7 @@
             <field name="arch" type="xml">
             
                 <field name="progress" position="replace">
-                    <field name="completion_ratio" string="" widget="progressbar"/>
+                    <field name="completion_ratio" string="" widget="progressbar" avg="Average Completion"/>
                 </field>
 
             </field>
