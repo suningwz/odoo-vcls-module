@@ -12,7 +12,7 @@ class Project(models.Model):
     def _get_default_type_common(self):
         ids = self.env['project.task.type'].search([
             ('case_default', '=', True),
-            ('project_type_default', '=', 'project_type')])
+            ('project_type_default', '=', self.project_type)])
         _logger.info("Default Stages: {} for project type {}".format(ids.mapped('name'),self.project_type))
         return ids
 
@@ -26,7 +26,7 @@ class Project(models.Model):
         ('client', 'Client'),
         ('internal','Internal')],
         string = 'Project Type',
-        default = 'internal',
+        default = 'client',
     )
 
     parent_task_count = fields.Integer(
@@ -37,6 +37,15 @@ class Project(models.Model):
         compute = '_compute_child_task_count'
     )
 
+    ###############
+    # ORM METHODS #
+    ###############
+    @api.model
+    def create(self, vals):
+        project = super(Project, self).create(vals)
+        ids = project._get_default_type_common()
+        project.type_ids = ids if ids else project.type_ids
+        return project
     
 
     ###################

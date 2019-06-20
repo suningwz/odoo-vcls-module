@@ -95,6 +95,7 @@
                                         <field name="diploma_ids" widget="many2many_tags"/>
                                         <field name="family_name_at_birth"/>
                                         <field name="birthday" string="Date of Birth"/>
+                                        <field name="place_of_birth" string="Place of Birth"/>
                                         <field name="children" attrs="{'invisible': [('country_name', 'not in', ['Switzerland'])]}"/>
                                         
                                         <field name="ssnid" string="Social Security No" attrs="{'invisible': [('country_name', 'not in', ['France','United States','United Kingdom'])]}"/>

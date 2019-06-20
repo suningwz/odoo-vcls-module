@@ -134,6 +134,11 @@ class Employee(models.Model):
         String='Secondary Citizenship',
         compute='_compute_country2_id',
         inverse='_set_country2_id')
+
+    ### /!\ Confidential information
+    place_of_birth = fields.Char(
+        compute='_compute_place_of_birth',
+        inverse='_set_place_of_birth')
     
     ### /!\ Confidential information
     #### /!\ Overwritten field
@@ -911,6 +916,23 @@ class Employee(models.Model):
     ###############################
     # CONFIDENTIAL ACCESS METHODS #
     ###############################
+
+    ### place of birth
+    @api.depends('confidential_id.place_of_birth')
+    def _compute_place_of_birth(self):
+        for rec in self:
+            if rec.confidential_id:
+                rec.place_of_birth = rec.confidential_id[0]['place_of_birth']
+            else:
+                rec.place_of_birth = False
+    
+    def _set_place_of_birth(self):
+        for rec in self:
+            if not rec.confidential_id:
+                self.env['hr.employee.confidential'].create({'employee_id':rec.id, 'place_of_birth': self.place_of_birth})
+            else:
+                rec.confidential_id[0].write({'place_of_birth': self.place_of_birth})
+
     ### birthday
     @api.depends('confidential_id.birthday')
     def _compute_birthday(self):

@@ -36,8 +36,9 @@ class ProjectTask(models.Model):
     )
 
     completion_ratio = fields.Float(
-        string = "Completion Ratio",
+        string = 'Task Completion',
         related = 'stage_id.completion_ratio',
+        group_operator='avg',
     )
 
     ###################
