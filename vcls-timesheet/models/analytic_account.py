@@ -22,6 +22,13 @@ class AnalyticLine(models.Model):
 
     lc_comment = fields.Text(string = "Comment")
 
+    deliverable_id = fields.Many2one(
+        'product.deliverable',
+        string = 'Deliverable',
+        related = 'product_id.deliverable_id',
+        store = True,
+    )
+
     @api.model
     def create(self, vals):
         if 'unit_amount' in vals and vals.get('is_timesheet',False): #do time ceiling for timesheets only
