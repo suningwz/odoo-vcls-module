@@ -37,6 +37,14 @@ class Project(models.Model):
         compute = '_compute_child_task_count'
     )
 
+    ###############
+    # ORM METHODS #
+    ###############
+    @api.model
+    def create(self, vals):
+        project = super(Project, self).create(vals)
+        project.type_ids = project._get_default_type_common()
+        return project
     
 
     ###################
