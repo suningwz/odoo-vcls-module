@@ -1,0 +1,37 @@
+<odoo>
+    <data>
+
+        <!-- Override of the initial view to add custom fields -->
+        <record id="view_task_form2_inherit" model="ir.ui.view">
+            <field name="name">view_task_form2_inherit</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+
+                <field name="tag_ids" position="after">
+                    <field name="completion_ratio" string="" widget="percentpie"/>
+                </field>
+
+                <field name="progress" position="replace">
+                    <field name="progress" string="Consummed" widget="progressbar"/>
+                </field>
+
+            </field>
+        </record>
+
+        <!-- Override of the initial view to add custom fields -->
+        <record id="view_task_tree2_inherit" model="ir.ui.view">
+            <field name="name">view_task_tree2_inherit</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_tree2"/>
+            <field name="arch" type="xml">
+            
+                <field name="progress" position="replace">
+                    <field name="completion_ratio" string="" widget="progressbar"/>
+                </field>
+
+            </field>
+        </record>
+       
+    </data>
+</odoo>

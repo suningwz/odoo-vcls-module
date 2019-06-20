@@ -35,7 +35,8 @@ class ProjectTask(models.Model):
         store = True,
     )
 
-    progress = fields.Float(
+    completion_ratio = fields.Float(
+        string = 'Task Completion',
         related = 'stage_id.completion_ratio',
     )
 
