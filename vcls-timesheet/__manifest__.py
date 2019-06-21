@@ -30,8 +30,7 @@
         ### SECURITY ###
         'security/vcls_groups.xml',
         'security/record_rule.xml',
-
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         #'data/parameters.xml',
         ### VIEWS ###
         'views/timesheets_views.xml',

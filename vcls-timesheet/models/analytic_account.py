@@ -29,6 +29,8 @@ class AnalyticLine(models.Model):
         store = True,
     )
 
+    adjustment_reason_id = fields.Many2one('timesheet.adjustment.reason', string="Adjustment Reason")
+
     @api.model
     def create(self, vals):
         if 'unit_amount' in vals and vals.get('is_timesheet',False): #do time ceiling for timesheets only
@@ -52,8 +54,8 @@ class AnalyticLine(models.Model):
         context = self.env.context
         timesheet_ids = context.get('active_ids',[])
         timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
-        timesheets.filtered(lambda r: (r.stage_id=='draft',r.lc_comment==True)).write({'stage_id':'pc_review'})
-        timesheets.filtered(lambda r: (r.stage_id=='draft',r.lc_comment==False)).write({'stage_id':'invoiceable'})
+        timesheets.filtered(lambda r: (r.stage_id=='draft',r.lc_comment==True,r.project_id.user_id.id == r.env.user.id or r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2'))).write({'stage_id':'pc_review'})
+        timesheets.filtered(lambda r: (r.stage_id=='draft',r.lc_comment==False,r.project_id.user_id.id == r.env.user.id or r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2'))).write({'stage_id':'invoiceable'})
 
 
         """for timesheet_id in timesheet_ids:
@@ -63,5 +65,11 @@ class AnalyticLine(models.Model):
             else:
                 timesheet.write({'stage_id':'invoiceable'})"""
     
+    @api.multi
+    def _finalize_pc_review(self):
+        context = self.env.context
+        timesheet_ids = context.get('active_ids',[])
+        timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
+        timesheets.filtered(lambda r: (r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or r.env.user.has_group('vcls-timesheet.vcls_pc'))).write({'stage_id':'invoiceable'})
 
     
