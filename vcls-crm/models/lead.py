@@ -85,7 +85,7 @@ class Leads(models.Model):
         inverse = '_set_internal_ref',
     )
 
-    is_support_user = fields.Boolean(compute='_compute_is_support_user')
+    #is_support_user = fields.Boolean(compute='_compute_is_support_user', store=False)
 
     app_country_group_id = fields.Many2one(
         'res.country.group',
@@ -96,9 +96,8 @@ class Leads(models.Model):
     # COMPUTE METHODS #
     ###################
 
-    def _compute_is_support_user(self):
-        self.ensure_one()
-        self.is_support_user = self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl1') or self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2')
+    """ def _compute_is_support_user(self):
+        self.is_support_user = self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl1') """
 
 
     @api.depends('country_id')

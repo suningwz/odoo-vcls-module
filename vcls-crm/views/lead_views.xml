@@ -15,8 +15,7 @@
                         <button name="%(crm.crm_lead_lost_action)d" string="Mark Lost"
                                 type="action" class="oe_highlight"
                                 context="{'default_lead_id': active_id}"
-                                attrs="{'invisible': ['|','&amp;',('probability', '&lt;', 100),('active', '=', False),'&amp;',('probability', '=', 100),('is_support_user','=',False)]}"/>
-                                <!--('probability','=',100),('group','=',''-->
+                                attrs="{'invisible': ['|','&amp;',('probability', '&lt;', 100),('active', '=', False),('probability', '=', 100)]}"/>
                         <button name="toggle_active"
                             string="Restore"
                             type="object"
@@ -27,7 +26,6 @@
                             attrs="{'invisible': [('active', '=', False)]}"/>
                     </header>
                     <sheet>
-                        <field name="is_support_user" invisible="1"/>
                         <field name="active" invisible="1"/>
                         <div class="oe_button_box" name="button_box">
                             <button class="oe_stat_button" type="object" context="{'partner_id': partner_id}" name="action_schedule_meeting" icon="fa-calendar">
