@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_vcls-timesheet_vcls-timesheet,vcls-timesheet.vcls-timesheet,model_vcls-timesheet_vcls-timesheet,,1,0,0,0
+access_vcls-timesheet_adjustement_reason_user,access_vcls-timesheet_adjustement_reason_user,vcls-timesheet.model_timesheet_adjustment_reason,base.group_user,1,0,0,0
+access_vcls-timesheet_adjustement_reason_support_lvl2,access_vcls-timesheet_adjustement_reason_support_lvl2,vcls-timesheet.model_timesheet_adjustment_reason,vcls-hr.vcls_group_superuser_lvl2,1,1,1,1
