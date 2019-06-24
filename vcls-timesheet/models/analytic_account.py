@@ -54,8 +54,7 @@ class AnalyticLine(models.Model):
         context = self.env.context
         timesheet_ids = context.get('active_ids',[])
         timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
-        timesheets.filtered(lambda r: (r.stage_id=='draft',r.lc_comment==True,r.project_id.user_id.id == r.env.user.id or r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2'))).write({'stage_id':'pc_review'})
-        timesheets.filtered(lambda r: (r.stage_id=='draft',r.lc_comment==False,r.project_id.user_id.id == r.env.user.id or r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2'))).write({'stage_id':'invoiceable'})
+        timesheets.filtered(lambda r: (r.stage_id=='draft',r.project_id.user_id.id == r.env.user.id or r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2'))).write({'stage_id':'pc_review'})
 
 
         """for timesheet_id in timesheet_ids:
