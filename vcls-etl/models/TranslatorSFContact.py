@@ -139,12 +139,12 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
     def convertCategory(SF, odoo):
         result = []
         if SF['Supplier__c']:
-            result += [odoo.env.ref('vcls-contact.category_PS').id]
+            result += [odoo.env.ref('vcls_partner_category.category_PS').id]
         """ if SFtype:
             if (not isSupplier) and 'supplier' in SFtype.lower():
-                result += [odoo.env.ref('vcls-contact.category_PS').id]
+                result += [odoo.env.ref('vcls_partner_category.category_PS').id]
             if 'competitor' in SFtype.lower():
-                result += [odoo.env.ref('vcls-contact.category_competitor').id]
+                result += [odoo.env.ref('vcls_partner_category.category_competitor').id]
             if 'partner' in SFtype.lower():
-                result += [odoo.env.ref('vcls-contact.category_partner').id] """
+                result += [odoo.env.ref('vcls_partner_category.category_partner').id] """
         return result

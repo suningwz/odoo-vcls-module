@@ -23,13 +23,13 @@
         'base',
         'contacts',
         'survey',
+        'vcls_partner_category',
         ],
 
     # always loaded
     'data': [
 
         ### CONFIGURATION DATA ###
-        'data/res.partner.category.csv',
         'data/ir.config_parameter.csv',
         'data/client.activity.csv',
         'data/client.product.csv',
