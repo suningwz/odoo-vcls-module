@@ -2,6 +2,19 @@
     <data>
         <!-- VIEWS -->
 
+        <record model="ir.ui.view" id="view_project_kanban_2">
+            <field name="name">view_project_kanban_2</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.view_project_kanban"/>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban" position="attributes">
+                    <attribute name="create">0</attribute>
+                </xpath> 
+            </field>
+        </record>
+
+
         <record model="ir.ui.view" id="view_project_program_tree">
             <field name="name">view_project_program_tree</field>
             <field name="model">project.program</field>
@@ -60,7 +73,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">kanban,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'kanban', 'view_id': ref('project.view_project_kanban')})]"/>
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')})]"/>
             <field name="domain">[('project_type','=', 'client')]</field>
         </record>
 
@@ -71,7 +84,7 @@
             <field name="view_mode">kanban,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('project.view_project_kanban')})]"/>
-            <field name="domain">['|',('project_type','!=', 'client'),('project_type','=',False)]</field>
+            <field name="domain">[('project_type','=', 'internal')]</field>
         </record>
 
         <!-- Menu -->

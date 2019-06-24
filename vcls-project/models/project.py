@@ -42,9 +42,16 @@ class Project(models.Model):
     ###############
     @api.model
     def create(self, vals):
+        if 'project_type' in vals: 
+            if vals['project_type'] == 'client':
+                vals['privacy_visibility'] = 'employees'
+            else:
+                vals['privacy_visibility'] = 'followers'
+
         project = super(Project, self).create(vals)
         ids = project._get_default_type_common()
         project.type_ids = ids if ids else project.type_ids
+        
         return project
     
 
@@ -70,3 +77,4 @@ class Project(models.Model):
         result = dict((data['project_id'][0], data['project_id_count']) for data in task_data)
         for project in self:
             project.child_task_count = result.get(project.id, 0)
+        
