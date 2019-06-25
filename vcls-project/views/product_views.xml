@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record model="ir.ui.view" id="product_tree_view">
+            <field name="name">product_tree_view</field>
+            <field name="model">product.template</field>
+            <field name="priority">2</field>
+            <field name="inherit_id"
+            ref="vcls-crm.product_tree_view" />
+            <field name="arch" type="xml">
+                <field name="categ_id" position="after">
+                    <field name="grouping_info" string="Info"/>
+                </field>
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="default_order">categ_id,grouping_info,list_price desc</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+    <record model="ir.ui.view" id="product_template_search_view">
+        <field name="name">product.template.search</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id"
+            ref="product.product_template_search_view" />
+        <field name="arch" type="xml">
+
+            <xpath expr="//filter[@name='group_deliverable']"
+                position="after">
+                <filter name="group_seniority" string="Seniority"
+                    domain="[]"
+                    context="{'group_by':'seniority_level_id'}" />
+                <filter name="group_info" string="Info"
+                    domain="[]" context="{'group_by':'grouping_info'}" />
+            </xpath>
+
+        </field>
+    </record>
+    
+    <!-- We Override the product action to start with Tree -->
+        <record id="sale.product_template_action" model="ir.actions.act_window">
+            <field name="name">Products</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.template</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="vcls-crm.product_tree_view"/>
+            <field name="search_view_id" ref="product.product_template_search_view"/>
+            <field name="context">{
+                "search_default_filter_to_sell":1,
+                "sale_multi_pricelist_product_template": 1,
+                "search_default_group_category":1,
+                "search_default_group_info":1,
+                }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new product
+                </p><p>
+                    You must define a product for everything you purchase,
+                    whether it's a physical product, a consumable or services.
+                </p>
+            </field>
+        </record>
+</odoo>

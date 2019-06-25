@@ -151,16 +151,16 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         result = []
         SFtype = SFAccount['Type']
         if SFAccount['Is_supplier__c'] or SFAccount['Supplier__c']:
-            result += [odoo.env.ref('vcls-contact.category_PS').id]
+            result += [odoo.env.ref('vcls_partner_category.category_PS').id]
         elif SFAccount['Project_Controller__c'] and SFAccount['VCLS_Alt_Name__c']:
-            result += [odoo.env.ref('vcls-contact.category_account').id]
+            result += [odoo.env.ref('vcls_partner_category.category_account').id]
         if SFtype:
             if (not SFAccount['Is_supplier__c'] or not SFAccount['Supplier__c']) and 'supplier' in SFtype.lower():
-                result += [odoo.env.ref('vcls-contact.category_PS').id]
+                result += [odoo.env.ref('vcls_partner_category.category_PS').id]
             if 'competitor' in SFtype.lower():
-                result += [odoo.env.ref('vcls-contact.category_competitor').id]
+                result += [odoo.env.ref('vcls_partner_category.category_competitor').id]
             if 'partner' in SFtype.lower():
-                result += [odoo.env.ref('vcls-contact.category_partner').id]
+                result += [odoo.env.ref('vcls_partner_category.category_partner').id]
         return result
     
 
