@@ -5,7 +5,7 @@ from odoo import models, fields, api
 class TherapeuticArea(models.Model):
 
     _name = 'therapeutic.area'
-    _description = "Used to segment leads according to their therapeutic area"
+    _description = "Segment leads by therapeutic area"
 
     active = fields.Boolean(
         default = True,
