@@ -445,6 +445,7 @@
                         <group>
                             <field name="client_activity_ids" widget="many2many_tags"/>
                             <field name="client_product_ids" widget="many2many_tags"/>
+                            <field name="therapeutic_area_ids" widget="many2many_tags"/>
                         </group>
                     </group>
                 </page>
@@ -456,6 +457,8 @@
 
         </field>
         </record>
+
+        therapeutic_area_tree_view
 
         <!-- Override the search view -->
         <record id="view_crm_case_opportunities_filter_inherit" model="ir.ui.view">

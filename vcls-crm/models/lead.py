@@ -75,7 +75,12 @@ class Leads(models.Model):
         string="Expected Project Start Date",
     )
 
-    won_reason = fields.Many2one('crm.won.reason', string='Won Reason', index=True, track_visibility='onchange')
+    won_reason = fields.Many2one(
+        'crm.won.reason',
+        string='Won Reason',
+        index=True,
+        track_visibility='onchange'
+    )
 
     internal_ref = fields.Char(
         string="Ref",
@@ -83,6 +88,11 @@ class Leads(models.Model):
         store = True,
         compute = '_compute_internal_ref',
         inverse = '_set_internal_ref',
+    )
+
+    therapeutic_area_ids = fields.Many2many(
+        'therapeutic.area',
+        string ='Therapeutic Area',
     )
 
     ###################
