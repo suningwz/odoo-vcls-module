@@ -1,0 +1,34 @@
+<odoo>
+  <data>
+    
+    <record id="view_module_filter_v2" model="ir.ui.view">
+        <field name="name">ir.module.module.list.select</field>
+        <field name="model">ir.module.module</field>
+        <field name='inherit_id' ref="base.view_module_filter" />
+        <field name="arch" type="xml">
+          <xpath expr="//search" position='replace'>
+            <search string="Search modules">
+                <field name="name" filter_domain="['|', '|', ('summary', 'ilike', self), ('shortdesc', 'ilike', self), ('name',
+                    'ilike', self)]" string="Module"/>
+                <filter name="vcls" string="VCLS" domain="[('name','ilike','vcls')]"/>
+                <filter name="app" string="Apps" domain="[('application', '=', True)]"/>
+                <filter name="extra" string="Extra" domain="[('application', '=', False)]"/>
+                <separator/>
+                <filter name="installed" string="Installed" domain="[('state', 'in', ['installed', 'to upgrade', 'to remove'])]"/>
+                <filter name="not_installed" string="Not Installed" domain="[('state', 'in', ['uninstalled', 'uninstallable', 'to install'])]"/>
+                <field name="category_id"/>
+                <group expand="0" string="Group By">
+                    <filter string="Author" name="author" domain="[]" context="{'group_by':'author'}"/>
+                    <filter string="Category" name="category" domain="[]" context="{'group_by':'category_id'}"/>
+                </group>
+            </search>
+          </xpath>
+        </field>
+    </record>
+
+    <record id="base.open_module_tree" model="ir.actions.act_window">
+        <field name="context">{'search_default_vcls':1}</field>
+    </record>
+    
+  </data>
+</odoo>
