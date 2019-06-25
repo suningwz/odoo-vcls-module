@@ -6,6 +6,16 @@ from odoo.exceptions import UserError, ValidationError, Warning
 import logging
 _logger = logging.getLogger(__name__)
 
+
+class ResoucesLeads(models.Model):
+
+    _name = 'crm.resource.lead'
+    _description = 'resource for lead'
+    
+    project_role_id = fields.Many2one(
+        'hr.project_role', string='Seniority')
+    number = fields.Float('Number')
+
 class Leads(models.Model):
 
     _inherit = 'crm.lead'
@@ -84,10 +94,44 @@ class Leads(models.Model):
         compute = '_compute_internal_ref',
         inverse = '_set_internal_ref',
     )
+    
+    technical_adv_id = fields.Many2one(
+        'hr.employee', 
+        string='Technical Advisor', 
+        track_visibility='onchange', 
+        )
+    
+    support_team = fields.Many2many(
+        'hr.employee', 
+        string='Support team', 
+        )
+    
+    resources_ids = fields.Many2many(
+        'crm.resource.lead', 
+        string='Resources', 
+        )
+    
+    CDA = fields.Boolean('CDA sign')
+    MSA = fields.Boolean('MSA validated')
+    
+    saleorder = fields.Boolean('Sale Order')
+    workorder = fields.Boolean('Work Order')
+    termandcondition = fields.Boolean('Terms and conditions')
+
+    #is_support_user = fields.Boolean(compute='_compute_is_support_user', store=False)
+
+    app_country_group_id = fields.Many2one(
+        'res.country.group',
+        string = "Application Geographic Area",
+    )
 
     ###################
     # COMPUTE METHODS #
     ###################
+
+    """ def _compute_is_support_user(self):
+        self.is_support_user = self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl1') """
+
 
     @api.depends('country_id')
     def _compute_country_group(self):
