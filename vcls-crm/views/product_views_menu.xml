@@ -9,12 +9,11 @@
             <field name="priority">2</field>
             <field name="arch" type="xml">
 
-                <tree string="Product" default_order='categ_id,grouping_info,list_price desc'>
+                <tree string="Product" default_order='categ_id,list_price desc'>
                     <field name="sequence" widget="handle"/>
                     <field name="name"/>
                     <field name="list_price" string="Sales Price"/>
                     <field name="categ_id"/>
-                    <field name="grouping_info" string="Info"/>
                     <field name="uom_id" options="{'no_open': True, 'no_create': True}" groups="uom.group_uom"/>
                     <field name="active" invisible="1"/>
                 </tree>
@@ -33,8 +32,6 @@
                     <group expand="0" string="Group By">
                         <filter name="group_category" string="Category" domain="[]" context="{'group_by':'categ_id'}"/>
                         <filter name="group_deliverable" string="Deliverable" domain="[]" context="{'group_by':'deliverable_id'}"/>
-                        <filter name="group_seniority" string="Seniority" domain="[]" context="{'group_by':'seniority_level_id'}"/>
-                        <filter name="group_info" string="Info" domain="[]" context="{'group_by':'grouping_info'}"/>
                         <filter name="group_price" string="Sales Price" domain="[]" context="{'group_by':'list_price'}"/>
                     </group>   
                 </xpath>
@@ -55,7 +52,6 @@
                 "search_default_filter_to_sell":1,
                 "sale_multi_pricelist_product_template": 1,
                 "search_default_group_category":1,
-                "search_default_group_info":1,
                 }</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
