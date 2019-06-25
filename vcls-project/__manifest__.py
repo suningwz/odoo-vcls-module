@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.6.1',
+    'version': '0.7',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -27,6 +27,7 @@
         'sale_project_timesheet_by_seniority',
         'project_task_stage_allow_timesheet',
         'project_task_default_stage',
+        'project_parent_task_filter',
         ],
 
     # always loaded
