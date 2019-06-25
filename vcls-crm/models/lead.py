@@ -97,13 +97,13 @@ class Leads(models.Model):
     
     technical_adv_id = fields.Many2one(
         'hr.employee', 
-        string='Technical Advisor', 
+        string='Main Technical Advisor', 
         track_visibility='onchange', 
         )
     
     support_team = fields.Many2many(
         'hr.employee', 
-        string='Support team', 
+        string='Others', 
         )
     
     resources_ids = fields.Many2many(
@@ -111,12 +111,13 @@ class Leads(models.Model):
         string='Resources', 
         )
     
-    CDA = fields.Boolean('CDA sign')
-    MSA = fields.Boolean('MSA validated')
+    CDA = fields.Boolean('CDA signed')
+    MSA = fields.Boolean('MSA valid')
     
-    saleorder = fields.Boolean('Sale Order')
-    workorder = fields.Boolean('Work Order')
-    termandcondition = fields.Boolean('Terms and conditions')
+    contract_type = fields.Selection([('saleorder', 'Sale Order'),
+                                      ('workorder', 'Work Order'),
+                                      ('termandcondition', 'Terms and conditions'),])
+
 
     #is_support_user = fields.Boolean(compute='_compute_is_support_user', store=False)
 
