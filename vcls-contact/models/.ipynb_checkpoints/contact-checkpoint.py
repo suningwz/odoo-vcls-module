@@ -137,11 +137,11 @@ class ContactExt(models.Model):
     def _compute_visibility(self):
         for contact in self:
             contact.see_segmentation = False
-            if self.env.ref('vcls_partner_category.category_account') in contact.category_id:
+            if self.env.ref('vcls-contact.category_account') in contact.category_id:
                 contact.see_segmentation = True
             
             contact.see_supplier = False
-            if self.env.ref('vcls_partner_category.category_PS') in contact.category_id:
+            if self.env.ref('vcls-contact.category_PS') in contact.category_id:
                 contact.see_supplier = True
 
     @api.depends('employee')
@@ -168,7 +168,7 @@ class ContactExt(models.Model):
         for contact in self:
             #search if this is an account contact
            
-            if self.env.ref('vcls_partner_category.category_account') in contact.category_id and contact.create_folder and contact.altname:
+            if self.env.ref('vcls-contact.category_account') in contact.category_id and contact.create_folder and contact.altname:
                 root = self.env.ref('vcls-contact.conf_path_sp_client_root').value
                 contact.sharepoint_folder = "{}{:.1}/{}".format(root,contact.altname,contact.altname)
             

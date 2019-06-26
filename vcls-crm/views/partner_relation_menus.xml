@@ -22,6 +22,13 @@
 			id="menu_contact_relations_all" 
 			action="action_partner_relation" 
 			sequence="6" />
+		
+		<menuitem 
+			name="Therapeutic Area" 
+			parent="crm.crm_menu_config"
+			id="menu_therapeutic_area"
+			action="action_therapeutic_area"
+			sequence="12" />
 
     </data>
 </odoo>

@@ -16,20 +16,20 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.9',
+    'version': '0.10',
 
     # any module necessary for this one to work correctly
     'depends': [
         'base',
         'contacts',
         'survey',
-        'vcls_partner_category',
         ],
 
     # always loaded
     'data': [
 
         ### CONFIGURATION DATA ###
+        'data/res.partner.category.csv',
         'data/ir.config_parameter.csv',
         'data/client.activity.csv',
         'data/client.product.csv',
