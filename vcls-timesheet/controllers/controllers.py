@@ -1,20 +1,35 @@
 # -*- coding: utf-8 -*-
-from odoo import http
+from ast import literal_eval
+import babel
+from dateutil.relativedelta import relativedelta
+import itertools
+import json
 
-# class Vcls-timesheet(http.Controller):
-#     @http.route('/vcls-timesheet/vcls-timesheet/', auth='public')
-#     def index(self, **kw):
-#         return "Hello, world"
+from odoo import http, fields, _
+from odoo.http import request
+from odoo.tools import float_round
 
-#     @http.route('/vcls-timesheet/vcls-timesheet/objects/', auth='public')
-#     def list(self, **kw):
-#         return http.request.render('vcls-timesheet.listing', {
-#             'root': '/vcls-timesheet/vcls-timesheet',
-#             'objects': http.request.env['vcls-timesheet.vcls-timesheet'].search([]),
-#         })
+from odoo.addons.sale_timesheet.controllers.main import SaleTimesheetController
 
-#     @http.route('/vcls-timesheet/vcls-timesheet/objects/<model("vcls-timesheet.vcls-timesheet"):obj>/', auth='public')
-#     def object(self, obj, **kw):
-#         return http.request.render('vcls-timesheet.object', {
-#             'object': obj
-#         })
+
+class TimesheetController(SaleTimesheetController):
+
+    @http.route('/timesheet/plan/action', type='json', auth="user")
+    def plan_stat_button(self, domain=[], res_model='account.analytic.line', res_id=False):
+        if res_model == 'account.analytic.line':
+            ts_view_tree_id = request.env.ref('hr_timesheet.timesheet_view_tree_user').id
+            ts_view_form_id = request.env.ref('hr_timesheet.hr_timesheet_line_form').id
+            action = {
+                'name': _('Timesheets'),
+                'type': 'ir.actions.act_window',
+                'res_model': res_model,
+                'view_mode': 'tree,form',
+                'view_type': 'form',
+                'views': [[ts_view_tree_id, 'list'], [ts_view_form_id, 'form']],
+                'domain': domain,
+                'context': {"search_default_groupby_deliverable":1, 
+                "search_default_groupby_task":1}, 
+            }
+        else:
+            action = super(TimesheetController,self).plan_stat_button(domain,res_model,res_id)
+        return action
