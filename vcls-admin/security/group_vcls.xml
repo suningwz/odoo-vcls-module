@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="vcls_mail_template_manager" model="res.groups">
+            <field name="name">Mail Manager</field>
+        </record>
+    </data>
+</odoo>
