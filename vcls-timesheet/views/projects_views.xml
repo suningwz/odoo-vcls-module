@@ -1,0 +1,22 @@
+<odoo>
+    <data>
+    
+        <record id="edit_project" model="ir.ui.view">
+                <field name="name">project.project.form</field>
+                <field name="model">project.project</field>
+                <field name="inherit_id" ref="project.edit_project"/>
+                <field name="arch" type="xml">
+                    <button name="toggle_active" position="before">
+                        <button
+                            class="oe_stat_button"
+                            name="%(project_timesheet_forecast.project_timesheet_forecast_report_action)d"
+                            type="action"
+                            icon="fa-calendar"
+                            string="Report Analysis"
+                        />
+                    </button>
+                </field>
+        </record>
+
+    </data>
+</odoo>

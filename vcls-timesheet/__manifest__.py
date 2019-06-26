@@ -34,6 +34,9 @@
         #'data/parameters.xml',
         ### VIEWS ###
         'views/timesheets_views.xml',
+        'views/projects_views.xml',
+
+
         'actions/timesheet_cron.xml',
         'actions/timesheet_server_action.xml',
     ],
