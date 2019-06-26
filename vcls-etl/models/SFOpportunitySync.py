@@ -44,7 +44,7 @@ class SFOpportunitySync(models.Model):
         return sql
     
     def getSQLForRecord(self):
-        sql =  'SELECT O.Id, O.Name, O.AccountId, O.StageName, O.Therapeutic_Area__c '
+        sql =  'SELECT O.Id, O.Name, O.AccountId, O.StageName, O.Therapeutic_Area__c, '
         sql += 'O.OwnerId, O.LastModifiedDate, O.ExpectedRevenue, O.Reasons_Lost_Comments__c, O.Probability, O.CloseDate, O.Deadline_for_Sending_Proposal__c, O.LeadSource, '
         sql += 'O.Description, O.Client_Product_Description__c, O.CurrencyIsoCode, O.Product_Category__c, O.Amount, O.Geographic_Area__c, O.VCLS_Activities__c,Project_start_date__c '
         sql += 'FROM Opportunity as O '
