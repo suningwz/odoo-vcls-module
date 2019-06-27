@@ -103,7 +103,7 @@ class Leads(models.Model):
     
     support_team = fields.Many2many(
         'hr.employee', 
-        string='Others', 
+        string='Other Technical Experts', 
         )
     
     resources_ids = fields.Many2many(

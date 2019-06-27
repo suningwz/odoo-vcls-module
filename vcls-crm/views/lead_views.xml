@@ -192,7 +192,7 @@
                             <field name="technical_adv_id" />
                         </group>
                         <group string="Support team" colspan="2">
-                            <field name="support_team" nolabel="1" no_create="True">
+                            <field name="support_team" nolabel="1" no_create="True" string="Other Technical Experts">
                                 <tree editable="bottom">
                                     <field name="name" />
                                 </tree>
@@ -219,7 +219,7 @@
                         <field name="CDA" />
                         <field name="MSA" />
                     </group>
-                    <group string="Contract">
+                    <group string="Contracts">
                         <field name="contract_type" widget="radio" nolabel="1"/>
                     </group>
                 </page>
