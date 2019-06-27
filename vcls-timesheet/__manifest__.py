@@ -32,8 +32,12 @@
         'security/record_rule.xml',
         'security/ir.model.access.csv',
         #'data/parameters.xml',
+
         ### VIEWS ###
         'views/timesheets_views.xml',
+        'views/sale_order_views.xml',
+
+        ### ACTIONS ###
         'actions/timesheet_cron.xml',
         'actions/timesheet_server_action.xml',
     ],
