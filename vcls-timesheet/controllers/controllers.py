@@ -58,4 +58,4 @@ class TimesheetController(SaleTimesheetController):
             }
         else:
             action = super(TimesheetController,self).plan_stat_button(domain,res_model,res_id)
-        return action 
+        return action
