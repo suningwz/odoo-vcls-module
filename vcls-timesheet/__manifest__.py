@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.1',
+    'version': '0.2',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -34,6 +34,9 @@
         #'data/parameters.xml',
         ### VIEWS ###
         'views/timesheets_views.xml',
+        'views/projects_views.xml',
+
+
         'actions/timesheet_cron.xml',
         'actions/timesheet_server_action.xml',
     ],

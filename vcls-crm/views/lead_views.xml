@@ -164,7 +164,7 @@
             <xpath expr="//field[@name='date_deadline']" position="after">
                     <field name="expected_start_date"/>
                     <field name="app_country_group_id" string="Scope Geographic Area"/>
-                    <field name="product_category_id" string="VCLS Business Line" options="{'no_create_edit': True}"/>
+                    <field name="product_category_id" string="Business Line" options="{'no_create_edit': True}"/>
             </xpath>
 
             <field name="lost_reason" position="after">
@@ -494,6 +494,7 @@
                         <group>
                             <field name="client_activity_ids" widget="many2many_tags"/>
                             <field name="client_product_ids" widget="many2many_tags"/>
+                            <field name="therapeutic_area_ids" widget="many2many_tags"/>
                         </group>
                     </group>
                 </page>
@@ -505,6 +506,8 @@
 
         </field>
         </record>
+
+        therapeutic_area_tree_view
 
         <!-- Override the search view -->
         <record id="view_crm_case_opportunities_filter_inherit" model="ir.ui.view">

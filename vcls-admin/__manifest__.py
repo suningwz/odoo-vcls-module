@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.2.3',
+    'version': '0.2.7',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -33,12 +33,15 @@
 
         ### SECURITY ###
         #'security/ir.model.access.csv',
+        'security/group_vcls.xml',
 
         ### ACTIONS
         'actions/admin_user_cronjob.xml',
 
         ### VIEWS
         #'views/vcls_admin.xml',
+        'views/quick_VCLS_Filter.xml',
+        'views/new_template_restriction.xml'
 
     ],
     # only loaded in demonstration mode
