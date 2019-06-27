@@ -23,7 +23,21 @@ class TimesheetController(SaleTimesheetController):
 
     @http.route('/timesheet/plan/action', type='json', auth="user")
     def plan_stat_button(self, domain=[], res_model='account.analytic.line', res_id=False):
-        if res_model == 'project.timesheet.forecast.report.analysis':
+        if res_model == 'account.analytic.line':
+            ts_view_tree_id = request.env.ref('hr_timesheet.timesheet_view_tree_user').id
+            ts_view_form_id = request.env.ref('hr_timesheet.hr_timesheet_line_form').id
+            action = {
+                'name': _('Timesheets'),
+                'type': 'ir.actions.act_window',
+                'res_model': res_model,
+                'view_mode': 'tree,form',
+                'view_type': 'form',
+                'views': [[ts_view_tree_id, 'list'], [ts_view_form_id, 'form']],
+                'domain': domain,
+                'context': {"search_default_groupby_deliverable":1, 
+                "search_default_groupby_task":1}, 
+            }
+        elif res_model == 'project.timesheet.forecast.report.analysis':
             ts_view_graph_id = request.env.ref('project_timesheet_forecast.project_timesheet_forecast_report_view_graph').id
             ts_view_pivot_id = request.env.ref('project_timesheet_forecast.project_timesheet_forecast_report_view_pivot').id
             ts_search_view_id = request.env.ref('project_timesheet_forecast.project_timesheet_forecast_report_view_search').id
@@ -44,4 +58,4 @@ class TimesheetController(SaleTimesheetController):
             }
         else:
             action = super(TimesheetController,self).plan_stat_button(domain,res_model,res_id)
-        return action 
+        return action
