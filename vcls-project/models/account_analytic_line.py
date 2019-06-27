@@ -58,7 +58,7 @@ class AccountAnalyticLine(models.Model):
                 # already mapped -> nothing to do
                 return
             so_mapped_seniority = so.order_line.filtered(
-                lambda r: r.seniority_level_id != False
+                lambda r: r.product_id.seniority_level_id != False
             )
             # Find a line on the default rate list
             for so_line in so_mapped_seniority:
