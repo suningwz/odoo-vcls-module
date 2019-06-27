@@ -17,3 +17,6 @@
 	path = VCLS-org/project
 	url = https://github.com/VCLS-org/project.git
 	branch = 12.0
+[submodule "VCLS-org/contract"]
+	path = VCLS-org/contract
+	url = https://github.com/VCLS-org/contract.git
