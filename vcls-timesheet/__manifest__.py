@@ -35,6 +35,7 @@
 
         ### VIEWS ###
         'views/timesheets_views.xml',
+        'views/projects_views.xml',
         'views/sale_order_views.xml',
 
         ### ACTIONS ###
