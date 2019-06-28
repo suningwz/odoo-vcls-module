@@ -285,4 +285,18 @@ class ContactExt(models.Model):
                 for child in contact.child_ids:
                     if child.company_type == 'person':
                         child.write({'category_id': [(6, 0, contact.category_id.ids)]})
+
+    def add_new_adress(self):
+        view_id = self.env.ref('vcls-contact.view_form_contact_address').id
+        print(self.company_type)
+        return {
+            'name': 'ADD NEW ADRESS',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': view_id,
+            'target': 'new',
+            'res_model': 'res.partner',
+            'type': 'ir.actions.act_window',
+            'context':{'default_name' : self.name,'default_parent_id' : self.id, 'default_category_id' : self.category_id.ids, 'default_company_type' : 'person',}# 'default_stage':5
+        } 
         
