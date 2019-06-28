@@ -135,6 +135,16 @@ class Leads(models.Model):
         'therapeutic.area',
         string ='Therapeutic Area',
     )
+    
+    targeted_indication_ids = fields.Many2many(
+        'targeted.indication',
+        string ='Targeted Indication',
+    )
+    
+    stage_development_id = fields.Many2one(
+        'stage.development',
+        string ='Stage of Development',
+    )
 
     ###################
     # COMPUTE METHODS #
