@@ -288,15 +288,15 @@ class ContactExt(models.Model):
 
     @api.model
     def create(self, vals):
-        if 'type' in vals:
-            if vals.get('type') != 'contact':
-                vals['name'] = ' (' + str(vals['type']) + ')'
-        return super(ContactExt, self).create(vals)
+        new_contact = super(ContactExt, self).create(vals)
+        if new_contact.type != 'contact':
+            type_contact = new_contact.type
+            new_contact.write({'display_name' : new_contact.display_name + ' (' + type_contact + ')' })
+        return new_contact
             
 
     def add_new_adress(self):
         view_id = self.env.ref('vcls-contact.view_form_contact_address').id
-        print(self.company_type)
         return {
             'name': 'ADD NEW ADRESS',
             'view_type': 'form',
