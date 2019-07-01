@@ -49,6 +49,7 @@ class Product(models.Model):
         product_ids = super(Product, self)._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
         products = self.browse(product_ids)
     
+        """
         if business_line:
             business_line_child_ids = self.env['product.category'].browse(business_line).child_id
             if business_line_child_ids:
@@ -62,4 +63,5 @@ class Product(models.Model):
             #If T&M, Show Services (i.e. milestones and re-invoicing = NO) and rates products (with a seniority level not null)
             elif business_mode == 't_and_m':
                 products = products.filtered(lambda p: (p.invoice_policy == 'delivered_manual' and p.expense_policy == 'no') or (p.expense_policy == 'no' and p.seniority_level_id))
+        """
         return products.ids

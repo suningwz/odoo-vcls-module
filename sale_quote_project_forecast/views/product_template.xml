@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <record id="product_template_forecast_employee" model="ir.ui.view">
+    <field name="name">product.template.forecast_employee</field>
+    <field name="model">product.template</field>
+    <field name="inherit_id" ref="product.product_template_form_view"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='seniority_level_id']" position="after">
+          <field name="forecast_employee_id" domain="[('seniority_level_id', '=', seniority_level_id)]" attrs="{'required': [('service_policy', '=', 'delivered_timesheet')], 'invisible': ['|', ('type', '!=', 'service'), ('service_policy', '!=', 'delivered_timesheet')]}" />
+      </xpath>
+    </field>
+  </record>
+</odoo>
