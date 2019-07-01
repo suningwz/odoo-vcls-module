@@ -286,6 +286,14 @@ class ContactExt(models.Model):
                     if child.company_type == 'person':
                         child.write({'category_id': [(6, 0, contact.category_id.ids)]})
 
+    @api.model
+    def create(self, vals):
+        if 'type' in vals:
+            if vals.get('type') != 'contact':
+                vals['name'] = ' (' + str(vals['type']) + ')'
+        return super(ContactExt, self).create(vals)
+            
+
     def add_new_adress(self):
         view_id = self.env.ref('vcls-contact.view_form_contact_address').id
         print(self.company_type)

@@ -305,7 +305,7 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="parent_id" widget="res_partner_many2one" string="Parent Contact"/>
+                                <field name="parent_id" widget="res_partner_many2one" string="Parent Contact" readonly="1"/>
                             </group>
                             <group>
                                 <field name="category_id" string='Tags' widget="many2many_tags" required="True" options="{'no_create_edit': True}" placeholder="Client, Supplier, etc."/>
@@ -322,7 +322,7 @@
                                 <field name="linkedin" widget="url"/>
                             </group>
                             <group>
-                                <field name="type" string="Type of adress"/>
+                                <field name="type" string="Type"/>
                                 <label for="street" string="Address"/>
                                 <div>
                                     <div class="o_address_format" name="div_address">
