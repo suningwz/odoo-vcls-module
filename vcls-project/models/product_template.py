@@ -39,9 +39,9 @@ class ProductTemplate(models.Model):
                     self.env['hr.contract'].create({
                         'name':emp.name,
                         'employee_id':emp.id,
-                        'resource_calendar_id':self.env.ref('__import__.WT_FRC100'),
+                        'resource_calendar_id':self.env.ref('__import__.WT_FRC100').id,
                         'active':False,
-                        'type_is':self.env.ref('vcls-hr.contract_permanent'),
+                        'type_is':self.env.ref('vcls-hr.contract_permanent').id,
                     })
 
                 rate.write({'forecast_employee_id':emp.id}) 
