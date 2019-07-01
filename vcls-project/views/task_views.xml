@@ -32,6 +32,16 @@
 
             </field>
         </record>
+
+        <record id="project_task_search" model="ir.ui.view">
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_search_form"/>
+            <field name="arch" type="xml">
+                <group expand="0">
+                    <filter string="Deadline" name="date_deadline" context="{'group_by':'date_deadline'}"/>
+                </group>
+            </field>
+        </record>
        
     </data>
 </odoo>
