@@ -1,6 +1,6 @@
 from odoo import models, fields, tools, api
 from odoo.exceptions import UserError, ValidationError
-
+import datetime
 
 class SaleOrder(models.Model):
     _inherit='sale.order'
@@ -11,17 +11,13 @@ class SaleOrder(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'name': "Forecast",
-            'domain': [('project_id', '!=', False)],
-            'res_model': 'project.timesheet.forecast.report.analysis',
+            'res_model': 'project.forecast',
             'search_view_id': self.env.ref('project_timesheet_forecast.project_timesheet_forecast_report_view_search').id,
             'view_mode': 'graph,pivot',
             'context': {
-                'pivot_row_groupby': ['employee_id'],
-                'pivot_col_groupby': ['date', 'type'],
-                'pivot_measures': ['number_hours'],
-                'group_by': ['date:month', 'type'],
-                'search_default_year': True,
+                'project_id': project_ids.id,
                 'default_project_id': project_ids.id, 
-                'search_default_project_id': [project_ids.id], 
+                'search_default_project_id': [project_ids.id],
+                'grid_anchor': (datetime.date.today()).strftime('%Y-%m-%d'),
             }
         }
