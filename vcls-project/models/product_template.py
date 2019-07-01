@@ -34,4 +34,4 @@ class ProductTemplate(models.Model):
         for rate in rates:
             emp = self.env['hr.employee'].with_context(active_test=False).search([('name','=',rate.name)])
             if emp:
-                rate.write({'forecast_employee_id':emp}) 
+                rate.write({'forecast_employee_id':emp.id}) 
