@@ -34,4 +34,14 @@ class ProductTemplate(models.Model):
         for rate in rates:
             emp = self.env['hr.employee'].with_context(active_test=False).search([('name','=',rate.name)])
             if emp:
+                #we ensure a contract to exists for these employee
+                if not emp.contract_id:
+                    self.env['hr.contract'].create({
+                        'name':emp.name,
+                        'employee_id':emp.id,
+                        'resource_calendar_id':self.env.ref('__import__.WT_FRC100'),
+                        'active':False,
+                        'type_is':self.env.ref('vcls-hr.contract_permanent'),
+                    })
+
                 rate.write({'forecast_employee_id':emp.id}) 
