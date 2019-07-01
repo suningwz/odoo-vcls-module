@@ -39,7 +39,7 @@ class ProductTemplate(models.Model):
             if emp:
                 #we ensure a contract to exists for these employee
                 if not emp.contract_id:
-                    self.env['hr.contract'].create({
+                    contract = self.env['hr.contract'].create({
                         'name':emp.name,
                         'employee_id':emp.id,
                         'resource_calendar_id':self.env.ref('__import__.WT_FRC100').id,
@@ -47,5 +47,8 @@ class ProductTemplate(models.Model):
                         'type_id':self.env.ref('vcls-hr.contract_permanent').id,
                         'date_start': datetime.now() + relativedelta(years=5),
                     })
+                    emp.contract_id = contract
 
-                rate.write({'forecast_employee_id':emp.id}) 
+                rate.write({
+                    'forecast_employee_id':emp.id,
+                    }) 
