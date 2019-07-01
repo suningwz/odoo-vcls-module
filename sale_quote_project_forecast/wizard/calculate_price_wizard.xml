@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+        <record id="view_calculate_price_wizard" model="ir.ui.view">
+            <field name="name">Calculate Cost</field>
+            <field name="model">sale.order.line.prize.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Calculate Cost">
+                    <field name="wizard_line_ids">
+                        <tree create="false" edit="false" delete="false">
+                            <field name="name" />
+                            <field name="time" />
+                            <field name="price" />
+                        </tree>
+                    </field>
+                    <group>
+                        <field name="old_price" />
+                        <field name="new_price" />
+                    </group>
+                    <footer>
+                        <button name="update_line" string="Update Line" type="object"
+                            class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_calculate_price_wizard" model="ir.actions.act_window">
+            <field name="name">Calculate Price</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.order.line.prize.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="groups_id" eval="[(4,ref('sales_team.group_sale_salesman'))]"/>
+            <!-- TODO: check if we need this -->
+            <field name="binding_model_id" ref="sale.model_sale_order" />
+        </record>
+</odoo>
