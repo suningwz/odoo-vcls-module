@@ -32,6 +32,6 @@ class ProductTemplate(models.Model):
     def _match_forecast_employee(self):
         rates = self.search([('seniority_level_id','!=',False)])
         for rate in rates:
-            emp = self.env['rh.employee'].with_context(active_test=False).search([('name','=',rate.name)])
+            emp = self.env['hr.employee'].with_context(active_test=False).search([('name','=',rate.name)])
             if emp:
                 rate.write({'forecast_employee_id':emp}) 
