@@ -51,7 +51,7 @@ class Product(models.Model):
         """if business_line:
             business_line_child_ids = self.env['product.category'].browse(business_line).child_id.ids
             if business_line_child_ids:
-                products = products.filtered(lambda p: p.categ_id.ids in business_line_child_ids)"""
+                products = products.filtered(lambda p: p.categ_id.ids in business_line_child_ids)
         if deliverable_id:
             products = products.filtered(lambda p: deliverable_id in p.deliverable_id.ids)
         if business_mode:
@@ -61,5 +61,5 @@ class Product(models.Model):
             #If T&M, Show Services (i.e. milestones and re-invoicing = NO) and rates products (with a seniority level not null)
             elif business_mode == 't_and_m':
                 products = products.filtered(lambda p: (p.invoice_policy == 'delivered_manual' and p.expense_policy == 'no') or (p.expense_policy == 'no' and p.seniority_level_id))
-    
+        """
         return products.ids
