@@ -1,6 +1,9 @@
 from odoo import models, fields, tools, api
 from odoo.exceptions import UserError, ValidationError
 
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
+
 class ProductTemplate(models.Model):
 
     _inherit = 'product.template'
@@ -42,6 +45,7 @@ class ProductTemplate(models.Model):
                         'resource_calendar_id':self.env.ref('__import__.WT_FRC100').id,
                         'active':False,
                         'type_id':self.env.ref('vcls-hr.contract_permanent').id,
+                        'date_start': datetime.now() + relativedelta(years=5),
                     })
 
                 rate.write({'forecast_employee_id':emp.id}) 
