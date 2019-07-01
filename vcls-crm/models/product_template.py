@@ -61,4 +61,5 @@ class Product(models.Model):
             #If T&M, Show Services (i.e. milestones and re-invoicing = NO) and rates products (with a seniority level not null)
             elif business_mode == 't_and_m':
                 products = products.filtered(lambda p: (p.invoice_policy == 'delivered_manual' and p.expense_policy == 'no') or (p.expense_policy == 'no' and p.seniority_level_id))
+    
         return products.ids
