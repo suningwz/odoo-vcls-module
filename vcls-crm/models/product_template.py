@@ -48,11 +48,10 @@ class Product(models.Model):
         deliverable_id = self._context.get('deliverable_id')
         product_ids = super(Product, self)._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
         products = self.browse(product_ids)
-
-        if business_line:
+        """if business_line:
             business_line_child_ids = self.env['product.category'].browse(business_line).child_id.ids
             if business_line_child_ids:
-                products = products.filtered(lambda p: p.categ_id.ids in business_line_child_ids)
+                products = products.filtered(lambda p: p.categ_id.ids in business_line_child_ids)"""
         if deliverable_id:
             products = products.filtered(lambda p: deliverable_id in p.deliverable_id.ids)
         if business_mode:
