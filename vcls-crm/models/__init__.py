@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from . import dropdown
 from . import partner_relation
 from . import overriden_classes
 from . import contact
@@ -11,4 +12,3 @@ from . import quotation_template
 from . import product_template
 from . import crm_lead_won
 from . import sale_order_template
-from . import dropdown
