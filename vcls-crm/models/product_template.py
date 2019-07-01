@@ -52,9 +52,9 @@ class Product(models.Model):
             products = products.filtered(lambda p: business_line in p.categ_id.ids)
         if deliverable_id:
             products = products.filtered(lambda p: deliverable_id in p.deliverable_id.ids)
-        if business_mode:
+        """if business_mode:
             if business_mode == 'fixed_price':
                 products = products.filtered(lambda p: p.invoice_policy == 'order' and p.expense_policy == 'sales_price')
             elif business_mode == 't_and_m':
-                products = products.filtered(lambda p: p.invoice_policy == 'order' and p.expense_policy == 'no' and p.seniority_level_id)
+                products = products.filtered(lambda p: p.invoice_policy == 'order' and p.expense_policy == 'no' and p.seniority_level_id)"""
         return products.ids
