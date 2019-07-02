@@ -24,8 +24,9 @@
     'data': [
         
          ### SECURITY ###
-        'security/ir.model.access.csv',
         'security/security_groups.xml',
+        'security/ir.model.access.csv',
+        
 
         ### VIEWS ###
         'views/views.xml',

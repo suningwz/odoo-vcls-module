@@ -56,30 +56,41 @@ class Product(models.Model):
 
             product_ids = super(Product, self)._search(args, offset, None, order, count=count, access_rights_uid=access_rights_uid)
             products = self.browse(product_ids)
-            _logger.info("Custom VCLS product search start with {} to filter with mode {}, business line {} and deliverable {}".format(len(products),business_mode,business_line,deliverable_id))
+            #_logger.info("Custom VCLS product search start with {} to filter with mode {}, business line {} and deliverable {}".format(len(products),business_mode,business_line,deliverable_id))
             
             if business_mode:
-                #If Fixed Price, Show only products with invoicing policy based on milestones and a re-invoicing policy configured as sales price
-                if business_mode == 'fixed_price':
-                    pass
-                    #products = products.filtered(lambda p: p.invoice_policy == 'delivered_manual' and p.expense_policy == 'sales_price')
-                #If T&M, Show Services (i.e. milestones and re-invoicing = NO) and rates products (with a seniority level not null)
-                elif business_mode == 't_and_m':
-                    products = products.filtered(lambda p: (not p.can_be_expensed) or (p.seniority_level_id))
+                has_deliver = False
+
+                if business_mode == 'all':
+                    has_deliver = True
+
+                elif business_mode == 'services':
+                    products = products.filtered(lambda p: (not p.can_be_expensed) and (not p.seniority_level_id))
+                    has_deliver = True
+                
+                elif business_mode == 'rates':
+                    products = products.filtered(lambda p: (not p.can_be_expensed) and (p.seniority_level_id))
                 
                 elif business_mode == 'subscriptions':
                     products = products.filtered(lambda p: p.recurring_invoice)
+                    #_logger.info("SEARCH found {} for mode {}".format(len(products),business_mode))
                 
-                _logger.info("SEARCH found {} for mode {}".format(len(products),business_mode))
+                if deliverable_id and has_deliver:
+                    products = products.filtered(lambda p: p.deliverable_id.id == deliverable_id)
+                    #_logger.info("SEARCH found {} for product {}".format(len(products),deliverable_id))
+
+                """elif business_mode == 't_and_m':
+                    products = products.filtered(lambda p: (not p.can_be_expensed) or (p.seniority_level_id))
+                """
+
+                
 
             if business_line:
                 bl_childs = self.env['product.category'].search([('id','child_of',business_line)])
-                products = products.filtered(lambda p: p.categ_id in bl_childs)
-                _logger.info("SEARCH found {} in {}".format(len(products),bl_childs.mapped('name')))
+                products = products.filtered(lambda p: (p.categ_id in bl_childs)) 
+                #_logger.info("SEARCH found {} in {}".format(len(products),bl_childs.mapped('name')))
 
-            if deliverable_id:
-                products = products.filtered(lambda p: p.deliverable_id.id == deliverable_id)
-                _logger.info("SEARCH found {} for product {}".format(len(products),deliverable_id))
+            
             
             return products.ids
 
