@@ -19,6 +19,7 @@ class SaleOrder(models.Model):
     business_mode = fields.Selection([
         ('t_and_m', 'T&M'), 
         ('fixed_price', 'Fixed Price'), 
+        ('subscriptions', 'Subscriptions'),
         ], default='t_and_m')
 
     deliverable_id = fields.Many2one(
