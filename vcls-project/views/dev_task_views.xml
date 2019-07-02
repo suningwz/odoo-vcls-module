@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="project.view_task_kanban"/>
             <field name="arch" type="xml">
                 <xpath expr="//kanban" position="replace">
-                    <kanban default_group_by="stage_id" class="o_kanban_small_column o_kanban_project_tasks" on_create="quick_create" quick_create_view="project.quick_create_task_form" examples="project">
+                    <kanban default_group_by="stage_id" class="o_kanban_small_column o_kanban_project_tasks" on_create="quick_create" quick_create_view="project.quick_create_task_form" examples="project" default_order="date_deadline">
                         <field name="color"/>
                         <field name="priority"/>
                         <field name="stage_id" options="{&quot;group_by_tooltip&quot;: {&quot;description&quot;: &quot;Stage Description&quot;, &quot;legend_priority&quot;: &quot;Use of stars&quot;}}"/>
