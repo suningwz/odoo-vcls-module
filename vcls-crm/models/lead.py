@@ -108,7 +108,7 @@ class Leads(models.Model):
     
     support_team = fields.Many2many(
         'hr.employee', 
-        string='Others', 
+        string='Other Technical Experts', 
         )
     
     resources_ids = fields.Many2many(
@@ -134,6 +134,16 @@ class Leads(models.Model):
     therapeutic_area_ids = fields.Many2many(
         'therapeutic.area',
         string ='Therapeutic Area',
+    )
+    
+    targeted_indication_ids = fields.Many2many(
+        'targeted.indication',
+        string ='Targeted Indication',
+    )
+    
+    stage_development_id = fields.Many2one(
+        'stage.development',
+        string ='Stage of Development',
     )
 
     ###################

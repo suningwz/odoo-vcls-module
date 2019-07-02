@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_order_form" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_confirm']" position="before">    
+                <button name="action_sync" id="action_sync"
+                    string="Synchronize Project" class="btn-primary" type="object"
+                    attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
+            </xpath>
+            <xpath expr="//tree/field[@name='price_tax']" position="after">
+                <field name="service_policy" invisible="True" />
+                <button type="action"
+                    name="%(sale_quote_project_forecast.action_calculate_price_wizard)d"
+                    icon="fa-calculator" attrs="{'invisible':[('service_policy', '==', 'delivered_timesheet')]}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

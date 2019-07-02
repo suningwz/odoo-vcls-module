@@ -16,6 +16,21 @@ class SaleOrder(models.Model):
         domain = "[('is_business_line','=',True)]"
     )
 
+    business_mode = fields.Selection([
+        #('t_and_m', 'T&M'), 
+        #('fixed_price', 'Fixed Price'), 
+        ('all', 'All'),
+        ('services', 'Services'),
+        ('rates', 'Rates'),
+        ('subscriptions', 'Subscriptions'),
+        ], default='all',
+        string = "Product Type")
+
+    deliverable_id = fields.Many2one(
+        'product.deliverable',
+        string="Deliverable"
+    )
+
     @api.model
     def create(self, vals):
 
@@ -33,3 +48,4 @@ class SaleOrder(models.Model):
 
         result = super(SaleOrder, self).create(vals)
         return result
+        
