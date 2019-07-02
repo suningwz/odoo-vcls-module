@@ -52,7 +52,8 @@ class Product(models.Model):
         _logger.info("SEARCH context: {} {} {}".format(business_mode,business_line,deliverable_id))
         product_ids = super(Product, self)._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
         products = self.browse(product_ids)
-        _logger.info("SEARCH found super: {} ".format(len(products)))
+        _logger.info("SEARCH  args {} ".format(args))
+        _logger.info("SEARCH found super: limit {} - found {} ".format(limit,len(products)))
 
         if business_line:
             bl_childs = self.env['product.category'].search([('id','child_of',business_line)])
