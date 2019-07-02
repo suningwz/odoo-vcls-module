@@ -2,7 +2,7 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 
 access_hr_employee_local_hr,hr.employee.local.hr,hr.model_hr_employee,vcls_group_HR_local,1,1,1,1
 hr.access_hr_employee_user,hr.employee user,hr.model_hr_employee,hr.group_hr_user,1,0,0,0
-hr.access_hr_employee_support,hr.access_hr_employee_support,hr.model_hr_employee,hr.vcls_group_superuser_lvl1,1,1,0,0
+hr.access_hr_employee_support,hr.access_hr_employee_support,hr.model_hr_employee,vcls-hr.vcls_group_superuser_lvl1,1,1,0,0
 
 access_hr_resource_global,hr.employee.resource.gloabl,resource.model_resource_resource,vcls_group_HR_global,1,1,1,1
 access_resource_local_hr,resource.local.hr,resource.model_resource_resource,vcls_group_HR_local,1,1,1,1
