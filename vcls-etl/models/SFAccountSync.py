@@ -19,12 +19,6 @@ class SFAccountSync(models.Model):
     def getSFTranslator(self, sfInstance):
         return TranslatorSFAccount.TranslatorSFAccount(sfInstance.getConnection())
 
-    """ def getCronId(self, isFullUpdate):
-        if isFullUpdate:
-            return self.env.ref('vcls-etl.cron_etl_account_full_Update').id
-        else:
-            return self.env.ref('vcls-etl.cron_etl_account').id
-    """
     def getSQLForKeys(self):
         sql = 'SELECT Id, LastModifiedDate FROM Account WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null))'
         return sql
