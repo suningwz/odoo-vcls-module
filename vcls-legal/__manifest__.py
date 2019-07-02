@@ -20,6 +20,7 @@
     # any module necessary for this one to work correctly
     'depends': ['agreement_legal',
                 'agreement_sale',
+                'agreement_legal_sale',
                 'vcls-crm',
                 ],
 
