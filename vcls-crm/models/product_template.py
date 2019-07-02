@@ -3,6 +3,9 @@
 from odoo import models, fields, tools, api
 from odoo.exceptions import UserError, ValidationError
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class Deliverable(models.Model):
 
     _name = 'product.deliverable'
@@ -46,8 +49,16 @@ class Product(models.Model):
         business_mode = self._context.get('business_mode')
         business_line = self._context.get('business_line')
         deliverable_id = self._context.get('deliverable_id')
+        _logger.info("SEARCH context: {} {} {}".format(business_mode,business_line,deliverable_id))
         product_ids = super(Product, self)._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
         products = self.browse(product_ids)
+        _logger.info("SEARCH found super: {} ".format(len(products)))
+
+        if business_line:
+            bl_childs = self.env['product.category'].search([('id','child_of',business_line)])
+            _logger.info("SEARCH BL cat: {} ".format(bl_childs.mapped('name')))
+            products = products.filtered(lambda p: p.categ_id in bl_childs)
+
         """if business_line:
             business_line_child_ids = self.env['product.category'].browse(business_line).child_id.ids
             if business_line_child_ids:
