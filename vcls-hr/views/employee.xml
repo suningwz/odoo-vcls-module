@@ -16,21 +16,25 @@
                         <!-- Button pop up new contract -->
                         <button name = "new_contract_pop_up" string = "New contract" type = "object"
                                 icon="fa-legal"
-                                attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"/>
+                                attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"
+                                groups="vcls-hr.vcls_group_HR_local"/>
                         
                         <!-- Button pop up new bonus -->
                         <button name = "new_bonus_pop_up" string = "New over variable salary" type = "object"
                                 icon="fa-trophy"
-                                attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"/>
+                                attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"
+                                groups="vcls-hr.vcls_group_HR_local"/>
                         
                         <!-- Button pop up new bonus -->
                         <button name = "new_benefit_pop_up" string = "New benefit set" type = "object"
                                 icon="fa-coffee"
-                                attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"/>
+                                attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"
+                                groups="vcls-hr.vcls_group_HR_local"/>
                         
                         <button name = "new_benefit_pop_up" string = "TEZST" type = "object"
                                 icon="fa-coffee"
-                                attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"/>
+                                attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"
+                                groups="vcls-hr.vcls_group_HR_local"/>
 
                     </header>
                     
