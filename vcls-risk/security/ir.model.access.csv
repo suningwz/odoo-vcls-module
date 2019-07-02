@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_risk_type_user,access_risk_type_user,vcls-risk.model_risk_type,base.group_user,1,0,0,0
+access_risk_type_manager,access_risk_type_manager,vcls-risk.model_risk_type,vcls-risk.risk_manager,1,1,1,1
+
+access_risk_user,access_risk_user,vcls-risk.model_risk,base.group_user,1,0,0,0
+access_risk_manager,access_risk_manager,vcls-risk.model_risk,vcls-risk.risk_user,1,1,1,1
