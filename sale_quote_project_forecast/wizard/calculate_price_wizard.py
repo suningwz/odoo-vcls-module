@@ -3,6 +3,7 @@ from odoo import models, fields, api
 
 class CalculatePriceWizard(models.TransientModel):
     _name = 'sale.order.line.prize.wizard'
+    _description = 'sale.order.line.prize.wizard'
 
     so_line_id = fields.Many2one(
         string='so_line',
@@ -72,6 +73,7 @@ class CalculatePriceWizard(models.TransientModel):
 
 class CalculatePriceWizardLine(models.TransientModel):
     _name = 'sale.order.line.prize.wizard.line'
+    _description = 'sale.order.line.prize.wizard.line'
 
     name = fields.Char("Name")
 
