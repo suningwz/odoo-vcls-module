@@ -19,7 +19,9 @@
 
     # any module necessary for this one to work correctly
     'depends': ['base',
-                'mail'],
+                'mail',
+                'sale',
+                'vcls-contact'],
 
     # always loaded
     'data': [
@@ -32,6 +34,8 @@
         'views/views.xml',
         'views/templates.xml',
         'views/risk_views.xml',
+        'views/sale_views.xml',
+        'views/contact_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
