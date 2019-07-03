@@ -46,7 +46,7 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
         
         if SF_Contract['Contract_EndDate__c']:
             result['end_date'] = SF_Contract['Contract_EndDate__c']
-            
+
         return result
 
     """ @staticmethod
@@ -87,9 +87,9 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
             result['OwnerId'] = TranslatorSFGeneral.TranslatorSFGeneral.revertOdooIdToSfId(Odoo_Contact.user_id,odoo)
         elif Odoo_Contact.parent_id:
             result['OwnerId'] = TranslatorSFGeneral.TranslatorSFGeneral.revertOdooIdToSfId(Odoo_Contact.parent_id.user_id,odoo)
-        """ for c in Odoo_Contact.category_id:
+        for c in Odoo_Contact.category_id:
             category += c.name 
-        result['Category__c'] = category"""
+        result['Category__c'] = category
         result['Salutation'] = Odoo_Contact.title.name
         result['Title'] = Odoo_Contact.function
 
