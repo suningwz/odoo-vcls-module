@@ -38,10 +38,10 @@ class SFContractSync(models.Model):
         return sql
 
     def getModifiedRecordsOdoo(self):
-        return self.env['agreement'].search([('write_date','>', self.getStrLastRun()),('is_company','=',False),('is_internal','=',False)])
+        return self.env['agreement'].search([('write_date','>', self.getStrLastRun())])
 
     def getAllRecordsOdoo(self):
-        return self.env['agreement'].search([('is_company','=',False)])
+        return self.env['agreement'].search([])
         
     def getKeysFromOdoo(self):                
         return self.env['etl.sync.keys'].search([('odooModelName','=','agreement'),('externalObjName','=','Contract')])

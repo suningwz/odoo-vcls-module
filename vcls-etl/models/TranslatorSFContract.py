@@ -9,13 +9,18 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
         mapOdoo = odoo.env['map.odoo']
         result = {}
         # Modify the name with -test
-        result['code'] = SF_Contract['Name'] #+ '-test'
-        
+        result['code'] = SF_Contract['ContractNumber']
+        if SF_Contract['Name']:
+            result['internal_name'] = SF_Contract['Name'] #+ '-test'
+        else:
+            result['internal_name'] = "the only one contract without name"
         if SF_Contract['External_Contract_Name__c']:
             result['name'] = SF_Contract['External_Contract_Name__c']
+        else:
+            result['name'] = result['internal_name']
 
-        if SF_Contract['Contract_Type__c']:    
-            result['agreement_type_id'] = mapOdoo.convertRef(SF_Contract['Contract_Type__c'], odoo, 'agreement.type', False)
+        if SF_Contract['Type_of_Contract__c']:    
+            result['agreement_type_id'] = mapOdoo.convertRef(SF_Contract['Type_of_Contract__c'], odoo, 'agreement.type', False)
         
         if SF_Contract['VCLS_Status__c']:
             result['stage_id'] = mapOdoo.convertRef(SF_Contract['VCLS_Status__c'], odoo, 'agreement.stage', False)
@@ -30,28 +35,31 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
             result['company_signed_user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contract['CompanySignedId'],odoo, SF)
         
         if SF_Contract['CustomerSignedId']:
-            result['customer_signed_user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contract['CustomerSignedId'],odoo, SF)
+            result['partner_signed_user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Contract['CustomerSignedId'],'res.partner','Contact', odoo)
 
         if SF_Contract['CustomerSignedDate']:
-            result['customer_signed_date'] = SF_Contract['CustomerSignedDate']
+            result['partner_signed_date'] = SF_Contract['CustomerSignedDate']
 
         if SF_Contract['Contract_URL__c']:
             result['contract_url'] = SF_Contract['Contract_URL__c']
         
-        if SF_Contract['Owner_Id']:
+        if SF_Contract['OwnerId']:
             result['assigned_user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contract['OwnerId'],odoo, SF)
 
-        if SF_Contract['Account_Id']:
-            result['partner_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Contract['Account_Id'],'res.partner','Contact',odoo)
+        if SF_Contract['AccountId']:
+            result['partner_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Contract['AccountId'],'res.partner','Account',odoo)
         
-        if SF_Contract['Contract_EndDate__c']:
-            result['end_date'] = SF_Contract['Contract_EndDate__c']
+        if SF_Contract['Contract_End_Date__c']:
+            result['end_date'] = SF_Contract['Contract_End_Date__c']
 
+        result['company_id'] = False
+        
         return result
 
-    """ @staticmethod
+    @staticmethod
     def translateToSF(Odoo_Contact, odoo):
-        result = {}
+        pass
+    """    result = {}
         # Modify the name with -test
         if ' ' in Odoo_Contact.name:
             name = Odoo_Contact.name.split(" ")

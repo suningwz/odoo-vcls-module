@@ -32,7 +32,7 @@ class SFAccountSync(models.Model):
         sql += 'Supplier_Selection_Form_completed__c, Website, '
         sql += 'Create_Sharepoint_Folder__c, OwnerId, Is_supplier__c, Main_VCLS_Contact__c, '
         sql += 'Supplier__c, Type, Project_Controller__c, VCLS_Alt_Name__c,  '
-        sql += 'Supplier_Project__c, Activity__c, Product_Type__c, Industry, CurrencyIsoCode, Invoice_Administrator__c '
+        sql += 'Supplier_Project__c, Activity__c, Product_Type__c, Industry, KimbleOne__InvoicingCurrencyIsoCode__c, Invoice_Administrator__c '
         sql += 'FROM Account '
         sql += 'WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null)) '
         return sql

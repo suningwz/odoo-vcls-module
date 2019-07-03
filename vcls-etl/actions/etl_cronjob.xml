@@ -118,7 +118,7 @@
             </field>
         </record>
 
-        <record id="cron_etl_account" model="ir.cron">
+        <record id="cron_etl_contract" model="ir.cron">
             <field name="name">ETL Salesforce Contract</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
@@ -132,7 +132,7 @@
 #run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords) </field>
         </record>
 
-        <record id="cron_etl_account_full_update" model="ir.cron">
+        <record id="cron_etl_contract_full_update" model="ir.cron">
             <field name="name">ETL Salesforce Contract Full Update</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
