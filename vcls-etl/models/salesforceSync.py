@@ -100,9 +100,13 @@ class salesforceSync(models.Model):
         sql = str(self.getSQLForKeys())
         allRecordExt = externalInstance.getConnection().query_all(sql)['records']
         allRecordOdoo = self.getAllRecordsOdoo()
-
         if not isFullUpdate:
-            sql += ' AND LastModifiedDate > ' + self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") 
+            if 'WHERE' in sql: 
+                sql += 'AND '
+            else:
+                sql += 'WHERE '
+            sql += 'LastModifiedDate > ' + self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") 
+        
         sql += ' ORDER BY Name'
         
         print('Execute QUERY: {}'.format(sql))
