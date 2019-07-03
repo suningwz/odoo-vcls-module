@@ -28,8 +28,7 @@ class SFContractSync(models.Model):
     
     def getSQLForRecord(self):
         sql = "Select Id, LastModifiedDate, Name, External_Contract_Name__c, AccountId, "
-        sql+= "BillingAddress, BillingCity, BillingCountry, CompanySignedDate, "
-        sql+= "CompanySignedId, ContractNumber, ContractTerm, Contract_End_Date__c, "
+        sql+= "CompanySignedDate, CompanySignedId, ContractNumber, ContractTerm, Contract_End_Date__c, "
         sql+= "Contract_Update__c, Contract_URL__c, CurrencyIsoCode, CustomerSignedDate, "
         sql+= "CustomerSignedId, CustomerSignedTitle, EndDate,Link_to_Parent_Contract__c, "
         sql+= "OwnerId, Parent_Contract_Name__c, Parent_Contract_Type__c, "

@@ -9,71 +9,47 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
         mapOdoo = odoo.env['map.odoo']
         result = {}
         # Modify the name with -test
-        result['name'] = SF_Contract['Name'] #+ '-test'
-
-        result['agreement_type_id'] = mapOdoo.convertRef(SF_Contract['Contract_Type__c'], odoo, 'agreement', False)
+        result['code'] = SF_Contract['Name'] #+ '-test'
         
-        result['stage'] = TranslatorSFContract.convertStatus(SF_Contract)
-        # Ignore  Contact_Level__c
-        # result['state_id'] = reference  BillingState
-        if SF_Contract['MailingAddress']:
-            result['city'] = SF_Contract['MailingAddress']['city']
-            result['zip'] = SF_Contract['MailingAddress']['postalCode']
-            result['street'] = SF_Contract['MailingAddress']['street']
+        if SF_Contract['External_Contract_Name__c']:
+            result['name'] = SF_Contract['External_Contract_Name__c']
+
+        if SF_Contract['Contract_Type__c']:    
+            result['agreement_type_id'] = mapOdoo.convertRef(SF_Contract['Contract_Type__c'], odoo, 'agreement.type', False)
         
-        result['linkedin'] = SF_Contract['LinkedIn_Profile__c']
-        result['phone'] = SF_Contract['Phone']
-        result['fax'] = SF_Contract['Fax']
-        result['mobile'] = SF_Contract['MobilePhone']
-        result['email'] = SF_Contract['Email']
+        if SF_Contract['VCLS_Status__c']:
+            result['stage_id'] = mapOdoo.convertRef(SF_Contract['VCLS_Status__c'], odoo, 'agreement.stage', False)
 
-        # Ignore Area_of_expertise__c
-        result['description'] = ''
-        result['description'] += 'Contact description : ' + str(SF_Contract['Description']) + '\n'
-        # Ignore Supplier_Selection_Form_completed__c
-        result['website'] = SF_Contract['AccountWebsite__c']
-        result['parent_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Contract['AccountId'],"res.partner","Account",odoo)
-        result['company_type'] = 'person'
-        #documented to trigger proper default image loaded
-        result['is_company'] = False
+        if SF_Contract['Link_to_Parent_Contract__c']:
+            result['parent_agreement_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Contract['Link_to_Parent_Contract__c'],'agreement','Contract',odoo)
         
-        if SF_Contract['MailingCountry']:
-            result['country_id'] = mapOdoo.convertRef(SF_Contract['MailingCountry'],odoo,'res.country',False)
-                
-        result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contract['OwnerId'],odoo, SF)
-       
-        result['category_id'] =  [(6, 0, TranslatorSFContract.convertCategory(SF_Contract, odoo))]
-        if SF_Contract['Salutation']:
-            result['title'] = mapOdoo.convertRef(SF_Contract['Salutation'], odoo,'res.partner.title',False)
+        if SF_Contract['CompanySignedDate']:
+            result['company_signed_date'] = SF_Contract['CompanySignedDate']
 
-        result['function'] = SF_Contract['Title']
-        result['message_ids'] = [(0, 0, TranslatorSFContract.generateLog(SF_Contract))]
+        if SF_Contract['CompanySignedId']:
+            result['company_signed_user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contract['CompanySignedId'],odoo, SF)
+        
+        if SF_Contract['CustomerSignedId']:
+            result['customer_signed_user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contract['CustomerSignedId'],odoo, SF)
 
-        if SF_Contract['Opted_In__c']:
-            result['opted_in'] = SF_Contract['Opted_In__c']
+        if SF_Contract['CustomerSignedDate']:
+            result['customer_signed_date'] = SF_Contract['CustomerSignedDate']
 
-        if SF_Contract['Unsubscribed_from_Marketing_Comms__c']:
-            result['opted_out'] = True if SF_Contract['Unsubscribed_from_Marketing_Comms__c'] == 'Unsubscribed' else False
+        if SF_Contract['Contract_URL__c']:
+            result['contract_url'] = SF_Contract['Contract_URL__c']
+        
+        if SF_Contract['Owner_Id']:
+            result['assigned_user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contract['OwnerId'],odoo, SF)
 
-        if SF_Contract['VCLS_Initial_Contact__c']:
-            result['vcls_contact_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contract['VCLS_Initial_Contact__c'],odoo, SF)
-
-        if SF_Contract['VCLS_Main_Contact__c']:
-            result['expert_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contract['VCLS_Main_Contact__c'],odoo, SF)
-
-        return result
-    
-    @staticmethod
-    def generateLog(SF_Contract):
-        result = {
-            'model': 'agreement',
-            'message_type': 'comment',
-            'body': '<p>Updated.</p>'
-        }
-
+        if SF_Contract['Account_Id']:
+            result['partner_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Contract['Account_Id'],'res.partner','Contact',odoo)
+        
+        if SF_Contract['Contract_EndDate__c']:
+            result['end_date'] = SF_Contract['Contract_EndDate__c']
+            
         return result
 
-    @staticmethod
+    """ @staticmethod
     def translateToSF(Odoo_Contact, odoo):
         result = {}
         # Modify the name with -test
@@ -118,36 +94,4 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
         result['Title'] = Odoo_Contact.function
 
 
-        return result
-
-    @staticmethod
-    def convertStatus(SF):
-        if SF['Inactive_Contact__c']:
-            return 5
-        else: # New
-            return 2
-    
-    @staticmethod
-    def revertStatus(status):
-        if status == 3:
-            return 'Active - contract set up, information completed'
-        elif status == 2:
-            return 'Prospective: no contract, pre-identify'
-        elif status == 5:
-            return 'Inactive - reason mentioned'
-        else: # Undefined
-            return 'Undefined - to fill'
-
-    @staticmethod
-    def convertCategory(SF, odoo):
-        result = []
-        if SF['Supplier__c']:
-            result += [odoo.env.ref('vcls-contact.category_PS').id]
-        """ if SFtype:
-            if (not isSupplier) and 'supplier' in SFtype.lower():
-                result += [odoo.env.ref('vcls-contact.category_PS').id]
-            if 'competitor' in SFtype.lower():
-                result += [odoo.env.ref('vcls-contact.category_competitor').id]
-            if 'partner' in SFtype.lower():
-                result += [odoo.env.ref('vcls-contact.category_partner').id] """
-        return result
+        return result """
