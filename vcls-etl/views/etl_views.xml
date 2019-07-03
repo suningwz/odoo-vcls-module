@@ -50,6 +50,13 @@
 			<field name="res_model">etl.salesforce.account</field>
 			<field name="view_mode">kanban,tree,form,activity</field>
 		</record>
+		
+		<record model="ir.actions.act_window" id="action_etl_contract">
+			<field name="name">ETL Salesforce Contract</field>
+			<field name="res_model">etl.salesforce.contract</field>
+			<field name="view_mode">kanban,tree,form,activity</field>
+		</record>
+
 		<record model="ir.actions.act_window" id="action_etl_contact">
 			<field name="name">ETL Salesforce Contact</field>
 			<field name="res_model">etl.salesforce.contact</field>

@@ -20,6 +20,12 @@
 			action="action_etl_contact" 
 			sequence="6" />
 		<menuitem 
+			name="Salesforce Contract" 
+			parent="menu_etl" 
+			id="menu_etl_contract" 
+			action="action_etl_contract" 
+			sequence="6" />
+		<menuitem 
 			name="Salesforce Opportunity" 
 			parent="menu_etl" 
 			id="menu_etl_opportunity" 

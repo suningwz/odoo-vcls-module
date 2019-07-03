@@ -8,6 +8,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
     @staticmethod
     def translateToOdoo(SF_Account, odoo, SF):
         mapOdoo = odoo.env['map.odoo']
+        
         result = {}
         # Modify the name with -test
         result['name'] = SF_Account['Name'] #+ '-test'
@@ -26,40 +27,62 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
             result['country_id'] = mapOdoo.convertRef(SF_Account['BillingCountry'],odoo,'res.country',False)
         
         result['phone'] = SF_Account['Phone']
+        
         result['fax'] = SF_Account['Fax']
         # Ignore Area_of_expertise__c
+        
         result['sharepoint_folder'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUrl(SF_Account['Sharepoint_Folder__c']) # /!\
+        
         result['description'] = ''
+        
         result['description'] += 'Supplier description : ' + str(SF_Account['Supplier_Description__c']) + '\n'
+        
         result['description'] += 'Key Information : {}\n'.format(SF_Account['Key_Information__c'])
+        
         # Ignore Supplier_Selection_Form_completed__c
         result['website'] = SF_Account['Website']
+        
         result['create_folder'] = SF_Account['Create_Sharepoint_Folder__c']
+        
         result['company_type'] = 'company'
         #documented to trigger proper default image loaded
         result['is_company'] = 'True'
-        result['default_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Account['CurrencyIsoCode'],odoo)
+        
+        result['default_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Account['KimbleOne__InvoicingCurrencyIsoCode__c'],odoo)
+        
         result['altname'] = SF_Account['VCLS_Alt_Name__c']
+        
         result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['OwnerId'],odoo, SF)
+        
         if SF_Account['Invoice_Administrator__c']:
            result['invoice_admin_id'] = mapOdoo.convertRef(SF_Account['Invoice_Administrator__c'],odoo,'res.users',False)
+        
         if SF_Account['Main_VCLS_Contact__c']:
             result['expert_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['Main_VCLS_Contact__c'],odoo, SF)
+        
         if SF_Account['Project_Assistant__c']:
             result['assistant_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['Project_Assistant__c'],odoo, SF)
+        
         if SF_Account['Project_Controller__c']:
             result['controller_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['Project_Controller__c'],odoo, SF)
+        
         if SF_Account['Industry']:
             result['industry_id'] = mapOdoo.convertRef(SF_Account['Industry'],odoo,'res.partner.industry',False)
+        
         if SF_Account['Area_of_expertise__c']:
             result['expertise_area_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Area_of_expertise__c'],odoo,'expertise.area',True))]
+        
         if SF_Account['Supplier_Project__c']:
             result['project_supplier_type_id'] = mapOdoo.convertRef(SF_Account['Supplier_Project__c'],odoo,'project.supplier.type',False)
+        
         if SF_Account['Activity__c']:
             result['client_activity_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Activity__c'],odoo,'client.activity',True))]
+        
         if SF_Account['Product_Type__c']:
             result['client_product_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Product_Type__c'],odoo,'client.product',True))]
+        
         result['category_id'] =  [(6, 0, TranslatorSFAccount.convertCategory(SF_Account,odoo))]
+        
         result['message_ids'] = [(0, 0, TranslatorSFAccount.generateLog(SF_Account))]
 
         return result
