@@ -9,15 +9,16 @@ class SaleOrder(models.Model):
     risk_ids = fields.Many2many('risk', string='Risk')
 
     def action_risk(self):
-        view_id = self.env.ref('vcls-risk.view_risk_tree').id
+        view_ids = [self.env.ref('vcls-risk.view_risk_tree').id,
+                    self.env.ref('vcls-risk.view_risk_kanban').id, 
+                    self.env.ref('vcls-risk.view_risk_form').id ]
         risk_ids = self.risk_ids
 
-        print(risk_ids)
         return {
             'name': 'All Risks',
             'view_type': 'form',
-            'view_mode': 'tree',
-            'view_id': view_id,
+            'view_mode': 'tree,kanban,form',
+            'view_ids': view_ids,
             'target': 'current',
             'res_model': 'risk',
             'type': 'ir.actions.act_window',
@@ -50,15 +51,11 @@ class SaleOrderLine(models.Model):
     @api.multi
     def write(self, vals):
         result = super(SaleOrderLine, self).write(vals)
-        print("write : ")
-        print(result)
         self.create_risk()
         return result
 
     @api.model
     def create(self, vals):
         result = super(SaleOrderLine, self).create(vals)
-        print("create : ")
-        print(result)
         result.create_risk()
         return result
