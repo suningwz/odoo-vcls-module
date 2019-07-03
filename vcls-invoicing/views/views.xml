@@ -1,0 +1,60 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <!--
+    <record model="ir.ui.view" id="vcls-invoicing.list">
+      <field name="name">vcls-invoicing list</field>
+      <field name="model">vcls-invoicing.vcls-invoicing</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </tree>
+      </field>
+    </record>
+    -->
+
+    <!-- actions opening views on models -->
+    <!--
+    <record model="ir.actions.act_window" id="vcls-invoicing.action_window">
+      <field name="name">vcls-invoicing window</field>
+      <field name="res_model">vcls-invoicing.vcls-invoicing</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    -->
+
+    <!-- server action to the one above -->
+    <!--
+    <record model="ir.actions.server" id="vcls-invoicing.action_server">
+      <field name="name">vcls-invoicing server</field>
+      <field name="model_id" ref="model_vcls-invoicing_vcls-invoicing"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+    -->
+
+    <!-- Top menu item -->
+    <!--
+    <menuitem name="vcls-invoicing" id="vcls-invoicing.menu_root"/>
+    -->
+    <!-- menu categories -->
+    <!--
+    <menuitem name="Menu 1" id="vcls-invoicing.menu_1" parent="vcls-invoicing.menu_root"/>
+    <menuitem name="Menu 2" id="vcls-invoicing.menu_2" parent="vcls-invoicing.menu_root"/>
+    -->
+    <!-- actions -->
+    <!--
+    <menuitem name="List" id="vcls-invoicing.menu_1_list" parent="vcls-invoicing.menu_1"
+              action="vcls-invoicing.action_window"/>
+    <menuitem name="Server to list" id="vcls-invoicing" parent="vcls-invoicing.menu_2"
+              action="vcls-invoicing.action_server"/>
+    -->
+  </data>
+</odoo>

@@ -11,7 +11,7 @@
             <field name="doall">False</field>
             <field name="model_id" ref="model_hr_employee" />
             <field name="state">code</field>
-            <field name="code">model.approve_timesheets(24)</field>
+            <field name="code">model.approve_timesheets(36)</field>
         </record>
     </data>
 </odoo>
