@@ -7,12 +7,10 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='add_new_adress']" position="after">
                 <field name="risk_ids" invisible="1"/>
-                <button class="badge-danger float-right" name="action_risk" id="action_risk"
-                    icon="fa-exclamation-triangle"
-                    string="All Risks" type="object"
+                <button class="btn-outline-primary float-right" name="action_risk" id="action_risk"
+                    string="Risk Analysis" type="object"
                     attrs="{'invisible': [('risk_ids', '=', [])]}"/>
             </xpath>
-
         </field>
     </record>
 </odoo>
