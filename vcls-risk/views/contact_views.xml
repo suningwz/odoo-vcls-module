@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_contact_form" model="ir.ui.view">
+        <field name="name">res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="vcls-contact.view_form_contact_all" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='add_new_adress']" position="after">
+                <field name="risk_ids" invisible="1"/>
+                <button class="btn-outline-primary float-right" name="action_risk" id="action_risk"
+                    string="Risk Analysis" type="object"
+                    attrs="{'invisible': [('risk_ids', '=', [])]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

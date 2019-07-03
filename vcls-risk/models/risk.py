@@ -27,7 +27,7 @@ class RiskType(models.Model):
 
 class Risk(models.Model):
     _name = 'risk'
-    #_inherit = ['mail.thread', 'mail.activity.mixin', 'mail.blacklist.mixin', 'portal.mixin', 'mail.alias.mixin']
+    _inherit = ['mail.thread']
     _description = 'A Risk'
 
     risk_type_id = fields.Many2one('risk.type',
