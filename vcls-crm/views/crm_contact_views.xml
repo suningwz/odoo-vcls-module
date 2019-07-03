@@ -36,6 +36,7 @@
                 </data>
                 <field name="property_product_pricelist" position="after">
                     <field name="default_currency_id"/>
+                    <field name="vat"/>
                 </field>
                 <xpath expr="/form/sheet/notebook/page[5]" position="after">
                     <page name="marketing" string="Marketing Info" attrs="{'invisible': [('see_segmentation', '=', False)]}">
