@@ -41,7 +41,7 @@ class SaleOrderLine(models.Model):
                     if not risk_type:
                         risk_type = self.env['risk.type'].create({'name': 'Sale Order Risk', 'active': True, 'model_name': 'sale.order.line'})
                     if not risk:
-                        risk = self.env['risk'].create({'risk_type_id': risk_type.id, 'resource': resource}).id
+                        risk = self.env['risk']._raise_risk(risk_type, resource).id
                         self.order_id.risk_id = risk
         
     @api.multi
