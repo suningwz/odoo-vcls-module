@@ -19,6 +19,7 @@
 
     # any module necessary for this one to work correctly
     'depends': ['base',
+                'vcls-hr',
                 'vcls-crm',
                 'account',],
 
@@ -28,6 +29,7 @@
         'views/views.xml',
         'views/templates.xml',
         'views/sale_views.xml',
+        'views/invoice_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

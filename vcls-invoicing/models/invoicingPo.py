@@ -24,5 +24,5 @@ class InvoicingPO(models.Model):
 
     @api.one
     def _compute_invoiced_amount(self):
-        self.invoiced_amount = sum(self.env['account.invoice'].search([('po_id','=',self.id)]).amount_untaxed)
+        self.invoiced_amount = sum(invoice.amount_untaxed for invoice in self.env['account.invoice'].search([('po_id','=',self.id)]))
         
