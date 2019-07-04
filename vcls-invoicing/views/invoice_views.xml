@@ -1,0 +1,54 @@
+<odoo>
+    <data>
+
+        <record id="invoice_tree_with_po" model="ir.ui.view">
+            <field name="name">account.invoice.tree.with.po</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='type']" position="after">
+                    <field name='po_id'/>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_invoice_form">
+            <field name="name">account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='team_id']" position="after">
+                    <field name='po_id'/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id='po_view_tree' model='ir.ui.view'>
+            <field name="name">po.view.tree</field>
+            <field name="model">invoicing.po</field>
+            <field name="arch" type="xml">
+                <tree create='1' editable="top" string="Purchase Order">
+                    <field name="active"/>
+                    <field name="name"/>
+                    <field name="client_ref" />
+                    <field name="partner_id"/>
+                    <field name="amount"/>
+                    <field name="currency_id"/>
+                    <field name="invoiced_amount" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_po" model="ir.actions.act_window">
+            <field name="name">Client Purchase Order</field>
+            <field name="res_model">invoicing.po</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="po_view_tree"/>
+        </record>
+
+        <menuitem id="menu_finance_po" name="Client Purchase Order" parent="account.menu_finance" sequence="3" action="action_po"/>
+
+        
+
+    </data>
+</odoo>
