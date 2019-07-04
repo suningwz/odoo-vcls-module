@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <!-- We deactivate the standard rule -->
+        <record id="hr_timesheet.timesheet_line_rule_user" model="ir.rule">
+            <field name="active" eval="False"/>
+        </record>
+
         <record id="LC_timesheet_read_rule" model="ir.rule">
             <field name="name">LC can see all project TS</field>
             <field name="model_id" ref="model_account_analytic_line"/>
