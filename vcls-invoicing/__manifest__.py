@@ -19,13 +19,16 @@
 
     # any module necessary for this one to work correctly
     'depends': ['base',
-                'vcls-hr',
                 'vcls-crm',
+                'vcls-contact',
+                'vcls-risk',
+                'vcls-hr',
                 'account',],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'views/contact_views.xml',
         'views/sale_views.xml',
         'views/invoice_views.xml',
     ],
