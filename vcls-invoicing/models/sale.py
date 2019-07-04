@@ -8,6 +8,8 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
     risk_id = fields.Many2one('risk', string='Risk')
 
+    po_id = fields.Many2one('invoicing.po', string ='Purchase Order')
+
     def action_risk(self):
         view_ids = [self.env.ref('vcls-risk.view_risk_tree').id,
                     self.env.ref('vcls-risk.view_risk_kanban').id, 
@@ -43,7 +45,7 @@ class SaleOrderLine(models.Model):
                     if not risk:
                         risk = self.env['risk']._raise_risk(risk_type, resource).id
                         self.order_id.risk_id = risk
-        
+                    
     @api.multi
     def write(self, vals):
         result = super(SaleOrderLine, self).write(vals)
