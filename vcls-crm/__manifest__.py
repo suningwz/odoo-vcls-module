@@ -29,6 +29,7 @@
                 'sale_management',
                 'sale_crm',
                 'crm_lead_currency',
+                'vcls-hr',
                 #'sale_project_timesheet_by_seniority',
                 #'crm_lead_product',
                 ],

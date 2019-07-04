@@ -36,6 +36,8 @@ class Leads(models.Model):
         track_visibility='onchange', 
         #default='_default_am',
         )
+    
+    company_id = fields.Many2one(default = '')
 
     country_group_id = fields.Many2one(
         'res.country.group',
