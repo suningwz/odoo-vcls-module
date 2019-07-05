@@ -19,9 +19,10 @@
 
     # any module necessary for this one to work correctly
     'depends': ['base',
-                'vcls-hr',
                 'vcls-crm',
                 'vcls-contact',
+                'vcls-risk',
+                'vcls-hr',
                 'account',],
 
     # always loaded
