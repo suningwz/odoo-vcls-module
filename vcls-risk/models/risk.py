@@ -64,7 +64,8 @@ class Risk(models.Model):
             partner_ids = []
             for user in risk_type.group_id.users:
                 partner_ids.append(user.partner_id.id)
-            self.message_subscribe(partner_ids=partner_ids)
-            self.message_post(body="Risk created", partner_ids=[4, partner_ids])
-            self.last_notification = datetime.datetime.now()
+            if partner_ids:
+                self.message_subscribe(partner_ids=partner_ids)
+                self.message_post(body="Risk created", partner_ids=[4, partner_ids])
+                self.last_notification = datetime.datetime.now()
 

@@ -33,18 +33,25 @@ class SaleOrderLine(models.Model):
     def create_risk(self):
         so_line_price = self.price_unit
         product_prices = self.product_id.item_ids
-
-        if self.product_id.seniority_level_id:
-            for product_price in product_prices:
-                if product_price.pricelist_id == self.pricelist_id and product_price.fixed_price != so_line_price:
-                    risk_type = self.env['risk.type'].search([('name', '=', 'Sale Order Risk'), ('model_name', '=', 'sale.order.line')])
-                    resource ='sale.order.line,' + str(self.id)
-                    risk = self.env['risk'].search([('resource', '=', resource)])
-                    if not risk_type:
-                        risk_type = self.env['risk.type'].create({'name': 'Sale Order Risk', 'active': True, 'model_name': 'sale.order.line'})
-                    if not risk:
-                        risk = self.env['risk']._raise_risk(risk_type, resource).id
-                        self.order_id.risk_id = risk
+        try:
+            if self.product_id.seniority_level_id:
+                for product_price in product_prices:
+                    if product_price.pricelist_id == self.pricelist_id and product_price.fixed_price != so_line_price:
+                        risk_type = self.env.ref('vcls-invoicing.non_standard_rates')
+                        resource ='sale.order.line,' + str(self.id)
+                        risk = self.env['risk'].search([('resource', '=', resource)])
+                        if not risk:
+                            risk = self.env['risk']._raise_risk(risk_type, resource).id
+                            self.order_id.risk_id = risk
+            elif self.company_id.id != self.env.ref('vcls-hr.company_VCFR').id:
+                risk_type = self.env.ref('vcls-invoicing.non_standard_company')
+                resource ='sale.order.line,' + str(self.id)
+                risk = self.env['risk'].search([('resource', '=', resource)])
+                if not risk:
+                    risk = self.env['risk']._raise_risk(risk_type, resource).id
+                    self.order_id.risk_id = risk
+        except Exception:
+            pass
                     
     @api.multi
     def write(self, vals):

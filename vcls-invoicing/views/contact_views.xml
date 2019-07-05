@@ -10,7 +10,24 @@
                 <button class="btn-outline-primary float-right" name="action_risk" id="action_risk"
                     string="Risk Analysis" type="object"
                     attrs="{'invisible': [('risk_ids', '=', [])]}"/>
+                <button class="btn-outline-primary float-right" name="action_po" id="action_po"
+                    string="Purchase Order" type="object"
+                    attrs="{'invisible': [('customer', '=', False)]}"/>
             </xpath>
+            <xpath expr="//page[@name='financials']" position="inside">
+                    <group>
+                        <group>
+                            <field name="communication_rate"/>
+                            <field name="invoicing_frequency"/>
+                        </group>
+
+                        <group>
+                            <field name="outsourcing_permission"/>
+                            <field name="invoice_template"/>
+                            <field name="activity_report_template"/>
+                        </group>
+                    </group> 
+                </xpath>
         </field>
     </record>
 </odoo>

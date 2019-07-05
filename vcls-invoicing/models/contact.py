@@ -24,3 +24,16 @@ class Contact(models.Model):
             'type': 'ir.actions.act_window',
             'context': {'search_default_id': risk_ids.ids,},
         } 
+
+    def action_po(self):
+        po_ids = self.env['invoicing.po'].search([('partner_id','=',self.id)]).ids
+
+        return {
+            'name': 'Purchase Order',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'target': 'current',
+            'res_model': 'invoicing.po',
+            'type': 'ir.actions.act_window',
+            'context': {'search_default_id': po_ids,},
+        } 
