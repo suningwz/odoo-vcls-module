@@ -23,5 +23,15 @@
 			sequence="6" />
 
 
+		<menuitem
+            id= "menu_show_external_consultant"
+            name= "External Consultants"
+			groups = "vcls-suppliers.vcls_group_rm" 
+            parent="hr.menu_hr_root"
+            action="action_show_external_consultant"
+            sequence="7"
+        />
+
+
 	</data>
 </odoo>
