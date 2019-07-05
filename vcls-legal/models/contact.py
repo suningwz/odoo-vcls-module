@@ -15,5 +15,5 @@ class Contact(models.Model):
             'res_model': 'agreement',
             'type': 'ir.actions.act_window',
             'context': {"default_partner_id": agre_ids, 
-                "search_default_partner_id": [agre_ids], },
+            "search_default_partner_id": [agre_ids], },
         } 
