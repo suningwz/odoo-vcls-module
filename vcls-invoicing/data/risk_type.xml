@@ -1,0 +1,25 @@
+<odoo>
+    <data>
+        <record id="non_standard_rates" model="risk.type">
+            <field name="name">Non-standard Rates</field>
+            <field name="active">True</field>
+            <field name="model_name">sale.order</field>
+            <field name="category">Finance</field>
+            <field name="description">when a rate product price is modified in a quotation</field>
+            <field name="group_id" ref="vcls-invoicing.finance_risk_group"/>
+            <field name="notify">True</field>
+            <field name="weight">1</field>
+        </record>
+
+        <record id="non_standard_company" model="risk.type">
+            <field name="name">Non-standard Company</field>
+            <field name="active">True</field>
+            <field name="model_name">sale.order</field>
+            <field name="category">Finance</field>
+            <field name="description">when the trading company is not VCLS Sàrl</field>
+            <field name="group_id" ref="vcls-invoicing.finance_risk_group"/>
+            <field name="notify">True</field>
+            <field name="weight">1</field>
+        </record>
+    </data>
+</odoo>
