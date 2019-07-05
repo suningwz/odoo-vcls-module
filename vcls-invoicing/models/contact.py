@@ -54,5 +54,6 @@ class Contact(models.Model):
             'target': 'current',
             'res_model': 'invoicing.po',
             'type': 'ir.actions.act_window',
-            'context': {'search_default_id': po_ids,},
+            'context': {"default_id": po_ids, 
+                "search_default_id": [po_ids], },
         } 
