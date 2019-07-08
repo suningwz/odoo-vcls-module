@@ -35,7 +35,10 @@ class Invoice(models.Model):
         ret = super(Invoice, self).create(vals)       
         partner = ret.partner_id
         if partner.communication_rate:
-            total_amount = ret.get_communication_amount()
+            try:
+                total_amount = ret.get_communication_amount()
+            except:
+                total_amount = False
             if total_amount:
                 line = self.env['account.invoice.line'].new()
                 line.invoice_id = ret.id
@@ -52,7 +55,10 @@ class Invoice(models.Model):
         for rec in self:
             partner = rec.partner_id
             if partner.communication_rate and not self.env.context.get('communication_rate'):
-                total_amount = rec.get_communication_amount()
+                try:
+                    total_amount = ret.get_communication_amount()
+                except:
+                    total_amount = False
                 if total_amount:
                     line = self.env['account.invoice.line'].new()
                     line.invoice_id = rec.id
