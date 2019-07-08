@@ -68,8 +68,9 @@
                                         <field name="office_id"/>
                                         <field name="work_email" widget="email"/>
                                         <field name="access_level" invisible='1' string='View Scope'/>
-                                        
+                                        <field name="employee_type" groups="vcls-hr.vcls_group_superuser_lvl2"/>
                                     </group>
+                                    
                                     <group string="">
                                         <field name="department_id"/>
                                         <field name="work_phone" widget="phone"/>
@@ -92,7 +93,6 @@
                                 <group>
                                     <group string="Administrative Information">
                                         <field name="employee_external_id"/>
-                                        <field name="employee_type"/>
                                         <field name="gender"/>
                                         <field name="first_name"/>
                                         <field name="middle_name"/>

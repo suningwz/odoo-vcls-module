@@ -72,7 +72,7 @@
 
 
         <record id="action_show_external_consultant" model="ir.actions.act_window">
-            <field name="name">Employees</field>
+            <field name="name">External Consultants</field>
             <field name="domain">[('employee_type','=','external')]</field>
             <field name="res_model">hr.employee</field>
             <field name="context">{'default_employee_type': 'external'}</field>
