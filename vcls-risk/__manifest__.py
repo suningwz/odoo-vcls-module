@@ -30,8 +30,6 @@
         
 
         ### VIEWS ###
-        'views/views.xml',
-        'views/templates.xml',
         'views/risk_views.xml',
     ],
     # only loaded in demonstration mode

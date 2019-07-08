@@ -8,6 +8,7 @@
         <record id="product_communication_rate" model="product.product">
             <field name="name">Communication rate</field>
             <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
             <field name="active" eval="False" />
             <field name="type">service</field>
             <field name="service_tracking">no</field>
