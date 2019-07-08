@@ -1,5 +1,5 @@
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="non_standard_rates" model="risk.type">
             <field name="name">Non-standard Rates</field>
             <field name="active">True</field>
