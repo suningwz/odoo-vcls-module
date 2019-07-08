@@ -194,7 +194,7 @@
                                     <field name="description"/>
                                 </page>
 
-                                <page name="segmentation" string="Business Segmentation" attrs="{'invisible': [('see_segmentation', '=', False)]}">
+                                <page name="segmentation" string="Business Segmentation" attrs="{'invisible': [('see_segmentation', '=', False),('see_supplier', '=', False)]}">
                                     <group>
                                         <group>
                                             <field name="country_group_id"/>

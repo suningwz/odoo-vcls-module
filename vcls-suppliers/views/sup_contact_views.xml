@@ -69,7 +69,6 @@
                 </tree>
             </field>
         </record>
-
         
         <record model="ir.actions.act_window" id="action_expertise_area">
             <field name="name">Expertise Area</field>

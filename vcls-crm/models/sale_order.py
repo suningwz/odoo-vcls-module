@@ -15,6 +15,8 @@ class SaleOrder(models.Model):
         string = 'Business Line',
         domain = "[('is_business_line','=',True)]"
     )
+    
+    company_id = fields.Many2one(default=lambda self: self.env.ref('vcls-hr.company_VCFR'))
 
     business_mode = fields.Selection([
         #('t_and_m', 'T&M'), 

@@ -173,7 +173,6 @@
 
             <field name="team_id" position="after">
                 <field name="internal_ref" readonly="1"/>
-                <field name="company_id" options="{'no_create_edit': True}"/>
             </field>
 
                
@@ -448,7 +447,7 @@
                                     <field name="message_bounce" readonly="1"/>
                                 </group>
                                 <group string="Tracking" groups="base.group_multi_company,base.group_no_one" name="categorization">
-                                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}" invisible="1"/>
                                     <field name="campaign_id"/>
                                     <field name="medium_id"/>
                                     <field name="source_id"/>

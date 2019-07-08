@@ -383,6 +383,17 @@
             </field>
         </record>
 
+        <record id="view_hr_holidays_filter" model="ir.ui.view">
+        <field name="name">hr.holidays.filter</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.view_hr_holidays_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//search/filter[@name='my_team_leaves']" position="attributes">
+                <attribute name="string">My Managees Leaves</attribute>
+            </xpath>
+        </field>
+        </record>
+
         <!-- RELATED ACTIONS -->
 
         <record id="action_hr_absent_today_overview" model="ir.actions.act_window">

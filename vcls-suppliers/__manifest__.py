@@ -16,13 +16,15 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.1.1',
+    'version': '0.3.0',
 
     # any module necessary for this one to work correctly
     'depends': [
         'base',
         'survey',
         'vcls-contact',
+        'vcls-hr',
+        'vcls-project',
         ],
 
     # always loaded
@@ -37,6 +39,8 @@
 
         ### VIEWS
         'views/sup_contact_views.xml',
+        'views/sup_employee_views.xml',
+
 
         ### MENUS
         'views/supplier_menu.xml',  

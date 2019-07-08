@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<odoo>
+    <data noupdate="1">
+        <record id="product_category_invoice" model="product.category">
+            <!--<field name="parent_id" ref="product.product_category_all"/>-->
+            <field name="name">Invoicing</field>
+        </record>
+        <record id="product_communication_rate" model="product.product">
+            <field name="name">Communication rate</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="active" eval="False" />
+            <field name="type">service</field>
+            <field name="service_tracking">no</field>
+            <field name="service_policy">delivered_manual</field>
+            <field name="categ_id" ref="product_category_invoice" />
+            <field name="company_id" eval="" />
+        </record>
+    </data>
+</odoo>

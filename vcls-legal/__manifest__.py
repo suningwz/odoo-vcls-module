@@ -22,11 +22,14 @@
                 'agreement_sale',
                 'agreement_legal_sale',
                 'vcls-crm',
+                'vcls-invoicing',
+                'vcls-contact',
                 ],
 
     # always loaded
     'data': [
         ### VIEWS ###
-        'views/lead_views.xml'
+        'views/lead_views.xml',
+        'views/contact_views.xml',
     ],
 }

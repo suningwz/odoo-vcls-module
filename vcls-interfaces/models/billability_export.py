@@ -80,7 +80,7 @@ class BillabilityExport(models.Model):
             comp_worked_days = gen_worked_days - bank_days
             
             #we now look into contracts valid over the defined period (i.e. starterd before the export end, end after export start, no end planned)
-            contracts = self.env['hr.contract'].search([('company_id.id','=',company.id),('date_start','<=',self.end_date),
+            contracts = self.env['hr.contract'].search([('employee_id.employee_type','=','internal'),('company_id.id','=',company.id),('date_start','<=',self.end_date),
                                                         '|',('date_end','>=',self.start_date),('date_end','=',False),
                                                         '|',('employee_id.employee_end_date','>=',self.start_date),('employee_id.employee_end_date','=',False)])
             for contract in contracts:
