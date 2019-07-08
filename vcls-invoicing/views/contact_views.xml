@@ -14,6 +14,11 @@
                     string="Purchase Order" type="object"
                     attrs="{'invisible': [('customer', '=', False)]}"/>
             </xpath>
+
+            <field name="property_product_pricelist" position="before">
+                <field name="communication_rate" />
+            </field>
+
             <xpath expr="//page[@name='financials']" position="inside">
                     <group>
                         <group>
@@ -28,6 +33,7 @@
                         </group>
                     </group> 
                 </xpath>
+
         </field>
     </record>
 </odoo>

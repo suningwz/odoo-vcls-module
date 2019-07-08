@@ -27,41 +27,43 @@ class SaleOrder(models.Model):
             'context': {'search_default_id': risk_id.id,},
         } 
 
-class SaleOrderLine(models.Model):
-    _inherit = 'sale.order.line'
-
-    def create_risk(self):
-        so_line_price = self.price_unit
-        product_prices = self.product_id.item_ids
-        try:
-            if self.product_id.seniority_
-            level_id:
-                for product_price in product_prices:
-                    if product_price.pricelist_id == self.pricelist_id and product_price.fixed_price != so_line_price:
-                        risk_type = self.env.ref('vcls-invoicing.non_standard_rates')
-                        resource ='sale.order.line,' + str(self.id)
+    def check_risk(self):
+        order_lines = self.order_line
+        
+        for line in order_lines:
+            if not self.risk_id:
+                so_line_price = line.price_unit
+                product_prices = line.product_id.item_ids
+                try:
+                    if line.product_id.seniority_level_id:
+                        for product_price in product_prices:
+                            if product_price.pricelist_id == line.pricelist_id and product_price.fixed_price != so_line_price:
+                                risk_type = self.env.ref('vcls-invoicing.non_standard_rates')
+                                resource ='sale.order,' + str(self.id)
+                                risk = self.env['risk'].search([('resource', '=', resource)])
+                                if not risk:
+                                    risk = self.env['risk']._raise_risk(risk_type, resource).id
+                                    self.risk_id = risk
+                    elif self.company_id.id != self.env.ref('vcls-hr.company_VCFR').id:
+                        risk_type = self.env.ref('vcls-invoicing.non_standard_company')
+                        resource ='sale.order,' + str(self.id)
                         risk = self.env['risk'].search([('resource', '=', resource)])
                         if not risk:
                             risk = self.env['risk']._raise_risk(risk_type, resource).id
-                            self.order_id.risk_id = risk
-            elif self.company_id.id != self.env.ref('vcls-hr.company_VCFR').id:
-                risk_type = self.env.ref('vcls-invoicing.non_standard_company')
-                resource ='sale.order.line,' + str(self.id)
-                risk = self.env['risk'].search([('resource', '=', resource)])
-                if not risk:
-                    risk = self.env['risk']._raise_risk(risk_type, resource).id
-                    self.order_id.risk_id = risk
-        except Exception:
-            pass
-                    
+                            self.risk_id = risk
+                except Exception:
+                    pass
+    
     @api.multi
     def write(self, vals):
-        result = super(SaleOrderLine, self).write(vals)
-        self.create_risk()
+        result = super(SaleOrder, self).write(vals)
+        if 'order_line' in vals:
+            self.check_risk()
         return result
 
     @api.model
     def create(self, vals):
-        result = super(SaleOrderLine, self).create(vals)
-        result.create_risk()
+        result = super(SaleOrder, self).create(vals)
+        if 'order_line' in vals:
+            result.check_risk()
         return result
