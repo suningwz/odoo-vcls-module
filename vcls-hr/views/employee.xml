@@ -68,9 +68,9 @@
                                         <field name="office_id"/>
                                         <field name="work_email" widget="email"/>
                                         <field name="access_level" invisible='1' string='View Scope'/>
-                                        <field name="employee_type" groups="vcls-hr.vcls_group_superuser_lvl2"/>
+                                        <field name="employee_type" groups="vcls-hr.vcls_group_superuser_lvl1"/>
                                     </group>
-                                    
+
                                     <group string="">
                                         <field name="department_id"/>
                                         <field name="work_phone" widget="phone"/>
