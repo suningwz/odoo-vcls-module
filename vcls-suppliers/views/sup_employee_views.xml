@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="sup_view_form_employee_all" model="ir.ui.view">
+            <field name="name">sup_view_form_employee_all</field>
+            <field name="model">hr.employee</field>
+            <field name="priority">2000</field>
+            <field name="arch" type="xml">
+                <form string="Employee">
+                    <header> 
+                    </header>
+                    
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" groups="hr.group_hr_user" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
+                            </button>
+                        </div> 
+                        
+                        <div id="o_employee_container">
+                            <div id="o_employee_main">
+                                <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;:&quot;image_medium&quot;}"/>
+                               
+                                <div class="oe_title">
+                                    <label for="name" class="oe_edit_only" string="First Name then Family Name" />
+                                    <h1>
+                                        <field name="name" placeholder="Employee's First Name then Family Name" required="True"/>
+                                    </h1>
+                                </div>                
+                                <!-- the header is accessible to everyone -->
+                                <group>
+                                    <group string="">
+                                        <field name="access_level" invisible='1' string='View Scope'/>
+                                        <field name="work_email" widget="email"/>
+                                    </group>
+
+                                    <group string="">
+                                        <field name="work_phone" widget="phone"/>
+                                    </group>
+                                </group>
+                            </div>
+                        </div>
+                        
+                        <notebook>
+                            <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['lm', 'hr','hl','support','me'])]}">
+                            <!-- <page name="job_information" string="Job Information" attrs="{'invisible': [('access_level', 'not in', ['hr'])]}">-->
+                                <group>
+                                    <group string="General Information">
+                                        <field name="category_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" placeholder="e.g. FR - Cadre" groups="hr.group_hr_user"/>
+                                        <field name="job_title"/>
+                                        <field name="parent_id" string='Line Manager'/>
+                                        <field name="employee_seniority_date"/>
+                                        <field name="employee_start_date"/>
+                                        <field name="employee_end_date"/>
+                                        <field name="employee_end_reason"/>
+                                    </group>
+                                   
+                                    <group string=" ">
+                                        <field name="company_id" string="Legal Entity"/>
+                                        <field name="contract_id" string="Current Contract" context="{'form_view_ref':'vcls-hr.vcls_contract_form1'}"/>
+                                        <field name="job_id" context="{'form_view_ref':'vcls-hr.view_form_job_for_employee'}"/>
+                                        <field name="resource_calendar_id" string="Work Schedule" domain="[('company_id','=',company_id)]" context="{'form_view_ref':'vcls-hr.view_form_working_times'}"/>
+                                        <field name="user_id" domain="[('groups_id','in',%(base.group_portal)d)]"/>
+                                        <!--<field name="job_profile_id"/> -->
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page name="technical" string="Technical Fields">
+                                <group>
+                                    <field name="employee_status"/>
+                                    <field name="country_name" invisible='0'/>
+                                    <group string="Management Line">
+                                        <field name="lm_ids" string="">
+                                            <tree string="Management Line">
+                                                <field name="name"/>
+                                            </tree>
+                                        </field>
+                                    </group> 
+                                </group>
+                            </page>
+                            
+                        </notebook>
+                        
+                        <group attrs="{'invisible': [('access_level', 'not in', ['hr','me'])]}" >
+                            <div class="oe_chatter">
+                                <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                                <field name="activity_ids" widget="mail_activity"/>
+                                <field name="message_ids" widget="mail_thread"/>
+                            </div>
+                        </group>
+                    </sheet> 
+                </form>
+            </field>
+        </record>
+
+        <record id="sup_view_tree_employee_all" model="ir.ui.view">
+            <field name="name">sup_view_tree_employee_all</field>
+            <field name="model">hr.employee</field>
+            <field name="priority">2000</field>
+            <field name="arch" type="xml">
+                <tree string="Employees" decoration-bf="message_needaction==True">
+                    <field name="name"/>
+                    <field name="work_email"/>
+                    <field name="work_phone"/>
+                    <field name="message_needaction" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_show_external_consultant" model="ir.actions.act_window">
+            <field name="name">External Consultants</field>
+            <field name="domain">[('employee_type','=','external')]</field>
+            <field name="res_model">hr.employee</field>
+            <field name="context">{'default_employee_type': 'external',
+            'default_parent_id' : 1}</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref='vcls-hr.view_employee_search'/>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-suppliers.sup_view_tree_employee_all')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-suppliers.sup_view_form_employee_all')}),
+            ]"/>
+        </record>
+    </data>
+</odoo>
+    
+    
+        
+  

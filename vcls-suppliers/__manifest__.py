@@ -23,6 +23,7 @@
         'base',
         'survey',
         'vcls-contact',
+        'vcls-hr',
         ],
 
     # always loaded
@@ -37,6 +38,8 @@
 
         ### VIEWS
         'views/sup_contact_views.xml',
+        'views/sup_employee_views.xml',
+
 
         ### MENUS
         'views/supplier_menu.xml',  
