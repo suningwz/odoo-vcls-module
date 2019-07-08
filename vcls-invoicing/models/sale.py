@@ -34,7 +34,8 @@ class SaleOrderLine(models.Model):
         so_line_price = self.price_unit
         product_prices = self.product_id.item_ids
         try:
-            if self.product_id.seniority_level_id:
+            if self.product_id.seniority_
+            level_id:
                 for product_price in product_prices:
                     if product_price.pricelist_id == self.pricelist_id and product_price.fixed_price != so_line_price:
                         risk_type = self.env.ref('vcls-invoicing.non_standard_rates')
