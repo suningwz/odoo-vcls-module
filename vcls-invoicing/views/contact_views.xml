@@ -11,6 +11,9 @@
                     string="Risk Analysis" type="object"
                     attrs="{'invisible': [('risk_ids', '=', [])]}"/>
             </xpath>
+            <field name="property_product_pricelist" position="before">
+                <field name="communication_rate" />
+            </field>
         </field>
     </record>
 </odoo>
