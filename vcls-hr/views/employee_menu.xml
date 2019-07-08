@@ -12,8 +12,9 @@
         <!-- Employee Main -->
         <record id="action_hr_employee_base" model="ir.actions.act_window">
             <field name="name">Employees</field>
-            <field name="domain">[('employee_status','=','active')]</field>
+            <field name="domain">[('employee_status','=','active'),('employee_type','=','internal')]</field>
             <field name="res_model">hr.employee</field>
+            <field name="context">{'default_employee_type': 'internal'}</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref='view_employee_search'/>
@@ -51,8 +52,9 @@
         <!-- Employee retired -->
         <record id="action_hr_employee_non_active" model="ir.actions.act_window">
             <field name="name">Non-active Employees</field>
-            <field name="domain">['|',('employee_status','=','departed'),('active','=',False)]</field>
+            <field name="domain">['|',('employee_status','=','departed'),('active','=',False),('employee_type','=','internal')]</field>
             <field name="res_model">hr.employee</field>
+            <field name="context">{'default_employee_type': 'internal'}</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref='view_employee_search'/>
@@ -65,8 +67,9 @@
         <!-- Employee Future -->
         <record id="action_hr_employee_newcomer" model="ir.actions.act_window">
             <field name="name">Newcomers</field>
-            <field name="domain">[('employee_status','=','future')]</field>
+            <field name="domain">[('employee_status','=','future'),('employee_type','=','internal')]</field>
             <field name="res_model">hr.employee</field>
+            <field name="context">{'default_employee_type': 'internal'}</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref='view_employee_search'/>

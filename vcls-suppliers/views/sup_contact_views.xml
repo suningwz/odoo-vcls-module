@@ -70,6 +70,20 @@
             </field>
         </record>
 
+
+        <record id="action_show_external_consultant" model="ir.actions.act_window">
+            <field name="name">Employees</field>
+            <field name="domain">[('employee_type','=','external')]</field>
+            <field name="res_model">hr.employee</field>
+            <field name="context">{'default_employee_type': 'external'}</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref='vcls-hr.view_employee_search'/>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-hr.employee_view_tree_all')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-hr.employee_view_form_all')}),
+            ]"/>
+        </record>
         
         <record model="ir.actions.act_window" id="action_expertise_area">
             <field name="name">Expertise Area</field>
