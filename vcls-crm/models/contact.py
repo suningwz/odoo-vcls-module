@@ -33,15 +33,16 @@ class ContactExt(models.Model):
 
     default_currency_id = fields.Many2one(
         'res.currency',
-        #compute='_get_default_currency',
-        #inverse='_set_default_currency',
+        compute='_get_default_currency',
+        inverse='_set_default_currency',
     )
 
     core_process_index = fields.Integer(
         default = 1,
         )
     
-    """@api.depends('property_product_pricelist')
+    @api.multi
+    @api.depends('property_product_pricelist')
     def _get_default_currency(self):
         ### handle the case where the user's company was created after the currency was set
         for rec in self:
@@ -50,12 +51,14 @@ class ContactExt(models.Model):
     def _set_default_currency(self):
         #raise UserError('{}'.format(self.default_currency_id.name))
         for rec in self:
-            pricelist = self.sudo().env['product.pricelist'].search([('company_id', '=', False), ('currency_id', '=', rec.default_currency_id.id)], limit=1)
-            if not pricelist:
-                raise UserError(('Please define a company independent pricelist with currency %s') % rec.default_currency_id.name)
-            for company in self.sudo().env['res.company'].search([]):
-                rec.with_context(force_company=company.id).property_product_pricelist = pricelist
+            if rec.default_currency_id:
+                pricelist = self.sudo().env['product.pricelist'].search([('company_id', '=', False), ('currency_id', '=', rec.default_currency_id.id)], limit=1)
+                if not pricelist:
+                    raise UserError(('Please define a company independent pricelist with currency %s') % rec.default_currency_id.name)
+                for company in self.sudo().env['res.company'].search([]):
+                    rec.with_context(force_company=company.id).property_product_pricelist = pricelist[0].id
     
+    """
     # NOT OVERWRITE CONTEXT
     @api.one
     def _inverse_product_pricelist(self):

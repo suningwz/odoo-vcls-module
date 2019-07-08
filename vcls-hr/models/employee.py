@@ -61,7 +61,14 @@ class Employee(models.Model):
         )
     
     
-     # Administrative informations
+    # Administrative informations
+    employee_type = fields.Selection([
+        ('internal', 'Internal'),
+        ('external', 'External'),
+        ('template', 'Template'),
+        ],default = 'internal'
+    )
+
     first_name = fields.Char(
         string='First Name',
         track_visibility='always',)

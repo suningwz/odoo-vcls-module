@@ -29,10 +29,12 @@
     'data': [
         'security/ir.model.access.csv',
         'data/data.xml',
-        'views/contact_views.xml',
+        'views/product_views.xml',
+        'security/security_groups.xml',
+        'data/risk_type.xml',
         'views/sale_views.xml',
         'views/invoice_views.xml',
-        'views/product_views.xml',
+        'views/contact_views.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
