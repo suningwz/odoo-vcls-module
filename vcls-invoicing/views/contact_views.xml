@@ -10,9 +10,14 @@
                 <button class="btn-outline-primary float-right" name="action_risk" id="action_risk"
                     string="Risk Analysis" type="object"
                     attrs="{'invisible': [('risk_ids', '=', [])]}"/>
-                <button class="btn-outline-primary float-right" name="action_po" id="action_po"
+            </xpath>
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" name="action_po" id="action_po"
                     string="Purchase Order" type="object"
-                    attrs="{'invisible': [('customer', '=', False)]}"/>
+                    icon="fa-usd"
+                    attrs="{'invisible': [('customer', '=', False)]}">
+                </button>
             </xpath>
 
             <field name="property_product_pricelist" position="before">
