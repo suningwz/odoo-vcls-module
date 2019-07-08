@@ -1,8 +1,14 @@
-from odoo import fields, models
+from odoo import api,fields, models
 
 
 class Contact(models.Model):
     _inherit = "res.partner"
+    agre_count = fields.Integer(compute='_compute_agre_count')
+
+    @api.depends('agreement_ids')
+    def _compute_agre_count(self):
+        self.agre_count = len(self.agreement_ids)
+
 
     def action_agre(self):
         agre_ids = self.env['agreement'].search([('partner_id','=',self.id)]).ids

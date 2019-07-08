@@ -3,12 +3,17 @@
     <record id="view_contact_form" model="ir.ui.view">
         <field name="name">res.partner.form</field>
         <field name="model">res.partner</field>
-        <field name="inherit_id" ref="vcls-contact.view_form_contact_all" />
+        <field name="inherit_id" ref="vcls-contact.view_form_contact_all"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='add_new_adress']" position="after">
-                <button class="btn-outline-primary float-right" name="action_agre" id="action_agre"
-                    string="Agreements" type="object"
-                    attrs="{'invisible': [('customer','=', False),('supplier','=',False)]}"/>
+            <xpath expr="//div[@name='button_box']" prosition="inside">
+                <button class="oe_stat_button"
+                            icon="fa-credit-card"
+                            id="action_agre"
+                            name="action_agre"
+                            type="object"
+                            attrs="{'invisible': [('customer','=', False),('supplier','=',False)]}">
+                    <field name="agre_count" widget="statinfo" string="Agreements"/>
+                </button>
             </xpath>
         </field>
     </record>
