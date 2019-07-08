@@ -24,6 +24,7 @@
         'survey',
         'vcls-contact',
         'vcls-hr',
+        'vcls-project',
         ],
 
     # always loaded
