@@ -23,6 +23,20 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('employee_view_form_all')}),
             ]"/>
         </record>
+
+        <record id="action_hr_employee_template" model="ir.actions.act_window">
+            <field name="name">Template Employees</field>
+            <field name="domain">[('employee_status','=','active'),('employee_type','=','template')]</field>
+            <field name="res_model">hr.employee</field>
+            <field name="context">{'default_employee_type': 'template'}</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref='view_employee_search'/>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('employee_view_tree_all')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('employee_view_form_all')}),
+            ]"/>
+        </record>
         
         <!-- Employee Absnet Today 
         <record id="action_hr_employee_absent" model="ir.actions.act_window">
@@ -335,7 +349,17 @@
             sequence="24"
         />
         
-       
+        <menuitem
+            id="menu_hr_employee_template"
+            name="Template Employees"
+            parent="menu_hr_company_org"
+            action="action_hr_employee_template"
+            sequence="27"
+        />
+        <!-- Configure groups to access non active employees -->
+        <record id="vcls-hr.menu_hr_employee_template" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1'))]"/>
+        </record>
         
     </data>
 </odoo>

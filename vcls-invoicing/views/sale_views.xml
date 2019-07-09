@@ -6,14 +6,21 @@
             <field name="priority">4000</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//div[@name='button_box']" position="after">
-                    <field name="risk_id" invisible="1"/>
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    
+                    <button class="oe_stat_button" type="object" name="action_risk" icon="fa-exclamation-triangle" attrs="{'invisible': [('risk_score', '=', 0)]}" string="Risk Score">
+                            <field string="Risk Score" name="risk_score" widget="statinfo"/>
+                    </button>
+                    <!-- 
+                    <field name="risk_ids" invisible="1"/>
                     <button class="btn-outline-primary float-right" name="action_risk" id="action_risk"
                         string="Risk Analysis" type="object"
-                        attrs="{'invisible': [('risk_id', '=', False)]}"/>
+                        attrs="{'invisible': [('risk_score', '=', 0)]}"/>
+                    -->
                 </xpath>
-                <xpath expr="//field[@name='partner_shipping_id']" position="after">    
+                <xpath expr="//field[@name='payment_term_id']" position="after">    
                     <field name="po_id"/>
+                    <field name="risk_score" invisible="1"/>
                 </xpath>
             </field>
     </record>

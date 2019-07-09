@@ -32,6 +32,10 @@
             sequence="7"
         />
 
+		<!-- Configure groups to access -->
+ 		<record id="vcls-suppliers.menu_show_external_consultant" model="ir.ui.menu">
+ 			<field name="groups_id" eval="[(4,ref('vcls-suppliers.vcls_group_rm'))]"/>
+ 		</record>
 
 	</data>
 </odoo>

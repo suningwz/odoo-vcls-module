@@ -6,6 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class InvoicingPO(models.Model):
     _name = 'invoicing.po'
+    _description = 'Client Purchase Order'
     
     name = fields.Char()
 

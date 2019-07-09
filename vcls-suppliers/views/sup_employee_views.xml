@@ -118,6 +118,10 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-suppliers.sup_view_form_employee_all')}),
             ]"/>
         </record>
+
+        <record id="hr_contract.action_hr_contract" model="ir.actions.act_window">
+             <field name="domain" eval="[('employee_id', '=', False),('type_id','!=',ref('vcls-suppliers.contract_type_project_supplier'))]"/>
+        </record>
     </data>
 </odoo>
     

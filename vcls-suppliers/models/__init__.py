@@ -3,3 +3,4 @@
 from . import survey
 from . import res_partner
 from . import employee
+from . import purchase

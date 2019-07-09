@@ -1,0 +1,17 @@
+<odoo>
+    <data noupdate="1">
+        <record id="contract_type_project_supplier" model="hr.contract.type">
+            <field name="name">Project Supplier</field>
+        </record>
+
+        <record id="role_project_supplier" model="hr.project_role">
+            <field name="name">Project Supplier</field>
+        </record>
+
+        <record id="job_project_supplier" model="hr.job">
+            <field name="name">Project Supplier</field>
+            <field name="department_id" ref="vcls-hr.department_RM"/>
+            <field name="project_role_id" ref="role_project_supplier"/>
+        </record>
+    </data>
+</odoo>
