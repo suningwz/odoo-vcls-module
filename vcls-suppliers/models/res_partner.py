@@ -51,3 +51,14 @@ class ContactExt(models.Model):
         string="Area of Expertise",
     )
 
+    def action_po(self):
+        return {
+            'name': 'Purchase Order',
+            'view_type': 'form',
+            'view_mode': 'tree',
+            'target': 'current',
+            'res_model': 'purchase.order',
+            'type': 'ir.actions.act_window',
+            'context': {'search_default_partner_id': self.id},
+        } 
+
