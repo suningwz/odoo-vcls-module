@@ -16,7 +16,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.3.0',
+    'version': '0.4.0',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -25,6 +25,7 @@
         'vcls-contact',
         'vcls-hr',
         'vcls-project',
+        'sale_purchase',
         ],
 
     # always loaded
@@ -32,6 +33,7 @@
         ### RECORDS
         'data/expertise.area.csv',
         'data/project.supplier.type.csv',
+        'data/hr_data.xml',
 
         ### SECURITY
         'security/vcls_groups.xml',
@@ -40,6 +42,7 @@
         ### VIEWS
         'views/sup_contact_views.xml',
         'views/sup_employee_views.xml',
+        'views/purchase_views.xml',
 
 
         ### MENUS
