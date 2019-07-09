@@ -5,7 +5,9 @@ from odoo import models, fields, api
 from odoo.exceptions import UserError, ValidationError
 
 class SaleOrder(models.Model):
+    
     _inherit = 'sale.order'
+
     risk_id = fields.Many2one('risk', string='Risk')
 
     po_id = fields.Many2one('invoicing.po', string ='Purchase Order')
