@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Swap columns and rows -->
+    <record id="view_hr_timesheet_attendance_report_pivot_inherit" model="ir.ui.view">
+        <field name="name">HR timesheet attendance report: Pivot Inherit</field>
+        <field name="model">hr.timesheet.attendance.report</field>
+        <field name="inherit_id" ref="hr_timesheet_attendance.view_hr_timesheet_attendance_report_pivot" />
+        <field name="arch" type="xml">
+            <field name="user_id" position="attributes">
+                <attribute name="type">col</attribute>
+            </field>
+            <field name="date" position="attributes">
+                <attribute name="type">row</attribute>
+            </field>
+        </field>
+    </record>
+
+
+    <!-- Add new domains -->
+    <record id="view_hr_timesheet_attendance_report_search_inherit" model="ir.ui.view">
+        <field name="name">Search for HR timesheet attendance report inherit</field>
+        <field name="model">hr.timesheet.attendance.report</field>
+        <field name="inherit_id" ref="hr_timesheet_attendance.view_hr_timesheet_attendance_report_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[last()]" position="after">
+                <separator/>
+                <filter name="my_dept" string="My Department"
+                    domain="[('employee_id.department_id.member_ids.user_id', 'child_of', uid)]" />
+                <filter name="my_ts" string="My Timesheets"
+                    domain="[('user_id', '=', uid)]" />
+            </xpath>
+        </field>
+  </record>
+</odoo>

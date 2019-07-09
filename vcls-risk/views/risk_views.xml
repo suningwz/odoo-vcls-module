@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_risk_type_tree" model="ir.ui.view" >
+        <field name="name">Risk Type</field>
+        <field name="model">risk.type</field>
+        <field name="arch" type="xml">
+        <tree>                    
+            <field name="name"/>
+            <field name="description"/>
+            <field name="model_name"/>
+            <field name="group_id"/>
+            <field name="notify"/>
+            <field name="weight"/>
+            <field name="category"/>
+        </tree>
+        </field>
+    </record>
+
+    <record id="view_risk_type_form" model="ir.ui.view">
+            <field name="name">risk.type.form</field>
+            <field name="model">risk.type</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="active"/>                        
+                                <field name="name"/>
+                                <field name="description"/>
+                                <field name="model_name"/>
+                            </group>
+                            <group>
+                                <field name="group_id"/>
+                                <field name="notify"/>
+                                <field name="weight"/>
+                                <field name="category"/>
+                            </group>
+                        </group>
+                    </sheet>
+               </form>
+            </field>
+    </record>
+
+    <record id="view_risk_tree" model="ir.ui.view" >
+        <field name="name">All Risks</field>
+        <field name="model">risk</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="risk_type_id"/>                        
+                <field name="note"/>
+                <field name="resource"/>
+                <field name="risk_level"/>
+                <field name="last_notification"/>
+                <field name="score"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_risk_form" model="ir.ui.view">
+            <field name="name">risk.form</field>
+            <field name="model">risk</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="risk_type_id"/>                        
+                                <field name="note"/>
+                                <field name="resource"/>
+                            </group>
+                            <group>
+                                <field name="risk_level"/>
+                                <field name="last_notification"/>
+                                <field name="score"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+               </form>
+            </field>
+    </record>
+
+    <record id="view_risk_kanban" model="ir.ui.view">
+            <field name="name">risk.kanban</field>
+            <field name="model">risk</field>
+            <field name="arch" type="xml">
+                <kanban>
+                        <templates>
+                            <t t-name="kanban-box">
+                                <div t-attf-class="oe_kanban_content oe_kanban_global_click o_kanban_get_form">
+                                    <strong><field name="risk_type_id"/></strong>
+                                    <div class="row">
+                                        <div class="col-6">                      
+                                            <field name="note"/>
+                                            <field name="resource"/>
+                                            <field name="risk_level"/>
+                                            <field name="last_notification"/>
+                                            <field name="score"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </templates>
+                </kanban>
+            </field>
+    </record>
+
+    <!-- Top menu item -->
+    <menuitem name="Risk"
+        id="menu_main_risk"
+        groups="risk_user"
+        web_icon="vcls-risk,static/description/riskicon.png"
+        sequence="50"/>
+
+    <record id="action_view_risk_type" model="ir.actions.act_window">
+            <field name="name">Risk Type</field>
+            <field name="res_model">risk.type</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_view_risk" model="ir.actions.act_window">
+            <field name="name">All Risks</field>
+            <field name="res_model">risk</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,kanban</field>
+    </record>
+
+    <menuitem action="action_view_risk" id="menu_risk" name="All Risks" parent="menu_main_risk"
+            sequence="100" groups="risk_user"/>
+
+    <menuitem action="action_view_risk_type" id="menu_risk_type" name="Risk Type" parent="menu_main_risk"
+            sequence="100" groups="risk_user"/>
+</odoo>
