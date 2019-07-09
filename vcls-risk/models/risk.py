@@ -44,6 +44,10 @@ class Risk(models.Model):
 
     score = fields.Integer(string = "Score", compute="_compute_score")
 
+    acknowledged = fields.Boolean(
+        default = False,
+    )
+
     @api.depends('risk_level', 'risk_type_id.weight')
     def _compute_score(self):
         for risk in self:
