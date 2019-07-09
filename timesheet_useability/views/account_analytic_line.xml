@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="timesheet_view_tree_user_inherit" model="ir.ui.view">
+        <field name="name">account.analytic.line.view.tree.with.user.inherit</field>
+        <field name="model">account.analytic.line</field>
+        <field name="inherit_id" ref="hr_timesheet.timesheet_view_tree_user"/>
+        <field name="arch" type="xml">
+            <field name="user_id" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="timesheet_view_search_inherit" model="ir.ui.view">
+        <field name="name">account.analytic.line.search.inherit</field>
+        <field name="model">account.analytic.line</field>
+        <field name="inherit_id" ref="sale_timesheet.timesheet_view_search"/>
+        <field name="arch" type="xml">
+            <filter name="non_billable" position="after">
+                <filter name="non_billable_project" string="Non Billable Project" domain="[('timesheet_invoice_type', '=', 'non_billable_project')]"/>
+            </filter>
+        </field>
+    </record>
+</odoo>
