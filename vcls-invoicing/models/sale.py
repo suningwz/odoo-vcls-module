@@ -63,9 +63,9 @@ class SaleOrder(models.Model):
                             so.risk_ids |= self.env['risk']._raise_risk(risk_rate, resource)
                         break
 
-        def _compute_risk_score(self):
-            for so in self:
-                so.score = sum(so.risk_ids.mapped('score'))
+    def _compute_risk_score(self):
+        for so in self:
+            so.score = sum(so.risk_ids.mapped('score'))
                     
             
 
