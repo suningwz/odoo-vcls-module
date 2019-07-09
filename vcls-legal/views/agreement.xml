@@ -121,8 +121,8 @@
                     <notebook>
                         <page name="structure" string="Structure" invisible="1">
                             <div>
-                                <button name="%(partner_agreement_contract_document_preview)d" string="Preview" type="action" class="oe_highlight"/>
-                                <button name="%(partner_agreement_contract_document)d" string="Print" type="action" class="oe_highlight"/>
+                                <button name="%(agreement_legal.partner_agreement_contract_document_preview)d" string="Preview" type="action" class="oe_highlight"/>
+                                <button name="%(agreement_legal.partner_agreement_contract_document)d" string="Print" type="action" class="oe_highlight"/>
                             </div>
                             <separator string="Recitals"/>
                             <field name="recital_ids"
