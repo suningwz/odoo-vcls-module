@@ -9,7 +9,7 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     risk_ids = fields.Many2many('risk', string='Risk')
-    
+
     risk_score = fields.Integer(
         string='Risk Score',
         compute = '_compute_risk_score',
@@ -66,7 +66,7 @@ class SaleOrder(models.Model):
 
     def _compute_risk_score(self):
         for so in self:
-            so.score = sum(so.risk_ids.mapped('score'))
+            so.risk_score = sum(so.risk_ids.mapped('score'))
                     
             
 
