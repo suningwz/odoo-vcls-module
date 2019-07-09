@@ -9,12 +9,12 @@
             <field name="priority">3000</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-
+                <!--
                 <xpath expr="//group" position="replace">
 
                     <group>
-                        <group>
-                            <field name="partner_id" widget="res_partner_many2one" domain="[('customer','=',True)]" context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}"/>
+                        <group string="Client">
+                            <field name="partner_id" string="Client" widget="res_partner_many2one" domain="[('customer','=',True)]" context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}"/>
                             <field name="partner_invoice_id" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'invoice'}" options="{&quot;always_reload&quot;: True}"/>
                             <field name="partner_shipping_id" string="Deliverable Address" invisible="0" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'delivery'}" options="{&quot;always_reload&quot;: True}"/>
                             <field name="validity_date" attrs="{'invisible': [('state', 'in', ['sale', 'done'])]}"/>
@@ -43,8 +43,8 @@
                     </group>
                     
                 </xpath>
-
-                <!--
+                -->
+                
                 <field name="sale_order_template_id" position="replace">
                     <field name="sale_order_template_id"  invisible='1'/>
                 </field>
@@ -65,7 +65,7 @@
                 <field name="partner_shipping_id" position="replace">    
                     <field name="partner_shipping_id" string="Deliverable Address" invisible="0" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'delivery'}" options="{&quot;always_reload&quot;: True}"/>
                 </field>
-                -->
+                
 
                 <xpath expr="//field[@name='order_line']//tree/field[@name='product_id']" position="replace">
                     <field name="product_id" options="{'no_create_edit':True}" attrs="{'readonly': [('product_updatable', '=', False)],'required': [('display_type', '=', False)],}" force_save="1"
