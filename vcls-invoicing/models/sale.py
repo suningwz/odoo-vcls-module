@@ -9,6 +9,7 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     risk_ids = fields.Many2many('risk', string='Risk')
+    
     risk_score = fields.Integer(
         string='Risk Score',
         compute = '_compute_risk_score',
