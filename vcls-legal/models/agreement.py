@@ -11,13 +11,13 @@ class Agreement(models.Model):
     parent_agreement_type = fields.Many2one(
         related='parent_agreement_id.agreement_type_id',
         #required=True, 
-        String='Parent Type',
+        string='Parent Type',
         )
 
     parent_agreement_name = fields.Char(
         related='parent_agreement_id.name', 
         #required=True,
-        String = 'Parent Name',
+        string = 'Parent Name',
         )
     
 
