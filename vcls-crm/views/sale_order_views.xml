@@ -11,7 +11,37 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//group" position="replace">
-                    <field name="partner_id"/>
+
+                    <group>
+                        <group>
+                            <field name="partner_id" widget="res_partner_many2one" domain="[('customer','=',True)]" context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}"/>
+                            <field name="partner_invoice_id" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'invoice'}" options="{&quot;always_reload&quot;: True}"/>
+                            <field name="partner_shipping_id" string="Deliverable Address" invisible="0" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'delivery'}" options="{&quot;always_reload&quot;: True}"/>
+                            <field name="validity_date" attrs="{'invisible': [('state', 'in', ['sale', 'done'])]}"/>
+                            <field name="confirmation_date" attrs="{'invisible': [('state', 'in', ['draft', 'sent', 'cancel'])]}"/>
+                        </group>
+
+                        <group string="Invoicing">
+                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
+                            <field name="pricelist_id" groups="product.group_sale_pricelist"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="payment_term_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Segmentation">
+                            <field name="product_category_id" required='True'/>
+                            <field name="business_mode" widget="radio"/>
+                            <field name="deliverable_id" domain="[('product_category_id','=',product_category_id)]"/>
+                            <field name="sale_order_template_id"  domain="[('product_category_id','=',product_category_id)]"/>
+                        </group>
+
+                        <group>
+                            
+                        </group>
+                    </group>
+                    
                 </xpath>
 
                 <!--
