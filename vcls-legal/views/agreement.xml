@@ -62,11 +62,11 @@
                             </ol>
                         </p>
                     </group>
-                    <group name="parties" string="Parties" invisible="1">
-                        <group name="cust_parties">
+                    <group name="parties" string="Parties">
+                        <group name="cust_parties" invisible="1">
                             <field name="use_parties_content" string="Use custom content" />
                         </group>
-                        <group name="cust_parties">
+                        <group name="cust_parties" invisible="1">
                             <p>
                                 This section (on the left) allows you to replace the default listing of the parties with custom dynamic content.
                             </p>
