@@ -50,7 +50,7 @@ class Risk(models.Model):
             if risk.risk_level:
                 risk.score = risk.risk_level * risk.risk_type_id.weight
             else:
-                risk.score = 0
+                risk.score = 1
 
     @api.model
     def _raise_risk(self, risk_type, resource):

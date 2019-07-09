@@ -9,6 +9,10 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     risk_ids = fields.Many2many('risk', string='Risk')
+    risk_score = fields.Integer(
+        string='Risk Score',
+        compute = '_compute_risk_score',
+    )
 
     po_id = fields.Many2one('invoicing.po', string ='Purchase Order')
 
@@ -31,7 +35,6 @@ class SaleOrder(models.Model):
         } 
 
     def check_risk(self):
-
         try:
             risk_company = self.env.ref('vcls-invoicing.non_standard_company')
             risk_rate = self.env.ref('vcls-invoicing.non_standard_rates')
@@ -47,7 +50,7 @@ class SaleOrder(models.Model):
                 if so.company_id != self.env.ref('vcls-hr.company_VCFR'):
                     existing = self.env['risk'].search([('resource', '=', resource),('risk_type_id','=',risk_company.id)])
                     if not existing:
-                        so.risk_ids |= self.env['risk']._raise_risk(risk_company, resource).id
+                        so.risk_ids |= self.env['risk']._raise_risk(risk_company, resource)
             
             rates = so.order_line.filtered(lambda r: r.product_id.seniority_level_id)
 
@@ -57,8 +60,12 @@ class SaleOrder(models.Model):
                     if rate.price_unit < std_price[0].fixed_price:
                         existing = self.env['risk'].search([('resource', '=', resource),('risk_type_id','=',risk_rate.id)])
                         if not existing:
-                            so.risk_ids |= self.env['risk']._raise_risk(risk_rate, resource).id
+                            so.risk_ids |= self.env['risk']._raise_risk(risk_rate, resource)
                         break
+
+        def _compute_risk_score(self):
+            for so in self:
+                so.score = sum(so.risk_ids.mapped('score'))
                     
             
 
@@ -93,13 +100,11 @@ class SaleOrder(models.Model):
     @api.multi
     def write(self, vals):
         result = super(SaleOrder, self).write(vals)
-        if 'order_line' in vals:
-            self.check_risk()
+        self.check_risk()
         return result
 
     @api.model
     def create(self, vals):
         result = super(SaleOrder, self).create(vals)
-        if 'order_line' in vals:
-            result.check_risk()
+        result.check_risk()
         return result
