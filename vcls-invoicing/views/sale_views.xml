@@ -12,7 +12,7 @@
                         string="Risk Analysis" type="object"
                         attrs="{'invisible': [('risk_id', '=', False)]}"/>
                 </xpath>
-                <xpath expr="//field[@name='partner_shipping_id']" position="after">    
+                <xpath expr="//field[@name='payment_term_id']" position="after">    
                     <field name="po_id"/>
                 </xpath>
             </field>
