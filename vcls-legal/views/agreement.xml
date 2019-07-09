@@ -39,8 +39,8 @@
                         <group>
                             <field name="parent_agreement_id"
                                    domain="[('partner_id', '=', partner_id)]"/> 
-                            <field name="parent_agreement_type"/>
-                            <field name="parent_agreement_name"/>
+                            <field name="parent_agreement_type" String="Parent Type"/>
+                            <field name="parent_agreement_name" String="Parent Name"/>
                         </group>
                     </group>
                     <group string="Description">
