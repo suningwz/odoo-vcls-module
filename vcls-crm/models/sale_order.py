@@ -2,6 +2,7 @@
 
 from odoo import models, fields, tools, api
 from odoo.exceptions import UserError, ValidationError
+from dateutil.relativedelta import relativedelta
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -32,6 +33,8 @@ class SaleOrder(models.Model):
         'product.deliverable',
         string="Deliverable"
     )
+    expected_start_date = fields.Date()
+    expected_end_date = fields.Date()
 
     @api.model
     def create(self, vals):
@@ -47,7 +50,32 @@ class SaleOrder(models.Model):
                     vals['name']=opp.name.replace(opp.internal_ref,"{}.{}".format(opp.internal_ref,len(prev_quote)+1))
                 else:
                     vals['name']=opp.name
+                #default expected_start_date and expected_end_date
+                expected_start_date = opp.expected_start_date
+                if expected_start_date:
+                    vals['expected_start_date'] = expected_start_date
+                    vals['expected_end_date'] = expected_start_date + relativedelta(months=+3)
+                
 
         result = super(SaleOrder, self).create(vals)
         return result
-        
+
+    @api.model
+    def write(self, vals):
+        if 'expected_start_date' in vals:
+            expected_start_date = fields.Date.from_string(vals['expected_start_date'])
+            vals['expected_end_date'] = expected_start_date + (self.expected_end_date - self.expected_start_date)
+            if self.tasks_ids:
+                for task_id in self.tasks_ids:
+                    forecast = self.env['project.forecast'].search([('task_id','=',task_id.id)],limit=1)
+                    if forecast:
+                        forecast.write({'start_date':vals['expected_start_date']})
+
+        if 'expected_end_date' in vals:
+            if self.tasks_ids:
+                for task_id in self.task_ids:
+                    forecast = self.env['project.forecast'].search([('task_id','=',task_id.id)],limit=1)
+                    if forecast:
+                        forecast.write({'end_date':vals['expected_end_date']})
+        return super(SaleOrder, self).write(vals)
+
