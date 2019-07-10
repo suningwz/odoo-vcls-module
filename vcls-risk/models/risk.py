@@ -38,11 +38,19 @@ class Risk(models.Model):
 
     resource = fields.Char(string='Resource', index=True, help="If not set, acts as a default value for new resources")
 
-    risk_level = fields.Selection([(1, 'Low'), (2, 'Moderate'), (3, 'Significant'), (4, 'High')], 'Risk Level',)
+    risk_level = fields.Selection(
+        [(0, 'Solved'),(1, 'Low'), (2, 'Moderate'), (3, 'Significant'), (4, 'High')],
+         'Risk Level',
+         default = 2,
+         )
 
     last_notification = fields.Datetime(readonly = True)
 
     score = fields.Integer(string = "Score", compute="_compute_score")
+
+    """acknowledged = fields.Boolean(
+        default = False,
+    )"""
 
     @api.depends('risk_level', 'risk_type_id.weight')
     def _compute_score(self):
