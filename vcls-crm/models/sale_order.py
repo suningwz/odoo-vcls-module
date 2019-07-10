@@ -64,7 +64,8 @@ class SaleOrder(models.Model):
     def write(self, vals):
         if 'expected_start_date' in vals:
             expected_start_date = fields.Date.from_string(vals['expected_start_date'])
-            vals['expected_end_date'] = expected_start_date + (self.expected_end_date - self.expected_start_date)
+            if self.expected_end_date and self.expected_start_date and expected_start_date:
+                vals['expected_end_date'] = expected_start_date + (self.expected_end_date - self.expected_start_date)
             if self.tasks_ids:
                 for task_id in self.tasks_ids:
                     forecast = self.env['project.forecast'].search([('task_id','=',task_id.id)],limit=1)
