@@ -42,6 +42,7 @@ class Risk(models.Model):
         [(0, 'Solved'),(1, 'Low'), (2, 'Moderate'), (3, 'Significant'), (4, 'High')],
          'Risk Level',
          default = 2,
+         track_visibility="onchange",
          )
 
     last_notification = fields.Datetime(readonly = True)
@@ -76,4 +77,12 @@ class Risk(models.Model):
                 self.message_subscribe(partner_ids=partner_ids)
                 self.message_post(body="Risk created", partner_ids=[4, partner_ids])
                 self.last_notification = datetime.datetime.now()
+    
+    
+    @api.onchange('risk_level')
+    def _onchange_risk_level(self):
+        group_id = self.risk_type_id.group_id
+        if group_id:
+            if self.env.user not in self.risk_type_id.group_id.users:
+                raise UserError("You need to be part of {} to modify the risk level".format(group_id.name))
 
