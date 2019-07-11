@@ -17,12 +17,20 @@ class SaleOrder(models.Model):
 
     po_id = fields.Many2one('invoicing.po', string ='Purchase Order')
 
+    @api.depends('partner_id.risk_ids')
+    def _compute_risk_ids(self):
+        resourceSo ="sale.order,{}".format(self.id)
+        risk_ids = self.env['risk'].search([('resource','=',resourceSo)])
+        if self.partner_id:
+            resourcePrtn ="res.partner,{}".format(self.partner_id.id)
+            risk_ids |= self.env['risk'].search([('resource','=',resourcePrtn)])
+        if risk_ids:
+            self.risk_ids |= risk_ids
+
     def action_risk(self):
         view_ids = [self.env.ref('vcls-risk.view_risk_tree').id,
                     self.env.ref('vcls-risk.view_risk_kanban').id, 
                     self.env.ref('vcls-risk.view_risk_form').id ]
-        
-        resource ="sale.order,{}".format(self.id)
 
         return {
             'name': 'All Risks',
@@ -32,7 +40,7 @@ class SaleOrder(models.Model):
             'target': 'current',
             'res_model': 'risk',
             'type': 'ir.actions.act_window',
-            'context': {'search_default_resouce':resource,},
+            'context': {'search_default_id':self.risk_ids.ids,},
         } 
 
     def check_risk(self):
