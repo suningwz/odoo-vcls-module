@@ -1,0 +1,41 @@
+<odoo>
+    <data>
+        <record id="view_project_forecast_inherit_search" model="ir.ui.view">
+            <field name="name">project.forecast.search</field>
+            <field name="model">project.forecast</field>
+            <field name="inherit_id" ref="project_forecast.project_forecast_view_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                    <field name = "employee_id" string="Employee"/>
+                    <field name = "department_id" string="Department"/>
+                    <filter name="draft" string="Quotation"
+                        domain="[('project_id.sale_order_id.state','=','draft')]"/>
+                    <filter name="sent" string="Quotation Sent"
+                        domain="[('project_id.sale_order_id.state','=','sent')]"/>
+                    <filter name="sale" string="Sales Order"
+                        domain="[('project_id.sale_order_id.state','=','sale')]"/>
+                    <filter name="done" string="Locked"
+                        domain="[('project_id.sale_order_id.state','=','done')]"/>
+                    <filter name="cancel" string="Cancelled"
+                        domain="[('project_id.sale_order_id.state','=','cancel')]"/>
+                </xpath>
+                <xpath expr="//search/group/filter[@name='group_by_employee_id']" position="before">
+                    <filter name="group_by_department_id" string="Department"
+                        context="{'group_by': 'department_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="project_forecast.project_forecast_action_by_user" model="ir.actions.act_window">
+            <field name="name">Forecast by employee</field>
+            <field name="res_model">project.forecast</field>
+            <field name="view_mode">grid,gantt,tree,form</field>
+            <field name="context">{
+                'search_default_future': 1,
+                'search_default_group_by_employee_id': 1,
+                'search_default_group_by_department_id': 1,
+                'group_by': ['employee_id', 'task_id'],
+            }</field>
+        </record>
+    </data>
+</odoo>
