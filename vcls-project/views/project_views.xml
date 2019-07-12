@@ -13,12 +13,40 @@
         </record>
         
         <record id="view_project_form_contact_book" model="ir.ui.view">
-            <field name="name">project.form.contact_book</field>
+            <field name="name">project.form.contact.book</field>
             <field name="model">project.project</field>
-            <field name="priority" eval="2"/>
+            <field name="priority" eval="500"/>
             <field name="arch" type="xml">
-                <form>
-                    <field name='name' />
+                <form string="Project Contact Book">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name='name' string="Project Name"/>
+                            </group>
+                            <group>
+                                <field name='alias_user_id' string="Lead Consultant"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Consultants" name="consultant">
+                                <field name='consultant_ids' mode="tree">
+                                    <tree editable="top">
+                                        <field name="name"/>
+                                        <field name="job_id"/>
+                                    </tree>
+                                </field>
+                            </page>
+
+                            <page string="Ta" name="ta">
+                                <field name='ta_ids'>
+                                    <tree editable="top">
+                                        <field name="name"/>
+                                        <field name="job_id"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
                 </form>
             </field>
         </record>
