@@ -11,5 +11,16 @@
                 </div>
             </field>
         </record>
+        
+        <record id="view_project_form_contact_book" model="ir.ui.view">
+            <field name="name">project.form.contact_book</field>
+            <field name="model">project.project</field>
+            <field name="priority" eval="2"/>
+            <field name="arch" type="xml">
+                <form>
+                    <field name='name' />
+                </form>
+            </field>
+        </record>
     </data>
 </odoo>
