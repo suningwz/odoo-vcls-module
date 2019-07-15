@@ -32,11 +32,13 @@
         'security/record_rule.xml',
         'security/ir.model.access.csv',
         #'data/parameters.xml',
+        'data/project.xml',
 
         ### VIEWS ###
         'views/timesheets_views.xml',
         'views/projects_views.xml',
         'views/sale_order_views.xml',
+        'views/crm_views.xml',
 
         ### ACTIONS ###
         'actions/timesheet_cron.xml',

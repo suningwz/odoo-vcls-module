@@ -21,3 +21,22 @@ class SaleOrder(models.Model):
                 'grid_anchor': (datetime.date.today()).strftime('%Y-%m-%d'),
             }
         }
+    @api.model
+    def create(self, vals):
+        result = super(SaleOrder, self).create(vals)
+        result.first_quotation()
+        return result
+
+    def first_quotation(self):
+        if self.opportunity_id:
+            if self.opportunity_id.sale_number == 1 : 
+                pre_project = self.env.ref('vcls-timesheet.default_project').id
+                stage_id = self.env['project.task.type'].sudo().search([('name','=','0% Progress')], limit=1).id
+                self.opportunity_id.task_id = self.env['project.task'].sudo().create({
+                                                                                    'name':self.opportunity_id.name,
+                                                                                    'project_id':pre_project, 
+                                                                                    'stage_id':stage_id, 
+                                                                                    'active':True}).id
+
+    
+
