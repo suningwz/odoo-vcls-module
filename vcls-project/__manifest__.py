@@ -45,6 +45,7 @@
         'views/task_views.xml',
         'views/employee_views.xml',
         'views/product_views.xml',
+        'views/sale_order_views.xml',
 
         ### MENUS ###
         'views/dev_project_menu.xml',
