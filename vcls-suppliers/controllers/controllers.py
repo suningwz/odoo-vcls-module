@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from odoo import http
-from odoo.addons.project.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo import http, _
+from odoo.addons.project.controllers.portal import CustomerPortal
+from odoo.addons.portal.controllers.portal import pager as portal_pager
 from odoo.exceptions import AccessError, MissingError
 from odoo.http import request
 
@@ -19,17 +19,16 @@ class CustomerPortal(CustomerPortal):
         # Only count user's task
         values['task_count'] = request.env['project.task'].search_count([('user_id','=',uid)])
         return values
-    
+
     @http.route(['/my/projects', '/my/projects/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_projects(self, page=1, date_begin=None, date_end=None, sortby=None, **kw):
         values = self._prepare_portal_layout_values()
         Project = request.env['project.project']
 
-        '''
         uid = request.env.context.get('uid')
         project_ids = request.env['project.task'].search([('user_id','=',uid)]).mapped('project_id').ids
-'''
-        domain = []
+
+        domain = [('id','in',project_ids)]
 
         searchbar_sortings = {
             'date': {'label': _('Newest'), 'order': 'create_date desc'},
@@ -69,5 +68,4 @@ class CustomerPortal(CustomerPortal):
             'searchbar_sortings': searchbar_sortings,
             'sortby': sortby
         })
-        print('TA MERE')
         return request.render("project.portal_my_projects", values)
