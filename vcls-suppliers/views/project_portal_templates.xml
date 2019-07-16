@@ -53,5 +53,12 @@
         </t>
     </template>
 
-
+    <template id="portal_my_projects" name="My Projects" inherit_id="project.portal_my_projects">
+            <xpath expr="//td[@class='text-right']/a" position="replace">
+                <a t-attf-href="/my/projects/tasks/?{{keep_query('debug', filterby=project.id)}}">
+                    <t t-esc="project.task_count" />
+                    <t t-esc="project.label_tasks" />
+                </a>
+            </xpath>
+    </template>
 </odoo>
