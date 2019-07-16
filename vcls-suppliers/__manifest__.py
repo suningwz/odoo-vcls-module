@@ -43,6 +43,7 @@
         'views/sup_contact_views.xml',
         'views/sup_employee_views.xml',
         'views/purchase_views.xml',
+        'views/project_portal_templates.xml',
 
 
         ### MENUS
