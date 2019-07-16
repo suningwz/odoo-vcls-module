@@ -16,4 +16,42 @@
                 </div>
             </xpath>
     </template>
+
+    <template id="portal_project_tasks" name="Project Tasks">
+            <t t-call="portal.portal_layout">
+            <t t-if="grouped_tasks">
+                <t t-call="portal.portal_table">
+                    <t t-foreach="grouped_tasks" t-as="tasks">
+                        <thead>
+                            <tr t-attf-class="{{'thead-light' if not groupby == 'none' else ''}}">
+                                <th t-if="groupby == 'none'">Name</th>
+                                <th t-else="">
+                                    <em class="font-weight-normal text-muted"><span t-field="tasks[0].sudo().project_id.label_tasks"/> for project:</em>
+                                    <span t-field="tasks[0].sudo().project_id.name"/></th>
+                                <th class="text-center">Stage</th>
+                                <th class="text-left">Ref</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="tasks" t-as="task">
+                                <tr>
+                                    <td>
+                                        <a t-attf-href="/my/task/#{task.id}?{{ keep_query() }}"><span t-field="task.name"/></a>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge badge-pill badge-info" title="Current stage of the task" t-esc="task.stage_id.name" />
+                                    </td>
+                                    <td class="text-left">
+                                        #<span t-esc="task.id"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
 </odoo>
