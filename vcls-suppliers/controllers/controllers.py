@@ -191,8 +191,8 @@ class CustomerPortal(CustomerPortal):
         })
         return request.render("project.portal_my_tasks", values)
     
-    @http.route(['/my/projects/tasks'], type='http', auth="user", website=True)
-    def portal_project_tasks(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, search=None, search_in='content', groupby='project', **kw):
+    @http.route(['/my/projects/<int:project_id>/tasks'], type='http', auth="user", website=True)
+    def portal_project_tasks(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, search=None, search_in='content', groupby='project', project_id=None, **kw):
         values = self._prepare_portal_layout_values()
         searchbar_sortings = {
             'date': {'label': _('Newest'), 'order': 'create_date desc'},
@@ -242,6 +242,14 @@ class CustomerPortal(CustomerPortal):
             filterby = 'all'
         domain = searchbar_filters[filterby]['domain']
 
+        ## ADD DOMAIN FILTER HERE ##
+
+        # ADD FILTER TO SHOW ONLY ASSIGNED TASK
+        uid = request.env.context.get('uid')
+        domain += [('project_id','=', project_id)]
+
+        ## END OF VCLS MODIFICATIONS ##
+
         # archive groups - Default Group By 'create_date'
         archive_groups = self._get_archive_groups('project.task', domain)
         if date_begin and date_end:
@@ -279,12 +287,14 @@ class CustomerPortal(CustomerPortal):
             grouped_tasks = [request.env['project.task'].concat(*g) for k, g in groupbyelem(tasks, itemgetter('project_id'))]
         else:
             grouped_tasks = [tasks]
+        
+        project = request.env['project.project'].search([('id','=',project_id)])
 
         values.update({
             'date': date_begin,
             'date_end': date_end,
             'grouped_tasks': grouped_tasks,
-            'page_name': 'task',
+            'page_name': 'project_tasks',
             'archive_groups': archive_groups,
             'default_url': '/my/tasks',
             'pager': pager,
@@ -296,5 +306,6 @@ class CustomerPortal(CustomerPortal):
             'groupby': groupby,
             'searchbar_filters': OrderedDict(sorted(searchbar_filters.items())),
             'filterby': filterby,
+            'project': project
         })
         return request.render("vcls-suppliers.portal_project_tasks", values)
