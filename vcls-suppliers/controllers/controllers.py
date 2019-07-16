@@ -31,9 +31,9 @@ class CustomerPortal(CustomerPortal):
         Project = request.env['project.project']
 
         uid = request.env.context.get('uid')
-        project_ids = request.env['project.task'].search([('user_id','=',uid)]).mapped('project_id').ids
+        project_ids = request.env['project.task'].search([('user_id','=',uid)]).mapped('project_id')
 
-        domain = [('id','in',project_ids)]
+        domain = [('id','in',project_ids.ids)]
 
         searchbar_sortings = {
             'date': {'label': _('Newest'), 'order': 'create_date desc'},
@@ -59,7 +59,7 @@ class CustomerPortal(CustomerPortal):
         )
 
         # content according to pager and archive selected
-        projects = Project.search(domain, order=order, limit=self._items_per_page, offset=pager['offset'])
+        projects = Project.sudo().search(domain, order=order, limit=self._items_per_page, offset=pager['offset'])
         request.session['my_projects_history'] = projects.ids[:100]
 
         values.update({
@@ -194,9 +194,12 @@ class CustomerPortal(CustomerPortal):
     @http.route(['/my/projects/<int:project_id>/tasks'], type='http', auth="user", website=True)
     def portal_project_tasks(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, search=None, search_in='content', groupby='project', project_id=None, access_token=None, **kw):
         try:
-            project_sudo = self._document_check_access('project.task', project_id, access_token)
+            projects_id = request.env['project.project'].browse(project_id)
+            if projects_id:
+                for task_id in projects_id.task_ids.ids:
+                    project_sudo = self._document_check_access('project.task', task_id, access_token)
         except (AccessError, MissingError):
-            return request.redirect('/my')
+            return request.render("website.403")
         values = self._prepare_portal_layout_values()
         searchbar_sortings = {
             'date': {'label': _('Newest'), 'order': 'create_date desc'},
