@@ -374,6 +374,14 @@
                                 <span class='fa fa-group' aria-label="Department" title="Department"></span>
                                 <field name="department_id" />
                             </div>
+                            <div>
+                                <b>From:</b>
+                                <field name="leave_date_from" />
+                            </div>
+                            <div>
+                                <b>To:</b>
+                                <field name="leave_date_to" />
+                            </div>
                         </div>
                     </div>
                     </t>
