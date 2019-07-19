@@ -761,6 +761,32 @@ class Employee(models.Model):
                     self.leave_duration_type = False
         else:
             self.leave_duration_type = False
+        
+    @api.multi
+    def _compute_leave_status(self):
+        # Used SUPERUSER_ID to forcefully get status of other user's leave, to bypass record rule
+        today_date = datetime.utcnow().date()
+        today_start = fields.Datetime.to_string(today_date)  # get the midnight of the current utc day
+        today_end = fields.Datetime.to_string(today_date + relativedelta(hours=23, minutes=59, seconds=59))
+        holidays = self.env['hr.leave'].sudo().search([
+            ('employee_id', 'in', self.ids),
+            ('date_from', '<=', today_end),
+            ('date_to', '>=', today_start),
+            ('state', 'not in', ('cancel', 'refuse'))
+        ])
+        leave_data = {}
+        for holiday in holidays:
+            leave_data[holiday.employee_id.id] = {}
+            leave_data[holiday.employee_id.id]['leave_date_from'] = holiday.date_from.date()
+            leave_data[holiday.employee_id.id]['leave_date_to'] = holiday.date_to.date()
+            leave_data[holiday.employee_id.id]['current_leave_state'] = holiday.state
+            leave_data[holiday.employee_id.id]['current_leave_id'] = holiday.holiday_status_id.id
+
+        for employee in self:
+            employee.leave_date_from = leave_data.get(employee.id, {}).get('leave_date_from')
+            employee.leave_date_to = leave_data.get(employee.id, {}).get('leave_date_to')
+            employee.current_leave_state = leave_data.get(employee.id, {}).get('current_leave_state')
+            employee.current_leave_id = leave_data.get(employee.id, {}).get('current_leave_id')
 
     ########################
     # CREATE TICKET METHOD #
