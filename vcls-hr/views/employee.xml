@@ -374,19 +374,14 @@
                                 <span class='fa fa-group' aria-label="Department" title="Department"></span>
                                 <field name="department_id" />
                             </div>
-                            <t t-if = 'record.leave_duration_type.raw_value != "am" and record.leave_duration_type.raw_value != "pm"'>
-                                <div>
-                                    <b>From:</b>
-                                    <field name="leave_date_from" />
-                                </div>
-                                <div>
-                                    <b>To:</b>
-                                    <field name="leave_date_to" />
-                                </div>
-                            </t>
-                            <t t-if = 'record.leave_duration_type.raw_value == "am" or record.leave_duration_type.raw_value == "pm"'>
-                                <b>Absent in the <field name="leave_duration_type" /></b>
-                            </t>
+                            <div>
+                                <b>From:</b>
+                                <field name="leave_date_from" />
+                            </div>
+                            <div>
+                                <b>To:</b>
+                                <field name="leave_date_to" />
+                            </div>
                         </div>
                     </div>
                     </t>
