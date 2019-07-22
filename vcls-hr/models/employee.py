@@ -81,6 +81,14 @@ class Employee(models.Model):
         string='Family Name',
         track_visibility='always',)
     
+    # Used in ABsent Today view in order to display leave period
+    leave_duration_type = fields.Selection(
+        [ ('am', 'Morning'),('pm', 'Afternoon') ],
+        string = 'Half Day Leave',
+        readonly = True,
+        compute='_compute_leave_duration_type',
+    )
+    
     #########################################
     # OVERRIDEN FIELDS FOR GROUP VISIBILITY #
     #########################################
@@ -734,6 +742,52 @@ class Employee(models.Model):
                 rec.trial_end_date = rec._get_previous_working_day(rec.trial_start_date + relativedelta(months=rec.trial_period_id.duration,days=-1))
                 rec.trial_notification_date = rec._get_previous_working_day(rec.trial_end_date + relativedelta(days=-1*rec.trial_period_id.notification_delay))
     
+    @api.one
+    def _compute_leave_duration_type(self):
+        today_date = datetime.utcnow().date()
+        today_start = fields.Datetime.to_string(today_date)  # get the midnight of the current utc day
+        today_end = fields.Datetime.to_string(today_date + relativedelta(hours=23, minutes=59, seconds=59))
+        holidays = self.env['hr.leave'].sudo().search([
+            ('employee_id', '=', self.id),
+            ('state', 'not in', ['cancel', 'refuse']),
+            ('date_from', '<=', today_end),
+            ('date_to', '>=', today_start)
+        ])
+        if len(holidays) == 1:
+            for holiday in holidays:
+                if holiday.request_unit_half:
+                    self.leave_duration_type = holiday.request_date_from_period
+                else:
+                    self.leave_duration_type = False
+        else:
+            self.leave_duration_type = False
+        
+    @api.multi
+    def _compute_leave_status(self):
+        # Used SUPERUSER_ID to forcefully get status of other user's leave, to bypass record rule
+        today_date = datetime.utcnow().date()
+        today_start = fields.Datetime.to_string(today_date)  # get the midnight of the current utc day
+        today_end = fields.Datetime.to_string(today_date + relativedelta(hours=23, minutes=59, seconds=59))
+        holidays = self.env['hr.leave'].sudo().search([
+            ('employee_id', 'in', self.ids),
+            ('date_from', '<=', today_end),
+            ('date_to', '>=', today_start),
+            ('state', 'not in', ('cancel', 'refuse'))
+        ])
+        leave_data = {}
+        for holiday in holidays:
+            leave_data[holiday.employee_id.id] = {}
+            leave_data[holiday.employee_id.id]['leave_date_from'] = holiday.date_from.date()
+            leave_data[holiday.employee_id.id]['leave_date_to'] = holiday.date_to.date()
+            leave_data[holiday.employee_id.id]['current_leave_state'] = holiday.state
+            leave_data[holiday.employee_id.id]['current_leave_id'] = holiday.holiday_status_id.id
+
+        for employee in self:
+            employee.leave_date_from = leave_data.get(employee.id, {}).get('leave_date_from')
+            employee.leave_date_to = leave_data.get(employee.id, {}).get('leave_date_to')
+            employee.current_leave_state = leave_data.get(employee.id, {}).get('current_leave_state')
+            employee.current_leave_id = leave_data.get(employee.id, {}).get('current_leave_id')
+
     ########################
     # CREATE TICKET METHOD #
     ########################
