@@ -27,25 +27,25 @@
                                 <field name='alias_user_id' string="Lead Consultant"/>
                             </group>
                         </group>
-                        <group>
-                            <group string="Consultants">
-                                <field name='consultant_ids' mode="tree" string="">
+                        <notebook>
+                            <page string="Consultants" name="consultant">
+                                <field name='consultant_ids' mode="tree">
                                     <tree editable="top">
                                         <field name="name"/>
                                         <field name="job_id"/>
                                     </tree>
                                 </field>
-                            </group>
-                            <group string="Technical Advisors">
-                                <field name='ta_ids' string="">
+                            </page>
+
+                            <page string="Ta" name="ta">
+                                <field name='ta_ids'>
                                     <tree editable="top">
                                         <field name="name"/>
                                         <field name="job_id"/>
                                     </tree>
                                 </field>
-                            </group>
-                        </group>
-                        
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>
