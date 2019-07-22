@@ -2,7 +2,7 @@
 <odoo>
 
 
-    <template id="portal_layout" name="Portal layout: project menu entry" inherit_id="project.portal_layout">
+    <!-- template id="portal_layout" name="Portal layout: project menu entry" inherit_id="project.portal_layout">
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
             <t t-if="page_name == 'project_tasks'">
                 <li class="breadcrumb-item active">
@@ -10,7 +10,7 @@
                 </li>
             </t>
         </xpath>
-    </template>
+    </template -->
 
     <template id="portal_my_task" name="My Task" inherit_id="project.portal_my_task">
             <xpath expr="//t[@t-set='o_portal_fullwidth_alert']" position="replace">
@@ -29,7 +29,7 @@
             </xpath>
     </template>
 
-    <template id="portal_project_tasks" name="Project Tasks">
+    <!-- template id="portal_project_tasks" name="Project Tasks">
             <t t-call="portal.portal_layout">
             <t t-if="grouped_tasks">
                 <t t-call="portal.portal_table">
@@ -63,14 +63,14 @@
                 </t>
             </t>
         </t>
-    </template>
+    </template -->
 
-    <template id="portal_my_projects" name="My Projects" inherit_id="project.portal_my_projects">
+    <!-- template id="portal_my_projects" name="My Projects" inherit_id="project.portal_my_projects">
             <xpath expr="//td[@class='text-right']/a" position="replace">
                 <a t-attf-href="/my/projects/{{ project.id }}/tasks">
                     <t t-esc="project.task_count" />
                     <t t-esc="project.label_tasks" />
                 </a>
             </xpath>
-    </template>
+    </template -->
 </odoo>

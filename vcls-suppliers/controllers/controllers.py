@@ -191,6 +191,7 @@ class CustomerPortal(CustomerPortal):
         })
         return request.render("project.portal_my_tasks", values)
     
+    '''
     @http.route(['/my/projects/<int:project_id>/tasks'], type='http', auth="user", website=True)
     def portal_project_tasks(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, search=None, search_in='content', groupby='project', project_id=None, access_token=None, **kw):
         try:
@@ -316,3 +317,4 @@ class CustomerPortal(CustomerPortal):
             'project': project
         })
         return request.render("vcls-suppliers.portal_project_tasks", values)
+    '''
