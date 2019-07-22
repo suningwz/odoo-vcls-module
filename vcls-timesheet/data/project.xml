@@ -3,6 +3,7 @@
     <data>
         <record id="default_project" model="project.project">
             <field name="name">Pre-Project</field>
+            <field name="privacy_visibility">employees</field>
             <field name="project_type">internal</field>
             <field name="allow_forecast" eval="False"/>
             <field name="allow_timesheets" eval="True"/>
