@@ -21,6 +21,7 @@
                 <xpath expr="//field[@name='payment_term_id']" position="after">    
                     <field name="po_id"/>
                     <field name="risk_score" invisible="1"/>
+                    <field name="timesheet_limit_date"/>
                 </xpath>
             </field>
     </record>

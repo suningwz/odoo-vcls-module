@@ -29,7 +29,7 @@
                         </group>
                         <group>
                             <group string="Consultants">
-                                <field name='consultant_ids' mode="tree">
+                                <field name='consultant_ids' mode="tree" nolabel="1">
                                     <tree>
                                         <field name="name"/>
                                         <field name="job_id"/>
@@ -37,7 +37,7 @@
                                 </field>  
                             </group>
                             <group string="Technical Advisors" >
-                                <field name='ta_ids' mode="tree">
+                                <field name='ta_ids' mode="tree" nolabel="1">
                                     <tree>
                                         <field name="name"/>
                                         <field name="job_id"/>
