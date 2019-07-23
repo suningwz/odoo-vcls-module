@@ -60,7 +60,7 @@ class SaleOrder(models.Model):
         result = super(SaleOrder, self).create(vals)
         return result
 
-    @api.model
+    """@api.model
     def write(self, vals):
         if 'expected_start_date' in vals:
             expected_start_date = fields.Date.from_string(vals['expected_start_date'])
@@ -78,5 +78,5 @@ class SaleOrder(models.Model):
                     forecast = self.env['project.forecast'].search([('task_id','=',task_id.id)],limit=1)
                     if forecast:
                         forecast.write({'end_date':vals['expected_end_date']})
-        return super(SaleOrder, self).write(vals)
+        return super(SaleOrder, self).write(vals)"""
 
