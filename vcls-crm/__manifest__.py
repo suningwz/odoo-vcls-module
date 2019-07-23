@@ -30,7 +30,7 @@
                 'sale_crm',
                 'crm_lead_currency',
                 'vcls-hr',
-                #'sale_timesheet_limit_date',
+                
                 #'sale_project_timesheet_by_seniority',
                 #'crm_lead_product',
                 ],
