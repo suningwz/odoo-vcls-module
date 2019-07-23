@@ -120,7 +120,7 @@
         </record>
 
         <record id="hr_contract.action_hr_contract" model="ir.actions.act_window">
-             <field name="domain" eval="[('employee_id', '=', False),('type_id','!=',ref('vcls-suppliers.contract_type_project_supplier'))]"/>
+             <field name="domain" eval="[('type_id','!=',ref('vcls-suppliers.contract_type_project_supplier'))]"/>
         </record>
     </data>
 </odoo>
