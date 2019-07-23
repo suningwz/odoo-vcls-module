@@ -25,6 +25,7 @@
                 'vcls-hr',
                 'account',
                 'sale_timesheet_limit_date',
+                'sale_timesheet_rounded',
                 ],
 
     # always loaded

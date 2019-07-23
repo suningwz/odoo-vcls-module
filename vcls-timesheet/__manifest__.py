@@ -23,6 +23,7 @@
         'sale_timesheet',
         'vcls-crm',
         'vcls-project',
+        'timesheet_useability',
         ],
 
     # always loaded
