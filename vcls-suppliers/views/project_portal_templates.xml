@@ -47,10 +47,46 @@
                             <td><t t-esc="timesheet.date"/></td>
                             <td><t t-esc="timesheet.name"/></td>
                             <td><t t-esc="timesheet.sudo().user_id.name"/></td>
-                            <td class="text-right"><span t-field="timesheet.unit_amount" t-options='{"widget": "duration", "unit": "hour", "round": "minute"}'/></td>
+                            <td class="text-right"><span t-esc="timesheet.unit_amount" t-options='{"widget": "duration", "unit": "hour", "round": "minute"}'/></td>
                         </tr>
                     </tbody>
                 </table>
+                <!-- ADD NEW TIMESHEET-->
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newTimesheetModal">
+                    Add new timesheet
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="newTimesheetModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">New timesheet</h5>
+                            </div>
+                            <div class="modal-body">
+                                <form t-attf-action="/my/task/#{task.id}/timesheets/new" method="post">
+                                    <div t-attf-class="form-group col-md-6">
+                                        <label class="col-form-label" for="name">Date</label>
+                                        <input type="date" name="date" class="form-control" />
+                                    </div>
+                                    <div t-attf-class="form-group col-md-6">
+                                        <label class="col-form-label" for="name">Description</label>
+                                        <input type="text" name="name" class="form-control" />
+                                    </div>
+                                    <div t-attf-class="form-group col-sm-4">
+                                        <label class="col-form-label" for="name">Duration (hours)</label>
+                                        <input type="text" name="unit_amount" class="form-control" />
+                                    </div>
+                                    <button type="submit" class="btn btn-primary float-right mb32 ">
+                                        Confirm
+                                        <span class="fa fa-long-arrow-right"/>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </xpath>
     </template>
     <!-- https://github.com/OCA/web/tree/12.0/web_widget_x2many_2d_matrix -->

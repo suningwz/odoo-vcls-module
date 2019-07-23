@@ -191,6 +191,20 @@ class CustomerPortal(CustomerPortal):
         })
         return request.render("project.portal_my_tasks", values)
     
+    @http.route(['/my/task/<int:task_id>/timesheets/new'], type='http', auth='user', website=True)
+    def add_new_timesheet(self, task_id, redirect=None, **post):
+        try:
+            project_sudo = self._document_check_access('project.task', task_id, None)
+        except (AccessError, MissingError):
+            return request.render("website.403")
+
+        if post:
+            # START PROCESSING DATA
+            print(post)
+            # END OF PROCESSING DATA
+        else:
+            return request.render("website.403")
+    
     '''
     @http.route(['/my/projects/<int:project_id>/tasks'], type='http', auth="user", website=True)
     def portal_project_tasks(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, search=None, search_in='content', groupby='project', project_id=None, access_token=None, **kw):
