@@ -19,3 +19,6 @@ class Employee(models.Model):
         _logger.info('New Timesheet Validation Date {}'.format(validation_date))
         employees = self.search([])
         employees.write({'timesheet_validated':validation_date})
+
+        # Update timesheet stage_id
+        self.env['account.analytic.line'].search([('stage_id', '=', 'draft'), ('validated', '=', True)]).write({'stage_id':'lc_review'})
