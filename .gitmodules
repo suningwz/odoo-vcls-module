@@ -20,3 +20,7 @@
 [submodule "VCLS-org/contract"]
 	path = VCLS-org/contract
 	url = https://github.com/VCLS-org/contract.git
+	
+[submodule "VCLS-org/partner-contact"]
+	path = VCLS-org/partner-contact
+	url = https://github.com/VCLS-org/partner-contact
