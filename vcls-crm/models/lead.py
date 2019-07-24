@@ -148,6 +148,14 @@ class Leads(models.Model):
         string ='Stage of Development',
     )
 
+    meet_story = fields.Char(
+    )
+
+    initial_vcls_contact = fields.Many2one(
+        'res.users', 
+        default=lambda self: self.env.user.id
+    )
+
     ###################
     # COMPUTE METHODS #
     ###################
