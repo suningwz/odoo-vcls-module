@@ -420,9 +420,10 @@
                     <field name="score"/>
                 </xpath>
 
+                <!--
                 <xpath expr="//button[@name='531']" position="attributes">
                     <attribute name="invisible">1</attribute>
-                </xpath>
+                </xpath> -->
             </field>
         </record>
 
