@@ -17,6 +17,15 @@
             <field name="binding_model_id" ref="model_account_analytic_line"/>
             <field name="state">code</field>
             <field name="code">model._finalize_pc_review()</field>
-        </record> 
+        </record>
+
+        <record id="server_action_set_outofscope" model="ir.actions.server">
+            <field name="name">Set to Out Of Scope</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="model_account_analytic_line"/>
+            <field name="binding_model_id" ref="model_account_analytic_line"/>
+            <field name="state">code</field>
+            <field name="code">model.set_outofscope()</field>
+        </record>
     </data>
 </odoo>
