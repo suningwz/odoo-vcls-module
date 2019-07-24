@@ -65,7 +65,7 @@ class AnalyticLine(models.Model):
             message = "You don't have the permission for the following timesheet(s) :\n"
             for timesheet in timesheets_out:
                 message += " - " + timesheet.name + "\n"
-            raise ValidationError()
+            raise ValidationError(message)
 
     
     @api.multi
