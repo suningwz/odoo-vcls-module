@@ -14,8 +14,18 @@
 
     <template id="portal_my_task" name="My Task" inherit_id="project.portal_my_task">
             <xpath expr="//t[@t-set='o_portal_fullwidth_alert']" position="replace">
-
             </xpath>
+            <xpath expr="//div[@t-if='user.partner_id.id in task.sudo().project_id.message_partner_ids.ids']" position="before">
+                <div t-foreach="errors" t-as="error">
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <span t-esc="error" />
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span class='fa fa-times' aria-label="Close" title="Close"></span>
+                    </button>
+                </div> 
+                </div>
+            </xpath>
+
             <xpath expr="//span[@t-field='task.stage_id.name']" position="replace">
                 <span t-esc="task.stage_id.name" class=" badge badge-pill badge-info" title="Current stage of this task"/>
             </xpath>
@@ -33,7 +43,7 @@
             <xpath expr="//div[@t-if='task.timesheet_ids']" position="replace">
                 <hr class="mt-4 mb-1"/>
                 <h5 class="mt-2 mb-2">Timesheets</h5>
-                <table class="table table-sm">
+                <table class="table table-sm table-hover">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -43,7 +53,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr t-foreach="task.timesheet_ids" t-as="timesheet">
+                        <tr t-foreach="task.timesheet_ids" t-as="timesheet" data-toggle="modal" data-target="#exampleModal" style="cursor: pointer;">
                             <td><t t-esc="timesheet.date"/></td>
                             <td><t t-esc="timesheet.name"/></td>
                             <td><t t-esc="timesheet.sudo().user_id.name"/></td>
@@ -51,6 +61,28 @@
                         </tr>
                     </tbody>
                 </table>
+                <!-- EDIT TIMESHEET -->
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span class='fa fa-times' aria-label="Close" title="Close"></span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div>
+                                idneofnio
+                                </div>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Discard</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ADD NEW TIMESHEET-->
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newTimesheetModal">
@@ -63,6 +95,9 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title">New timesheet</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span class='fa fa-times' aria-label="Close" title="Close"></span>
+                                </button>
                             </div>
                             <div class="modal-body">
                                 <form t-attf-action="/my/task/#{task.id}/timesheets/new" method="post">

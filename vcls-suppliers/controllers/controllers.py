@@ -209,7 +209,19 @@ class CustomerPortal(CustomerPortal):
         
         return error
     
-    @http.route(['/my/task/<int:task_id>/timesheets/new'], type='http', auth='user', methods=['POST'])
+    # Override in order to support error messages
+    @http.route(['/my/task/<int:task_id>'], type='http', auth="public", website=True)
+    def portal_my_task(self, task_id, access_token=None, error = [], **kw):
+        try:
+            task_sudo = self._document_check_access('project.task', task_id, access_token)
+        except (AccessError, MissingError):
+            return request.redirect('/my')
+
+        values = self._task_get_page_view_values(task_sudo, access_token, **kw)
+        values['errors'] = error
+        return request.render("project.portal_my_task", values)
+    
+    @http.route(['/my/task/<int:task_id>/timesheets/new'], type='http', auth='user', methods=['POST'], website=True)
     def add_new_timesheet(self, task_id, redirect=None, **post):
         try:
             project_sudo = self._document_check_access('project.task', task_id, None)
@@ -225,12 +237,13 @@ class CustomerPortal(CustomerPortal):
                 vals['project_id'] = request.env['project.task'].sudo().search([('id','=',task_id)]).project_id.id
                 vals['task_id'] = task_id
                 request.env['account.analytic.line'].create(vals)
-                # return request.redirect('/my/task/{}'.format(task_id))
             else:
                 print('DO ERROR THING')
             # END OF PROCESSING DATA
+            return self.portal_my_task(task_id, error = error)
         else:
             return request.render("website.403")
+            
 
     '''
     @http.route(['/my/projects/<int:project_id>/tasks'], type='http', auth="user", website=True)
