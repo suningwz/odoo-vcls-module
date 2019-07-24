@@ -54,7 +54,7 @@ class AnalyticLine(models.Model):
         if len(timesheets) == 0:
             raise ValidationError(_("Please select at least one record!"))
 
-        timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='draft' and (r.project_id.user_id.id == r.env.user.id or r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2')))
+        timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='draft' and (r.project_id.user_id.id == r.env.user.id or r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2'))))
         timesheets_out = timesheets - timesheets_in
         #timesheets_out = timesheets.filtered(lambda r: (r.stage_id=='draft' and r.project_id.user_id.id != r.env.user.id and not r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2')))
         for timesheet in timesheets_in:
