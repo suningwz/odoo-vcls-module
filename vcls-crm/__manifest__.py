@@ -30,7 +30,7 @@
                 'sale_crm',
                 'crm_lead_currency',
                 'vcls-hr',
-                'crm_lead_firstname',
+                #'crm_lead_firstname',
                
                 ],
 
