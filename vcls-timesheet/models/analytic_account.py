@@ -63,12 +63,7 @@ class AnalyticLine(models.Model):
         timesheet_ids = context.get('active_ids',[])
         timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
         if len(timesheets) == 0:
-            return {
-                'warning': {
-                    'title': 'Warning!',
-                    'message': 'Please select at least one record!'
-                }
-            }
+            raise ValidationError(_("Please select at least one record!"))
 
         timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='draft',r.project_id.user_id.id == r.env.user.id or r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2')))
         timesheets_out = timesheets.filtered(lambda r: (r.stage_id=='draft',r.project_id.user_id.id != r.env.user.id and not r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2')))
@@ -81,11 +76,7 @@ class AnalyticLine(models.Model):
             message = "You don't have the permission for the following timesheet(s) :\n"
             for timesheet in timesheets_out:
                 message += "- " + timesheet.name + "\n"
-            return {
-                'warning': {
-                    'title': 'Permission warning!',
-                    'message': message }
-            }
+            raise ValidationError(_(message))
 
 
         """for timesheet_id in timesheet_ids:
@@ -101,23 +92,14 @@ class AnalyticLine(models.Model):
         timesheet_ids = context.get('active_ids',[])
         timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
         if len(timesheets) == 0:
-            return {
-                'warning': {
-                    'title': 'Warning!',
-                    'message': 'Please select at least one record!'
-                }
-            }
+            raise ValidationError(_("Please select at least one record!"))
         timesheets.filtered(lambda r: (r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or r.env.user.has_group('vcls-timesheet.vcls_pc'))).write({'stage_id':'invoiceable'})
         timesheets_out = timesheets.filtered(lambda r: ((not r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2')) and not (r.env.user.has_group('vcls-timesheet.vcls_pc'))))
         if len(timesheets_out) > 0:
             message = "You don't have the permission for the following timesheet(s) :\n"
             for timesheet in timesheets_out:
                 message += "- " + timesheet.name + "\n"
-            return {
-                'warning': {
-                    'title': 'Permission warning!',
-                    'message': message }
-            }
+            raise ValidationError(_(message))
     
     @api.multi
     def set_outofscope(self):
