@@ -313,3 +313,7 @@ class Leads(models.Model):
                 "client_product_ids": partner.client_product_ids
             })
         return result
+
+    @api.onchange('contact_name','contact_lastname')
+    def _onchange_name(self):
+        self.name = self.contact_name
