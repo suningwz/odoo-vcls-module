@@ -153,7 +153,8 @@ class Leads(models.Model):
 
     initial_vcls_contact = fields.Many2one(
         'res.users', 
-        default=lambda self: self.env.user.id
+        default=lambda self: self.env.user.id,
+        string='VCLS Initial Contact'
     )
 
     ###################
