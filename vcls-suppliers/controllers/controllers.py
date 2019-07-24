@@ -191,7 +191,24 @@ class CustomerPortal(CustomerPortal):
         })
         return request.render("project.portal_my_tasks", values)
     
-    @http.route(['/my/task/<int:task_id>/timesheets/new'], type='http', auth='user', website=True)
+    def check_timesheet(post):
+        error = []
+        if post['date'] == '':
+            error += ['Date not specified.']
+        if post['name'] == '':
+            error += ['Description not specified.']
+        if post['unit_amount'] == '':
+            error += ['Duration not specified.']
+        else:
+            try:
+                if float(post['unit_amount']) < 0:
+                    error += ['Negative duration.']
+            except:
+                error += ['Invalid duration.']
+        
+        return error
+    
+    @http.route(['/my/task/<int:task_id>/timesheets/new'], type='http', auth='user', methods=['POST'])
     def add_new_timesheet(self, task_id, redirect=None, **post):
         try:
             project_sudo = self._document_check_access('project.task', task_id, None)
@@ -200,11 +217,13 @@ class CustomerPortal(CustomerPortal):
 
         if post:
             # START PROCESSING DATA
+            error = CustomerPortal.check_timesheet(post)
+            print(error)
             print(post)
             # END OF PROCESSING DATA
         else:
             return request.render("website.403")
-    
+
     '''
     @http.route(['/my/projects/<int:project_id>/tasks'], type='http', auth="user", website=True)
     def portal_project_tasks(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, search=None, search_in='content', groupby='project', project_id=None, access_token=None, **kw):

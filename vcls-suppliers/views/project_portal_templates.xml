@@ -66,6 +66,7 @@
                             </div>
                             <div class="modal-body">
                                 <form t-attf-action="/my/task/#{task.id}/timesheets/new" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                     <div t-attf-class="form-group col-md-6">
                                         <label class="col-form-label" for="name">Date</label>
                                         <input type="date" name="date" class="form-control" />
