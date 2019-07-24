@@ -315,5 +315,6 @@ class Leads(models.Model):
         return result
 
     @api.onchange('contact_name','contact_lastname')
-    def _onchange_name(self):
-        self.name = self.contact_name
+    def _onchange_partner_name(self):
+        if self.contact_name and self.contact_lastname:
+            self.name = self.contact_name + " " + self.contact_lastname
