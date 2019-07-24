@@ -74,7 +74,7 @@ class SaleOrder(models.Model):
 
         if 'expected_end_date' in vals:
             if self.tasks_ids:
-                for task_id in self.task_ids:
+                for task_id in self.tasks_ids:
                     forecast = self.env['project.forecast'].search([('task_id','=',task_id.id)],limit=1)
                     if forecast:
                         forecast.write({'end_date':vals['expected_end_date']})
