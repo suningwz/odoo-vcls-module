@@ -419,11 +419,10 @@
                 <xpath expr="//field[@name='score_ids']" position="before">
                     <field name="score"/>
                 </xpath>
-
-                <!--
-                <xpath expr="//button[@name='531']" position="attributes">
+              
+                <xpath expr="//button[@icon='fa-tags']" position="attributes">
                     <attribute name="invisible">1</attribute>
-                </xpath> -->
+                </xpath>
             </field>
         </record>
 
