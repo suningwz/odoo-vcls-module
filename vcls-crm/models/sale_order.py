@@ -70,8 +70,8 @@ class SaleOrder(models.Model):
                 for task_id in self.tasks_ids:
                     forecasts = self.env['project.forecast'].search([('task_id','=',task_id.id)])
                     for forecast in forecasts:
-                        forecast.write({'start_date' : vals['expected_start_date']})
-
-
+                        forecast.write({'start_date':vals['expected_start_date']})
+       
+       
         return super(SaleOrder, self).write(vals)
 

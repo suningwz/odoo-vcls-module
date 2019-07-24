@@ -148,6 +148,15 @@ class Leads(models.Model):
         string ='Stage of Development',
     )
 
+    meet_story = fields.Char(
+    )
+
+    initial_vcls_contact = fields.Many2one(
+        'res.users', 
+        default=lambda self: self.env.user.id,
+        string='VCLS Initial Contact'
+    )
+
     ###################
     # COMPUTE METHODS #
     ###################
@@ -305,3 +314,8 @@ class Leads(models.Model):
                 "client_product_ids": partner.client_product_ids
             })
         return result
+
+    @api.onchange('contact_name','contact_lastname')
+    def _onchange_partner_name(self):
+        if self.contact_name and self.contact_lastname:
+            self.name = self.contact_name + " " + self.contact_lastname
