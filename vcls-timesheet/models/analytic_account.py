@@ -46,17 +46,6 @@ class AnalyticLine(models.Model):
                 vals['unit_amount'] = math.ceil(vals['unit_amount']*4)/4
         return super(AnalyticLine, self).create(vals)
 
-    # Replaced by an approval at the employee level (timesheet_validated field)
-    """@api.model
-    def approve_timesheets(self):
-        last_timesheet_lock = datetime.datetime.now() - datetime.timedelta(days=1)
-        timesheets = self.env['account.analytic.line'].search([('validated','=',False)])
-        timesheets.write({'validated':True, 'stage_id':'lc_review'})
-        #for ts in timesheets:
-            #ts.write({'validated':True, 'stage_id':'lc_review'})
-
-        self.env.ref('vcls-timesheet.last_timesheet_lock').value = last_timesheet_lock"""
-
     @api.multi
     def _finalize_lc_review(self):
         context = self.env.context
@@ -78,13 +67,6 @@ class AnalyticLine(models.Model):
                 message += " - " + timesheet.name + "\n"
             raise ValidationError(message)
 
-
-        """for timesheet_id in timesheet_ids:
-            timesheet = self.env['account.analytic.line'].browse(timesheet_id)
-            if timesheet.lc_comment != False:
-                timesheet.write({'stage_id':'pc_review'})
-            else:
-                timesheet.write({'stage_id':'invoiceable'})"""
     
     @api.multi
     def _finalize_pc_review(self):

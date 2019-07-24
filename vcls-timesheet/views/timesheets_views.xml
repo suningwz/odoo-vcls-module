@@ -52,7 +52,7 @@
             <!-- <field name="context">{'group_by':['project_id']}</field> -->
             <field name="view_mode">tree</field>
             <field name="view_id" ref="vcls_timesheet_lc_view_tree"/>
-            <field name="domain">[('stage_id', '=', 'lc_review')]</field>
+            <field name="domain">[('validated','=',True),'|',('stage_id', '=', 'lc_review'),('stage_id','=','draft')]</field>
         </record>
 
         
