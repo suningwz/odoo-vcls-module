@@ -398,6 +398,21 @@
             <field name="model">crm.lead</field>
             <field name="inherit_id" ref="crm_lead_firstname.crm_case_form_view_leads"/>
             <field name="arch" type="xml">
+                <xpath expr="//field[@name='contact_name']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='contact_lastname']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="crm_case_form_view_leads_inherit" model="ir.ui.view">
+            <field name="name">crm_case_form_view_leads_inherit</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="website_crm_score.lead_score_form"/>
+            <field name="arch" type="xml">
                 <xpath expr="//field[@name='score']" position="replace">
                 </xpath>
 
@@ -407,14 +422,6 @@
 
                 <xpath expr="//button[@name='531']" position="attributes">
                     <attribute name="invisible">1</attribute>
-                </xpath>
-
-                <xpath expr="//field[@name='contact_name']" position="attributes">
-                    <attribute name="required">True</attribute>
-                </xpath>
-
-                <xpath expr="//field[@name='contact_lastname']" position="attributes">
-                    <attribute name="required">True</attribute>
                 </xpath>
             </field>
         </record>
