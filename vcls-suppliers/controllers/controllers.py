@@ -8,6 +8,7 @@ from collections import OrderedDict
 from operator import itemgetter
 from odoo.http import request
 from odoo.osv.expression import OR
+from datetime import datetime
 
 class CustomerPortal(CustomerPortal):
     
@@ -218,8 +219,15 @@ class CustomerPortal(CustomerPortal):
         if post:
             # START PROCESSING DATA
             error = CustomerPortal.check_timesheet(post)
-            print(error)
-            print(post)
+            if len(error) == 0:
+                vals = post
+                vals['date'] = datetime.strptime(vals['date'], '%Y-%m-%d')
+                vals['project_id'] = request.env['project.task'].sudo().search([('id','=',task_id)]).project_id.id
+                vals['task_id'] = task_id
+                request.env['account.analytic.line'].create(vals)
+                # return request.redirect('/my/task/{}'.format(task_id))
+            else:
+                print('DO ERROR THING')
             # END OF PROCESSING DATA
         else:
             return request.render("website.403")
