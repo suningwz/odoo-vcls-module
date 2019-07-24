@@ -206,6 +206,10 @@ class CustomerPortal(CustomerPortal):
                     error += ['Negative duration.']
             except:
                 error += ['Invalid duration.']
+        try:
+            datetime.strptime(post['date'], '%Y-%m-%d')
+        except:
+            error += ['Invalid date.']
         
         return error
     
@@ -237,13 +241,28 @@ class CustomerPortal(CustomerPortal):
                 vals['project_id'] = request.env['project.task'].sudo().search([('id','=',task_id)]).project_id.id
                 vals['task_id'] = task_id
                 request.env['account.analytic.line'].create(vals)
-            else:
-                print('DO ERROR THING')
             # END OF PROCESSING DATA
             return self.portal_my_task(task_id, error = error)
         else:
             return request.render("website.403")
-            
+    
+    @http.route(['/my/task/<int:task_id>/timesheets/<int:timesheet_id>/edit'], type='http', auth='user', methods=['POST'], website=True)
+    def edit_timesheet(self, task_id, timesheet_id, redirect=None, **post):
+        try:
+            project_sudo = self._document_check_access('project.task', task_id, None)
+        except (AccessError, MissingError):
+            return request.render("website.403")
+
+        if post:
+            # START PROCESSING DATA
+            error = CustomerPortal.check_timesheet(post)
+            if len(error) == 0:
+                vals = post
+                vals['date'] = datetime.strptime(vals['date'], '%Y-%m-%d')
+                request.env['account.analytic.line'].search([('id','=',timesheet_id)]).write(vals)
+            return self.portal_my_task(task_id, error = error)
+        else:
+            return request.render("website.403")
 
     '''
     @http.route(['/my/projects/<int:project_id>/tasks'], type='http', auth="user", website=True)
