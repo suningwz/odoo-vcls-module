@@ -72,5 +72,6 @@ class SaleOrder(models.Model):
                     for forecast in forecasts:
                         forecast.write({'start_date' : vals['expected_start_date']})
 
+
         return super(SaleOrder, self).write(vals)
 
