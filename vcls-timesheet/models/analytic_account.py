@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, tools, api
+from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError
 
 import logging
@@ -58,15 +58,12 @@ class AnalyticLine(models.Model):
         timesheets_out = timesheets - timesheets_in
         #timesheets_out = timesheets.filtered(lambda r: (r.stage_id=='draft' and r.project_id.user_id.id != r.env.user.id and not r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2')))
         for timesheet in timesheets_in:
-            if timesheet.unit_amount_rounded != timesheet.unit_amount:
-                timesheet.write({'stage_id':'adjustment_validation'})
-            else:
-                timesheet.write({'stage_id':'invoiceable'})
+                timesheet.write({'stage_id':'pc_review'})
         if len(timesheets_out) > 0:
             message = "You don't have the permission for the following timesheet(s) :\n"
             for timesheet in timesheets_out:
                 message += " - " + timesheet.name + "\n"
-            raise ValidationError(message)
+            raise ValidationError(_(message))
 
     
     @api.multi
@@ -76,8 +73,13 @@ class AnalyticLine(models.Model):
         timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
         if len(timesheets) == 0:
             raise ValidationError(_("Please select at least one record!"))
-        timesheets.filtered(lambda r: (r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or r.env.user.has_group('vcls-timesheet.vcls_pc'))).write({'stage_id':'invoiceable'})
-        timesheets_out = timesheets.filtered(lambda r: ((not r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2')) and not (r.env.user.has_group('vcls-timesheet.vcls_pc'))))
+        timesheets_in = timesheets.filtered(lambda r: (r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or r.env.user.has_group('vcls-timesheet.vcls_pc'))).write({'stage_id':'invoiceable'})
+        timesheets_out = timesheets - timesheets_in
+        for timesheet in timesheets_in:
+            if timesheet.unit_amount_rounded != timesheet.unit_amount:
+                timesheet.write({'stage_id':'adjustment_validation'})
+            else:
+                timesheet.write({'stage_id':'invoiceable'})
         if len(timesheets_out) > 0:
             message = "You don't have the permission for the following timesheet(s) :\n"
             for timesheet in timesheets_out:
