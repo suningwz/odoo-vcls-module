@@ -319,5 +319,6 @@ class Leads(models.Model):
     
     @api.depends('contact_name','contact_lastname')
     def _compute_partner_name(self):
-        if self.contact_name and self.contact_lastname:
-            self.name = self.contact_name + " " + self.contact_lastname
+        for lead in self:
+            if lead.contact_name and lead.contact_lastname:
+                lead.name = lead.contact_name + " " + lead.contact_lastname
