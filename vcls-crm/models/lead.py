@@ -162,6 +162,15 @@ class Leads(models.Model):
 
     name = fields.Char(compute='_compute_partner_name')
 
+    @api.model
+    def create(self, vals):
+        lead = super(Leads, self).create(vals)
+        # VCLS MODS
+        if lead.type == 'lead':
+            lead.message_ids[0].subtype_id = self.env.ref('vcls-crm.lead_creation')
+        # END OF MODS
+        return lead
+
     ###################
     # COMPUTE METHODS #
     ###################
