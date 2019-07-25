@@ -284,6 +284,11 @@
                         <h1><field name="name" placeholder="Built from contact name..." readonly="1"/></h1>
                     </div>
                     <group>
+                        <label for="contact_name"/>
+                        <div class="o_row">
+                            <field name="contact_name"/>
+                            <field name="title" placeholder="Salutation" domain="[]" options="{&quot;no_open&quot;: True}" required="True"/>
+                        </div>
                         <group>
                             <!-- Preload all the partner's information -->
                             <field name="partner_id" string="Search Existing Client" widget="res_partner_many2one" 
@@ -302,11 +307,7 @@
                             <field name="website" widget="url" placeholder="e.g. www.odoo.com"/>
                         </group>
                         <group>
-                            <label for="contact_name"/>
-                            <div class="o_row">
-                                <field name="contact_name"/>
-                                <field name="title" placeholder="Salutation" domain="[]" options="{&quot;no_open&quot;: True}" required="True"/>
-                            </div>
+                            
                             <field name="is_blacklisted" invisible="1"/>
                             <label for="email_from" class="oe_inline"/>
                             <div class="o_row o_row_readonly">
