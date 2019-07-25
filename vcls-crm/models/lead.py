@@ -157,6 +157,8 @@ class Leads(models.Model):
         string='VCLS Initial Contact'
     )
 
+    name = fields.Char(compute='_compute_partner_name')
+
     ###################
     # COMPUTE METHODS #
     ###################
@@ -314,8 +316,9 @@ class Leads(models.Model):
                 "client_product_ids": partner.client_product_ids
             })
         return result
-
-    @api.onchange('contact_name','contact_lastname')
-    def _onchange_partner_name(self):
-        if self.contact_name and self.contact_lastname:
-            self.name = self.contact_name + " " + self.contact_lastname
+    
+    @api.depends('contact_name','contact_lastname')
+    def _compute_partner_name(self):
+        for lead in self:
+            if lead.contact_name and lead.contact_lastname:
+                lead.name = lead.contact_name + " " + lead.contact_lastname
