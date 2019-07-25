@@ -281,7 +281,7 @@
                     <div class="badge-pill badge-success float-right" attrs="{'invisible': [('probability', '&lt;', 100)]}">Won</div>
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only" string="Lead"/>
-                        <h1><field name="name" placeholder="Built from contact name..."/></h1>
+                        <h1><field name="name" placeholder="Built from contact name..." readonly="1"/></h1>
                     </div>
                     <group>
                         <group>
@@ -320,6 +320,7 @@
                             <field name="mobile"/>
                         </group>
                         <group>
+                            <field name="initial_vcls_contact"/>
                             <field name="meet_story" string = "How do you meet ?" required="True"/>
                         </group>
                         <group>
