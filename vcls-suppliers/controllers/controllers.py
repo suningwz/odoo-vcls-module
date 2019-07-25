@@ -8,6 +8,7 @@ from collections import OrderedDict
 from operator import itemgetter
 from odoo.http import request
 from odoo.osv.expression import OR
+from datetime import datetime
 
 class CustomerPortal(CustomerPortal):
     
@@ -191,6 +192,80 @@ class CustomerPortal(CustomerPortal):
         })
         return request.render("project.portal_my_tasks", values)
     
+    def check_timesheet(post):
+        error = []
+        if post['date'] == '':
+            error += ['Date not specified.']
+        if post['name'] == '':
+            error += ['Description not specified.']
+        if post['unit_amount'] == '':
+            error += ['Duration not specified.']
+        else:
+            try:
+                if float(post['unit_amount']) < 0:
+                    error += ['Negative duration.']
+            except:
+                error += ['Invalid duration.']
+        try:
+            datetime.strptime(post['date'], '%Y-%m-%d')
+        except:
+            error += ['Invalid date.']
+        
+        return error
+    
+    # Override in order to support error messages
+    @http.route(['/my/task/<int:task_id>'], type='http', auth="public", website=True)
+    def portal_my_task(self, task_id, access_token=None, error = [], **kw):
+        try:
+            task_sudo = self._document_check_access('project.task', task_id, access_token)
+        except (AccessError, MissingError):
+            return request.redirect('/my')
+
+        values = self._task_get_page_view_values(task_sudo, access_token, **kw)
+        values['errors'] = error
+        return request.render("project.portal_my_task", values)
+    
+    @http.route(['/my/task/<int:task_id>/timesheets/new'], type='http', auth='user', methods=['POST'], website=True)
+    def add_new_timesheet(self, task_id, redirect=None, **post):
+        try:
+            project_sudo = self._document_check_access('project.task', task_id, None)
+        except (AccessError, MissingError):
+            return request.render("website.403")
+
+        if post:
+            # START PROCESSING DATA
+            error = CustomerPortal.check_timesheet(post)
+            if len(error) == 0:
+                vals = post
+                vals['date'] = datetime.strptime(vals['date'], '%Y-%m-%d')
+                vals['project_id'] = request.env['project.task'].sudo().search([('id','=',task_id)]).project_id.id
+                vals['task_id'] = task_id
+                request.env['account.analytic.line'].create(vals)
+            # END OF PROCESSING DATA
+            return self.portal_my_task(task_id, error = error)
+        else:
+            return request.render("website.403")
+    
+    @http.route(['/my/task/<int:task_id>/timesheets/<int:timesheet_id>/edit'], type='http', auth='user', methods=['POST'], website=True)
+    def edit_timesheet(self, task_id, timesheet_id, redirect=None, **post):
+        try:
+            project_sudo = self._document_check_access('project.task', task_id, None)
+        except (AccessError, MissingError):
+            return request.render("website.403")
+
+        if post:
+            # START PROCESSING DATA
+            error = CustomerPortal.check_timesheet(post)
+            if len(error) == 0:
+                vals = post
+                vals['date'] = datetime.strptime(vals['date'], '%Y-%m-%d')
+                vals['stage_id'] = 'draft'
+                request.env['account.analytic.line'].search([('id','=',timesheet_id)]).write(vals)
+            return self.portal_my_task(task_id, error = error)
+        else:
+            return request.render("website.403")
+
+    '''
     @http.route(['/my/projects/<int:project_id>/tasks'], type='http', auth="user", website=True)
     def portal_project_tasks(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, search=None, search_in='content', groupby='project', project_id=None, access_token=None, **kw):
         try:
@@ -316,3 +391,4 @@ class CustomerPortal(CustomerPortal):
             'project': project
         })
         return request.render("vcls-suppliers.portal_project_tasks", values)
+    '''
