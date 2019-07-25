@@ -280,7 +280,7 @@
                     <div class="badge-pill badge-success float-right" attrs="{'invisible': [('probability', '&lt;', 100)]}">Won</div>
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only" string="Lead"/>
-                        <h1><field name="name" placeholder="Built from contact name..."/></h1>
+                        <h1><field name="name" placeholder="Built from contact name..." readonly="1"/></h1>
                     </div>
                     <group>
                         <group>
@@ -304,7 +304,7 @@
                             <label for="contact_name"/>
                             <div class="o_row">
                                 <field name="contact_name"/>
-                                <field name="title" placeholder="Salutation" domain="[]" options="{&quot;no_open&quot;: True}"/>
+                                <field name="title" placeholder="Salutation" domain="[]" options="{&quot;no_open&quot;: True}" required="True"/>
                             </div>
                             <field name="is_blacklisted" invisible="1"/>
                             <label for="email_from" class="oe_inline"/>
@@ -319,10 +319,11 @@
                             <field name="mobile"/>
                         </group>
                         <group>
+                            <field name="initial_vcls_contact"/>
                             <field name="meet_story" string = "How do you meet ?" required="True"/>
                         </group>
                         <group>
-                            <field name="user_id" domain="[('share', '=', False)]" context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}" readonly="True"/>
+                            <field name="user_id" string="Account Manager" domain="[('share', '=', False)]" context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}" readonly="True"/>
                             <field name="type" invisible="1"/>
                             
                         </group>
@@ -351,7 +352,7 @@
                         
                         <page name="extra" string="Marketing Info">
                             <group>
-                                <group string="Email" groups="base.group_no_one">
+                                <group string="Email" groups="base.group_no_one" invisible="1">
                                     <field name="message_bounce" readonly="1"/>
                                 </group>
                                 <group string="Tracking" groups="base.group_multi_company,base.group_no_one" name="categorization">
@@ -400,11 +401,11 @@
             <field name="priority">1000</field>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='contact_name']" position="attributes">
-                    <attribute name="required">True</attribute>
+                    <attribute name="required">1</attribute>
                 </xpath>
 
                 <xpath expr="//field[@name='contact_lastname']" position="attributes">
-                    <attribute name="required">True</attribute>
+                    <attribute name="required">1</attribute>
                 </xpath>
                 <xpath expr="//field[@name='score']" position="replace">
                 </xpath>
