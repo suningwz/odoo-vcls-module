@@ -259,6 +259,7 @@ class CustomerPortal(CustomerPortal):
             if len(error) == 0:
                 vals = post
                 vals['date'] = datetime.strptime(vals['date'], '%Y-%m-%d')
+                vals['stage_id'] = 'draft'
                 request.env['account.analytic.line'].search([('id','=',timesheet_id)]).write(vals)
             return self.portal_my_task(task_id, error = error)
         else:

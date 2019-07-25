@@ -31,13 +31,13 @@
             </xpath>
             <xpath expr="//div[@t-if='task.date_deadline']" position="after">
                 <div class="col-12 col-md-6">
-                    <strong>Planned Hours:</strong> <span t-field="task.planned_hours" t-options='{"widget": "float"}'/>
+                    <strong>Planned Hours:</strong> <span t-esc="task.planned_hours" t-options='{"widget": "float", "precision": 1}'/>
                 </div>
                 <div class="col-12 col-md-6">
-                    <strong>Total Hours Spent:</strong> <span t-field="task.total_hours_spent" t-options='{"widget": "float"}'/>
+                    <strong>Total Hours Spent:</strong> <span t-esc="task.total_hours_spent" t-options='{"widget": "float", "precision": 1}'/>
                 </div>
                 <div class="col-12 col-md-6">
-                    <strong>Progress: </strong> <span t-field="task.progress" t-options='{"widget": "percentage"}'/><strong>%</strong>
+                    <strong>Progress: </strong> <span t-esc="task.progress" t-options='{"widget": "percentage"}'/><strong>%</strong>
                 </div>
             </xpath>
             <xpath expr="//div[@t-if='task.timesheet_ids']" position="replace">
