@@ -268,7 +268,6 @@
                     <button name="%(crm.action_crm_lead2opportunity_partner)d" string="Convert to Opportunity" type="action" help="Convert to Opportunity" class="oe_highlight" attrs="{'invisible': [('type', '=', 'opportunity')]}"/>
                     <button name="toggle_active" string="Restore" type="object" attrs="{'invisible': ['|', ('probability', '&gt;', 0), ('active', '=', True)]}"/>
                     <button name="action_set_lost" string="Mark as Lost" type="object" attrs="{'invisible': ['&amp;', ('probability', '=', 0), ('active', '=', False)]}" invisible="1"/>
-                    <field name="initial_vcls_contact"/>
                 </header>
                 <sheet>
                     <field name="active" invisible="1"/>
@@ -393,10 +392,12 @@
         </record>
 
         <!-- Override of the initial view to add custom fields -->
+
         <record id="crm_case_form_view_leads_inherit" model="ir.ui.view">
             <field name="name">crm_case_form_view_leads_inherit</field>
             <field name="model">crm.lead</field>
-            <field name="inherit_id" ref="crm_lead_firstname.crm_case_form_view_leads"/>
+            <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
+            <field name="priority">1000</field>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='contact_name']" position="attributes">
                     <attribute name="required">True</attribute>
@@ -405,14 +406,6 @@
                 <xpath expr="//field[@name='contact_lastname']" position="attributes">
                     <attribute name="required">True</attribute>
                 </xpath>
-            </field>
-        </record>
-
-        <record id="crm_case_form_view_leads_inherit" model="ir.ui.view">
-            <field name="name">crm_case_form_view_leads_inherit</field>
-            <field name="model">crm.lead</field>
-            <field name="inherit_id" ref="website_crm_score.lead_score_form"/>
-            <field name="arch" type="xml">
                 <xpath expr="//field[@name='score']" position="replace">
                 </xpath>
 
