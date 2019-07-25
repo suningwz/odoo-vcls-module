@@ -22,6 +22,9 @@ class Leads(models.Model):
 
     company_id = fields.Many2one(string = 'Trading Entity', default = lambda self: self.env.ref('vcls-hr.company_VCFR'))
 
+    # KEEP CAMPAIGN_ID -> FIRST CONTACT
+    campaign_ids = fields.Many2many('utm.campaign', string = 'Campaings')
+
     ###################
     # DEFAULT METHODS #
     ###################
