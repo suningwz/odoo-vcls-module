@@ -5,3 +5,6 @@ access_dev_project_manager,dev.project.manager,vcls-project.model_project_projec
 
 access_program_user,access_program_user,vcls-project.model_project_program,base.group_user,1,0,0,0
 access_program_manager,access_program_manager,vcls-project.model_project_program,project.group_project_manager,1,1,1,1
+
+access_time_category_user,access_time_category_user,vcls-project.model_project_time_category,base.group_user,1,0,1,0
+access_time_category_manager,access_time_category_manager,vcls-project.model_project_time_category,project.group_project_manager,1,1,1,1

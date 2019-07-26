@@ -52,6 +52,7 @@
         'views/program_views_menu.xml',
         'views/project_views.xml',
         'views/project_forecast_views.xml',
+        'views/time_category_views.xml',
     ],
 
     # only loaded in demonstration mode
