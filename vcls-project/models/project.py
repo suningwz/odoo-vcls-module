@@ -21,6 +21,13 @@ class Project(models.Model):
 
     user_id = fields.Many2one('res.users', string='Project Manager', default=lambda self: self._default_user_id() , track_visibility="onchange")
 
+    employee_id = fields.Many2one(
+        'hr.employee',
+        string = 'Related employee_id',
+        compute='_compute_employee_id',
+        store = True
+    )
+
     project_type = fields.Selection([
         ('dev', 'Developement'),
         ('client', 'Client'),
@@ -61,6 +68,13 @@ class Project(models.Model):
     ###################
     # COMPUTE METHODS #
     ###################
+
+    def _compute_employee_id(self):
+        for record in self:
+            if record.user_id:
+                resource = self.env['resource.resource'].search([('user_id','=',record.user_id.id)])
+                employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
+                record.employee_id = employee
 
     @api.model
     def _default_user_id(self):

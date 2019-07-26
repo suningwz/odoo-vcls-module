@@ -31,6 +31,28 @@ class AnalyticLine(models.Model):
         store = True,
     )
 
+    # Used in order to group by client
+    partner_id = fields.Many2one(
+        'res.partner',
+        string = 'Client',
+        related = 'project_id.partner_id',
+        store = True,
+    )
+
+    project_user_id = fields.Many2one(
+        'res.users',
+        string = 'Project Controller',
+        related = 'project_id.user_id',
+        store = True,
+    )
+
+    # Used to authorize LM to view managee's timesheets
+    is_authorized = fields.Boolean(
+        'LM can see',
+        compute = '_is_authorized_lm',
+        store = True
+    )
+
     adjustment_reason_id = fields.Many2one('timesheet.adjustment.reason', string="Adjustment Reason")
 
     # Rename description label
@@ -85,6 +107,16 @@ class AnalyticLine(models.Model):
             for timesheet in timesheets_out:
                 message += "- " + timesheet.name + "\n"
             raise ValidationError(_(message))
+    
+    @api.depends('project_id')
+    def _is_authorized_lm(self):
+        for record in self:
+            try:
+                record.is_authorized = self._uid in record.project_id.employee_id.lm_ids.ids
+            except Exception as err:
+                print(err)
+                # No project / project controller / project manager
+                self.is_authorized = False
     
     @api.multi
     def set_outofscope(self):
