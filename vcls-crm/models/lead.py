@@ -159,6 +159,8 @@ class Leads(models.Model):
 
     name = fields.Char(compute='_compute_partner_name')
 
+    lead_history = fields.Many2many(comodel_name="crm.lead", relation="crm_lead_rel", column1="crm_lead_id1")
+
     ### MIDDLE NAME ###
 
     contact_middlename = fields.Char("Middle name")

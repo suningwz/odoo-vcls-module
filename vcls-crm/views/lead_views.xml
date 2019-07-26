@@ -380,6 +380,19 @@
                                 </group>
                             </group>
                         </page>
+                        <page name="lead_history" string="Lead History">
+                            <field name="lead_history">
+                                <tree>
+                                    <field name="create_date"/>
+                                    <field name="name" string="Lead"/>
+                                    <field name="city"/>
+                                    <field name="country_id"/>
+                                    <field name="email_from"/>
+                                    <field name="phone"/>
+                                    <field name="team_id"/>
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
@@ -438,7 +451,10 @@
                 <xpath expr="//field[@name='medium_id']" position="attributes">
                     <!-- HIDE medium field -->
                     <attribute name="invisible">1</attribute>
-                </xpath>            
+                </xpath>    
+                <xpath expr="//page[@name='lead_history']" position="attributes">        
+                    <attribute name="invisible">1</attribute>
+                </xpath>  
             </field>
         </record>
 
