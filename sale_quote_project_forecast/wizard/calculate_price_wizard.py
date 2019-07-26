@@ -38,6 +38,7 @@ class CalculatePriceWizard(models.TransientModel):
     @api.model
     def default_get(self, fields):
         """Function gets default values."""
+        uom_hour = self.env.ref('uom.product_uom_hour')
         res = super().default_get(fields)
         so_line = self.env['sale.order.line'].browse(
             self.env.context['active_id']
@@ -53,14 +54,19 @@ class CalculatePriceWizard(models.TransientModel):
         res['wizard_line_ids'] = []
         line_model = self.env['sale.order.line.prize.wizard.line']
         suggested_price = 0.0
-        for rate_product in rate_lines:
-            rates[rate_product.product_id.seniority_level_id.id] = rate_product
+        for rate_line in rate_lines:
+            rates[rate_line.product_id.seniority_level_id.id] = rate_line
         for forecast in forecasts:
             current_rate = rates.get(
                 forecast.employee_id.seniority_level_id.id
             )
-            per_hour = current_rate.price_unit
-            amount = per_hour * forecast.resource_hours
+            if not current_rate:
+                continue
+            unit_price = current_rate.price_unit
+            amount = uom_hour._compute_price(
+                unit_price * forecast.resource_hours,
+                current_rate.product_uom  # target unit
+            )
             suggested_price += amount
             line = line_model.create({
                 'name': current_rate.name,
