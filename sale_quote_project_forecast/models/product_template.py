@@ -10,8 +10,3 @@ class ProductTemplate(models.Model):
         comodel_name='hr.employee',
         string="Forecast employee",
     )
-    seniority_level_id = fields.Many2one(
-        name='Seniority level',
-        comodel_name='hr.employee.seniority.level',
-        ondelete='restrict',
-    )
