@@ -1,3 +1,6 @@
+# Copyright 2019 Camptocamp SA
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from odoo import models, fields, api
 
 
@@ -6,7 +9,7 @@ class CalculatePriceWizard(models.TransientModel):
     _description = 'sale.order.line.prize.wizard'
 
     so_line_id = fields.Many2one(
-        string='so_line',
+        string='So line',
         comodel_name='sale.order.line',
     )
 
@@ -19,11 +22,14 @@ class CalculatePriceWizard(models.TransientModel):
     old_price = fields.Monetary(
         'Current Price',
         related='so_line_id.price_subtotal',
+        readonly=True,
     )
 
     currency_id = fields.Many2one(
         'res.currency',
-        related='so_line_id.currency_id'
+        string='Currency',
+        related='so_line_id.currency_id',
+        readonly=True
     )
     new_price = fields.Monetary(
         'New Price',
@@ -32,7 +38,7 @@ class CalculatePriceWizard(models.TransientModel):
     @api.model
     def default_get(self, fields):
         """Function gets default values."""
-        res = super(CalculatePriceWizard, self).default_get(fields)
+        res = super().default_get(fields)
         so_line = self.env['sale.order.line'].browse(
             self.env.context['active_id']
         )
@@ -42,32 +48,37 @@ class CalculatePriceWizard(models.TransientModel):
         forecasts = self.env['project.forecast'].search(
             [('task_id', 'in', task_ids)]
         )
-        rate_products = so_line.order_id.get_rate_tasks()
+        rate_lines = so_line.order_id.get_rate_tasks()
         rates = {}
         res['wizard_line_ids'] = []
         line_model = self.env['sale.order.line.prize.wizard.line']
         suggested_price = 0.0
-        for rate_product in rate_products:
+        for rate_product in rate_lines:
             rates[rate_product.product_id.seniority_level_id.id] = rate_product
         for forecast in forecasts:
-            current_rate = rates[forecast.employee_id.seniority_level_id.id]
+            current_rate = rates.get(
+                forecast.employee_id.seniority_level_id.id
+            )
             per_hour = current_rate.price_unit
             amount = per_hour * forecast.resource_hours
             suggested_price += amount
-            res['wizard_line_ids'].append(line_model.create({
+            line = line_model.create({
                 'name': current_rate.name,
                 'price': amount,
                 'currency_id': current_rate.currency_id.id,
                 'time': forecast.resource_hours,
                 'wizard_id': self.id
-            }).id)
+            })
+            res['wizard_line_ids'].append(line.id)
         res['new_price'] = suggested_price
         return res
 
     @api.multi
     def update_line(self):
-        self.so_line_id.price_unit = self.new_price
-        self.so_line_id.amount = 1.0
+        self.so_line_id.write({
+            'price_unit': self.new_price,
+            'amount': 1.0,
+        })
         return {'type': 'ir.actions.act_window_close'}
 
 
@@ -80,7 +91,8 @@ class CalculatePriceWizardLine(models.TransientModel):
     price = fields.Monetary("Price")
 
     currency_id = fields.Many2one(
-        'res.currency'
+        'res.currency',
+        string='Currency'
     )
 
     time = fields.Float("Time (h)")
