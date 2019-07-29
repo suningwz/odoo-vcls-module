@@ -24,11 +24,6 @@ class AccountAnalyticLine(models.Model):
 
     _inherit = 'account.analytic.line'
 
-    time_category_id = fields.Many2one(
-        comodel_name='project.time_category',
-        string="Time Category",
-    )
-
     @api.model
     def _update_project_soline_mapping(self, vals):
         

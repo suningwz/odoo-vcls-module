@@ -48,6 +48,11 @@ class AnalyticLine(models.Model):
 
     adjustment_reason_id = fields.Many2one('timesheet.adjustment.reason', string="Adjustment Reason")
 
+    time_category_id = fields.Many2one(
+        comodel_name='project.time_category',
+        string="Time Category",
+    )
+
     # Rename description label
     name = fields.Char('External Comment', required=True)
 
