@@ -46,19 +46,18 @@ class AnalyticLine(models.Model):
         store = True,
     )
 
-    # Used to authorize LM to view managee's timesheets
-    is_authorized = fields.Boolean(
-        'LM can see',
-        compute = '_is_authorized_lm',
-        store = True
-    )
-
     adjustment_reason_id = fields.Many2one('timesheet.adjustment.reason', string="Adjustment Reason")
 
     # Rename description label
     name = fields.Char('External Comment', required=True)
 
     internal_comment = fields.Char(string = 'Internal Comment')
+
+    is_authorized = fields.Boolean(
+        'LM can see',
+        compute = '_is_authorized_lm',
+        store = True
+    )
 
 
     @api.model
@@ -108,22 +107,32 @@ class AnalyticLine(models.Model):
                 message += "- " + timesheet.name + "\n"
             raise ValidationError(_(message))
     
-    @api.depends('project_id')
-    def _is_authorized_lm(self):
-        for record in self:
-            try:
-                record.is_authorized = self._uid in record.project_id.employee_id.lm_ids.ids
-            except Exception as err:
-                print(err)
-                # No project / project controller / project manager
-                self.is_authorized = False
-    
     @api.multi
     def set_outofscope(self):
         context = self.env.context
         timesheet_ids = context.get('active_ids',[])
         timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
         timesheets.filtered(lambda r: (r.task_id.project_id.user_id.id == self._uid or r.env.user.has_group('vcls-timesheet.vcls_pc'))).write({'stage_id':'outofscope'})
+    
+    @api.depends('user_id')
+    def _compute_employee_id(self):
+        for record in self:
+            if record.user_id:
+                resource = self.env['resource.resource'].search([('user_id','=',record.user_id.id)])
+                employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
+                record.employee_id = employee
+    
+    @api.depends('user_id')
+    def _is_authorized_lm(self):
+        for record in self:
+            try:
+                resource = self.env['resource.resource'].search([('user_id','=',record.user_id.id)])
+                employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
+                record.is_authorized = self._uid in employee.lm_ids.ids
+            except Exception as err:
+                print(err)
+                # No project / project controller / project manager
+                record.is_authorized = False
 
 
     

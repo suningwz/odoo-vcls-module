@@ -129,7 +129,7 @@
             <field name="domain">[('project_id.user_id','=',uid)]</field>
         </record>
 
-        <record id="action_lm2_all_timesheet_tree" model="ir.actions.act_window">
+        <record id="action_lm_all_timesheet_tree" model="ir.actions.act_window">
             <field name="name">Managee Timesheets</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.analytic.line</field>
@@ -192,19 +192,17 @@
             sequence="2"
             parent="menu_pc_review"
             action="action_pc_all_timesheet_tree"/>
-        
-        <!-- HHHHHEEEEEEEEEEEEEEEEERRRRRRRRRRRRRRRREEEEEEEEEEEEEEEEEEEEE -->
 
         <menuitem id="menu_lm_timesheet"
             name="Line Manager"
             sequence="4"
             parent="hr_timesheet.timesheet_menu_root"
-            action="action_lm2_all_timesheet_tree"
+            action="action_lm_all_timesheet_tree"
         />
 
-        <record id="menu_lm_timesheet" model="ir.ui.menu">
+        <!-- record id="menu_lm_timesheet" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_lm'))]"/>
-        </record>
+        </record -->
         
         <menuitem id="hr_timesheet.timesheet_menu_adjustment"
             name="Adjustment Approval"
