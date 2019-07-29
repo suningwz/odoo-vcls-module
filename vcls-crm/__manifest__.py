@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.9',
+    'version': '1.4',
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -24,15 +24,16 @@
                 #'mass_mailing',
                 'website',
                 'website_crm',
+                'partner_firstname',
+                'partner_second_lastname',
                 'website_crm_score',
                 'vcls-contact',
                 'sale_management',
                 'sale_crm',
                 'crm_lead_currency',
                 'vcls-hr',
-                #'sale_timesheet_limit_date',
-                #'sale_project_timesheet_by_seniority',
-                #'crm_lead_product',
+                'crm_lead_firstname',
+               
                 ],
 
     # always loaded
