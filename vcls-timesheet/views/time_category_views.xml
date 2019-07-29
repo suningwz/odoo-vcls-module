@@ -41,7 +41,7 @@
                     name="Time Categories"
                     sequence="5"
                     parent="hr_timesheet.hr_timesheet_menu_configuration"
-                    action="vcls-project.act_time_categories"/>
+                    action="vcls-timesheet.act_time_categories"/>
 
         <!-- <menuitem id="hr_timesheet.timesheet_menu_activity_mine"
                     name="Time Categories "
