@@ -41,6 +41,8 @@ class ProjectTask(models.Model):
         group_operator='avg',
     )
 
+    time_category_ids = fields.Many2many('project.time_category')
+    
     ###################
     # COMPUTE METHODS #
     ###################
@@ -61,3 +63,12 @@ class ProjectTask(models.Model):
                 task.info_string = task.parent_id.name
             else:
                 task.info_string = task.project_id.name
+    
+    ###############
+    # ORM METHODS #
+    ###############
+    @api.model
+    def search(self, args, offset=0, limit=None, order=None, count=False):
+        return super(ProjectTask, self.with_context(allow_timesheets=True)).search(
+            args = args, offset=offset, limit=limit,
+            order=order, count=count)

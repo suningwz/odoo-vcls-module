@@ -157,6 +157,31 @@ class Leads(models.Model):
         string='VCLS Initial Contact'
     )
 
+    name = fields.Char(compute='_compute_partner_name')
+
+    lead_history = fields.Many2many(comodel_name="crm.lead", relation="crm_lead_rel", column1="crm_lead_id1")
+
+    ### MIDDLE NAME ###
+
+    contact_middlename = fields.Char("Middle name")
+
+    @api.multi
+    def _create_lead_partner_data(self, name, is_company, parent_id=False):
+        lead_partner_data = super(Leads, self)._create_lead_partner_data(
+            name,
+            is_company,
+            parent_id
+        )
+        if not is_company:
+            if self.contact_middlename:
+                lead_partner_data.update({
+                    "middlename": self.contact_middlename,
+                })
+                if 'name' in lead_partner_data:
+                    del lead_partner_data['name']
+        return lead_partner_data
+
+
     ###################
     # COMPUTE METHODS #
     ###################
@@ -313,10 +338,17 @@ class Leads(models.Model):
                 "client_activity_ids": partner.client_activity_ids,
                 "client_product_ids": partner.client_product_ids
             })
+            if not partner.is_company:
+                result.update({
+                    "contact_middlename": partner.middlename,
+                })
         return result
     
-    @api.onchange('contact_name','contact_lastname')
+    @api.onchange('contact_name','contact_lastname','contact_middlename')
     def _compute_partner_name(self):
         for lead in self:
-            if lead.contact_name and lead.contact_lastname:
+            if lead.contact_name and lead.contact_lastname and lead.contact_middlename:
+                lead.name = lead.contact_name + " " + lead.contact_middlename + " " + lead.contact_lastname
+            elif lead.contact_name and lead.contact_lastname:
                 lead.name = lead.contact_name + " " + lead.contact_lastname
+    

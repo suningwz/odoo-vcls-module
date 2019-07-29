@@ -25,6 +25,7 @@
                 'website',
                 'website_crm',
                 'partner_firstname',
+                'partner_second_lastname',
                 'website_crm_score',
                 'vcls-contact',
                 'sale_management',
