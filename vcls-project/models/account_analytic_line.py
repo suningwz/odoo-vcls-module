@@ -1,4 +1,4 @@
-from odoo import api, models, _
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 class SaleOrder(models.Model):
@@ -23,6 +23,11 @@ class SaleOrder(models.Model):
 class AccountAnalyticLine(models.Model):
 
     _inherit = 'account.analytic.line'
+
+    time_category_id = fields.Many2one(
+        comodel_name='project.time_category',
+        string="Time Category",
+    )
 
     @api.model
     def _update_project_soline_mapping(self, vals):

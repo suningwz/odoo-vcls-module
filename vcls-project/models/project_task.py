@@ -41,6 +41,8 @@ class ProjectTask(models.Model):
         group_operator='avg',
     )
 
+    time_category_ids = fields.Many2many('project.time_category')
+    
     ###################
     # COMPUTE METHODS #
     ###################
