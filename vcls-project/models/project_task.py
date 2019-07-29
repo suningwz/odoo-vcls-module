@@ -40,8 +40,6 @@ class ProjectTask(models.Model):
         related = 'stage_id.completion_ratio',
         group_operator='avg',
     )
-
-    time_category_ids = fields.Many2many('project.time_category')
     
     ###################
     # COMPUTE METHODS #

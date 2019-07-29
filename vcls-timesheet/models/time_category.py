@@ -7,4 +7,4 @@ class TimeCategory(models.Model):
     _description = 'Time Category'
 
     name = fields.Char()
-    active = fields.Boolean()
+    active = fields.Boolean(default="True")
