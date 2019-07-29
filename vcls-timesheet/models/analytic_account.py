@@ -31,12 +31,33 @@ class AnalyticLine(models.Model):
         store = True,
     )
 
+    # Used in order to group by client
+    partner_id = fields.Many2one(
+        'res.partner',
+        string = 'Client',
+        related = 'project_id.partner_id',
+        store = True,
+    )
+
+    project_user_id = fields.Many2one(
+        'res.users',
+        string = 'Project Controller',
+        related = 'project_id.user_id',
+        store = True,
+    )
+
     adjustment_reason_id = fields.Many2one('timesheet.adjustment.reason', string="Adjustment Reason")
 
     # Rename description label
     name = fields.Char('External Comment', required=True)
 
     internal_comment = fields.Char(string = 'Internal Comment')
+
+    is_authorized = fields.Boolean(
+        'LM can see',
+        compute = '_is_authorized_lm',
+        store = True
+    )
 
 
     @api.model
@@ -93,6 +114,27 @@ class AnalyticLine(models.Model):
         timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
         timesheets.filtered(lambda r: (r.task_id.project_id.user_id.id == self._uid or r.env.user.has_group('vcls-timesheet.vcls_pc'))).write({'stage_id':'outofscope'})
     
+
+    @api.depends('user_id')
+    def _compute_employee_id(self):
+        for record in self:
+            if record.user_id:
+                resource = self.env['resource.resource'].search([('user_id','=',record.user_id.id)])
+                employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
+                record.employee_id = employee
+    
+    @api.depends('user_id')
+    def _is_authorized_lm(self):
+        for record in self:
+            try:
+                resource = self.env['resource.resource'].search([('user_id','=',record.user_id.id)])
+                employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
+                record.is_authorized = self._uid in employee.lm_ids.ids
+            except Exception as err:
+                print(err)
+                # No project / project controller / project manager
+                record.is_authorized = False
+
     @api.onchange('project_id')
     def onchange_project_id(self):
         # force domain on task when project is set
@@ -103,6 +145,7 @@ class AnalyticLine(models.Model):
             return {'domain': {
                 'task_id': [('project_id', '=', self.project_id.id), ('stage_id.allow_timesheet','=', True)]
             }}
+
 
 
     
