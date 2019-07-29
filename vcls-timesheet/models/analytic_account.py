@@ -92,6 +92,17 @@ class AnalyticLine(models.Model):
         timesheet_ids = context.get('active_ids',[])
         timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
         timesheets.filtered(lambda r: (r.task_id.project_id.user_id.id == self._uid or r.env.user.has_group('vcls-timesheet.vcls_pc'))).write({'stage_id':'outofscope'})
+    
+    @api.onchange('project_id')
+    def onchange_project_id(self):
+        # force domain on task when project is set
+        if self.project_id:
+            if self.project_id != self.task_id.project_id:
+                # reset task when changing project
+                self.task_id = False
+            return {'domain': {
+                'task_id': [('project_id', '=', self.project_id.id), ('stage_id.allow_timesheet','=', True)]
+            }}
 
 
     
