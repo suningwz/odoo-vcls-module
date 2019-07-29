@@ -268,7 +268,6 @@
                     <button name="%(crm.action_crm_lead2opportunity_partner)d" string="Convert to Opportunity" type="action" help="Convert to Opportunity" class="oe_highlight" attrs="{'invisible': [('type', '=', 'opportunity')]}"/>
                     <button name="toggle_active" string="Restore" type="object" attrs="{'invisible': ['|', ('probability', '&gt;', 0), ('active', '=', True)]}"/>
                     <button name="action_set_lost" string="Mark as Lost" type="object" attrs="{'invisible': ['&amp;', ('probability', '=', 0), ('active', '=', False)]}" invisible="1"/>
-                    <field name="initial_vcls_contact"/>
                 </header>
                 <sheet>
                     <field name="active" invisible="1"/>
@@ -284,11 +283,6 @@
                         <h1><field name="name" placeholder="Built from contact name..." readonly="1"/></h1>
                     </div>
                     <group>
-                        <label for="contact_name"/>
-                        <div class="o_row">
-                            <field name="contact_name"/>
-                            <field name="title" placeholder="Salutation" domain="[]" options="{&quot;no_open&quot;: True}" required="True"/>
-                        </div>
                         <group>
                             <!-- Preload all the partner's information -->
                             <field name="partner_id" string="Search Existing Client" widget="res_partner_many2one" 
@@ -307,7 +301,11 @@
                             <field name="website" widget="url" placeholder="e.g. www.odoo.com"/>
                         </group>
                         <group>
-                            
+                            <label for="contact_name"/>
+                            <div class="o_row">
+                                <field name="contact_name"/>
+                                <field name="title" placeholder="Salutation" domain="[]" options="{&quot;no_open&quot;: True}" required="True"/>
+                            </div>
                             <field name="is_blacklisted" invisible="1"/>
                             <label for="email_from" class="oe_inline"/>
                             <div class="o_row o_row_readonly">
@@ -327,7 +325,6 @@
                         <group>
                             <field name="user_id" string="Account Manager" domain="[('share', '=', False)]" context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}" readonly="True"/>
                             <field name="type" invisible="1"/>
-                            
                         </group>
                         <group>
                             <field name="priority" widget="priority"/>
@@ -383,6 +380,19 @@
                                 </group>
                             </group>
                         </page>
+                        <page name="lead_history" string="Lead History">
+                            <field name="lead_history">
+                                <tree>
+                                    <field name="create_date"/>
+                                    <field name="name" string="Lead"/>
+                                    <field name="city"/>
+                                    <field name="country_id"/>
+                                    <field name="email_from"/>
+                                    <field name="phone"/>
+                                    <field name="team_id"/>
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
@@ -398,7 +408,8 @@
         <record id="crm_case_form_view_leads_inherit" model="ir.ui.view">
             <field name="name">crm_case_form_view_leads_inherit</field>
             <field name="model">crm.lead</field>
-            <field name="inherit_id" ref="crm_lead_firstname.crm_case_form_view_leads"/>
+            <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
+            <field name="priority">2000</field>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='contact_name']" position="attributes">
                     <attribute name="required">1</attribute>
@@ -407,14 +418,11 @@
                 <xpath expr="//field[@name='contact_lastname']" position="attributes">
                     <attribute name="required">1</attribute>
                 </xpath>
-            </field>
-        </record>
 
-        <record id="crm_case_form_view_leads_inherit" model="ir.ui.view">
-            <field name="name">crm_case_form_view_leads_inherit</field>
-            <field name="model">crm.lead</field>
-            <field name="inherit_id" ref="website_crm_score.lead_score_form"/>
-            <field name="arch" type="xml">
+                <xpath expr="//field[@name='contact_name']" position="after">
+                    <field name="contact_middlename" placeholder="Middle name"/>
+                </xpath>
+                
                 <xpath expr="//field[@name='score']" position="replace">
                 </xpath>
 
@@ -444,7 +452,10 @@
                 <xpath expr="//field[@name='medium_id']" position="attributes">
                     <!-- HIDE medium field -->
                     <attribute name="invisible">1</attribute>
-                </xpath>                
+                </xpath>    
+                <xpath expr="//page[@name='lead_history']" position="attributes">        
+                    <attribute name="invisible">1</attribute>
+                </xpath>  
             </field>
         </record>
 
