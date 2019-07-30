@@ -157,7 +157,7 @@ class Leads(models.Model):
         string='VCLS Initial Contact'
     )
 
-    name = fields.Char(compute='_compute_partner_name')
+    #name = fields.Char() We don't compute, it breaks too much usecases
 
     lead_history = fields.Many2many(comodel_name="crm.lead", relation="crm_lead_rel", column1="crm_lead_id1")
 
