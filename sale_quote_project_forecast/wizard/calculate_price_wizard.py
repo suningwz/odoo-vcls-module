@@ -63,9 +63,9 @@ class CalculatePriceWizard(models.TransientModel):
             if not current_rate:
                 continue
             unit_price = current_rate.price_unit
-            amount = uom_hour._compute_price(
+            amount = current_rate.product_uom._compute_price(
                 unit_price * forecast.resource_hours,
-                current_rate.product_uom  # target unit
+                uom_hour
             )
             suggested_price += amount
             line = line_model.create({
