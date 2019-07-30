@@ -24,6 +24,6 @@ class TimeCategory(models.Model):
         if task_id:
             task = self.env['project.task'].browse(task_id)
             #_logger.info("task {} | all tc {} | found {} with tc {}".format(task_id,time_category_ids,task.id,task.time_category_ids))
-            return task.time_category_ids
+            return task.time_category_ids.mapped('id')
             
         return time_category_ids
