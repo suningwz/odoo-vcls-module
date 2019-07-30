@@ -23,7 +23,7 @@ class Leads(models.Model):
     company_id = fields.Many2one(string = 'Trading Entity', default = lambda self: self.env.ref('vcls-hr.company_VCFR'))
 
     # KEEP CAMPAIGN_ID -> FIRST CONTACT
-    campaign_ids = fields.Many2many('utm.campaign', string = 'Campaings')
+    #campaign_ids = fields.Many2many('utm.campaign', string = 'Campaings')
 
     ###################
     # DEFAULT METHODS #
@@ -187,6 +187,12 @@ class Leads(models.Model):
 
     @api.model
     def create(self, vals):
+        ################
+        if vals['contact_name'] and vals['contact_lastname'] and vals['contact_middlename']:
+                vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
+        elif vals['contact_name'] and vals['contact_lastname']:
+                vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
+        #############
         lead = super(Leads, self).create(vals)
         # VCLS MODS
         if lead.type == 'lead':
@@ -360,7 +366,21 @@ class Leads(models.Model):
     def _compute_partner_name(self):
         for lead in self:
             if lead.contact_name and lead.contact_lastname and lead.contact_middlename:
-                lead.name = lead.contact_name + " " + lead.contact_middlename + " " + lead.contact_lastname
+                res = lead.contact_name + " " + lead.contact_middlename + " " + lead.contact_lastname
+                lead.name = res
             elif lead.contact_name and lead.contact_lastname:
-                lead.name = lead.contact_name + " " + lead.contact_lastname
+                res = lead.contact_name + " " + lead.contact_lastname
+                lead.name = res
     
+    def write(self, vals):
+        if vals['contact_name'] and vals['contact_lastname'] and vals['contact_middlename']:
+                vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
+        elif vals['contact_name'] and vals['contact_lastname']:
+                vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
+        return super(Leads, self).write(vals)
+    
+    def all_campaigns_pop_up(self):
+        print('OK')
+
+
+
