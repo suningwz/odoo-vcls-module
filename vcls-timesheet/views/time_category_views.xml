@@ -54,6 +54,12 @@
             <field name="model">account.analytic.line</field>
             <field name="inherit_id" ref="timesheet_grid.timesheet_view_form"/>
             <field name="arch" type="xml">
+                <field name="task_id" position="replace">
+                    <field name="task_id" context="{'default_project_id': project_id}" required="1" class="o_timesheet_tour_task_name"/>
+                </field>
+                <field name="unit_amount" position="replace">
+                    <field name="unit_amount" string="Hours Spent" required="1"/>
+                </field>
                 <xpath expr="//field[@name='employee_id']" position="after">
                     <field name="task_id" invisible="1"/>
                     <field name="time_category_id" context="{'task_filter':True,'task_id':task_id}" option="{'no_create_edit': True}"/>
