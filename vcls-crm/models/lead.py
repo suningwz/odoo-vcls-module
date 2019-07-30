@@ -377,7 +377,10 @@ class Leads(models.Model):
                 vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
         elif vals['contact_name'] and vals['contact_lastname']:
                 vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
+        _logger.info("{}".format(vals))
         return super(Leads, self).write(vals)
+    
+    #def _vals_to_name
     
     def all_campaigns_pop_up(self):
         print('OK')
