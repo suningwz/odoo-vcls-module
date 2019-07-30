@@ -23,7 +23,7 @@ class TimeCategory(models.Model):
         #if we are in the context of a custom task filtered search, we look at the list of authorized categories in the related task
         if task_id:
             task = self.env['project.task'].browse(task_id)
-            _logger.info("task {} | all tc {} | found {} with tc {}".format(task_id,time_category_ids,task.id,task.time_category_ids))
-            time_category_ids = time_category_ids.intersection(task.time_category_ids)
+            #_logger.info("task {} | all tc {} | found {} with tc {}".format(task_id,time_category_ids,task.id,task.time_category_ids))
+            return task.time_category_ids
             
         return time_category_ids
