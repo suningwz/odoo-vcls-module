@@ -8,3 +8,16 @@ class TimeCategory(models.Model):
 
     name = fields.Char()
     active = fields.Boolean(default="True")
+
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+
+        task_id = self._context.get('task_id')
+
+        time_categories_ids = super(TimeCategory, self)._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
+
+        #if we are in the context of a custom task filtered search, we look at the list of authorized categories in the related task
+        if task_id:
+            time_categories_ids.filtered(lambda r: r.id in task_id.time_categories_ids)
+            
+        return time_categories_ids
