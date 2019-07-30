@@ -1,3 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_vcls-timesheet_adjustement_reason_user,access_vcls-timesheet_adjustement_reason_user,vcls-timesheet.model_timesheet_adjustment_reason,base.group_user,1,0,0,0
 access_vcls-timesheet_adjustement_reason_support_lvl2,access_vcls-timesheet_adjustement_reason_support_lvl2,vcls-timesheet.model_timesheet_adjustment_reason,vcls-hr.vcls_group_superuser_lvl2,1,1,1,1
+
+access_time_category_user,access_time_category_user,vcls-timesheet.model_project_time_category,base.group_user,1,0,1,0
+access_time_category_manager,access_time_category_manager,vcls-timesheet.model_project_time_category,project.group_project_manager,1,1,1,1

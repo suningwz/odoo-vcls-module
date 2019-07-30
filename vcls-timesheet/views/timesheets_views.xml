@@ -28,6 +28,23 @@
             </field>
         </record>
 
+        <record id='vcls_timesheet_read_view' model='ir.ui.view'>
+            <field name="name">vcls-timesheet.view.tree.readonly</field>
+            <field name="model">account.analytic.line</field>
+            <field name="arch" type="xml">
+                <tree editable="top" string="Timesheets" create="false">
+                    <field name="date" readonly="1"/>
+                    <field name = "internal_comment" readonly="1"/>
+                    <field name="name" readonly="1" />
+                    <field name="project_id" readonly="1"/>
+                    <field name="task_id" readonly="1"/>
+                    <field name="unit_amount" readonly="1" string="Duration (hours)"/>
+                    <field name="lc_comment" readonly="1"/>
+                    <field name="employee_id" readonly="1"/>
+                </tree>
+            </field>
+        </record>
+
         <record id='vcls_timesheet_pc_view_tree' model='ir.ui.view'>
             <field name="name">vcls-timesheet.view.tree</field>
             <field name="model">account.analytic.line</field>
@@ -92,6 +109,36 @@
             <field name="domain">[('stage_id', '=', 'adjustment_validation')]</field>
         </record>
 
+        <record id="action_lc_all_timesheet_tree" model="ir.actions.act_window">
+            <field name="name">All Timesheets</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">account.analytic.line</field>
+            <field name="context">{'group_by':['partner_id', 'project_id']}</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="vcls_timesheet_read_view"/>
+            <field name="domain">[('project_id.user_id','=',uid)]</field>
+        </record>
+
+        <record id="action_pc_all_timesheet_tree" model="ir.actions.act_window">
+            <field name="name">All Timesheets</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">account.analytic.line</field>
+            <field name="context">{'group_by':['partner_id', 'project_id']}</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="vcls_timesheet_read_view"/>
+            <field name="domain">[('project_id.user_id','=',uid)]</field>
+        </record>
+
+        <record id="action_lm_all_timesheet_tree" model="ir.actions.act_window">
+            <field name="name">Managee Timesheets</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">account.analytic.line</field>
+            <field name="context">{'group_by':['project_user_id', 'project_id']}</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="vcls_timesheet_read_view"/>
+            <field name="domain">[('is_authorized', '=', True)]</field>
+        </record>
+
         <menuitem id="hr_timesheet.timesheet_menu_activity_mine"
             name="My Timesheets"
             sequence="1"
@@ -110,21 +157,56 @@
                   sequence="10"
                   active="False"/>
 
-        <menuitem id="timesheet_menu_lc_review"
-            name="LC Review"
+        <menuitem id="menu_lc_review"
+            name="LC"
             sequence="2"
             parent="hr_timesheet.timesheet_menu_root"
+        />
+        
+        <menuitem id="timesheet_menu_lc_review"
+            name="LC Review"
+            sequence="1"
+            parent="menu_lc_review"
             action="action_vcls_timesheet_tree"/>
         
-        <menuitem id="timesheet_menu_pc_review"
-            name="PC Review"
+        <menuitem id="timesheet_menu_lc_all"
+            name="Timesheets"
+            sequence="2"
+            parent="menu_lc_review"
+            action="action_lc_all_timesheet_tree"/>
+        
+        <menuitem id="menu_pc_review"
+            name="PC"
             sequence="3"
             parent="hr_timesheet.timesheet_menu_root"
+        />
+
+        <menuitem id="timesheet_menu_pc_review"
+            name="PC Review"
+            sequence="1"
+            parent="menu_pc_review"
             action="action_timesheet_pc_review"/>
+        
+        <menuitem id="timesheet_menu_pc_all"
+            name="Timesheets"
+            sequence="2"
+            parent="menu_pc_review"
+            action="action_pc_all_timesheet_tree"/>
+
+        <menuitem id="menu_lm_timesheet"
+            name="Line Manager"
+            sequence="4"
+            parent="hr_timesheet.timesheet_menu_root"
+            action="action_lm_all_timesheet_tree"
+        />
+
+        <!-- record id="menu_lm_timesheet" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_lm'))]"/>
+        </record -->
         
         <menuitem id="hr_timesheet.timesheet_menu_adjustment"
             name="Adjustment Approval"
-            sequence="4"
+            sequence="5"
             parent="hr_timesheet.timesheet_menu_root"
             action="action_timesheet_adjustment"/>
 
