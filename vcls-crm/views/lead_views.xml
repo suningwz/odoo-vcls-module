@@ -61,7 +61,7 @@
                         </div>
                         <group>
                             <group>
-                                <field name="partner_id" widget="res_partner_many2one" string="Client" options="{'no_create_edit': True}" domain="[('customer', '=', True),('company_type', '=','company')]" context="{'search_default_customer': 1,                                         'default_name': partner_name, 'default_street': street,                                         'default_street2': street2, 'default_city': city,                                         'default_state_id': state_id, 'default_zip': zip,                                         'default_country_id': country_id, 'default_function': function,                                         'default_phone': phone, 'default_mobile': mobile,                                         'default_email': email_from,                                         'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website,                                         'show_vat': True,                                     }"/>
+                                <field name="partner_id" widget="res_partner_many2one" string="Client" options="{'no_quick_create': True, 'no_create_edit' : True}" domain="[('customer', '=', True),('company_type', '=','company')]" context="{'search_default_customer': 1,                                         'default_name': partner_name, 'default_street': street,                                         'default_street2': street2, 'default_city': city,                                         'default_state_id': state_id, 'default_zip': zip,                                         'default_country_id': country_id, 'default_function': function,                                         'default_phone': phone, 'default_mobile': mobile,                                         'default_email': email_from,                                         'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website,                                         'show_vat': True,                                     }"/>
                                 <field name="is_blacklisted" invisible="1"/>
                                 <field name="partner_is_blacklisted" invisible="1"/>
                                 <label for="email_from" class="oe_inline"/>
@@ -71,7 +71,7 @@
                                     <i class="fa fa-ban" style="color: red;" role="img" title="This email is blacklisted for mass mailing" aria-label="Blacklisted" attrs="{'invisible': ['|', ('partner_is_blacklisted', '=', False), ('partner_address_email', '=', False)]}" groups="base.group_user"/>
                                     <field name="partner_address_email" attrs="{'invisible': [('partner_address_email', '==', False)]}" widget="email" string="Email"/>
                                 </div>
-                                <field name="partner_address_phone" attrs="{'invisible': [('partner_address_phone', '==', False)]}" readonly="1" widget="phone" string="Phone"/>
+                                <field name="partner_address_phone" attrs="{'invisible': [('partner_address_phone', '==', False)]}" readonly="1" style="color:#08206E;" widget="phone" string="Phone"/>
                                 <field name="phone" attrs="{'invisible': [('partner_address_phone', '!=', False)]}" widget="phone"/>
                             </group>
 
@@ -81,12 +81,12 @@
                             </group>
 
                             <group>
-                                <field name="user_id" string="Account Manager" options="{'no_create_edit': True}" context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}" domain="[('share', '=', False)]"/>
-                                <field name="team_id" widget="selection" options="{'no_create_edit': True}"/>
+                                <field name="user_id" string="Account Manager" options="{'no_quick_create': True, 'no_create_edit' : True}" context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}" domain="[('share', '=', False)]"/>
+                                <field name="team_id" widget="selection" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
                             </group>
                             <group>
                                 <field name="priority" widget="priority"/>
-                                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
+                                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True, 'no_quick_create': True}"/>
                                 <field name="lost_reason" attrs="{'invisible': ['|', ('active', '=', True), ('probability', '=', 100)]}"/>
                                 
                                 <field name="date_conversion" invisible="1"/>
@@ -108,7 +108,7 @@
                                         <field name="city" placeholder="City" class="o_address_city"/>
                                         <field name="state_id" class="o_address_state" placeholder="State" options="{&quot;no_open&quot;: True}"/>
                                         <field name="zip" placeholder="ZIP" class="o_address_zip"/>
-                                        <field name="country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
+                                        <field name="country_id" placeholder="Country" class="o_address_country" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
                                     </div>
                                     <field name="website" widget="url" placeholder="e.g. www.odoo.com"/>
                                 </group>
@@ -172,7 +172,7 @@
             </field>
 
             <field name="team_id" position="after">
-                <field name="internal_ref" readonly="1"/>
+                <field name="internal_ref" readonly="1" style="color:#08206E;"/>
             </field>
 
                
@@ -191,7 +191,7 @@
                             <field name="technical_adv_id" />
                         </group>
                         <group string="Support team" colspan="2">
-                            <field name="support_team" nolabel="1" no_create="True" string="Other Technical Experts">
+                            <field name="support_team" nolabel="1" no_create="True" options="{'no_quick_create': True, 'no_create_edit' : True}" string="Other Technical Experts">
                                 <tree editable="bottom">
                                     <field name="name" />
                                 </tree>
@@ -224,9 +224,9 @@
                 </page>
                 <page string="Scope">
                     <group>
-                        <field name="product_category_id" string="Business Line" options="{'no_create_edit': True}"/>
-                        <field name="therapeutic_area_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
-                        <field name="targeted_indication_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
+                        <field name="product_category_id" string="Business Line" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
+                        <field name="therapeutic_area_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
+                        <field name="targeted_indication_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
                         <field name="stage_development_id" widget="selection" />                       
                         <field name="description" string="Scope of work" widget="html"/>
                     </group>
@@ -235,7 +235,7 @@
                     <group>
                         <field name="resources_ids">
                             <tree editable="bottom">
-                                <field name="project_role_id" no_create_edit="True" no_create="True"/>
+                                <field name="project_role_id" no_create_edit="True" options="{'no_quick_create': True, 'no_create_edit' : True}" no_create="True"/>
                                 <field name="number" />
                             </tree>
                         </field>
@@ -280,12 +280,12 @@
                     <div class="badge-pill badge-success float-right" attrs="{'invisible': [('probability', '&lt;', 100)]}">Won</div>
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only" string="Lead"/>
-                        <h1><field name="name" placeholder="Built from contact name..." readonly="1"/></h1>
+                        <h1><field name="name" placeholder="Built from contact name..." readonly="1" style="color:#08206E;"/></h1>
                     </div>
                     <group>
                         <group>
                             <!-- Preload all the partner's information -->
-                            <field name="partner_id" string="Search Existing Client" widget="res_partner_many2one" 
+                            <field name="partner_id" string="Search Individual" widget="res_partner_many2one" 
                             options="{'no_quick_create': True, 'no_create_edit' : True}"
                             context="{'default_name': contact_name, 'default_street': street, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_function': function, 'default_phone': phone, 'default_mobile': mobile, 'default_email': email_from, 'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website, 'show_vat': True}"/>
                             <field name="partner_name" string="Company Name" required="True"/>
@@ -298,7 +298,7 @@
                                 <field name="zip" placeholder="ZIP" class="o_address_zip"/>
                                 <field name="country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}" required="True"/>
                             </div>
-                            <field name="website" widget="url" placeholder="e.g. www.odoo.com"/>
+                            <field name="website" widget="url" placeholder="e.g. voisinconsulting.com"/>
                         </group>
                         <group>
                             <label for="contact_name"/>
@@ -323,7 +323,7 @@
                             <field name="meet_story" string = "How did you meet ?" required="True"/>
                         </group>
                         <group>
-                            <field name="user_id" string="Account Manager" domain="[('share', '=', False)]" context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}" readonly="True"/>
+                            <field name="user_id" string="Account Manager" domain="[('share', '=', False)]" context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}" readonly="True" class="color:#08206E;"/>
                             <field name="type" invisible="1"/>
                         </group>
                         <group>
@@ -352,11 +352,18 @@
                         <page name="extra" string="Marketing Info">
                             <group>
                                 <group string="Email" groups="base.group_no_one" invisible="1">
-                                    <field name="message_bounce" readonly="1"/>
+                                    <field name="message_bounce" readonly="1" style="color:#08206E;"/>
                                 </group>
                                 <group string="Tracking" groups="base.group_multi_company,base.group_no_one" name="categorization">
                                     <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}" invisible="1"/>
-                                    <field name="campaign_id"/>
+                                    <field name="campaign_id" string = "Opt-in Campaign" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
+                                    <!-- field name = "campaign_ids" string="Campaigns" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/ -->
+                                    <button name = "all_campaigns_pop_up" 
+                                        string = "All Campaigns" 
+                                        type = "object"
+                                        icon="fa-bar-chart"
+                                        class = 'btn btn-primary'
+                                    />
                                     <field name="medium_id"/>
                                     <field name="source_id"/>
                                     <field name="referent_id"/>

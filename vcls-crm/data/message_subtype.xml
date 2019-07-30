@@ -1,0 +1,12 @@
+<odoo>
+    <data>
+        <record id="lead_creation" model="mail.message.subtype">
+            <field name="name">Lead Created</field>
+            <field name="sequence">1</field>
+            <field name="res_model">crm.lead</field>
+            <field name="display_name">Lead Created</field>
+            <field name="description">Lead Created</field>
+            <field name="hidden">True</field>
+        </record>
+    </data>
+</odoo>
