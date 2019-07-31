@@ -380,7 +380,15 @@ class Leads(models.Model):
         return super(Leads, self).write(vals)
     
     def all_campaigns_pop_up(self):
-        print('OK')
-
+        print("{}".format(self.env.context))
+        model_id = self.env['ir.model'].search([('model','=','crm.lead')], limit = 1)
+        return {
+            'name': 'All participated campaigns',
+            'view_mode': 'tree',
+            'target': 'new',
+            'res_model': 'marketing.participant',
+            'type': 'ir.actions.act_window',
+            'domain': "[('model_id','=', {}),('res_id','=',{})]".format(model_id.id, self.id)
+        }
 
 

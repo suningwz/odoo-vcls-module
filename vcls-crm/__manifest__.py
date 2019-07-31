@@ -35,7 +35,7 @@
                 'crm_lead_currency',
                 'vcls-hr',
                 'crm_lead_firstname',
-               
+                'marketing_automation'
                 ],
 
     # always loaded
