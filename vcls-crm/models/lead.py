@@ -374,7 +374,7 @@ class Leads(models.Model):
                 lead.name = res
     
     def write(self, vals):
-        _logger.info("On write : {}".format(vals))
+        _logger.info("On write 123soleil : {}".format(vals))
         if vals['contact_name'] and vals['contact_lastname'] and vals['contact_middlename']:
                 vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
         elif vals['contact_name'] and vals['contact_lastname']:
