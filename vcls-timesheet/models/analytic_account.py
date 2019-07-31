@@ -32,7 +32,7 @@ class AnalyticLine(models.Model):
     )
 
     # Used in order to group by client
-    partner_id = fields.Many2one(
+    """partner_id = fields.Many2one(
         'res.partner',
         string = 'Client',
         related = 'project_id.partner_id',
@@ -44,7 +44,7 @@ class AnalyticLine(models.Model):
         string = 'Project Controller',
         related = 'project_id.user_id',
         store = True,
-    )
+    )"""
 
     adjustment_reason_id = fields.Many2one('timesheet.adjustment.reason', string="Adjustment Reason")
 
@@ -56,13 +56,13 @@ class AnalyticLine(models.Model):
     # Rename description label
     name = fields.Char('External Comment', required=True)
 
-    internal_comment = fields.Char(string = 'Internal Comment')
+    #internal_comment = fields.Char(string = 'Internal Comment')
 
-    is_authorized = fields.Boolean(
+    """is_authorized = fields.Boolean(
         'LM can see',
         compute = '_is_authorized_lm',
         store = True
-    )
+    )"""
 
 
     @api.model
