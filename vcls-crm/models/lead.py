@@ -22,6 +22,8 @@ class Leads(models.Model):
 
     company_id = fields.Many2one(string = 'Trading Entity', default = lambda self: self.env.ref('vcls-hr.company_VCFR'))
 
+    source_id = fields.Many2one('utm.source', "Initial Lead Source")
+
     # KEEP CAMPAIGN_ID -> FIRST CONTACT
     #campaign_ids = fields.Many2many('utm.campaign', string = 'Campaings')
 
@@ -50,7 +52,7 @@ class Leads(models.Model):
 
     referent_id = fields.Many2one(
         'res.partner',
-        string = 'Referent',
+        string = 'Referee',
     )
 
     functional_focus_id = fields.Many2one(
@@ -380,7 +382,6 @@ class Leads(models.Model):
         return super(Leads, self).write(vals)
     
     def all_campaigns_pop_up(self):
-        print("{}".format(self.env.context))
         model_id = self.env['ir.model'].search([('model','=','crm.lead')], limit = 1)
         return {
             'name': 'All participated campaigns',
