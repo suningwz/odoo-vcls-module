@@ -192,7 +192,7 @@
                         </group>
                         <group string="Support team" colspan="2">
                             <field name="support_team" nolabel="1" string="Other Technical Experts">
-                                <tree editable="bottom">
+                                <tree editable="bottom" create = '1'>
                                     <field name="name" />
                                 </tree>
                             </field>
