@@ -26,6 +26,17 @@ class Leads(models.Model):
 
     source_id = fields.Many2one('utm.source', "Initial Lead Source")
 
+    # Related fields in order to avoid mismatch & errors
+    opted_in = fields.Boolean(
+        related = 'partner_id.opted_in',
+        string = 'Opted In'
+    )
+
+    opted_out = fields.Boolean(
+        related = 'partner_id.opted_out',
+        string = 'Opted In'
+    )
+
     # KEEP CAMPAIGN_ID -> FIRST CONTACT
     #campaign_ids = fields.Many2many('utm.campaign', string = 'Campaings')
 
@@ -421,5 +432,8 @@ class Leads(models.Model):
             'type': 'ir.actions.act_window',
             'domain': "[('model_id','=', {}),('res_id','=',{})]".format(model_id.id, self.id)
         }
-
+    
+    def create_contact_pop_up(self):
+        result = self.env['crm.lead'].browse(self.id).handle_partner_assignation('create', False)
+        return result.get(self.id)
 
