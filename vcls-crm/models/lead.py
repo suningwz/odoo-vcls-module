@@ -190,9 +190,9 @@ class Leads(models.Model):
     @api.model
     def create(self, vals):
         ################
-        if vals['contact_name'] and vals['contact_lastname'] and vals['contact_middlename']:
+        if vals.get('contact_name', False) and vals.get('contact_lastname', False) and vals.get('contact_middlename', False):
                 vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
-        elif vals['contact_name'] and vals['contact_lastname']:
+        elif vals.get('contact_name', False) and vals.get('contact_lastname', False):
                 vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
         #############
         lead = super(Leads, self).create(vals)
@@ -375,11 +375,14 @@ class Leads(models.Model):
                 lead.name = res
     
     def write(self, vals):
-        if vals['contact_name'] and vals['contact_lastname'] and vals['contact_middlename']:
+        if vals.get('contact_name', False) and vals.get('contact_lastname', False) and vals.get('contact_middlename', False):
                 vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
-        elif vals['contact_name'] and vals['contact_lastname']:
+        elif vals.get('contact_name', False) and vals.get('contact_lastname', False):
                 vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
+        _logger.info("{}".format(vals))
         return super(Leads, self).write(vals)
+    
+    #def _vals_to_name
     
     def all_campaigns_pop_up(self):
         model_id = self.env['ir.model'].search([('model','=','crm.lead')], limit = 1)
