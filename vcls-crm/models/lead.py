@@ -2,6 +2,8 @@
 
 from odoo import models, fields, tools, api
 from odoo.exceptions import UserError, ValidationError, Warning
+from datetime import date
+import datetime
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -23,6 +25,17 @@ class Leads(models.Model):
     company_id = fields.Many2one(string = 'Trading Entity', default = lambda self: self.env.ref('vcls-hr.company_VCFR'))
 
     source_id = fields.Many2one('utm.source', "Initial Lead Source")
+
+    # Related fields in order to avoid mismatch & errors
+    opted_in = fields.Boolean(
+        related = 'partner_id.opted_in',
+        string = 'Opted In'
+    )
+
+    opted_out = fields.Boolean(
+        related = 'partner_id.opted_out',
+        string = 'Opted In'
+    )
 
     # KEEP CAMPAIGN_ID -> FIRST CONTACT
     #campaign_ids = fields.Many2many('utm.campaign', string = 'Campaings')
@@ -162,6 +175,12 @@ class Leads(models.Model):
         string='VCLS Initial Contact'
     )
 
+    age = fields.Char(
+        compute = '_compute_lead_age'
+    )
+
+    conversion_date = fields.Date()
+
     #name = fields.Char() We don't compute, it breaks too much usecases
 
     lead_history = fields.Many2many(comodel_name="crm.lead", relation="crm_lead_rel", column1="crm_lead_id1")
@@ -216,6 +235,24 @@ class Leads(models.Model):
             groups = lead.country_id.country_group_ids
             if groups:
                 lead.country_group_id = groups[0]
+    
+    @api.depends('create_date', 'type', 'conversion_date')
+    def _compute_lead_age(self):
+        for lead in self:
+            if lead.conversion_date != False:
+                reference = lead.conversion_date.date()
+            elif lead.create_date != False:
+                reference = lead.create_date.date()
+            else:
+                reference = date.today()
+            today = date.today()
+            delta = today - reference
+            if delta.days == 1:
+                lead.age = "{} day old".format(delta.days)
+            elif delta.days == 0:
+                lead.age = "{} day old (created/converted today)".format(delta.days)
+            else:
+                lead.age = "{} days old".format(delta.days)
     
     @api.onchange('name')
     def _onchange_name(self):
@@ -338,14 +375,15 @@ class Leads(models.Model):
                 new_program = self.env['project.program'].create(values)
                 data['program_id'] = new_program.id"""
         
-        data['country_group_id'] = self.country_group_id
-        data['referent_id'] = self.referent_id
-        data['functional_focus_id'] = self.functional_focus_id
-        data['partner_seniority_id'] = self.partner_seniority_id
-        data['industry_id'] = self.industry_id
+        data['country_group_id'] = self.country_group_id.id
+        data['referent_id'] = self.referent_id.id
+        data['functional_focus_id'] = self.functional_focus_id.id
+        data['partner_seniority_id'] = self.partner_seniority_id.id
+        data['industry_id'] = self.industry_id.id
         data['client_activity_ids'] = self.client_activity_ids
         data['client_product_ids'] = self.client_product_ids
-        data['product_category_id'] = self.product_category_id
+        data['product_category_id'] = self.product_category_id.id
+        data['converted_date'] = datetime.datetime.now()
         
         return data
 
@@ -394,5 +432,8 @@ class Leads(models.Model):
             'type': 'ir.actions.act_window',
             'domain': "[('model_id','=', {}),('res_id','=',{})]".format(model_id.id, self.id)
         }
-
+    
+    def create_contact_pop_up(self):
+        result = self.env['crm.lead'].browse(self.id).handle_partner_assignation('create', False)
+        return result.get(self.id)
 
