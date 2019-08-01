@@ -344,11 +344,11 @@ class Leads(models.Model):
             :returns res.partner record
         """
         data = super()._create_lead_partner_data(name,is_company,parent_id)
-        data['country_group_id'] = self.country_group_id
-        data['referent_id'] = self.referent_id
-        data['functional_focus_id'] = self.functional_focus_id
-        data['partner_seniority_id'] = self.partner_seniority_id
-        data['industry_id'] = self.industry_id
+        data['country_group_id'] = self.country_group_id.id
+        data['referent_id'] = self.referent_id.id
+        data['functional_focus_id'] = self.functional_focus_id.id
+        data['partner_seniority_id'] = self.partner_seniority_id.id
+        data['industry_id'] = self.industry_id.id
         data['client_activity_ids'] = self.client_activity_ids
         data['client_product_ids'] = self.client_product_ids
 
