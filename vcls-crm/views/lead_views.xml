@@ -191,7 +191,7 @@
                             <field name="technical_adv_id" />
                         </group>
                         <group string="Support team" colspan="2">
-                            <field name="support_team" nolabel="1" no_create="True" options="{'no_quick_create': True}" string="Other Technical Experts">
+                            <field name="support_team" nolabel="1" string="Other Technical Experts">
                                 <tree editable="bottom">
                                     <field name="name" />
                                 </tree>
