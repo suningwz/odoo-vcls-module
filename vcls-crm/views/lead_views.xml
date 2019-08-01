@@ -241,6 +241,9 @@
                         </field>
                     </group>
                 </page>
+                <page string="Internal Notes" modifiers="{}">
+				    <field name="description" modifiers="{}"/>
+			    </page>
                  
             </xpath>
         </field>
@@ -313,6 +316,7 @@
                                 <field name="email_from" widget="email" required="True"/>
                             </div>
                             <field name="partner_seniority_id" options='"no_create_edit": True}'/>
+                            <field name = "age" string = 'Age' />
                             <field name="function" string="Job Title" required="True"/>
                             <field name="functional_focus_id" options='"no_create_edit": True}'/>
                             <field name="phone" widget="phone"/>

@@ -2,6 +2,8 @@
 
 from odoo import models, fields, tools, api
 from odoo.exceptions import UserError, ValidationError, Warning
+from datetime import date
+import datetime
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -162,6 +164,12 @@ class Leads(models.Model):
         string='VCLS Initial Contact'
     )
 
+    age = fields.Char(
+        compute = '_compute_lead_age'
+    )
+
+    conversion_date = fields.Date()
+
     #name = fields.Char() We don't compute, it breaks too much usecases
 
     lead_history = fields.Many2many(comodel_name="crm.lead", relation="crm_lead_rel", column1="crm_lead_id1")
@@ -216,6 +224,24 @@ class Leads(models.Model):
             groups = lead.country_id.country_group_ids
             if groups:
                 lead.country_group_id = groups[0]
+    
+    @api.depends('create_date', 'type', 'conversion_date')
+    def _compute_lead_age(self):
+        for lead in self:
+            if lead.conversion_date != False:
+                reference = lead.conversion_date.date()
+            elif lead.create_date != False:
+                reference = lead.create_date.date()
+            else:
+                reference = date.today()
+            today = date.today()
+            delta = today - reference
+            if delta.days == 1:
+                lead.age = "{} day old".format(delta.days)
+            elif delta.days == 0:
+                lead.age = "{} day old (created/converted today)".format(delta.days)
+            else:
+                lead.age = "{} days old".format(delta.days)
     
     @api.onchange('name')
     def _onchange_name(self):
@@ -346,6 +372,7 @@ class Leads(models.Model):
         data['client_activity_ids'] = self.client_activity_ids
         data['client_product_ids'] = self.client_product_ids
         data['product_category_id'] = self.product_category_id
+        data['converted_date'] = datetime.datetime.now()
         
         return data
 
