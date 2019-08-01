@@ -34,7 +34,7 @@ class Leads(models.Model):
 
     opted_out = fields.Boolean(
         related = 'partner_id.opted_out',
-        string = 'Opted In'
+        string = 'Opted Out'
     )
 
     # KEEP CAMPAIGN_ID -> FIRST CONTACT
@@ -179,7 +179,7 @@ class Leads(models.Model):
         compute = '_compute_lead_age'
     )
 
-    conversion_date = fields.Date()
+    conversion_date = fields.Date(string = 'Lead to Opp date')
 
     #name = fields.Char() We don't compute, it breaks too much usecases
 
