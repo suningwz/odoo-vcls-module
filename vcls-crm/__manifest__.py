@@ -16,7 +16,7 @@
     # for the full list
     'category': 'Uncategorized',
 
-    'version': '1.6.1',
+    'version': '1.7',
 
 
     # any module necessary for this one to work correctly
@@ -35,7 +35,7 @@
                 'crm_lead_currency',
                 'vcls-hr',
                 'crm_lead_firstname',
-               
+                'marketing_automation'
                 ],
 
     # always loaded
