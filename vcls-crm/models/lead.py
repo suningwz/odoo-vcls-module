@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, tools, api
+from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError, Warning
 from datetime import date
 import datetime
@@ -436,4 +436,30 @@ class Leads(models.Model):
     def create_contact_pop_up(self):
         result = self.env['crm.lead'].browse(self.id).handle_partner_assignation('create', False)
         return result.get(self.id)
+    
+    # Copy/Paste in order to redirect to right view (overriden)
+    @api.multi
+    def redirect_opportunity_view(self):
+        self.ensure_one()
+        # Get opportunity views
+        form_view = self.env.ref('crm.crm_case_form_view_oppor')
+        tree_view = self.env.ref('crm.crm_case_tree_view_oppor')
+        return {
+            'name': _('Opportunity'),
+            'view_type': 'form',
+            'view_mode': 'tree, form',
+            'res_model': 'crm.lead',
+            'domain': [('type', '=', 'opportunity')],
+            'res_id': self.id,
+            'view_id': False,
+            'views': [
+                (form_view.id, 'form'),
+                (tree_view.id, 'tree'),
+                (False, 'kanban'),
+                (False, 'calendar'),
+                (False, 'graph')
+            ],
+            'type': 'ir.actions.act_window',
+            'context': {'default_type': 'opportunity'}
+        }
 
