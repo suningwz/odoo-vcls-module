@@ -16,7 +16,8 @@ class TimesheetForecastReport(models.Model):
         ('invoiceable', 'Invoiceable'),
         ('outofscope', 'Out Of Scope'),
     ], 'Stage', readonly = True)
-    
+
+    revenue = fields.Float('Revenue', readonly=True)
     
     @api.model_cr
     def init(self):
@@ -32,6 +33,7 @@ class TimesheetForecastReport(models.Model):
                         F.resource_hours / NULLIF(F.working_days_count, 0) AS number_hours,
                         'forecast' AS type,
                         'forecast' AS stage_id,
+                        0 AS revenue,
                         F.id AS id
                     FROM generate_series(
                         (SELECT min(start_date) FROM project_forecast WHERE active=true)::date,
@@ -55,6 +57,7 @@ class TimesheetForecastReport(models.Model):
                         A.unit_amount AS number_hours,
                         'timesheet' AS type,
                         A.stage_id AS stage_id,
+                        (A.so_line_unit_price * A.unit_amount) AS revenue,
                         -A.id AS id
                     FROM account_analytic_line A, hr_employee E
                     WHERE A.project_id IS NOT NULL
