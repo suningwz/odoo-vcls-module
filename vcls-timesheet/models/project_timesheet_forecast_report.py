@@ -18,7 +18,10 @@ class TimesheetForecastReport(models.Model):
     ], 'Stage', readonly = True)
 
     revenue = fields.Float('Revenue', readonly=True)
+
+    rate_product = fields.Char('Rate Product', readonly = True)
     
+    # EDIT SQL REQUEST IN ORDER TO GET STAGE & REVENUE
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -34,6 +37,7 @@ class TimesheetForecastReport(models.Model):
                         'forecast' AS type,
                         'forecast' AS stage_id,
                         0 AS revenue,
+                        'forecast' AS rate_product,
                         F.id AS id
                     FROM generate_series(
                         (SELECT min(start_date) FROM project_forecast WHERE active=true)::date,
@@ -58,8 +62,11 @@ class TimesheetForecastReport(models.Model):
                         'timesheet' AS type,
                         A.stage_id AS stage_id,
                         (A.so_line_unit_price * A.unit_amount) AS revenue,
+                        P.name AS rate_product,
                         -A.id AS id
                     FROM account_analytic_line A, hr_employee E
+                    LATERAL JOIN sale_order_line S ON A.so_line = S.id
+                    LATERAL JOIN product_product P ON S.product_id = P.id
                     WHERE A.project_id IS NOT NULL
                         AND A.employee_id = E.id
                 )
