@@ -64,9 +64,9 @@ class TimesheetForecastReport(models.Model):
                         (A.so_line_unit_price * A.unit_amount) AS revenue,
                         P.name AS rate_product,
                         -A.id AS id
-                    FROM account_analytic_line A, hr_employee E
-                    LATERAL JOIN sale_order_line S ON A.so_line = S.id
-                    LATERAL JOIN product_product P ON S.product_id = P.id
+                    FROM hr_employee E, ((account_analytic_line A
+                    LEFT JOIN sale_order_line S ON A.so_line = S.id)
+                    LEFT JOIN product_product P ON S.product_id = P.id)
                     WHERE A.project_id IS NOT NULL
                         AND A.employee_id = E.id
                 )
