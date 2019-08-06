@@ -6,9 +6,11 @@
             <field name="model">project.timesheet.forecast.report.analysis</field>
             <field name="arch" type="xml">
                 <pivot string="Project Follow-up Report">
-                    <field name="project_id" type="col"/>
-                    <field name="task_id" type="col"/>
-                    <field name="employee_id" type="row"/>
+                    <field name="date" type="col"/>
+                    <field name="stage_id" type="col"/>
+                    <field name = "project_id" type="row" />
+                    <field name = "task_id" type="row" />
+                    <field name="rate_product" type="row"/>
                     <field name="revenue" type="measure"/>
                 </pivot>
             </field>
