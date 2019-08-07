@@ -13,6 +13,8 @@ class TimesheetForecastReport(models.Model):
     project_id = fields.Many2one('project.project', string = 'Project', readonly = True)
     task_id = fields.Many2one('project.task', string = 'Task', readonly = True)
     unit_amount = fields.Float('Duration (Hour(s))', readonly = True)
+    date = fields.Date('Date', readonly = True)
+    employee_id = fields.Many2one('hr.employee', readonly = True)
 
     # END OF NEEDED FIELDS
 
@@ -28,6 +30,8 @@ class TimesheetForecastReport(models.Model):
                         A.project_id AS project_id,
                         A.task_id AS task_id,
                         A.unit_amount AS unit_amount,
+                        A.date AS date,
+                        A.employee_id AS employee_id,
                         A.id AS id
                     FROM account_analytic_line A
                     WHERE
