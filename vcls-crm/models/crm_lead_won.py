@@ -17,11 +17,12 @@ class CrmLeadWon(models.TransientModel):
     _description = 'Get Won Reason'
 
     won_reason_id = fields.Many2one('crm.won.reason', 'Won Reason')
+    description = fields.Char(string = 'Description')
 
     @api.multi
     def action_won_reason_apply(self):
         leads = self.env['crm.lead'].browse(self.env.context.get('active_ids'))
-        leads.write({'won_reason': self.won_reason_id.id})
+        leads.write({'won_reason': self.won_reason_id.id, 'won_lost_description': self.description})
         result = leads.action_set_won()
         if result:
             return {
@@ -32,3 +33,13 @@ class CrmLeadWon(models.TransientModel):
                         'type': 'rainbow_man',
                     }
                 }
+
+class CrmLeadLost(models.TransientModel):
+    _inherit = 'crm.lead.lost'
+    description = fields.Char(string = 'Description')
+
+    @api.multi
+    def action_lost_reason_apply(self):
+        leads = self.env['crm.lead'].browse(self.env.context.get('active_ids'))
+        leads.write({'lost_reason': self.lost_reason_id.id, 'won_lost_description': self.description})
+        return leads.action_set_lost()
