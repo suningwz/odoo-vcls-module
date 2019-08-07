@@ -31,6 +31,9 @@
 
         ### VIEWS ###
         'views/risk_views.xml',
+
+        ### DATA ###
+        'data/risk_type.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -1,0 +1,12 @@
+<odoo>
+    <data>
+
+        <record id="risk_go_nogo" model="risk.type">
+            <field name="name">Go/NoGo</field>
+            <field name="description">GO / NO GO RISK RELATED TO A PROJECT</field>
+            <field name="model_name">crm.lead</field>
+            <!-- field>OTHER INFORMATION FIELD</field -->
+        </record>
+
+    </data>
+</odoo>
