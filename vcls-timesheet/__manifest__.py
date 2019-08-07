@@ -42,6 +42,7 @@
         'views/sale_order_views.xml',
         'views/crm_views.xml',
         'views/time_category_views.xml',
+        'views/timesheet_report_views.xml',
 
         ### ACTIONS ###
         'actions/timesheet_cron.xml',

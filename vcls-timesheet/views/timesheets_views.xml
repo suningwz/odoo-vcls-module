@@ -197,6 +197,12 @@
             name="Line Manager"
             sequence="4"
             parent="hr_timesheet.timesheet_menu_root"
+        />
+
+        <menuitem id="menu_lm_timesheet_tree"
+            name="Tree"
+            sequence="1"
+            parent="menu_lm_timesheet"
             action="action_lm_all_timesheet_tree"
         />
 
