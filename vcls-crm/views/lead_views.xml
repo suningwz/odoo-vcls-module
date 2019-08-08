@@ -164,12 +164,13 @@
             <xpath expr="//field[@name='date_deadline']" position="after">
                     <field name="expected_start_date"/>
                     <field name="app_country_group_id" string="Scope Geographic Area"/>
-                    
             </xpath>
 
-            <field name="lost_reason" position="after">
-                <field name="won_reason" attrs="{'invisible': ['|', ('active', '=', False), ('probability', '&lt;', 100)]}"/>
-                <field name="won_lost_description" attrs="{'invisible': [('won_reason','=', False), ('lost_reason', '=', False)]}" />
+            <field name="lost_reason" position="replace">
+                <field name ="lost_reason" invisible = "1" />
+                <field name="lost_reasons" attrs="{'invisible': ['|', ('active', '=', True), ('probability', '=', 100)]}" widget = "many2many_tags" />
+                <field name="won_reasons" attrs="{'invisible': ['|', ('active', '=', False), ('probability', '&lt;', 100)]}" widget = "many2many_tags" />
+                <field name="won_lost_description" attrs="{'invisible': [('probability','!=', 100), ('probability', '!=', 0)]}" />
             </field>
 
             <field name="team_id" position="after">

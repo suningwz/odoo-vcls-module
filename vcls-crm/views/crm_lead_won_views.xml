@@ -6,9 +6,9 @@
             <field name="name">crm.lead.won.form</field>
             <field name="model">crm.lead.won</field>
             <field name="arch" type="xml">
-                <form string="won Reason">
+                <form string="won Reasons">
                     <group class="oe_title">
-                        <field name="won_reason_id"/>
+                        <field name="won_reason_ids" widget="many2many_tags" />
                         <field name = "description" />
                     </group>
                     <footer>
@@ -20,7 +20,7 @@
         </record>
 
         <record id="crm_lead_won_action" model="ir.actions.act_window">
-            <field name="name">won Reason</field>
+            <field name="name">won Reasons</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">crm.lead.won</field>
             <field name="view_mode">form</field>
@@ -35,7 +35,7 @@
             <field name="arch" type="xml">
                 <form string="Lost Reason">
                     <group class="oe_title">
-                        <field name="lost_reason_id"/>
+                        <field name="lost_reason_ids" widget="many2many_tags" />
                         <field name = "description" />
                     </group>
                     <footer>
