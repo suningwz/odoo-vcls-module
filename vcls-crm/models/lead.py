@@ -472,4 +472,10 @@ class Leads(models.Model):
             'type': 'ir.actions.act_window',
             'context': {'default_type': 'opportunity'}
         }
+    
 
+    @api.onchange('stage_id')
+    def _check_won_lost(self):
+        if self.stage_id == self.env.ref('crm.stage_lead4'):
+            if len(self.won_reasons) == 0:
+                raise ValidationError(_("Please use the \"MARK WON\" button or select at least 1 reason."))
