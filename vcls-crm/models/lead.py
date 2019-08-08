@@ -145,6 +145,7 @@ class Leads(models.Model):
     
     CDA = fields.Boolean('CDA signed')
     MSA = fields.Boolean('MSA valid')
+    sp_folder = fields.Char('Sharepoint Folder')
     
     contract_type = fields.Selection([('saleorder', 'Sale Order'),
                                       ('workorder', 'Work Order'),
