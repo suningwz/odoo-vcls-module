@@ -189,6 +189,9 @@ class Leads(models.Model):
 
     contact_middlename = fields.Char("Middle name")
 
+    ### WON / LOST DESCRIPTION ###
+    won_lost_description = fields.Char(string = 'Won/Lost details')
+
     @api.multi
     def _create_lead_partner_data(self, name, is_company, parent_id=False):
         lead_partner_data = super(Leads, self)._create_lead_partner_data(

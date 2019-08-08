@@ -169,6 +169,7 @@
 
             <field name="lost_reason" position="after">
                 <field name="won_reason" attrs="{'invisible': ['|', ('active', '=', False), ('probability', '&lt;', 100)]}"/>
+                <field name="won_lost_description" attrs="{'invisible': [('won_reason','=', False), ('lost_reason', '=', False)]}" />
             </field>
 
             <field name="team_id" position="after">
