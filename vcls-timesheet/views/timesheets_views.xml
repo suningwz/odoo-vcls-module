@@ -15,7 +15,7 @@
             <field name="name">vcls-timesheet.view.tree</field>
             <field name="model">account.analytic.line</field>
             <field name="arch" type="xml">
-                <tree editable="top" string="Timesheets" create="false">
+                <tree editable="top" string="Timesheets" create="false" colors="red:at_risk==True">
                     <field name="date" readonly="1"/>
                     <field name = "internal_comment" readonly="1"/>
                     <field name="name" readonly="1" />
@@ -32,7 +32,7 @@
             <field name="name">vcls-timesheet.view.tree.readonly</field>
             <field name="model">account.analytic.line</field>
             <field name="arch" type="xml">
-                <tree editable="top" string="Timesheets" create="false">
+                <tree editable="top" string="Timesheets" create="false" colors="red:at_risk==True">
                     <field name="date" readonly="1"/>
                     <field name = "internal_comment" readonly="1"/>
                     <field name="name" readonly="1" />
@@ -49,7 +49,7 @@
             <field name="name">vcls-timesheet.view.tree</field>
             <field name="model">account.analytic.line</field>
             <field name="arch" type="xml">
-                <tree editable="top" string="PC Review">
+                <tree editable="top" string="PC Review" colors="red:at_risk==True">
                     <field name="date"/>
                     <field name="employee_id"/>
                     <field name = "internal_comment" />
