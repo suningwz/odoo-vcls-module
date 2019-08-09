@@ -33,6 +33,11 @@ class ProjectProgram(models.Model):
 
     indication = fields.Char()
 
+    # Only 4 input so no need to create new object
+    stage_id =  fields.Selection([('pre', 'Preclinical'),('exploratory', 'Exploratory Clinical'),
+    ('confirmatory', 'Confirmatory Clinical'), ('post', 'Post Marketing')], 'Stage', default='pre')
+
+
 ### ADD PROGRAM TO OTHER MODELS ###
 class Client(models.Model):
 
@@ -63,6 +68,9 @@ class Lead(models.Model):
         comodel_name = 'project.program',
         string = 'Related Program',
     )
+
+    program_stage_id = fields.Selection([('pre', 'Preclinical'),('exploratory', 'Exploratory Clinical'),
+    ('confirmatory', 'Confirmatory Clinical'), ('post', 'Post Marketing')], 'Program Stage', related='program_id.stage_id')
 
 
 
