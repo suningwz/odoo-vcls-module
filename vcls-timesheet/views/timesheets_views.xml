@@ -288,5 +288,17 @@
               </p>
             </field>
         </record>
+
+        <record id="account_analytic_line_tree_inherit" model="ir.ui.view">
+            <field name="name">account.analytic.line.tree.inherit</field>
+            <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="sale_timesheet_rounded.account_analytic_line_tree_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='unit_amount_rounded']" position="replace">
+                    <field name="unit_amount_rounded" string="Revised Time" sum="Total quantity rounded" widget="float_time"/>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </odoo>

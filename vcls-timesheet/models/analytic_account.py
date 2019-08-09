@@ -71,6 +71,13 @@ class AnalyticLine(models.Model):
         store = True
     )
 
+        # OVERWRITE IN ORDER TO UPDATE LABEL
+    unit_amount_rounded = fields.Float(
+        string="Revised Time",
+        default=0.0,
+        copy=False,
+    )
+
 
     @api.model
     def create(self, vals):
