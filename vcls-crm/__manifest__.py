@@ -17,7 +17,9 @@
     'category': 'Uncategorized',
 
 
+
     'version': '1.8.0',
+
 
 
 
