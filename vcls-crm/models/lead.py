@@ -112,6 +112,13 @@ class Leads(models.Model):
         track_visibility='onchange'
     )
 
+    won_reason = fields.Many2one(
+        'crm.won.reason',
+        string='Won Reason',
+        index=True,
+        track_visibility='onchange'
+    )
+
     lost_reasons = fields.Many2many(
         'crm.lost.reason',
         string='Lost Reasons',
