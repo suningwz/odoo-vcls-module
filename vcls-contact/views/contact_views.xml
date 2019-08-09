@@ -53,7 +53,7 @@
                                     </group>
                                     <group string="Internal Contacts">
                                         <field name="user_id" string="Account Manager"/>
-                                        <field name="expert_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
+                                        <field name="expert_id" invisible = '1'/>
                                         <field name="assistant_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                         <field name="controller_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                         <field name="invoice_admin_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>    
