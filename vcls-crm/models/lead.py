@@ -355,13 +355,13 @@ class Leads(models.Model):
             :returns res.partner record
         """
         data = super()._create_lead_partner_data(name,is_company,parent_id)
-        data['country_group_id'] = self.country_group_id
-        data['referent_id'] = self.referent_id
-        data['functional_focus_id'] = self.functional_focus_id
-        data['partner_seniority_id'] = self.partner_seniority_id
-        data['industry_id'] = self.industry_id
-        data['client_activity_ids'] = self.client_activity_ids
-        data['client_product_ids'] = self.client_product_ids
+        data['country_group_id'] = self.country_group_id.id
+        data['referent_id'] = self.referent_id.id
+        data['functional_focus_id'] = self.functional_focus_id.id
+        data['partner_seniority_id'] = self.partner_seniority_id.id
+        data['industry_id'] = self.industry_id.id
+        data['client_activity_ids'] = [(6, 0, self.client_activity_ids.ids)]
+        data['client_product_ids'] = [(6, 0, self.client_product_ids.ids)]
 
         return data
 
@@ -391,8 +391,8 @@ class Leads(models.Model):
         data['functional_focus_id'] = self.functional_focus_id.id
         data['partner_seniority_id'] = self.partner_seniority_id.id
         data['industry_id'] = self.industry_id.id
-        data['client_activity_ids'] = self.client_activity_ids
-        data['client_product_ids'] = self.client_product_ids
+        data['client_activity_ids'] = [(6, 0, self.client_activity_ids.ids)]
+        data['client_product_ids'] = [(6, 0, self.client_product_ids.ids)]
         data['product_category_id'] = self.product_category_id.id
         data['converted_date'] = datetime.datetime.now()
         
@@ -404,8 +404,8 @@ class Leads(models.Model):
             partner = self.env["res.partner"].browse(partner_id)
             result.update({
                 "industry_id": partner.industry_id,
-                "client_activity_ids": partner.client_activity_ids,
-                "client_product_ids": partner.client_product_ids
+                "client_activity_ids": [(6, 0, partner.client_activity_ids.ids)],
+                "client_product_ids": [(6, 0, partner.client_product_ids.ids)]
             })
             if not partner.is_company:
                 result.update({
