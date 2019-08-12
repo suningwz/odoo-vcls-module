@@ -29,7 +29,7 @@ class TimesheetForecastReport(models.Model):
             CREATE or REPLACE VIEW %s as (
                 (
                     SELECT
-                        d::date AS date,
+                        NULL AS date,
                         F.employee_id AS employee_id,
                         F.task_id AS task_id,
                         F.project_id AS project_id,
@@ -58,7 +58,7 @@ class TimesheetForecastReport(models.Model):
                         E.id AS employee_id,
                         A.task_id AS task_id,
                         A.project_id AS project_id,
-                        A.unit_amount AS number_hours,
+                        -A.unit_amount AS number_hours,
                         'timesheet' AS type,
                         A.stage_id AS stage_id,
                         (A.so_line_unit_price * A.unit_amount_rounded) AS revenue,
