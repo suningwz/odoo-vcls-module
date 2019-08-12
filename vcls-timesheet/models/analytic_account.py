@@ -38,14 +38,7 @@ class AnalyticLine(models.Model):
         related = 'project_id.partner_id',
         store = True,
     )
-
-    project_user_id = fields.Many2one(
-        'res.users',
-        string = 'Project Controller',
-        related = 'project_id.user_id',
-        store = True,
-    )
-
+    
     adjustment_reason_id = fields.Many2one('timesheet.adjustment.reason', string="Adjustment Reason")
 
     time_category_id = fields.Many2one(
@@ -57,13 +50,6 @@ class AnalyticLine(models.Model):
     name = fields.Char('External Comment', required=True)
 
     internal_comment = fields.Char(string = 'Internal Comment')
-
-    # Used in LM view
-    is_authorized = fields.Boolean(
-        'LM can see',
-        compute = '_is_authorized_lm',
-        store = True
-    )
 
     at_risk = fields.Boolean(
         string = 'Timesheet at risk',

@@ -105,6 +105,10 @@ class Leads(models.Model):
         string="Expected Project Start Date",
     )
 
+    won_reason = fields.Many2one(
+        'crm.won.reason'
+    )
+
     won_reasons = fields.Many2many(
         'crm.won.reason',
         string='Won Reasons',
