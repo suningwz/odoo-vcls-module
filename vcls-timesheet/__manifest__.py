@@ -21,6 +21,7 @@
     'depends': [
         'base',
         'sale_timesheet',
+        'project_timesheet_forecast',
         'sale_timesheet_rounded',
         'hr_timesheet',
         'vcls-crm',
@@ -43,6 +44,7 @@
         'views/sale_order_views.xml',
         'views/crm_views.xml',
         'views/time_category_views.xml',
+        'views/report_views.xml',
 
         ### ACTIONS ###
         'actions/timesheet_cron.xml',

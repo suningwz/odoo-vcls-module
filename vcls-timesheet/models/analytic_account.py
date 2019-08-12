@@ -79,6 +79,19 @@ class AnalyticLine(models.Model):
     )
 
 
+    so_line_unit_price = fields.Float(
+        'Sales Oder Line Unit Price',
+        related = 'so_line.price_unit',
+        store = True
+    )
+
+    so_line_currency_id = fields.Many2one(
+        'res.currency',
+        related = 'so_line.currency_id',
+        store = True,
+        string = 'Sales Order Currency',
+    )
+
     @api.model
     def create(self, vals):
         _logger.info("Create {}".format(vals['unit_amount']))
