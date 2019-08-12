@@ -32,13 +32,13 @@ class AnalyticLine(models.Model):
     )
 
     # Used in order to group by client
-    partner_id = fields.Many2one(
+    """partner_id = fields.Many2one(
         'res.partner',
         string = 'Client',
         related = 'project_id.partner_id',
         store = True,
     )
-    
+
     adjustment_reason_id = fields.Many2one('timesheet.adjustment.reason', string="Adjustment Reason")
 
     time_category_id = fields.Many2one(
@@ -149,17 +149,19 @@ class AnalyticLine(models.Model):
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
                 record.employee_id = employee
     
+    
     @api.depends('user_id')
     def _is_authorized_lm(self):
         for record in self:
             try:
                 resource = self.env['resource.resource'].search([('user_id','=',record.user_id.id)])
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
-                record.is_authorized = self._uid in employee.lm_ids.ids
+                record.is_authorized = self._uid == employee.parent_id.id
             except Exception as err:
                 print(err)
                 # No project / project controller / project manager
                 record.is_authorized = False
+    
 
     # NEED TO BE REFINED
     @api.depends('so_line')

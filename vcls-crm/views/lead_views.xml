@@ -40,7 +40,7 @@
                         <div class="badge-pill badge-success float-right" attrs="{'invisible': [('probability', '&lt;', 100)]}">Won</div>
                         <div class="oe_title">
                             <label for="name" class="oe_edit_only"/>
-                            <h1><field name="name" placeholder="e.g. Product Pricing"/></h1>
+                            <h1><field name="name" placeholder="Ref automatically added at save."/></h1>
                             <h2 class="o_row row no-gutters d-flex">
                                 <div class="col">
                                     <label for="planned_revenue" class="oe_edit_only"/>
@@ -174,7 +174,7 @@
             </field>
 
             <field name="team_id" position="after">
-                <field name="internal_ref" readonly="1" style="color:#08206E;"/>
+                <field name="internal_ref" readonly="0" style="color:#08206E;"/>
             </field>
 
                
@@ -233,7 +233,8 @@
                         <field name="client_product_ids" widget="many2many_tags"/>
                         <field name="description" string="Scope of work" widget="html"/>
                     </group>
-                </page>   
+                </page>
+                <!--
                 <page name="resources" string="Resources">
                     <group>
                         <field name="resources_ids">
@@ -244,6 +245,7 @@
                         </field>
                     </group>
                 </page>
+                -->
                 <page string="Internal Notes" modifiers="{}">
 				    <field name="description" modifiers="{}"/>
 			    </page>

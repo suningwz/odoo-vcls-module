@@ -143,6 +143,24 @@ class ContactExt(models.Model):
                 for company in self.sudo().env['res.company'].search([]):
                     rec.with_context(force_company=company.id).property_product_pricelist = pricelist[0].id
     
+    @api.one
+    def _get_new_ref(self):
+        #we look for the configuration of the company/parent_company of the current contact to build a reference
+        if self.company_type == 'company':
+            company = self
+        else:
+            company = self.parent_id
+        
+        #if no ALTNAME, then we raise an error
+        if not company.altname:
+            raise ValidationError("Please document an ALTNAME in the {} client sheet to automate refence calculation.".format(company.name))
+        
+        else:
+            reference = "{}-{:03}".format(company.altname, company.core_process_index+1)
+            company.core_process_index += 1
+            return reference
+
+    
     """
     # NOT OVERWRITE CONTEXT
     @api.one
