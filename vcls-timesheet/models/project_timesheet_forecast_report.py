@@ -61,7 +61,7 @@ class TimesheetForecastReport(models.Model):
                         A.unit_amount AS number_hours,
                         'timesheet' AS type,
                         A.stage_id AS stage_id,
-                        (A.so_line_unit_price * A.unit_amount) AS revenue,
+                        (A.so_line_unit_price * A.unit_amount_rounded) AS revenue,
                         P.name AS rate_product,
                         -A.id AS id
                     FROM hr_employee E, ((account_analytic_line A
