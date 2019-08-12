@@ -150,7 +150,7 @@ class AnalyticLine(models.Model):
                 record.employee_id = employee
     
     
-    @api.depends('user_id')
+    """@api.depends('user_id')
     def _is_authorized_lm(self):
         for record in self:
             try:
@@ -160,7 +160,7 @@ class AnalyticLine(models.Model):
             except Exception as err:
                 print(err)
                 # No project / project controller / project manager
-                record.is_authorized = False
+                record.is_authorized = False"""
     
 
     # NEED TO BE REFINED
