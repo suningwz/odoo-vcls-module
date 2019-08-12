@@ -105,6 +105,13 @@ class Leads(models.Model):
         string="Expected Project Start Date",
     )
 
+    won_reason = fields.Many2many(
+        'crm.won.reason',
+        string='Won Reasons',
+        index=True,
+        track_visibility='onchange'
+    )
+
     won_reasons = fields.Many2many(
         'crm.won.reason',
         string='Won Reasons',
