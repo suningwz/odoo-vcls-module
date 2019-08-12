@@ -449,7 +449,7 @@ class Leads(models.Model):
             if client:
                 vals['internal_ref']=client._get_new_ref()[0]
             else:
-                vals['internal_ref']=False
+                vals['internal_ref']=""
 
         _logger.info("{}".format(vals))
         return super(Leads, self).write(vals)
