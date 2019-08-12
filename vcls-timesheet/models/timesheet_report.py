@@ -34,8 +34,6 @@ class TimesheetForecastReport(models.Model):
                         A.employee_id AS employee_id,
                         A.id AS id
                     FROM account_analytic_line A
-                    WHERE
-                        A.is_authorized IS True
                 )
             )
         """ % (self._table,))
