@@ -56,7 +56,7 @@ class AnalyticLine(models.Model):
     # Rename description label
     name = fields.Char('External Comment', required=True)
 
-    #internal_comment = fields.Char(string = 'Internal Comment')
+    internal_comment = fields.Char(string = 'Internal Comment')
 
     """is_authorized = fields.Boolean(
         'LM can see',
