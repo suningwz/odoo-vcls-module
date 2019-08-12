@@ -8,7 +8,7 @@
 
                 <xpath expr="//group[@name='name']" position="before">
                     <h1 modifiers="{}">
-				        <field name="opp_name" placeholder="Name" />
+				        <field name="opp_name" placeholder="Name" attrs="{'invisible': [('name', '=', 'merge')]}"/>
 			        </h1>
                 </xpath>
             </field>

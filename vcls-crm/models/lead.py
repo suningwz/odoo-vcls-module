@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, tools, api
+from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError, Warning
 from datetime import date
 import datetime
@@ -105,9 +105,16 @@ class Leads(models.Model):
         string="Expected Project Start Date",
     )
 
-    won_reason = fields.Many2one(
+    won_reasons = fields.Many2many(
         'crm.won.reason',
-        string='Won Reason',
+        string='Won Reasons',
+        index=True,
+        track_visibility='onchange'
+    )
+
+    lost_reasons = fields.Many2many(
+        'crm.lost.reason',
+        string='Lost Reasons',
         index=True,
         track_visibility='onchange'
     )
@@ -138,6 +145,7 @@ class Leads(models.Model):
     
     CDA = fields.Boolean('CDA signed')
     MSA = fields.Boolean('MSA valid')
+    sp_folder = fields.Char('Sharepoint Folder')
     
     contract_type = fields.Selection([('saleorder', 'Sale Order'),
                                       ('workorder', 'Work Order'),
@@ -188,6 +196,9 @@ class Leads(models.Model):
     ### MIDDLE NAME ###
 
     contact_middlename = fields.Char("Middle name")
+
+    ### WON / LOST DESCRIPTION ###
+    won_lost_description = fields.Char(string = 'Won/Lost details')
 
     @api.multi
     def _create_lead_partner_data(self, name, is_company, parent_id=False):
@@ -349,8 +360,8 @@ class Leads(models.Model):
         data['functional_focus_id'] = self.functional_focus_id.id
         data['partner_seniority_id'] = self.partner_seniority_id.id
         data['industry_id'] = self.industry_id.id
-        data['client_activity_ids'] = self.client_activity_ids
-        data['client_product_ids'] = self.client_product_ids
+        data['client_activity_ids'] = [(6, 0, self.client_activity_ids.ids)]
+        data['client_product_ids'] = [(6, 0, self.client_product_ids.ids)]
 
         return data
 
@@ -380,8 +391,8 @@ class Leads(models.Model):
         data['functional_focus_id'] = self.functional_focus_id.id
         data['partner_seniority_id'] = self.partner_seniority_id.id
         data['industry_id'] = self.industry_id.id
-        data['client_activity_ids'] = self.client_activity_ids
-        data['client_product_ids'] = self.client_product_ids
+        data['client_activity_ids'] = [(6, 0, self.client_activity_ids.ids)]
+        data['client_product_ids'] = [(6, 0, self.client_product_ids.ids)]
         data['product_category_id'] = self.product_category_id.id
         data['converted_date'] = datetime.datetime.now()
         
@@ -393,8 +404,8 @@ class Leads(models.Model):
             partner = self.env["res.partner"].browse(partner_id)
             result.update({
                 "industry_id": partner.industry_id,
-                "client_activity_ids": partner.client_activity_ids,
-                "client_product_ids": partner.client_product_ids
+                "client_activity_ids": [(6, 0, partner.client_activity_ids.ids)],
+                "client_product_ids": [(6, 0, partner.client_product_ids.ids)]
             })
             if not partner.is_company:
                 result.update({
@@ -436,4 +447,36 @@ class Leads(models.Model):
     def create_contact_pop_up(self):
         result = self.env['crm.lead'].browse(self.id).handle_partner_assignation('create', False)
         return result.get(self.id)
+    
+    # Copy/Paste in order to redirect to right view (overriden)
+    @api.multi
+    def redirect_opportunity_view(self):
+        self.ensure_one()
+        # Get opportunity views
+        form_view = self.env.ref('crm.crm_case_form_view_oppor')
+        tree_view = self.env.ref('crm.crm_case_tree_view_oppor')
+        return {
+            'name': _('Opportunity'),
+            'view_type': 'form',
+            'view_mode': 'tree, form',
+            'res_model': 'crm.lead',
+            'domain': [('type', '=', 'opportunity')],
+            'res_id': self.id,
+            'view_id': False,
+            'views': [
+                (form_view.id, 'form'),
+                (tree_view.id, 'tree'),
+                (False, 'kanban'),
+                (False, 'calendar'),
+                (False, 'graph')
+            ],
+            'type': 'ir.actions.act_window',
+            'context': {'default_type': 'opportunity'}
+        }
+    
 
+    @api.onchange('stage_id')
+    def _check_won_lost(self):
+        if self.stage_id == self.env.ref('crm.stage_lead4'):
+            if len(self.won_reasons) == 0:
+                raise ValidationError(_("Please use the \"MARK WON\" button or select at least 1 reason."))

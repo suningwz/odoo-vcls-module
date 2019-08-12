@@ -22,6 +22,7 @@
         'base',
         'sale_timesheet',
         'project_timesheet_forecast',
+        'sale_timesheet_rounded',
         'hr_timesheet',
         'vcls-crm',
         'vcls-project',

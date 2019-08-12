@@ -1,0 +1,14 @@
+<odoo>
+    <data>
+        <record id="crm_case_form_view_oppor" model="ir.ui.view">
+            <field name="name">crm_case_form_view_oppor</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='score']" position="after">
+                    <field name = 'program_stage_id' />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
