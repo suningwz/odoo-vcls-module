@@ -446,7 +446,10 @@ class Leads(models.Model):
         _logger.info("INTERNAL REF {}".format(vals.get('internal_ref',self.internal_ref)))
         if (vals.get('type',False) == 'opportunity' or self.type == 'opportunity') and not vals.get('internal_ref',self.internal_ref):
             client = self.env['res.partner'].browse(vals.get('partner_id',self.partner_id.id)) #if a new client defined or was already existing
-            vals['internal_ref']=client._get_new_ref()[0]
+            if client:
+                vals['internal_ref']=client._get_new_ref()[0]
+            else:
+                vals['internal_ref']=False
 
         _logger.info("{}".format(vals))
         return super(Leads, self).write(vals)
