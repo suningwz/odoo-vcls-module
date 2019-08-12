@@ -49,6 +49,7 @@
                             <th>Date</th>
                             <th>Description</th>
                             <th>Responsible</th>
+                            <th>Internal Comment</th>
                             <th class="text-right">Duration</th>
                         </tr>
                     </thead>
@@ -59,6 +60,7 @@
                                     <td><t t-esc="timesheet.date"/></td>
                                     <td><t t-esc="timesheet.name"/></td>
                                     <td><t t-esc="timesheet.sudo().user_id.name"/></td>
+                                    <td><t t-esc="timesheet.sudo().internal_comment"/></td>
                                     <td class="text-right"><span t-esc="timesheet.unit_amount" t-options='{"widget": "duration", "unit": "hour", "round": "minute"}'/></td>
                                 </tr>
                                 <!-- EDIT TIMESHEET -->
