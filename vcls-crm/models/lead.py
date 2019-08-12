@@ -236,7 +236,7 @@ class Leads(models.Model):
         if lead.type == 'lead':
             lead.message_ids[0].subtype_id = self.env.ref('vcls-crm.lead_creation')
         elif lead.type == 'opportunity':
-            _logger.info("OPP CREATION")
+            lead.internal_ref = lead.partner_id._get_new_ref()
         # END OF MODS
         return lead
 
@@ -278,6 +278,7 @@ class Leads(models.Model):
     def _clear_ref(self):
         for lead in self:
             lead.internal_ref = False
+            
     
     """@api.onchange('name')
     def _onchange_name(self):
@@ -442,6 +443,13 @@ class Leads(models.Model):
                 vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
         elif vals.get('contact_name', False) and vals.get('contact_lastname', False):
                 vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
+
+        #we manage the reference of the opportunity, if we change the type or update an opportunity not having a ref defined
+        _logger.info("INTERNAL REF {}".format(vals.get('internal_ref',self.internal_ref)))
+        if (vals.get('type',False) == 'opportunity' or self.type == 'opportunity') and not vals.get('internal_ref',self.internal_ref):
+            client = vals.get('partner_id',self.partner_id) #if a new client defined or was already existing
+            vals['internal_ref']=client._get_new_ref()
+
         _logger.info("{}".format(vals))
         return super(Leads, self).write(vals)
     
