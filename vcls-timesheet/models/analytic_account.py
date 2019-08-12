@@ -169,7 +169,7 @@ class AnalyticLine(models.Model):
             try:
                 resource = self.env['resource.resource'].search([('user_id','=',record.user_id.id)])
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
-                record.is_authorized = self._uid in employee.lm_ids.ids
+                record.is_authorized = self._uid == employee.parent_id.id
             except Exception as err:
                 print(err)
                 # No project / project controller / project manager
