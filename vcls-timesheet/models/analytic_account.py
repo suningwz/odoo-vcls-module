@@ -32,7 +32,7 @@ class AnalyticLine(models.Model):
     )
 
     # Used in order to group by client
-    """partner_id = fields.Many2one(
+    partner_id = fields.Many2one(
         'res.partner',
         string = 'Client',
         related = 'project_id.partner_id',
