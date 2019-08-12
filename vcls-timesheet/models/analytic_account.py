@@ -64,6 +64,19 @@ class AnalyticLine(models.Model):
         store = True
     )"""
 
+    at_risk = fields.Boolean(
+        string = 'Timesheet at risk',
+        compute = '_compute_at_risk',
+        store = True
+    )
+
+        # OVERWRITE IN ORDER TO UPDATE LABEL
+    unit_amount_rounded = fields.Float(
+        string="Revised Time",
+        default=0.0,
+        copy=False,
+    )
+
 
     @api.model
     def create(self, vals):
@@ -73,6 +86,7 @@ class AnalyticLine(models.Model):
             if vals['unit_amount'] % 0.25 != 0:
                 vals['unit_amount'] = math.ceil(vals['unit_amount']*4)/4
                 _logger.info("After round {}".format(vals['unit_amount']))
+
         return super(AnalyticLine, self).create(vals)
     
     """ @api.onchange('unit_amount')
@@ -135,6 +149,7 @@ class AnalyticLine(models.Model):
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
                 record.employee_id = employee
     
+    """
     @api.depends('user_id')
     def _is_authorized_lm(self):
         for record in self:
@@ -146,6 +161,16 @@ class AnalyticLine(models.Model):
                 print(err)
                 # No project / project controller / project manager
                 record.is_authorized = False
+    """
+
+    # NEED TO BE REFINED
+    @api.depends('so_line')
+    def _compute_at_risk(self):
+        for record in self:
+            if record.so_line:
+                record.at_risk = False
+            else:
+                record.at_risk = True
 
     @api.onchange('project_id')
     def onchange_project_id(self):

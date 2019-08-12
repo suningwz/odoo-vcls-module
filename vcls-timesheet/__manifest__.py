@@ -21,6 +21,7 @@
     'depends': [
         'base',
         'sale_timesheet',
+        'sale_timesheet_rounded',
         'hr_timesheet',
         'vcls-crm',
         'vcls-project',

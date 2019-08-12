@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, tools, api
+from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError, Warning
+from datetime import date
+import datetime
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -21,6 +23,19 @@ class Leads(models.Model):
     _inherit = 'crm.lead'
 
     company_id = fields.Many2one(string = 'Trading Entity', default = lambda self: self.env.ref('vcls-hr.company_VCFR'))
+
+    source_id = fields.Many2one('utm.source', "Initial Lead Source")
+
+    # Related fields in order to avoid mismatch & errors
+    opted_in = fields.Boolean(
+        related = 'partner_id.opted_in',
+        string = 'Opted In'
+    )
+
+    opted_out = fields.Boolean(
+        related = 'partner_id.opted_out',
+        string = 'Opted Out'
+    )
 
     # KEEP CAMPAIGN_ID -> FIRST CONTACT
     #campaign_ids = fields.Many2many('utm.campaign', string = 'Campaings')
@@ -50,7 +65,7 @@ class Leads(models.Model):
 
     referent_id = fields.Many2one(
         'res.partner',
-        string = 'Referent',
+        string = 'Referee',
     )
 
     functional_focus_id = fields.Many2one(
@@ -90,9 +105,16 @@ class Leads(models.Model):
         string="Expected Project Start Date",
     )
 
-    won_reason = fields.Many2one(
+    won_reasons = fields.Many2many(
         'crm.won.reason',
-        string='Won Reason',
+        string='Won Reasons',
+        index=True,
+        track_visibility='onchange'
+    )
+
+    lost_reasons = fields.Many2many(
+        'crm.lost.reason',
+        string='Lost Reasons',
         index=True,
         track_visibility='onchange'
     )
@@ -123,6 +145,7 @@ class Leads(models.Model):
     
     CDA = fields.Boolean('CDA signed')
     MSA = fields.Boolean('MSA valid')
+    sp_folder = fields.Char('Sharepoint Folder')
     
     contract_type = fields.Selection([('saleorder', 'Sale Order'),
                                       ('workorder', 'Work Order'),
@@ -160,6 +183,12 @@ class Leads(models.Model):
         string='VCLS Initial Contact'
     )
 
+    age = fields.Char(
+        compute = '_compute_lead_age'
+    )
+
+    conversion_date = fields.Date(string = 'Lead to Opp date')
+
     #name = fields.Char() We don't compute, it breaks too much usecases
 
     lead_history = fields.Many2many(comodel_name="crm.lead", relation="crm_lead_rel", column1="crm_lead_id1")
@@ -167,6 +196,9 @@ class Leads(models.Model):
     ### MIDDLE NAME ###
 
     contact_middlename = fields.Char("Middle name")
+
+    ### WON / LOST DESCRIPTION ###
+    won_lost_description = fields.Char(string = 'Won/Lost details')
 
     @api.multi
     def _create_lead_partner_data(self, name, is_company, parent_id=False):
@@ -188,10 +220,9 @@ class Leads(models.Model):
     @api.model
     def create(self, vals):
         ################
-        _logger.info("On create : {}".format(vals))
-        if vals['contact_name'] and vals['contact_lastname'] and vals['contact_middlename']:
+        if vals.get('contact_name', False) and vals.get('contact_lastname', False) and vals.get('contact_middlename', False):
                 vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
-        elif vals['contact_name'] and vals['contact_lastname']:
+        elif vals.get('contact_name', False) and vals.get('contact_lastname', False):
                 vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
         #############
         lead = super(Leads, self).create(vals)
@@ -215,6 +246,24 @@ class Leads(models.Model):
             groups = lead.country_id.country_group_ids
             if groups:
                 lead.country_group_id = groups[0]
+    
+    @api.depends('create_date', 'type', 'conversion_date')
+    def _compute_lead_age(self):
+        for lead in self:
+            if lead.conversion_date != False:
+                reference = lead.conversion_date.date()
+            elif lead.create_date != False:
+                reference = lead.create_date.date()
+            else:
+                reference = date.today()
+            today = date.today()
+            delta = today - reference
+            if delta.days == 1:
+                lead.age = "{} day old".format(delta.days)
+            elif delta.days == 0:
+                lead.age = "{} day old (created/converted today)".format(delta.days)
+            else:
+                lead.age = "{} days old".format(delta.days)
     
     @api.onchange('name')
     def _onchange_name(self):
@@ -306,13 +355,13 @@ class Leads(models.Model):
             :returns res.partner record
         """
         data = super()._create_lead_partner_data(name,is_company,parent_id)
-        data['country_group_id'] = self.country_group_id
-        data['referent_id'] = self.referent_id
-        data['functional_focus_id'] = self.functional_focus_id
-        data['partner_seniority_id'] = self.partner_seniority_id
-        data['industry_id'] = self.industry_id
-        data['client_activity_ids'] = self.client_activity_ids
-        data['client_product_ids'] = self.client_product_ids
+        data['country_group_id'] = self.country_group_id.id
+        data['referent_id'] = self.referent_id.id
+        data['functional_focus_id'] = self.functional_focus_id.id
+        data['partner_seniority_id'] = self.partner_seniority_id.id
+        data['industry_id'] = self.industry_id.id
+        data['client_activity_ids'] = [(6, 0, self.client_activity_ids.ids)]
+        data['client_product_ids'] = [(6, 0, self.client_product_ids.ids)]
 
         return data
 
@@ -337,14 +386,15 @@ class Leads(models.Model):
                 new_program = self.env['project.program'].create(values)
                 data['program_id'] = new_program.id"""
         
-        data['country_group_id'] = self.country_group_id
-        data['referent_id'] = self.referent_id
-        data['functional_focus_id'] = self.functional_focus_id
-        data['partner_seniority_id'] = self.partner_seniority_id
-        data['industry_id'] = self.industry_id
-        data['client_activity_ids'] = self.client_activity_ids
-        data['client_product_ids'] = self.client_product_ids
-        data['product_category_id'] = self.product_category_id
+        data['country_group_id'] = self.country_group_id.id
+        data['referent_id'] = self.referent_id.id
+        data['functional_focus_id'] = self.functional_focus_id.id
+        data['partner_seniority_id'] = self.partner_seniority_id.id
+        data['industry_id'] = self.industry_id.id
+        data['client_activity_ids'] = [(6, 0, self.client_activity_ids.ids)]
+        data['client_product_ids'] = [(6, 0, self.client_product_ids.ids)]
+        data['product_category_id'] = self.product_category_id.id
+        data['converted_date'] = datetime.datetime.now()
         
         return data
 
@@ -354,8 +404,8 @@ class Leads(models.Model):
             partner = self.env["res.partner"].browse(partner_id)
             result.update({
                 "industry_id": partner.industry_id,
-                "client_activity_ids": partner.client_activity_ids,
-                "client_product_ids": partner.client_product_ids
+                "client_activity_ids": [(6, 0, partner.client_activity_ids.ids)],
+                "client_product_ids": [(6, 0, partner.client_product_ids.ids)]
             })
             if not partner.is_company:
                 result.update({
@@ -374,10 +424,9 @@ class Leads(models.Model):
                 lead.name = res
     
     def write(self, vals):
-        _logger.info("On write 123soleil : {}".format(vals))
-        if vals['contact_name'] and vals['contact_lastname'] and vals['contact_middlename']:
+        if vals.get('contact_name', False) and vals.get('contact_lastname', False) and vals.get('contact_middlename', False):
                 vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
-        elif vals['contact_name'] and vals['contact_lastname']:
+        elif vals.get('contact_name', False) and vals.get('contact_lastname', False):
                 vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
         _logger.info("{}".format(vals))
         return super(Leads, self).write(vals)
@@ -385,7 +434,49 @@ class Leads(models.Model):
     #def _vals_to_name
     
     def all_campaigns_pop_up(self):
-        print('OK')
+        model_id = self.env['ir.model'].search([('model','=','crm.lead')], limit = 1)
+        return {
+            'name': 'All participated campaigns',
+            'view_mode': 'tree',
+            'target': 'new',
+            'res_model': 'marketing.participant',
+            'type': 'ir.actions.act_window',
+            'domain': "[('model_id','=', {}),('res_id','=',{})]".format(model_id.id, self.id)
+        }
+    
+    def create_contact_pop_up(self):
+        result = self.env['crm.lead'].browse(self.id).handle_partner_assignation('create', False)
+        return result.get(self.id)
+    
+    # Copy/Paste in order to redirect to right view (overriden)
+    @api.multi
+    def redirect_opportunity_view(self):
+        self.ensure_one()
+        # Get opportunity views
+        form_view = self.env.ref('crm.crm_case_form_view_oppor')
+        tree_view = self.env.ref('crm.crm_case_tree_view_oppor')
+        return {
+            'name': _('Opportunity'),
+            'view_type': 'form',
+            'view_mode': 'tree, form',
+            'res_model': 'crm.lead',
+            'domain': [('type', '=', 'opportunity')],
+            'res_id': self.id,
+            'view_id': False,
+            'views': [
+                (form_view.id, 'form'),
+                (tree_view.id, 'tree'),
+                (False, 'kanban'),
+                (False, 'calendar'),
+                (False, 'graph')
+            ],
+            'type': 'ir.actions.act_window',
+            'context': {'default_type': 'opportunity'}
+        }
+    
 
-
-
+    @api.onchange('stage_id')
+    def _check_won_lost(self):
+        if self.stage_id == self.env.ref('crm.stage_lead4'):
+            if len(self.won_reasons) == 0:
+                raise ValidationError(_("Please use the \"MARK WON\" button or select at least 1 reason."))
