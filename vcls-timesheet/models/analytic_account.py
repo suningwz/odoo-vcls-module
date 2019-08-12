@@ -162,7 +162,7 @@ class AnalyticLine(models.Model):
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
                 record.employee_id = employee
     
-    """
+    
     @api.depends('user_id')
     def _is_authorized_lm(self):
         for record in self:
@@ -174,7 +174,7 @@ class AnalyticLine(models.Model):
                 print(err)
                 # No project / project controller / project manager
                 record.is_authorized = False
-    """
+    
 
     # NEED TO BE REFINED
     @api.depends('so_line')
