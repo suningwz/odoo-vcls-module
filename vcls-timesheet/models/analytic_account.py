@@ -32,7 +32,7 @@ class AnalyticLine(models.Model):
     )
 
     # Used in order to group by client
-    partner_id = fields.Many2one(
+    """partner_id = fields.Many2one(
         'res.partner',
         string = 'Client',
         related = 'project_id.partner_id',
@@ -44,7 +44,7 @@ class AnalyticLine(models.Model):
         string = 'Project Controller',
         related = 'project_id.user_id',
         store = True,
-    )
+    )"""
 
     adjustment_reason_id = fields.Many2one('timesheet.adjustment.reason', string="Adjustment Reason")
 
@@ -58,12 +58,38 @@ class AnalyticLine(models.Model):
 
     internal_comment = fields.Char(string = 'Internal Comment')
 
-    is_authorized = fields.Boolean(
+    """is_authorized = fields.Boolean(
         'LM can see',
         compute = '_is_authorized_lm',
         store = True
+    )"""
+
+    at_risk = fields.Boolean(
+        string = 'Timesheet at risk',
+        compute = '_compute_at_risk',
+        store = True
     )
 
+        # OVERWRITE IN ORDER TO UPDATE LABEL
+    unit_amount_rounded = fields.Float(
+        string="Revised Time",
+        default=0.0,
+        copy=False,
+    )
+
+
+    so_line_unit_price = fields.Float(
+        'Sales Oder Line Unit Price',
+        related = 'so_line.price_unit',
+        store = True
+    )
+
+    so_line_currency_id = fields.Many2one(
+        'res.currency',
+        related = 'so_line.currency_id',
+        store = True,
+        string = 'Sales Order Currency',
+    )
 
     @api.model
     def create(self, vals):
@@ -73,6 +99,7 @@ class AnalyticLine(models.Model):
             if vals['unit_amount'] % 0.25 != 0:
                 vals['unit_amount'] = math.ceil(vals['unit_amount']*4)/4
                 _logger.info("After round {}".format(vals['unit_amount']))
+
         return super(AnalyticLine, self).create(vals)
     
     """ @api.onchange('unit_amount')
@@ -135,6 +162,7 @@ class AnalyticLine(models.Model):
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
                 record.employee_id = employee
     
+    """
     @api.depends('user_id')
     def _is_authorized_lm(self):
         for record in self:
@@ -146,6 +174,16 @@ class AnalyticLine(models.Model):
                 print(err)
                 # No project / project controller / project manager
                 record.is_authorized = False
+    """
+
+    # NEED TO BE REFINED
+    @api.depends('so_line')
+    def _compute_at_risk(self):
+        for record in self:
+            if record.so_line:
+                record.at_risk = False
+            else:
+                record.at_risk = True
 
     @api.onchange('project_id')
     def onchange_project_id(self):

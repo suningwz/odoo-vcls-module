@@ -3,6 +3,7 @@
 from odoo import models, fields, tools, api
 from odoo.exceptions import UserError, ValidationError
 from dateutil.relativedelta import relativedelta
+import math
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -47,7 +48,8 @@ class SaleOrder(models.Model):
                 #we look at other eventual quotations from the same opp
                 prev_quote = self.sudo().with_context(active_test=False).search([('opportunity_id','=',opp_id)])
                 if prev_quote:
-                    vals['name']=opp.name.replace(opp.internal_ref,"{}.{}".format(opp.internal_ref,len(prev_quote)+1))
+                    # vals['name']=opp.name.replace(opp.internal_ref,"{}.{}".format(opp.internal_ref,len(prev_quote)+1))
+                    vals['name'] = self.generate_name(opp.name, len(prev_quote)+1)
                 else:
                     vals['name']=opp.name
                 #default expected_start_date and expected_end_date
@@ -74,4 +76,18 @@ class SaleOrder(models.Model):
        
        
         return super(SaleOrder, self).write(vals)
+
+    @api.model
+    def generate_name(self, name, number):
+        map = {1:'A', 2:'B', 3:'C', 4:'D', 5:'E', 6:'F', 7:'G', 8:'H', 9:'I', 10:'J',
+                11:'K', 12:'L', 13:'M', 14:'O', 15:'P', 16:'Q', 17:'R', 18:'S', 19:'T',
+                20:'U', 21:'V', 22:'W', 23:'X', 24:'Y', 26:'Z'}
+        
+        suffix = ""
+        for i in range(math.ceil(number / 26)):
+            key = number - i * 26
+            suffix += "{}".format(map[key % 26])
+        
+        # need to add scope
+        return name + suffix
 
