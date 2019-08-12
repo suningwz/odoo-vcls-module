@@ -37,7 +37,7 @@ class TimesheetForecastReport(models.Model):
                         'forecast' AS type,
                         'forecast' AS stage_id,
                         0 AS revenue,
-                        'temp' AS rate_product,
+                        F.product_name AS rate_product,
                         F.id AS id
                     FROM generate_series(
                         (SELECT min(start_date) FROM project_forecast WHERE active=true)::date,

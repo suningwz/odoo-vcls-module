@@ -56,13 +56,13 @@ class AnalyticLine(models.Model):
     # Rename description label
     name = fields.Char('External Comment', required=True)
 
-    #internal_comment = fields.Char(string = 'Internal Comment')
+    internal_comment = fields.Char(string = 'Internal Comment')
 
-    """is_authorized = fields.Boolean(
+    is_authorized = fields.Boolean(
         'LM can see',
         compute = '_is_authorized_lm',
         store = True
-    )"""
+    )
 
     at_risk = fields.Boolean(
         string = 'Timesheet at risk',
@@ -162,19 +162,19 @@ class AnalyticLine(models.Model):
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
                 record.employee_id = employee
     
-    """
+    
     @api.depends('user_id')
     def _is_authorized_lm(self):
         for record in self:
             try:
                 resource = self.env['resource.resource'].search([('user_id','=',record.user_id.id)])
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
-                record.is_authorized = self._uid in employee.lm_ids.ids
+                record.is_authorized = self._uid == employee.parent_id.id
             except Exception as err:
                 print(err)
                 # No project / project controller / project manager
                 record.is_authorized = False
-    """
+    
 
     # NEED TO BE REFINED
     @api.depends('so_line')
