@@ -58,11 +58,11 @@ class AnalyticLine(models.Model):
 
     internal_comment = fields.Char(string = 'Internal Comment')
 
-    """is_authorized = fields.Boolean(
+    is_authorized = fields.Boolean(
         'LM can see',
         compute = '_is_authorized_lm',
         store = True
-    )"""
+    )
 
     at_risk = fields.Boolean(
         string = 'Timesheet at risk',
