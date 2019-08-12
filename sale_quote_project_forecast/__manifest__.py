@@ -11,7 +11,6 @@
         'sale_project_timesheet_by_seniority',
         'project_timesheet_forecast',
         'sale_milestone_profile_invoicing',
-        'agreement_sale'
     ],
     'website': 'http://www.camptocamp.com',
     'data': [
