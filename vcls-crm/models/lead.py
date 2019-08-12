@@ -228,6 +228,8 @@ class Leads(models.Model):
         # VCLS MODS
         if lead.type == 'lead':
             lead.message_ids[0].subtype_id = self.env.ref('vcls-crm.lead_creation')
+        elif lead.type == 'opportunity':
+            _logger.info("OPP CREATION")
         # END OF MODS
         return lead
 
