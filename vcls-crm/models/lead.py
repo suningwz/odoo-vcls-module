@@ -447,7 +447,7 @@ class Leads(models.Model):
         #we manage the reference of the opportunity, if we change the type or update an opportunity not having a ref defined
         _logger.info("INTERNAL REF {}".format(vals.get('internal_ref',self.internal_ref)))
         if (vals.get('type',False) == 'opportunity' or self.type == 'opportunity') and not vals.get('internal_ref',self.internal_ref):
-            client = vals.get('partner_id',self.partner_id) #if a new client defined or was already existing
+            client = self.env['res.partner'].browse(vals.get('partner_id',self.partner_id.id)) #if a new client defined or was already existing
             vals['internal_ref']=client._get_new_ref()
 
         _logger.info("{}".format(vals))
