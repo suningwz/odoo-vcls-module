@@ -39,13 +39,6 @@ class AnalyticLine(models.Model):
         store = True,
     )
 
-    project_user_id = fields.Many2one(
-        'res.users',
-        string = 'Project Controller',
-        related = 'project_id.user_id',
-        store = True,
-    )
-
     adjustment_reason_id = fields.Many2one('timesheet.adjustment.reason', string="Adjustment Reason")
 
     time_category_id = fields.Many2one(
@@ -58,19 +51,47 @@ class AnalyticLine(models.Model):
 
     internal_comment = fields.Char(string = 'Internal Comment')
 
-    is_authorized = fields.Boolean(
-        'LM can see',
-        compute = '_is_authorized_lm',
+    at_risk = fields.Boolean(
+        string = 'Timesheet at risk',
+        compute = '_compute_at_risk',
         store = True
     )
 
+        # OVERWRITE IN ORDER TO UPDATE LABEL
+    unit_amount_rounded = fields.Float(
+        string="Revised Time",
+        default=0.0,
+        copy=False,
+    )
+
+
+    so_line_unit_price = fields.Float(
+        'Sales Oder Line Unit Price',
+        related = 'so_line.price_unit',
+        store = True
+    )
+
+    so_line_currency_id = fields.Many2one(
+        'res.currency',
+        related = 'so_line.currency_id',
+        store = True,
+        string = 'Sales Order Currency',
+    )
 
     @api.model
     def create(self, vals):
+        _logger.info("Create {}".format(vals['unit_amount']))
         if 'unit_amount' in vals and vals.get('is_timesheet',False): #do time ceiling for timesheets only
+            _logger.info("Before round {}".format(vals['unit_amount']))
             if vals['unit_amount'] % 0.25 != 0:
                 vals['unit_amount'] = math.ceil(vals['unit_amount']*4)/4
+                _logger.info("After round {}".format(vals['unit_amount']))
+
         return super(AnalyticLine, self).create(vals)
+    
+    """ @api.onchange('unit_amount')
+    def _round_ts(self,rounding=0.25):
+        for ts in self.filtered(lambda r: r.)"""
 
     @api.multi
     def _finalize_lc_review(self):
@@ -128,17 +149,28 @@ class AnalyticLine(models.Model):
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
                 record.employee_id = employee
     
-    @api.depends('user_id')
+    
+    """@api.depends('user_id')
     def _is_authorized_lm(self):
         for record in self:
             try:
                 resource = self.env['resource.resource'].search([('user_id','=',record.user_id.id)])
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
-                record.is_authorized = self._uid in employee.lm_ids.ids
+                record.is_authorized = self._uid == employee.parent_id.id
             except Exception as err:
                 print(err)
                 # No project / project controller / project manager
-                record.is_authorized = False
+                record.is_authorized = False"""
+    
+
+    # NEED TO BE REFINED
+    @api.depends('so_line')
+    def _compute_at_risk(self):
+        for record in self:
+            if record.so_line:
+                record.at_risk = False
+            else:
+                record.at_risk = True
 
     @api.onchange('project_id')
     def onchange_project_id(self):
