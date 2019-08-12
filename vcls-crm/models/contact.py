@@ -158,6 +158,7 @@ class ContactExt(models.Model):
         else:
             reference = "{}-{:03}".format(company.altname, company.core_process_index+1)
             company.core_process_index += 1
+            print(reference)
             return reference
 
     
