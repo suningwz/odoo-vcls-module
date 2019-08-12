@@ -121,10 +121,9 @@ class Leads(models.Model):
 
     internal_ref = fields.Char(
         string="Ref",
-        #readonly = True,
         store = True,
-        compute = '_compute_internal_ref',
-        inverse = '_set_internal_ref',
+        #compute = '_compute_internal_ref',
+        #inverse = '_set_internal_ref',
     )
     
     technical_adv_id = fields.Many2one(
@@ -265,12 +264,17 @@ class Leads(models.Model):
             else:
                 lead.age = "{} days old".format(delta.days)
     
-    @api.onchange('name')
+    #if we change the partner_id, then we clean the ref to trigger a new creation at save
+    @api.onchange('partner_id')
+    def _clear_ref(self):
+        for lead in self:
+            lead.internal_ref = False
+    
+    """@api.onchange('name')
     def _onchange_name(self):
         for lead in self:
             if lead.type == 'opportunity' and lead.internal_ref:
-                lead.name_to_internal_ref(False)
-
+                lead._ref_in_name()"""
 
     
     """@api.onchange('partner_id','country_id')
@@ -278,7 +282,7 @@ class Leads(models.Model):
         for lead in self:
             lead.user_id = lead.guess_am()"""
     
-    @api.depends('partner_id','type')
+    """@api.depends('partner_id','type')
     def _compute_internal_ref(self):
         for lead in self:
             if lead.partner_id and lead.type=='opportunity': #we compute a ref only for opportunities, not lead
@@ -289,9 +293,9 @@ class Leads(models.Model):
                     _logger.info("_compute_internal_ref: Core Process increment for {} from {} to {}".format(lead.partner_id.name,lead.partner_id.core_process_index,next_index))
                     #lead.partner_id.write({'core_process_index': next_index})
                     lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname,next_index)
-                    lead.name_to_internal_ref(False)
+                    lead.name_to_internal_ref(False)"""
                     
-    @api.onchange('internal_ref')
+    """ @api.onchange('internal_ref')
     def _set_internal_ref(self):
         for lead in self:
             #format checking
@@ -309,7 +313,7 @@ class Leads(models.Model):
 
             except:
                 _logger.warning("Bad Lead Reference syntax: {}".format(lead.internal_ref))
-                #lead.internal_ref = False
+                #lead.internal_ref = False"""
 
 
     ################
@@ -324,8 +328,9 @@ class Leads(models.Model):
         #elif self.team_id.
         else:
             return False
+    
 
-    def name_to_internal_ref(self,write_ref = False):
+    """def name_to_internal_ref(self,write_ref = False):
         for lead in self:
             if lead.type == 'opportunity':
                 #we verify if the format is matching expectations
@@ -343,7 +348,7 @@ class Leads(models.Model):
                         lead.name = "{} | {}".format(lead.internal_ref,lead.name)
 
                 except:
-                    _logger.info("Unable to extract ref from opp name {}".format(lead.name))
+                    _logger.info("Unable to extract ref from opp name {}".format(lead.name))"""
 
 
     @api.multi

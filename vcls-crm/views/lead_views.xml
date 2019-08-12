@@ -233,7 +233,8 @@
                         <field name="client_product_ids" widget="many2many_tags"/>
                         <field name="description" string="Scope of work" widget="html"/>
                     </group>
-                </page>   
+                </page>
+                <!--
                 <page name="resources" string="Resources">
                     <group>
                         <field name="resources_ids">
@@ -244,6 +245,7 @@
                         </field>
                     </group>
                 </page>
+                -->
                 <page string="Internal Notes" modifiers="{}">
 				    <field name="description" modifiers="{}"/>
 			    </page>
