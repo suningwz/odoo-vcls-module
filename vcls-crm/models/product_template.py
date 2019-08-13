@@ -44,6 +44,7 @@ class ProductTemplate(models.Model):
 class Product(models.Model):
 
     _inherit = 'product.product'
+    
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         vcls_search = self._context.get('vcls_search')

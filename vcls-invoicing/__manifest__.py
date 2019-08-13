@@ -37,7 +37,8 @@
         'data/risk_type.xml',
         'views/sale_views.xml',
         'views/invoice_views.xml',
-        'views/contact_views.xml'
+        'views/contact_views.xml',
+        'wizard/sale_make_invoice_advance_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
