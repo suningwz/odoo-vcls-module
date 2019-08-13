@@ -66,7 +66,7 @@ class TimesheetForecastReport(models.Model):
                         -A.id AS id
                     FROM hr_employee E, ((account_analytic_line A
                     LEFT JOIN sale_order_line S ON A.so_line = S.id)
-                    LEFT JOIN product_product P ON S.product_id = P.id)
+                    LEFT JOIN product_template P ON S.product_id = P.id)
                     WHERE A.project_id IS NOT NULL
                         AND A.employee_id = E.id
                 )

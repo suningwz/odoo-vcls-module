@@ -5,6 +5,7 @@ from odoo import api, fields, models
 class TimesheetForecastReport(models.Model):
 
     _name = "timesheet.report"
+    _description = "Timesheet Reports"
     _auto=False
 
     # NEEDED FIELDS
