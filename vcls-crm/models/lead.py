@@ -461,9 +461,10 @@ class Leads(models.Model):
             client = self.env['res.partner'].browse(vals.get('partner_id',self.partner_id.id)) #if a new client defined or was already existing
             if client:
                 vals['internal_ref']=client._get_new_ref()[0]
-                vals['name']=self.build_opp_name(vals['internal_ref'],vals['name'])
             else:
                 vals['internal_ref']=False
+        
+        vals['name']=self.build_opp_name(vals.get('internal_ref',self.internal_ref),vals.get('name',self.name))
 
         _logger.info("{}".format(vals))
         return super(Leads, self).write(vals)
