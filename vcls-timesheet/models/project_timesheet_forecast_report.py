@@ -29,7 +29,7 @@ class TimesheetForecastReport(models.Model):
             CREATE or REPLACE VIEW %s as (
                 (
                     SELECT
-                        NULL AS date,
+                        d::date AS date,
                         F.employee_id AS employee_id,
                         F.task_id AS task_id,
                         F.project_id AS project_id,
@@ -40,8 +40,8 @@ class TimesheetForecastReport(models.Model):
                         'temp' AS rate_product,
                         F.id AS id
                     FROM generate_series(
-                        (SELECT min(start_date) FROM project_forecast WHERE active=true)::date,
-                        (SELECT max(end_date) FROM project_forecast WHERE active=true)::date,
+                        TO_DATE('date', '2000/01/01'),
+                        TO_DATE('date', '2100/12/31'),
                         '1 day'::interval
                     ) d
                         LEFT JOIN project_forecast F ON d.date >= F.start_date AND d.date <= end_date
@@ -66,7 +66,7 @@ class TimesheetForecastReport(models.Model):
                         -A.id AS id
                     FROM hr_employee E, ((account_analytic_line A
                     LEFT JOIN sale_order_line S ON A.so_line = S.id)
-                    LEFT JOIN product_product P ON S.product_id = P.id)
+                    LEFT JOIN product_template P ON S.product_id = P.id)
                     WHERE A.project_id IS NOT NULL
                         AND A.employee_id = E.id
                 )
