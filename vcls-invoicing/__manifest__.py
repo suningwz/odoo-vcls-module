@@ -26,7 +26,6 @@
                 'account',
                 'sale_timesheet_limit_date',
                 'sale_timesheet_rounded',
-                'sale_merge_draft_invoice',
                 ],
 
     # always loaded
