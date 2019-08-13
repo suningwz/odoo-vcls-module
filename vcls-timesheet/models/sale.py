@@ -38,8 +38,8 @@ class SaleOrder(models.Model):
                                                                                     'stage_id':stage_id, 
                                                                                     'active':True}).id
 
-class ProductProduct(models.Model):
-    _inherit = 'product.product'
+class ProductTemplate(models.Model):
+    _inherit = 'product.template'
 
     name = fields.Char(
         store = True
