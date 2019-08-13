@@ -52,6 +52,7 @@
                 <field name="risk_level"/>
                 <field name="last_notification"/>
                 <field name="score"/>
+                <button string="Record" class="oe_highlight" name = 'go_to_record' type = 'object' />
             </tree>
         </field>
     </record>
@@ -149,6 +150,10 @@
                     type="object" class="oe_highlight" 
                     attrs="{'invisible': [('risk_raised','=',True)]}"
                     />
+            </xpath>
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" type="object" name="open_related_risks" icon="fa-exclamation-triangle" attrs="{'invisible': [('risk_raised','=',False)]}" string="Related Risk(s)" />
             </xpath>
             
         </field>
