@@ -234,7 +234,7 @@ class Leads(models.Model):
         if lead.type == 'lead':
             lead.message_ids[0].subtype_id = self.env.ref('vcls-crm.lead_creation')
         elif lead.type == 'opportunity' and lead.partner_id:
-            lead.write()
+            lead.write({'type':'opportunity'})
             #lead.internal_ref = lead.partner_id._get_new_ref()
             #lead.name = lead.build_opp_name(lead.internal_ref,lead.name)
         # END OF MODS
