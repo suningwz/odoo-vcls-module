@@ -2,7 +2,7 @@ from odoo import api, fields, models, _
 
 
 class SaleAdvancePaymentInv(models.TransientModel):
-    _inherit_id = "sale.advance.payment.inv"
+    _inherit = "sale.advance.payment.inv"
 
     group_invoice_method = fields.Selection([('one', 'Only this order'),
                                              ('project', 'project'),
