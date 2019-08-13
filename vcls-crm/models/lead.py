@@ -233,9 +233,9 @@ class Leads(models.Model):
         # VCLS MODS
         if lead.type == 'lead':
             lead.message_ids[0].subtype_id = self.env.ref('vcls-crm.lead_creation')
-        elif lead.type == 'opportunity':
+        elif lead.type == 'opportunity' and lead.partner_id:
             lead.internal_ref = lead.partner_id._get_new_ref()
-            lead.name = lead.build_opp_name(lead.internal_ref,lead.name)
+            #lead.name = lead.build_opp_name(lead.internal_ref,lead.name)
         # END OF MODS
         return lead
 
@@ -279,11 +279,11 @@ class Leads(models.Model):
             lead.internal_ref = False
             
     
-    """@api.onchange('name')
+    @api.onchange('name')
     def _onchange_name(self):
         for lead in self:
             if lead.type == 'opportunity' and lead.internal_ref:
-                lead._ref_in_name()"""
+                lead.name = lead.build_opp_name(lead.internal_ref,leaed.name)
 
     
     """@api.onchange('partner_id','country_id')
