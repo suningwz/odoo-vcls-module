@@ -73,7 +73,7 @@ class SaleOrder(models.Model):
     @api.multi
     def upsell(self):
         for rec in self:
-            new_order = rec.copy()
+            new_order = rec.copy({'order_line': False})
             pending_section = None
             for line in rec.order_line:
                 if line.display_type == 'line_section':
@@ -88,6 +88,14 @@ class SaleOrder(models.Model):
                     line.copy({'order_id': new_order.id,
                                'project_id': line.project_id.id,
                                'analytic_line_ids': [(6, 0, line.analytic_line_ids.ids)]})
+        return {
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'sale.order',
+                'target': 'current',
+                'res_id': rec.id,
+            }
 
 
 class SaleOrderLine(models.Model):
