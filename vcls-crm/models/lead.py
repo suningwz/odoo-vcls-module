@@ -235,6 +235,7 @@ class Leads(models.Model):
             lead.message_ids[0].subtype_id = self.env.ref('vcls-crm.lead_creation')
         elif lead.type == 'opportunity':
             lead.internal_ref = lead.partner_id._get_new_ref()
+            lead.name = lead.build_opp_name(lead.internal_ref,lead.name)
         # END OF MODS
         return lead
 
@@ -337,6 +338,18 @@ class Leads(models.Model):
         else:
             return False
     
+    def build_opp_name(self,reference=False,name=False):
+        try:
+            #if the name already contains the ref
+            offset = name.upper().find(reference.upper())
+            if offset == -1 and reference:
+                return = "{} | {}".format(reference,name)
+            else:
+                return name
+
+        except:
+            _logger.info("Unable to extract ref from opp name {}".format(lead.name))
+            return name
 
     """def name_to_internal_ref(self,write_ref = False):
         for lead in self:
@@ -443,11 +456,12 @@ class Leads(models.Model):
                 vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
 
         #we manage the reference of the opportunity, if we change the type or update an opportunity not having a ref defined
-        _logger.info("INTERNAL REF {}".format(vals.get('internal_ref',self.internal_ref)))
+        #_logger.info("INTERNAL REF {}".format(vals.get('internal_ref',self.internal_ref)))
         if (vals.get('type',False) == 'opportunity' or self.type == 'opportunity') and not vals.get('internal_ref',self.internal_ref):
             client = self.env['res.partner'].browse(vals.get('partner_id',self.partner_id.id)) #if a new client defined or was already existing
             if client:
                 vals['internal_ref']=client._get_new_ref()[0]
+                vals['name']=self.build_opp_name(vals['internal_ref'],vals['name'])
             else:
                 vals['internal_ref']=False
 
