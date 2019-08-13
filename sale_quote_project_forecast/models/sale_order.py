@@ -82,6 +82,9 @@ class SaleOrder(models.Model):
                 elif line.product_id.type == 'service' and \
                     line.product_id.service_policy == 'delivered_timesheet' and \
                     line.product_id.service_tracking in ('no', 'project_only'):
+                    if pending_section:
+                        pending_section.copy({'order_id': new_order.id})
+                        pending_section = None
                     line.copy({'order_id': new_order.id,
                                'project_id': line.project_id.id,
                                'analytic_line_ids': [(6, 0, line.analytic_line_ids.ids)]})
