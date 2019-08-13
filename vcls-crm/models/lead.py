@@ -234,10 +234,32 @@ class Leads(models.Model):
         if lead.type == 'lead':
             lead.message_ids[0].subtype_id = self.env.ref('vcls-crm.lead_creation')
         elif lead.type == 'opportunity' and lead.partner_id:
-            lead.internal_ref = lead.partner_id._get_new_ref()
+            lead.write()
+            #lead.internal_ref = lead.partner_id._get_new_ref()
             #lead.name = lead.build_opp_name(lead.internal_ref,lead.name)
         # END OF MODS
         return lead
+    
+    def write(self, vals):
+        if (vals.get('type',False) == 'lead' or self.type == 'lead'):
+            if vals.get('contact_name', False) and vals.get('contact_lastname', False) and vals.get('contact_middlename', False):
+                    vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
+            elif vals.get('contact_name', False) and vals.get('contact_lastname', False):
+                    vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
+
+        #we manage the reference of the opportunity, if we change the type or update an opportunity not having a ref defined
+        #_logger.info("INTERNAL REF {}".format(vals.get('internal_ref',self.internal_ref)))
+        if (vals.get('type',False) == 'opportunity' or self.type == 'opportunity') and not vals.get('internal_ref',self.internal_ref):
+            client = self.env['res.partner'].browse(vals.get('partner_id',self.partner_id.id)) #if a new client defined or was already existing
+            if client:
+                vals['internal_ref']=client._get_new_ref()[0]
+            else:
+                vals['internal_ref']=False
+        
+        vals['name']=self.build_opp_name(vals.get('internal_ref',self.internal_ref),vals.get('name',self.name))
+
+        _logger.info("{}".format(vals))
+        return super(Leads, self).write(vals)
 
     ###################
     # COMPUTE METHODS #
@@ -283,7 +305,7 @@ class Leads(models.Model):
     def _onchange_name(self):
         for lead in self:
             if lead.type == 'opportunity' and lead.internal_ref:
-                lead.name = lead.build_opp_name(lead.internal_ref,leaed.name)
+                lead.name = lead.build_opp_name(lead.internal_ref,lead.name)
 
     
     """@api.onchange('partner_id','country_id')
@@ -449,27 +471,7 @@ class Leads(models.Model):
                 res = lead.contact_name + " " + lead.contact_lastname
                 lead.name = res
     
-    def write(self, vals):
-        if vals.get('contact_name', False) and vals.get('contact_lastname', False) and vals.get('contact_middlename', False):
-                vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
-        elif vals.get('contact_name', False) and vals.get('contact_lastname', False):
-                vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
-
-        #we manage the reference of the opportunity, if we change the type or update an opportunity not having a ref defined
-        #_logger.info("INTERNAL REF {}".format(vals.get('internal_ref',self.internal_ref)))
-        if (vals.get('type',False) == 'opportunity' or self.type == 'opportunity') and not vals.get('internal_ref',self.internal_ref):
-            client = self.env['res.partner'].browse(vals.get('partner_id',self.partner_id.id)) #if a new client defined or was already existing
-            if client:
-                vals['internal_ref']=client._get_new_ref()[0]
-            else:
-                vals['internal_ref']=False
-        
-        vals['name']=self.build_opp_name(vals.get('internal_ref',self.internal_ref),vals.get('name',self.name))
-
-        _logger.info("{}".format(vals))
-        return super(Leads, self).write(vals)
     
-    #def _vals_to_name
     
     def all_campaigns_pop_up(self):
         model_id = self.env['ir.model'].search([('model','=','crm.lead')], limit = 1)
