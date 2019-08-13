@@ -235,8 +235,7 @@ class Leads(models.Model):
             lead.message_ids[0].subtype_id = self.env.ref('vcls-crm.lead_creation')
         elif lead.type == 'opportunity' and lead.partner_id:
             lead.write({'type':'opportunity'})
-            #lead.internal_ref = lead.partner_id._get_new_ref()
-            #lead.name = lead.build_opp_name(lead.internal_ref,lead.name)
+           
         # END OF MODS
         return lead
     
@@ -370,7 +369,7 @@ class Leads(models.Model):
                 return name
 
         except:
-            _logger.info("Unable to extract ref from opp name {}".format(lead.name))
+            _logger.info("Unable to extract ref from opp name {}".format(name))
             return name
 
     """def name_to_internal_ref(self,write_ref = False):
