@@ -37,6 +37,13 @@ class SaleOrder(models.Model):
     expected_start_date = fields.Date()
     expected_end_date = fields.Date()
 
+    user_id = fields.Many2one(
+        'res.users', 
+        track_visibility='onchange', 
+        domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
+    )
+    
+
     @api.model
     def create(self, vals):
 

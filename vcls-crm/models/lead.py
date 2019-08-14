@@ -52,7 +52,7 @@ class Leads(models.Model):
         'res.users', 
         string='Account Manager', 
         track_visibility='onchange', 
-        #default='_default_am',
+        domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
         )
     
     company_id = fields.Many2one(default = '')
