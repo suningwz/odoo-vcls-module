@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-    
+        <!-- 
+        MENUS 
+        ##### -->
+
         <!-- Root Menu -->
         <menuitem
             id="menu_bd_root"
@@ -11,30 +14,124 @@
             active="True"
             groups="vcls-hr.vcls_group_superuser_lvl1"
         />
-        <!--
-        <record id="menu_bd_root" model="ir.ui.menu">
-                <field name="name">BD</field>
-                <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1'))]"/>
-                <field name="sequence">7</field>
-                <field name="active" eval="True"/>
-                <field name="web_icon" eval="vcls-crm,static/description/icon.png"/>    
-        </record> -->
-
-        <!-- Opportunities -->
+        
+        <!-- Main Objects -->
         <menuitem
             id="menu_bd_opp_main"
             name="Opportunities"
             parent="menu_bd_root"
+            action="crm.crm_lead_opportunities_tree_view"
             sequence="3"
         />
 
         <menuitem
-            id="menu_bd_opp_pipeline"
-            name="Opportunities Pipeline"
-            parent="menu_bd_opp_main"
-            action="crm.crm_lead_opportunities_tree_view"
+            id="menu_bd_lead_main"
+            name="Leads"
+            parent="menu_bd_root"
+            action="crm.crm_lead_all_leads"
+            sequence="6"
+        />
+
+        <menuitem
+            id="menu_bd_sales_main"
+            name="Quotations"
+            parent="menu_bd_root"
+            action="sale.action_quotations"
+            sequence="9"
+        />
+
+        <menuitem
+            id="menu_bd_client_main"
+            name="Clients"
+            parent="menu_bd_root"
+            action="vcls-contact.action_accounts"
+            sequence="12"
+        />
+
+        <!-- Reporting -->
+        <menuitem
+            id="menu_bd_rep_main"
+            name="Reporting"
+            parent="menu_bd_root"
+            sequence="15"
+        />
+
+        <menuitem
+            id="menu_bd_rep_activities"
+            name="Activities"
+            parent="menu_bd_rep_main"
+            action="crm.crm_activity_report_action"
+            sequence="1"
+        />
+
+        <menuitem
+            id="menu_bd_rep_opp"
+            name="Opportunities"
+            parent="menu_bd_rep_main"
+            action="crm_enterprise.crm_opportunity_action_dashboard"
             sequence="3"
         />
+
+        <menuitem
+            id="menu_bd_rep_leads"
+            name="Leads"
+            parent="menu_bd_rep_main"
+            action="crm_enterprise.crm_lead_action_dashboard"
+            sequence="6"
+        />
+
+        <menuitem
+            id="menu_bd_rep_sales"
+            name="Quotations"
+            parent="menu_bd_rep_main"
+            action="sale_enterprise.sale_report_action_dashboard"
+            sequence="9"
+        />
+
+        <!-- Configuration -->
+        <menuitem
+            id="menu_bd_conf_main"
+            name="Configuration"
+            parent="menu_bd_root"
+            sequence="18"
+        />
+
+        <menuitem
+            id="menu_bd_conf_team"
+            name="Team Management"
+            parent="menu_bd_conf_main"
+            sequence="3"
+        />
+
+        <menuitem
+            id="menu_bd_conf_segmentation"
+            name="Segmentation Fields"
+            parent="menu_bd_conf_main"
+            sequence="6"
+        />
+
+        <menuitem
+            id="menu_bd_conf_opp"
+            name="Opportunity"
+            parent="menu_bd_conf_main"
+            sequence="9"
+        />
+
+        <menuitem
+            id="menu_bd_conf_lead"
+            name="Lead"
+            parent="menu_bd_conf_main"
+            sequence="12"
+        />
+
+        <!-- 
+        ACTIONS 
+        ##### -->
+
+        <!-- Opp pipeline renaming -->
+        <record id="crm.crm_lead_opportunities_tree_vie" model="ir.actions.act_window">
+            <field name="name">Opportunities Pipeline</field>
+        </record>
 
     </data>
 </odoo>
