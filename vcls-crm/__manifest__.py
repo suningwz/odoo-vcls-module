@@ -40,7 +40,8 @@
                 'crm_lead_currency',
                 'vcls-hr',
                 'crm_lead_firstname',
-                'marketing_automation'
+                'marketing_automation',
+                'vcls-risk',
                 ],
 
     # always loaded
@@ -53,6 +54,7 @@
         #'security/vcls_groups.xml',
         'security/ir.model.access.csv',
         'security/lead_rules.xml',
+        'security/security_groups.xml',
 
         ### VIEWS ###
         'views/dropdown_views.xml',
@@ -75,6 +77,7 @@
         'data/partner.relation.type.csv',
         'data/product.pricelist.csv',
         'data/message_subtype.xml',
+        'data/risk_type.xml',
 
     ],
     # only loaded in demonstration mode
