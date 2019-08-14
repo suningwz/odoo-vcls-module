@@ -519,3 +519,20 @@ class Leads(models.Model):
         if self.stage_id == self.env.ref('crm.stage_lead4'):
             if len(self.won_reasons) == 0:
                 raise ValidationError(_("Please use the \"MARK WON\" button or select at least 1 reason."))
+    
+    risk_raised = fields.Boolean(default = False)
+
+    def raise_go_nogo(self):
+        for record in self:
+            self.env['risk']._raise_risk(self.env.ref('vcls-crm.risk_go_nogo'), '{},{}'.format(record._name, record.id))
+            record.risk_raised = True
+            
+    def open_related_risks(self):
+        return {
+            'name': 'All related risk(s)',
+            'view_mode': 'tree',
+            'target': 'new',
+            'res_model': 'risk',
+            'type': 'ir.actions.act_window',
+            'domain': "[('resource','=', '{},{}')]".format(self._name, self.id)
+        }

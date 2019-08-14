@@ -7,7 +7,7 @@ class TimesheetForecastReport(models.Model):
     _inherit = "project.timesheet.forecast.report.analysis"
 
     stage_id = fields.Selection([
-        ('forecast', 'Forecast'),
+        ('forecast', 'Budget'),
         ('draft', 'Draft'), 
         ('lc_review', 'LC review'), 
         ('pc_review', 'PC review'), 
@@ -20,6 +20,8 @@ class TimesheetForecastReport(models.Model):
     revenue = fields.Float('Revenue', readonly=True)
 
     rate_product = fields.Char('Rate Product', readonly = True)
+
+    date = fields.Boolean() # Override existing field
     
     # EDIT SQL REQUEST IN ORDER TO GET STAGE & REVENUE
     @api.model_cr
@@ -29,7 +31,7 @@ class TimesheetForecastReport(models.Model):
             CREATE or REPLACE VIEW %s as (
                 (
                     SELECT
-                        d::date AS date,
+                        True AS date,
                         F.employee_id AS employee_id,
                         F.task_id AS task_id,
                         F.project_id AS project_id,
@@ -54,7 +56,7 @@ class TimesheetForecastReport(models.Model):
                         AND F.active=true
                 ) UNION (
                     SELECT
-                        A.date AS data,
+                        True AS date,
                         E.id AS employee_id,
                         A.task_id AS task_id,
                         A.project_id AS project_id,
