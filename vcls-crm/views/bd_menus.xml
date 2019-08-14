@@ -66,7 +66,7 @@
 
         <menuitem
             id="menu_bd_rep_activities"
-            name="Activities"
+            name="BD Activities"
             parent="menu_bd_rep_main"
             action="crm.crm_activity_report_action"
             sequence="1"
@@ -272,6 +272,11 @@
         <!-- Opp pipeline renaming -->
         <record id="crm.crm_lead_opportunities_tree_view" model="ir.actions.act_window">
             <field name="name">Opportunities Pipeline</field>
+        </record>
+
+        <!-- Quotations on KanBan by default -->
+        <record id="sale.action_quotations" model="ir.actions.act_window">
+            <field name="view_id" ref="sale.view_sale_order_kanban"/>
         </record>
 
     </data>
