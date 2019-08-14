@@ -8,7 +8,7 @@
                 <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1'))]"/>
                 <field name="sequence">7</field>
                 <field name="active" eval="True"/>
-                <field name="web_icon" eval="sale,static/description/icon.png"/>    
+                <field name="web_icon" eval="vcls-crm,static/description/icon.png"/>    
         </record>
 
         <!-- Opportunities -->
