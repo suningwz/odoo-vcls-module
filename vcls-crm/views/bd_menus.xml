@@ -276,7 +276,8 @@
 
         <!-- Quotations on KanBan by default -->
         <record id="sale.action_quotations" model="ir.actions.act_window">
-            <field name="view_id" ref="sale.view_sale_order_kanban"/>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity</field>
         </record>
 
     </data>
