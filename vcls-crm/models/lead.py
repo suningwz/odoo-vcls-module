@@ -18,6 +18,17 @@ class ResoucesLeads(models.Model):
         'hr.project_role', string='Seniority')
     number = fields.Float('Number')
 
+class LeadStage(models.Model):
+    _name = 'crm.lead.stage'
+    _description = 'stage for lead'
+    name = fields.Char(
+        required = True,
+        string = 'Name'
+    )
+    
+    active = fields.Boolean(default = True)
+
+
 class Leads(models.Model):
 
     _inherit = 'crm.lead'
@@ -36,6 +47,11 @@ class Leads(models.Model):
         related = 'partner_id.opted_out',
         string = 'Opted Out'
     )
+
+    #################
+    # CUSTOM FIELDS #
+    #################
+    lead_stage_id = fields.Many2one('crm.lead.stage', string = 'Lead Stage', default = lambda self: self.env.ref('vcls-crm.lead_open'))
 
     # KEEP CAMPAIGN_ID -> FIRST CONTACT
     #campaign_ids = fields.Many2many('utm.campaign', string = 'Campaings')
