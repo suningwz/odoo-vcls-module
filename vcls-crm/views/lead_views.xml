@@ -177,6 +177,18 @@
                 <field name="internal_ref" readonly="0" style="color:#08206E;"/>
             </field>
 
+            <xpath expr="//header" position="inside">
+                <field name='risk_raised' invisible = '1' />
+                <button name="raise_go_nogo" string="Go/NoGo required"
+                    type="object" class="oe_highlight" 
+                    attrs="{'invisible': [('risk_raised','=',True)]}"
+                    />
+            </xpath>
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" type="object" name="open_related_risks" icon="fa-exclamation-triangle" attrs="{'invisible': [('risk_raised','=',False)]}" string="Related Risk(s)" />
+            </xpath>
+
                
             
             <field name="user_id" position="replace" />
@@ -661,6 +673,7 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('crm.crm_case_form_view_leads')}),
             ]"/>
         </record>
+                
 
     </data>
 </odoo>
