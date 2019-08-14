@@ -19,7 +19,7 @@
 
 
 
-    'version': '1.10.0',
+    'version': '1.11.0',
 
 
 
@@ -69,6 +69,7 @@
         ### MENUS ###
         'views/lead_menus.xml',
         'views/partner_relation_menus.xml',
+        'views/bd_menus.xml',
 
         ### RECORDS DATA ###
         'data/partner.relation.type.csv',
