@@ -94,7 +94,7 @@ class SaleOrder(models.Model):
                 'view_mode': 'form',
                 'res_model': 'sale.order',
                 'target': 'current',
-                'res_id': rec.id,
+                'res_id': new_order.id,
             }
 
 
