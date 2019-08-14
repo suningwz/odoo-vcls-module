@@ -19,6 +19,8 @@
                             <field name="partner_shipping_id" string="Deliverable Address" invisible="0" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'delivery'}" options="{&quot;always_reload&quot;: True}"/>
                             <field name="validity_date" attrs="{'invisible': [('state', 'in', ['sale', 'done'])]}"/>
                             <field name="confirmation_date" attrs="{'invisible': [('state', 'in', ['draft', 'sent', 'cancel'])]}"/>
+                            <field name="opportunity_id" required="1" domain="[('partner_id','child_of',partner_id)]"/>
+                            <field name="program_id" options="{'no_create': True}" domain="[('client_id','=',partner_id)]"/>
                         </group>
 
                         <group string="Invoicing">
