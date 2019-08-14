@@ -19,7 +19,7 @@
                             <field name="partner_shipping_id" string="Deliverable Address" invisible="0" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'delivery'}" options="{&quot;always_reload&quot;: True}"/>
                             <field name="validity_date" attrs="{'invisible': [('state', 'in', ['sale', 'done'])]}"/>
                             <field name="confirmation_date" attrs="{'invisible': [('state', 'in', ['draft', 'sent', 'cancel'])]}"/>
-                            <field name="opportunity_id" required="1" domain="[('partner_id','child_of',partner_id)]"/>
+                            <field name="opportunity_id" string="Related Opportunity" required="1" domain="[('partner_id','=',partner_id)]" options="{'no_create': True}"/>
                         </group>
 
                         <group string="Invoicing">
@@ -49,6 +49,10 @@
                 <xpath expr="//field[@name='order_line']//tree/field[@name='product_id']" position="replace">
                     <field name="product_id" options="{'no_create_edit':True}" attrs="{'readonly': [('product_updatable', '=', False)],'required': [('display_type', '=', False)],}" force_save="1"
                     context="{'search_default_group_category':1,'search_default_group_info':1,'tree_view_ref':'vcls-crm.product_tree_view','partner_id': parent.partner_id,'quantity': product_uom_qty,'pricelist': parent.pricelist_id,'uom':product_uom,'company_id': parent.company_id,'default_lst_price': price_unit,'default_description_sale': name,'vcls_search': True,'business_mode':parent.business_mode,'business_line':parent.product_category_id,'deliverable_id':parent.deliverable_id }"/>
+                </xpath>
+
+                <xpath expr="//page/field[@name='sale_order_option_ids']/.." position="attributes">
+                    <attribute name="invisible">1</attribute>
                 </xpath>
 
             </field>
@@ -85,16 +89,15 @@
             </field>
         </record>
 
+        <!-- 
         <record id="sale_order_form" model="ir.ui.view">
         <field name="name">sale.order.form</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//page/field[@name='sale_order_option_ids']/.." position="attributes">
-                <attribute name="invisible">1</attribute>
-            </xpath>
+            
         </field>
-        </record>
+        </record>-->
 
         <record id="sale.view_sale_order_calendar" model="ir.ui.view">
             <field name="name">quotation_calendar</field>
