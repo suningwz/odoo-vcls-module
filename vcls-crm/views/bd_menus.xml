@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- 
+        MENUS 
+        ##### -->
+
+        <!-- Root Menu -->
+        <menuitem
+            id="menu_bd_root"
+            name="BD"
+            web_icon="vcls-crm,static/description/icon.png"
+            sequence="7"
+            active="True"
+            groups="vcls-hr.vcls_group_superuser_lvl1"
+        />
+        
+        <!-- Main Objects -->
+        <menuitem
+            id="menu_bd_opp_main"
+            name="Opportunities"
+            parent="menu_bd_root"
+            action="crm.crm_lead_opportunities_tree_view"
+            sequence="3"
+        />
+
+        <menuitem
+            id="menu_bd_lead_main"
+            name="Leads"
+            parent="menu_bd_root"
+            action="crm.crm_lead_all_leads"
+            sequence="6"
+        />
+
+        <menuitem
+            id="menu_bd_sales_main"
+            name="Quotations"
+            parent="menu_bd_root"
+            action="sale.action_quotations"
+            sequence="9"
+        />
+
+        <menuitem
+            id="menu_bd_client_main"
+            name="Clients"
+            parent="menu_bd_root"
+            action="vcls-contact.action_accounts"
+            sequence="12"
+        />
+
+        <menuitem
+            id="menu_bd_product_main"
+            name="Product Catalog"
+            parent="menu_bd_root"
+            action="sale.product_template_action"
+            sequence="13"
+        />
+
+        <!-- Reporting -->
+        <menuitem
+            id="menu_bd_rep_main"
+            name="Reporting"
+            parent="menu_bd_root"
+            sequence="15"
+        />
+
+        <menuitem
+            id="menu_bd_rep_activities"
+            name="Activities"
+            parent="menu_bd_rep_main"
+            action="crm.crm_activity_report_action"
+            sequence="1"
+        />
+
+        <menuitem
+            id="menu_bd_rep_opp"
+            name="Opportunities"
+            parent="menu_bd_rep_main"
+            action="crm_enterprise.crm_opportunity_action_dashboard"
+            sequence="3"
+        />
+
+        <menuitem
+            id="menu_bd_rep_leads"
+            name="Leads"
+            parent="menu_bd_rep_main"
+            action="crm_enterprise.crm_lead_action_dashboard"
+            sequence="6"
+        />
+
+        <menuitem
+            id="menu_bd_rep_sales"
+            name="Quotations"
+            parent="menu_bd_rep_main"
+            action="sale_enterprise.sale_report_action_dashboard"
+            sequence="9"
+        />
+
+        <!-- CONFIGURATION -->
+        <menuitem
+            id="menu_bd_conf_main"
+            name="Configuration"
+            parent="menu_bd_root"
+            sequence="18"
+        />
+
+        <!-- Teams -->
+        <menuitem
+            id="menu_bd_conf_management"
+            name="Department Management"
+            parent="menu_bd_conf_main"
+            sequence="3"
+        />
+
+        <menuitem
+            id="menu_bd_conf_team"
+            name="Teams"
+            parent="menu_bd_conf_management"
+            action="website_crm_score.team_action"
+            sequence="3"
+        />
+
+        <menuitem
+            id="menu_bd_conf_activities"
+            name="Activity Types"
+            parent="menu_bd_conf_management"
+            action="sales_team.mail_activity_type_action_config_sales"
+            sequence="6"
+        />
+	
+
+        <!-- Segmentation -->
+        <menuitem
+            id="menu_bd_conf_segmentation"
+            name="Segmentation Fields"
+            parent="menu_bd_conf_main"
+            sequence="6"
+        />
+
+        <menuitem
+            id="menu_bd_conf_country_groups"
+            name="Country Groups"
+            parent="menu_bd_conf_segmentation"
+            action="base.action_country_group"
+            sequence="3"
+        />
+
+        <menuitem
+            id="menu_bd_conf_industry"
+            name="Client Industry"
+            parent="menu_bd_conf_segmentation"
+            action="base.res_partner_industry_action"
+            sequence="6"
+        />
+
+        <menuitem
+            id="menu_bd_conf_activity"
+            name="Client Activity"
+            parent="menu_bd_conf_segmentation"
+            action="vcls-contact.action_client_activity"
+            sequence="9"
+        />
+
+        <menuitem
+            id="menu_bd_conf_product"
+            name="Client Product"
+            parent="menu_bd_conf_segmentation"
+            action="vcls-contact.action_client_product"
+            sequence="12"
+        />
+
+        <menuitem
+            id="menu_bd_conf_therapeutic_area"
+            name="Therapeutic Area"
+            parent="menu_bd_conf_segmentation"
+            action="vcls-crm.action_therapeutic_area"
+            sequence="13"
+        />
+
+        <menuitem
+            id="menu_bd_conf_functional_focus"
+            name="Contact Functional Focus"
+            parent="menu_bd_conf_segmentation"
+            action="vcls-contact.action_functional_focus"
+            sequence="15"
+        />
+
+        <menuitem
+            id="menu_bd_conf_seniority"
+            name="Contact Seniority"
+            parent="menu_bd_conf_segmentation"
+            action="vcls-contact.action_partner_seniority"
+            sequence="18"
+        />
+
+        <!-- Sales process -->
+        <menuitem
+            id="menu_bd_conf_sales"
+            name="Sales Process"
+            parent="menu_bd_conf_main"
+            sequence="9"
+        />
+
+        <menuitem
+            id="menu_bd_conf_tags"
+            name="Tags"
+            parent="menu_bd_conf_sales"
+            action="crm.crm_lead_tag_action"
+            sequence="3"
+        />
+
+        <menuitem
+            id="menu_bd_conf_lead_stage"
+            name="Lead Stages"
+            parent="menu_bd_conf_sales"
+            action=""
+            sequence="6"
+        />
+
+        <menuitem
+            id="menu_bd_conf_opp_stage"
+            name="Opportunity Stages"
+            parent="menu_bd_conf_sales"
+            action="crm.crm_stage_action"
+            sequence="9"
+        />
+
+        <menuitem
+            id="menu_bd_conf_won_reason"
+            name="Won Reasons"
+            parent="menu_bd_conf_sales"
+            action="vcls-crm.crm_lead_won_action"
+            sequence="12"
+        />
+
+        <menuitem
+            id="menu_bd_conf_lost_reason"
+            name="Lost Reasons"
+            parent="menu_bd_conf_sales"
+            action="crm.crm_lost_reason_action"
+            sequence="15"
+        />
+
+        <!-- Product Catalog -->
+        <menuitem
+            id="menu_bd_conf_product"
+            name="Product Catalog"
+            parent="menu_bd_conf_main"
+            sequence="12"
+        />
+
+        <menuitem
+            id="menu_bd_conf_deliverables"
+            name="Product Deliverables"
+            parent="menu_bd_conf_product"
+            action="vcls-crm.action_deliverable"
+            sequence="3"
+        />
+
+        <menuitem
+            id="menu_bd_conf_templates"
+            name="Quotation Templates"
+            parent="menu_bd_conf_product"
+            action="sale_management.sale_order_template_action"
+            sequence="6"
+        />
+
+        <!-- 
+        ACTIONS 
+        ##### -->
+
+        <!-- Opp pipeline renaming -->
+        <record id="crm.crm_lead_opportunities_tree_view" model="ir.actions.act_window">
+            <field name="name">Opportunities Pipeline</field>
+        </record>
+
+    </data>
+</odoo>
+        
