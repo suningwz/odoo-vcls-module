@@ -270,7 +270,7 @@
         ##### -->
 
         <!-- Opp pipeline renaming -->
-        <record id="crm.crm_lead_opportunities_tree_vie" model="ir.actions.act_window">
+        <record id="crm.crm_lead_opportunities_tree_view" model="ir.actions.act_window">
             <field name="name">Opportunities Pipeline</field>
         </record>
 
