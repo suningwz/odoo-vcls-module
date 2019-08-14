@@ -3,13 +3,22 @@
     <data>
     
         <!-- Root Menu -->
+        <menuitem
+            id="menu_bd_root"
+            name="BD"
+            web_icon="vcls-crm,static/description/icon.png"
+            sequence="7"
+            active="True"
+            groups="vcls-hr.vcls_group_superuser_lvl1"
+        />
+        <!--
         <record id="menu_bd_root" model="ir.ui.menu">
                 <field name="name">BD</field>
                 <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1'))]"/>
                 <field name="sequence">7</field>
                 <field name="active" eval="True"/>
                 <field name="web_icon" eval="vcls-crm,static/description/icon.png"/>    
-        </record>
+        </record> -->
 
         <!-- Opportunities -->
         <menuitem
