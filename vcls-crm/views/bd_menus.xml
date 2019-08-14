@@ -5,6 +5,15 @@
         MENUS 
         ##### -->
 
+        <!-- Original Menus Only accessible to admins -->
+        <record id="sale.sale_menu_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0,[ref('base.group_system')])]"/>
+        </record>
+
+        <record id="crm.crm_menu_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0,[ref('base.group_system')])]"/>
+        </record>
+
         <!-- Root Menu -->
         <menuitem
             id="menu_bd_root"
@@ -66,7 +75,7 @@
 
         <menuitem
             id="menu_bd_rep_activities"
-            name="Activities"
+            name="BD Activities"
             parent="menu_bd_rep_main"
             action="crm.crm_activity_report_action"
             sequence="1"
@@ -272,6 +281,20 @@
         <!-- Opp pipeline renaming -->
         <record id="crm.crm_lead_opportunities_tree_view" model="ir.actions.act_window">
             <field name="name">Opportunities Pipeline</field>
+        </record>
+
+        <!-- Quotations on KanBan by default -->
+        <record id="sale.action_quotations" model="ir.actions.act_window">
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('sale.view_sale_order_kanban')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('sale.view_quotation_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('sale.view_order_form')}),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('sale.view_sale_order_calendar')}),
+                (0, 0, {'view_mode': 'pivot', 'view_id': ref('sale.view_sale_order_pivot')}),
+                (0, 0, {'view_mode': 'graph', 'view_id': ref('sale.view_sale_order_graph')}),
+            ]"/>
         </record>
 
     </data>
