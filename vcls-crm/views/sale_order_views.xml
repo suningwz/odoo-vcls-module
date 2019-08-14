@@ -20,7 +20,6 @@
                             <field name="validity_date" attrs="{'invisible': [('state', 'in', ['sale', 'done'])]}"/>
                             <field name="confirmation_date" attrs="{'invisible': [('state', 'in', ['draft', 'sent', 'cancel'])]}"/>
                             <field name="opportunity_id" required="1" domain="[('partner_id','child_of',partner_id)]"/>
-                            <field name="program_id" options="{'no_create': True}" domain="[('client_id','=',partner_id)]"/>
                         </group>
 
                         <group string="Invoicing">
