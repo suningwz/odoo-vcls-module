@@ -126,7 +126,7 @@ class SaleOrder(models.Model):
     @api.multi
     def upsell(self):
         for rec in self:
-            new_order = rec.copy({'order_line': False,'parent_id':rec})
+            new_order = rec.copy({'order_line': False,'parent_id':rec.id})
             #new_order.parent_id = rec
 
             """
