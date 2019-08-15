@@ -3,6 +3,9 @@
 from odoo import models, api, _, fields
 from odoo.exceptions import UserError
 
+import logging
+_logger = logging.getLogger(__name__)
+
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -74,8 +77,9 @@ class SaleOrder(models.Model):
     def upsell(self):
         for rec in self:
             new_order = rec.copy({'order_line': False})
-            
+
             #we copy the project_ids to properly link newly created tasks
+            _logger.info("New Upsell: {} Found Projects: {}".format(new_order.name,rec.project_ids.mapped('name')))
             new_order.project_ids = rec.project_ids
             pending_section = None
 
