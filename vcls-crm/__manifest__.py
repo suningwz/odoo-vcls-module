@@ -19,7 +19,7 @@
 
 
 
-    'version': '1.11.0',
+    'version': '1.12.0',
 
 
 
@@ -78,6 +78,7 @@
         'data/product.pricelist.csv',
         'data/message_subtype.xml',
         'data/risk_type.xml',
+        'data/lead_stage.xml',
 
     ],
     # only loaded in demonstration mode
