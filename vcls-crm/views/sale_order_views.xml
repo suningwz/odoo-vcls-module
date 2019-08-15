@@ -34,7 +34,7 @@
                             <field name="currency_id" invisible="1"/>
                             <field name="payment_term_id" options="{'no_create': True}"/>
                             <field name="parent_id" options="{'no_create': True}" readonly="1"/>
-                            <field name="project_id" options="{'no_create': True}"/>
+                            <field name="project_id" options="{'no_create': True}" string="Linked Project"/>
                         </group>
                     </group>
 
