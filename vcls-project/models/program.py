@@ -8,7 +8,9 @@ class ProjectProgram(models.Model):
     _name = 'project.program'
     _description = 'A Program of Projects'
 
-    name = fields.Char()
+    name = fields.Char(
+        required = True,
+    )
 
     active = fields.Boolean(
         default = True,
