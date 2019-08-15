@@ -76,7 +76,7 @@ class Leads(models.Model):
     lead_stage_id = fields.Many2one(
         'crm.lead.stage',
         string = 'Lead Stage',
-        default = '_default_lead_stage'
+        default = _default_lead_stage,
         )
 
     ### CUSTOM FIELDS RELATED TO MARKETING PURPOSES ###
