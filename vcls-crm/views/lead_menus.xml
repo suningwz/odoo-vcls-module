@@ -12,19 +12,7 @@
 			id="menu_new_CI" 
 			action="action_new_CI" 
 			sequence="9" />
-        
-        <record model="ir.actions.act_window" id="action_lead_stage">
-            <field name="name">Lead Stages</field>
-            <field name="res_model">crm.lead.stage</field>
-            <field name="view_mode">tree, form</field>
-        </record>
-        
-        <menuitem
-            id="menu_lead_stage"
-            action="action_lead_stage"
-            parent="crm.menu_crm_config_lead"
-            sequence="2"/>
-        
+
         <!-- Configure groups to access non active employees 
         <record id="vcls-crm.menu_new_CI" model="ir.ui.menu">
             <field name="groups_id" eval="[(4,ref('vcls-contact.vcls_group_ceo'))]"/>
