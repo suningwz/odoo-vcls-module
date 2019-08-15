@@ -74,7 +74,12 @@ class SaleOrder(models.Model):
     def upsell(self):
         for rec in self:
             new_order = rec.copy({'order_line': False})
+            
+            #we copy the project_ids to properly link newly created tasks
+            new_order.project_ids = rec.project_ids
             pending_section = None
+
+            #we loop in source lines to copy rate ones only
             for line in rec.order_line:
                 if line.display_type == 'line_section':
                     pending_section = line
