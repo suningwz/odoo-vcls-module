@@ -67,7 +67,7 @@ class SaleOrder(models.Model):
 
     @api.model
     def create(self, vals):
-
+        _logger.info("NEW QUOTATION: {}".format(vals))
         #if related to an opportunity
         if 'opportunity_id' in vals:
             opp_id = vals.get('opportunity_id')
