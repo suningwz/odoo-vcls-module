@@ -80,7 +80,7 @@ class SaleOrder(models.Model):
 
             #we copy the project_ids to properly link newly created tasks
             _logger.info("New Upsell: {} Found Projects: {}".format(new_order.name,rec.project_ids.mapped('name')))
-            new_order.project_ids = rec.project_ids
+            new_order.write({'project_ids':rec.project_ids})
             pending_section = None
 
             #we loop in source lines to copy rate ones only

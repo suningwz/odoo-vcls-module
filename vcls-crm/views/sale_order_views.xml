@@ -9,6 +9,12 @@
             <field name="priority">3000</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
+
+                <xpath expr="//button[@name='action_confirm']" position="after">    
+                    <button name="upsell" id="action_upsell"
+                        string="Upsell" class="btn-primary" type="object"
+                        attrs="{'invisible': [('state', 'in', ['draft'])]}"/>
+                </xpath>
                 
                 <xpath expr="//group" position="replace">
 

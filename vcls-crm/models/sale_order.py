@@ -114,6 +114,39 @@ class SaleOrder(models.Model):
     ################
     # TOOL METHODS #
     ################
+    
+    @api.multi
+    def upsell(self):
+        for rec in self:
+            new_order = rec.copy({'order_line': False})
+
+            #we copy the project_ids to properly link newly created tasks
+            _logger.info("New Upsell: {} Found Projects: {}".format(new_order.name,rec.project_ids.mapped('name')))
+            new_order.write({'project_ids':rec.project_ids})
+            pending_section = None
+
+            #we loop in source lines to copy rate ones only
+            for line in rec.order_line:
+                if line.display_type == 'line_section':
+                    pending_section = line
+                    continue
+                elif line.product_id.type == 'service' and \
+                    line.product_id.service_policy == 'delivered_timesheet' and \
+                    line.product_id.service_tracking in ('no', 'project_only'):
+                    if pending_section:
+                        pending_section.copy({'order_id': new_order.id})
+                        pending_section = None
+                    line.copy({'order_id': new_order.id,
+                               'project_id': line.project_id.id,
+                               'analytic_line_ids': [(6, 0, line.analytic_line_ids.ids)]})
+        return {
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'sale.order',
+                'target': 'current',
+                'res_id': new_order.id,
+            }
 
     @api.model
     def generate_name(self, name, number):
