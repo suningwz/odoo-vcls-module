@@ -93,15 +93,6 @@ class SaleOrder(models.Model):
                 vals['internal_ref'] = "{}-{}".format(opp.internal_ref,self.get_alpha_index(index))
 
             vals['name'] = vals['internal_ref']
-            
-            """if opp:
-                #we look at other eventual quotations from the same opp
-                prev_quote = self.sudo().with_context(active_test=False).search([('opportunity_id','=',opp_id)])
-                if prev_quote:
-                    # vals['name']=opp.name.replace(opp.internal_ref,"{}.{}".format(opp.internal_ref,len(prev_quote)+1))
-                    vals['name'] = self.generate_name(opp.name, len(prev_quote)+1)
-                else:
-                    vals['name']=opp.name"""
 
             #default expected_start_date and expected_end_date
             expected_start_date = opp.expected_start_date
