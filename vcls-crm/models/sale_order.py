@@ -112,8 +112,8 @@ class SaleOrder(models.Model):
     @api.depends('project_ids')
     def _compute_project_id(self):
         for so in self:
-            if parent_id.project_id:
-                so.project_id = prent_id.project_id
+            if so.parent_id.project_id:
+                so.project_id = so.parent_id.project_id
             elif so.project_ids:
                 so.project_id = so.project_ids[0]
 
