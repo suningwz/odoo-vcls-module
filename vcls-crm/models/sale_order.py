@@ -125,8 +125,8 @@ class SaleOrder(models.Model):
     @api.multi
     def upsell(self):
         for rec in self:
-            new_order = rec.copy({'order_line': False})
-            new_order.parent_id = rec
+            new_order = rec.copy({'order_line': False,'parent_id':rec})
+            #new_order.parent_id = rec
 
             """
             pending_section = None
@@ -154,10 +154,10 @@ class SaleOrder(models.Model):
                 'res_id': new_order.id,
             }
 
-    @api.multi
+    """ @api.multi
     def copy_data(self, default=None):
         default['name']="I DO TEST"
-        return super(SaleOrder, self).copy_data(default)
+        return super(SaleOrder, self).copy_data(default)"""
 
     @api.model
     def generate_name(self, name, number):
