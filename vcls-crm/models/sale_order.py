@@ -127,6 +127,8 @@ class SaleOrder(models.Model):
         for rec in self:
             new_order = rec.copy({'order_line': False})
             new_order.parent_id = rec
+
+            """
             pending_section = None
 
             #we loop in source lines to copy rate ones only
@@ -142,7 +144,7 @@ class SaleOrder(models.Model):
                         pending_section = None
                     line.copy({'order_id': new_order.id,
                                'project_id': line.project_id.id,
-                               'analytic_line_ids': [(6, 0, line.analytic_line_ids.ids)]})
+                               'analytic_line_ids': [(6, 0, line.analytic_line_ids.ids)]})"""
         return {
                 'type': 'ir.actions.act_window',
                 'view_type': 'form',
