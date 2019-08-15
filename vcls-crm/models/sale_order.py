@@ -50,6 +50,11 @@ class SaleOrder(models.Model):
         compute='_compute_project_id',
         store=True,
     )
+
+    parent_id = fields.Many2one(
+        'sale.order',
+        string="Parent Quotation",
+    )
     
     internal_ref = fields.Char(
         string="Ref",
@@ -107,7 +112,9 @@ class SaleOrder(models.Model):
     @api.depends('project_ids')
     def _compute_project_id(self):
         for so in self:
-            if so.project_ids:
+            if parent_id.project_id:
+                so.project_id = prent_id.project_id
+            elif so.project_ids:
                 so.project_id = so.project_ids[0]
 
 
@@ -119,10 +126,7 @@ class SaleOrder(models.Model):
     def upsell(self):
         for rec in self:
             new_order = rec.copy({'order_line': False})
-
-            #we copy the project_ids to properly link newly created tasks
-            _logger.info("New Upsell: {} Found Projects: {}".format(new_order.name,rec.project_ids.mapped('name')))
-            new_order.write({'project_ids':rec.project_ids})
+            new_order.parent_id = rec
             pending_section = None
 
             #we loop in source lines to copy rate ones only
