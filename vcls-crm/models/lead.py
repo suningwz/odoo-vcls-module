@@ -255,7 +255,7 @@ class Leads(models.Model):
 
     @api.model
     def create(self, vals):
-        ################
+        #############
         if vals.get('contact_name', False) and vals.get('contact_lastname', False) and vals.get('contact_middlename', False):
                 vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
         elif vals.get('contact_name', False) and vals.get('contact_lastname', False):

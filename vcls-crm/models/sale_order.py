@@ -42,7 +42,23 @@ class SaleOrder(models.Model):
         track_visibility='onchange', 
         domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
     )
+
+    #We never use several projects per quotation, so we highlight the 1st of the list
+    project_id = fields.Many2one(
+        'project.project',
+        string = 'Project Name',
+        compute='_compute_project_id',
+        store=True,
+    )
     
+    internal_ref = fields.Char(
+        string="Ref",
+        store = True,
+    )
+
+    ###############
+    # ORM METHODS #
+    ###############
 
     @api.model
     def create(self, vals):
@@ -83,6 +99,21 @@ class SaleOrder(models.Model):
        
        
         return super(SaleOrder, self).write(vals)
+
+    ###################
+    # COMPUTE METHODS #
+    ###################
+
+    @api.depends('project_ids')
+    def _compute_project_id(self):
+        for so in self:
+            if so.project_ids:
+                so.project_id = so.project_ids[0]
+
+
+    ################
+    # TOOL METHODS #
+    ################
 
     @api.model
     def generate_name(self, name, number):
