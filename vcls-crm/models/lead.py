@@ -21,6 +21,7 @@ class ResoucesLeads(models.Model):
 class LeadStage(models.Model):
     _name = 'crm.lead.stage'
     _description = 'stage for lead'
+
     name = fields.Char(
         required = True,
         string = 'Name'
@@ -33,9 +34,33 @@ class Leads(models.Model):
 
     _inherit = 'crm.lead'
 
+    ###################
+    # DEFAULT METHODS #
+    ###################
+
+
+    def _default_am(self):
+        return self.guess_am()
+
+    @api.model
+    def _default_lead_stage(self):
+        try:
+            return self.env.ref('vcls-crm.lead_open')
+        except:
+            return self.env['crm.lead.stage']
+
+
+    ####################
+    # OVERRIDEN FIELDS #
+    ####################
+
     company_id = fields.Many2one(string = 'Trading Entity', default = lambda self: self.env.ref('vcls-hr.company_VCFR'))
 
     source_id = fields.Many2one('utm.source', "Initial Lead Source")
+
+    #################
+    # CUSTOM FIELDS #
+    #################
 
     # Related fields in order to avoid mismatch & errors
     opted_in = fields.Boolean(
@@ -47,22 +72,13 @@ class Leads(models.Model):
         related = 'partner_id.opted_out',
         string = 'Opted Out'
     )
+ 
+    lead_stage_id = fields.Many2one(
+        'crm.lead.stage',
+        string = 'Lead Stage',
+        default = '_default_lead_stage'
+        )
 
-    #################
-    # CUSTOM FIELDS #
-    #################
-    lead_stage_id = fields.Many2one('crm.lead.stage', string = 'Lead Stage', default = lambda self: self.env.ref('vcls-crm.lead_open'))
-
-    # KEEP CAMPAIGN_ID -> FIRST CONTACT
-    #campaign_ids = fields.Many2many('utm.campaign', string = 'Campaings')
-
-    ###################
-    # DEFAULT METHODS #
-    ###################
-
-    def _default_am(self):
-        return self.guess_am()
-    
     ### CUSTOM FIELDS RELATED TO MARKETING PURPOSES ###
     user_id = fields.Many2one(
         'res.users', 
