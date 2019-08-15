@@ -18,11 +18,15 @@ class SaleOrderLine(models.Model):
         return project
 
     #We override the line creation in order to link them with existing project
-    @api.model
-    def create(self,vals):
-        line = super(SaleOrderLine, self).create(vals)
-        if (line.product_id.service_tracking in ['project_only', 'task_new_project']) and not line.product_id.project_template_id:
-            line.project_id = line.order_id.project_id
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        
+        for line in lines:
+            if (line.product_id.service_tracking in ['project_only', 'task_new_project']) and not line.product_id.project_template_id:
+                line.project_id = line.order_id.project_id
+        
+        return lines
 
     
 
