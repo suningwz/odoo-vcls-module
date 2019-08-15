@@ -2,6 +2,22 @@
 <odoo>
     <data>
 
+        <record model="ir.ui.view" id="view_crm_case_leads_filter_inherit">
+            <field name="name">crm.lead.search.inherit</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.view_crm_case_leads_filter" />
+            <field name="arch" type="xml">
+                <!-- ADD THINGS HERE -->
+                <xpath expr="//field[@name='source_id']" position="after">
+                    <field name = 'lead_stage_id' />
+                </xpath>
+
+                <xpath expr="//filter[@name='salesperson']" position="after">
+                    <filter name="lead_stage_id" string="Lead Stage" context="{'group_by':'lead_stage_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
         <!-- Override of the initial view, but without custom fields added by this module -->
         <record id="crm.crm_case_form_view_oppor" model="ir.ui.view">
         <field name="name">crm.lead.form.opportunity</field>
@@ -24,6 +40,7 @@
                             options="{'clickable': '1', 'fold_field': 'fold'}"
                             domain="['|', ('team_id', '=', team_id), ('team_id', '=', False)]"
                             attrs="{'invisible': [('active', '=', False)]}"/>
+
                     </header>
                     <sheet>
                         <field name="active" invisible="1"/>
@@ -177,6 +194,18 @@
                 <field name="internal_ref" readonly="0" style="color:#08206E;"/>
             </field>
 
+            <xpath expr="//header" position="inside">
+                <field name='risk_raised' invisible = '1' />
+                <button name="raise_go_nogo" string="Go/NoGo required"
+                    type="object" class="oe_highlight" 
+                    attrs="{'invisible': [('risk_raised','=',True)]}"
+                    />
+            </xpath>
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" type="object" name="open_related_risks" icon="fa-exclamation-triangle" attrs="{'invisible': [('risk_raised','=',False)]}" string="Related Risk(s)" />
+            </xpath>
+
                
             
             <field name="user_id" position="replace" />
@@ -282,6 +311,9 @@
                     <button name="create_contact_pop_up" string="Create contact" type="object" help="Create related Contact" class="oe_highlight" attrs="{'invisible': ['|',('type', '=', 'opportunity'),('partner_id','!=',False)]}"/>
                     <button name="toggle_active" string="Restore" type="object" attrs="{'invisible': ['|', ('probability', '&gt;', 0), ('active', '=', True)]}"/>
                     <button name="action_set_lost" string="Mark as Lost" type="object" attrs="{'invisible': ['&amp;', ('probability', '=', 0), ('active', '=', False)]}" invisible="1"/>
+                    <field name="lead_stage_id" widget="statusbar"
+                            options="{'clickable': '1'}"
+                            attrs="{'invisible': [('active', '=', False)]}"/>
                 </header>
                 <sheet>
                     <field name="active" invisible="1"/>
@@ -661,6 +693,7 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('crm.crm_case_form_view_leads')}),
             ]"/>
         </record>
+                
 
     </data>
 </odoo>

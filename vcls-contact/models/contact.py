@@ -75,12 +75,14 @@ class ContactExt(models.Model):
     user_id = fields.Many2one(
         'res.users',
         string = 'Account Manager',
+        domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
     )
     #override to link
     activity_user_id = fields.Many2one(
         'res.users',
         related = 'user_id',
         store = True,
+        domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
     )
 
     linkedin = fields.Char(
@@ -121,6 +123,7 @@ class ContactExt(models.Model):
     controller_id = fields.Many2one(
         'res.users',
         string = 'Project Controller',
+        domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
     )
 
     invoice_admin_id = fields.Many2one(
@@ -306,5 +309,4 @@ class ContactExt(models.Model):
             'res_model': 'res.partner',
             'type': 'ir.actions.act_window',
             'context':{'default_name' : self.name,'default_parent_id' : self.id, 'default_category_id' : self.category_id.ids, 'default_company_type' : 'person',}# 'default_stage':5
-        } 
-        
+        }

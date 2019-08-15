@@ -18,13 +18,49 @@ class ResoucesLeads(models.Model):
         'hr.project_role', string='Seniority')
     number = fields.Float('Number')
 
+class LeadStage(models.Model):
+    _name = 'crm.lead.stage'
+    _description = 'stage for lead'
+
+    name = fields.Char(
+        required = True,
+        string = 'Name'
+    )
+    
+    active = fields.Boolean(default = True)
+
+
 class Leads(models.Model):
 
     _inherit = 'crm.lead'
 
+    ###################
+    # DEFAULT METHODS #
+    ###################
+
+
+    def _default_am(self):
+        return self.guess_am()
+
+    @api.model
+    def _default_lead_stage(self):
+        try:
+            return self.env.ref('vcls-crm.lead_open')
+        except:
+            return self.env['crm.lead.stage']
+
+
+    ####################
+    # OVERRIDEN FIELDS #
+    ####################
+
     company_id = fields.Many2one(string = 'Trading Entity', default = lambda self: self.env.ref('vcls-hr.company_VCFR'))
 
     source_id = fields.Many2one('utm.source', "Initial Lead Source")
+
+    #################
+    # CUSTOM FIELDS #
+    #################
 
     # Related fields in order to avoid mismatch & errors
     opted_in = fields.Boolean(
@@ -36,23 +72,19 @@ class Leads(models.Model):
         related = 'partner_id.opted_out',
         string = 'Opted Out'
     )
+ 
+    lead_stage_id = fields.Many2one(
+        'crm.lead.stage',
+        string = 'Lead Stage',
+        default = _default_lead_stage,
+        )
 
-    # KEEP CAMPAIGN_ID -> FIRST CONTACT
-    #campaign_ids = fields.Many2many('utm.campaign', string = 'Campaings')
-
-    ###################
-    # DEFAULT METHODS #
-    ###################
-
-    def _default_am(self):
-        return self.guess_am()
-    
     ### CUSTOM FIELDS RELATED TO MARKETING PURPOSES ###
     user_id = fields.Many2one(
         'res.users', 
         string='Account Manager', 
         track_visibility='onchange', 
-        #default='_default_am',
+        domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
         )
     
     company_id = fields.Many2one(default = '')
@@ -519,3 +551,20 @@ class Leads(models.Model):
         if self.stage_id == self.env.ref('crm.stage_lead4'):
             if len(self.won_reasons) == 0:
                 raise ValidationError(_("Please use the \"MARK WON\" button or select at least 1 reason."))
+    
+    risk_raised = fields.Boolean(default = False)
+
+    def raise_go_nogo(self):
+        for record in self:
+            self.env['risk']._raise_risk(self.env.ref('vcls-crm.risk_go_nogo'), '{},{}'.format(record._name, record.id))
+            record.risk_raised = True
+            
+    def open_related_risks(self):
+        return {
+            'name': 'All related risk(s)',
+            'view_mode': 'tree',
+            'target': 'new',
+            'res_model': 'risk',
+            'type': 'ir.actions.act_window',
+            'domain': "[('resource','=', '{},{}')]".format(self._name, self.id)
+        }

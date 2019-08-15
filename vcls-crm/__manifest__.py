@@ -19,7 +19,7 @@
 
 
 
-    'version': '1.10.0',
+    'version': '1.12.0',
 
 
 
@@ -40,7 +40,8 @@
                 'crm_lead_currency',
                 'vcls-hr',
                 'crm_lead_firstname',
-                'marketing_automation'
+                'marketing_automation',
+                'vcls-risk',
                 ],
 
     # always loaded
@@ -53,6 +54,7 @@
         #'security/vcls_groups.xml',
         'security/ir.model.access.csv',
         'security/lead_rules.xml',
+        'security/security_groups.xml',
 
         ### VIEWS ###
         'views/dropdown_views.xml',
@@ -69,11 +71,14 @@
         ### MENUS ###
         'views/lead_menus.xml',
         'views/partner_relation_menus.xml',
+        'views/bd_menus.xml',
 
         ### RECORDS DATA ###
         'data/partner.relation.type.csv',
         'data/product.pricelist.csv',
         'data/message_subtype.xml',
+        'data/risk_type.xml',
+        'data/lead_stage.xml',
 
     ],
     # only loaded in demonstration mode

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
-from odoo import models, fields, api
+from odoo import models, fields, api, http
 
 from odoo.exceptions import UserError, ValidationError
 
@@ -86,3 +86,13 @@ class Risk(models.Model):
             if self.env.user not in self.risk_type_id.group_id.users:
                 raise UserError("You need to be part of {} to modify the risk level".format(group_id.name))
 
+    def go_to_record(self):
+        resource = str(self.resource).split(',')
+        if len(resource) == 2:
+            url = http.request.env['ir.config_parameter'].get_param('web.base.url')
+            link = "{}/web#id={}&model={}".format(url, resource[1], resource[0])
+            return {
+                'type': 'ir.actions.act_url',
+                'url': link,
+                'target': 'self',
+            }
