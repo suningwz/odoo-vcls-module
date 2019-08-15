@@ -54,6 +54,7 @@ class SaleOrder(models.Model):
     parent_id = fields.Many2one(
         'sale.order',
         string="Parent Quotation",
+        copy=True,
     )
     
     internal_ref = fields.Char(
