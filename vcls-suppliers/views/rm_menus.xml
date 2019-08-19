@@ -14,9 +14,10 @@
         <!-- Root Menu -->
         <menuitem
             id="menu_rm_root"
-            name="Ressource Management"
+            name="Resource Management"
             sequence="8"
             active="True"
+            web_icon="fa fa-spinner,#f1c40f,#838383"
             groups="vcls-suppliers.vcls_group_rm"
         />
         
