@@ -25,6 +25,7 @@
         'vcls-contact',
         'vcls-hr',
         'vcls-project',
+        'vcls-crm',
         'sale_purchase',
         ],
 
