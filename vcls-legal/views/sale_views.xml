@@ -19,7 +19,7 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <field name="payment_term_id" position="before">
-                <field name="agreement_id" string="Related Agreement"/>
+                <field name="agreement_id" string="Related Agreement" options="{'no_create_edit': True}"/>
             </field>
         </field>
     </record>
