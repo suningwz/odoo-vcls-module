@@ -11,9 +11,7 @@
             </field>
         </field>
     </record>
-</odoo>
 
-<odoo>
     <record id="view_order_form_legal_inherit" model="ir.ui.view">
         <field name="name">sale.order.form</field>
         <field name="model">sale.order</field>
@@ -24,4 +22,8 @@
             </field>
         </field>
     </record>
+    
 </odoo>
+
+
+    
