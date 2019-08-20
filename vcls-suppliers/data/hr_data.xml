@@ -13,5 +13,10 @@
             <field name="department_id" ref="vcls-hr.department_RM"/>
             <field name="project_role_id" ref="role_project_supplier"/>
         </record>
+
+        <record id="not_found_sup" model="res.partner">
+            <field name="firstname">Supplier Not Found</field>
+        </record>
+
     </data>
 </odoo>

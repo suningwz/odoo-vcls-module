@@ -67,6 +67,7 @@ class ContactExt(models.Model):
     
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+
         supplier_search = self._context.get('supplier_search')
 
         #if we are in the context of a vcls custom search
@@ -80,6 +81,14 @@ class ContactExt(models.Model):
             #we filter according to the expertises
             if expertises:
                 partners = partners.filtered(lambda p: expertises in p.expertise_area_ids)
+            
+            #if no one has been found,propose default one
+            if not partners:
+                try:
+                    not_found = self.ref('vcls-suppliers.not_found_sup')
+                    return not_found.id
+                except:
+                    pass
         
             return partners.ids
         
