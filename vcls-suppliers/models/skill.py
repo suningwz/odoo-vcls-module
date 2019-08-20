@@ -18,7 +18,7 @@ class UserSkill(models.Model):
     user_id = fields.Many2one(
         string='Resource Contact',
         comodel_name='res.partner',
-        domain="[('company_type','=','person')]",
+        domain="[('is_company','=',False)]",
     )
 
     skill_id = fields.Many2one(
