@@ -72,7 +72,7 @@
                 </xpath>
 
                 <field name="partner_id" position="after">
-                    <field name="supplier_stage"/>
+                    <field name="supplier_stage" string="Supplier Stage"/>
                 </field>
 
             </field>
