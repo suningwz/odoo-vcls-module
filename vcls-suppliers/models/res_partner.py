@@ -65,7 +65,7 @@ class ContactExt(models.Model):
             'context': {'search_default_partner_id': self.id},
         } 
     
-   """ @api.model
+    """ @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         supplier_search = self._context.get('supplier_search')
 
@@ -84,5 +84,6 @@ class ContactExt(models.Model):
         
         else:
             partner_ids = super(ContactExt, self)._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
-            return partner_ids"""
+            return partner_ids
+    """
 
