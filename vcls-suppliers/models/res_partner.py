@@ -84,12 +84,13 @@ class ContactExt(models.Model):
             
             #if no one has been found,propose default one
             _logger.info("FOUND {}".format(partners.mapped('name')))
-            if not partners:
+            if len(partners)==0:
                 try:
                     not_found = self.ref('vcls-suppliers.not_found_sup')
                     _logger.info("FOUND {}-{}".format(not_found.name,not_found.id))
                     return not_found.id
                 except:
+                    _logger.info("NOT FOUND CRASH")
                     pass
         
             return partners.ids
