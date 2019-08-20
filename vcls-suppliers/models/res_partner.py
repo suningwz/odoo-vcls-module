@@ -65,16 +65,19 @@ class ContactExt(models.Model):
             'context': {'search_default_partner_id': self.id},
         } 
     
-    """ @api.model
+    @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         supplier_search = self._context.get('supplier_search')
 
         #if we are in the context of a vcls custom search
         if supplier_search:
             expertise_ids = self._context.get('expertise_ids')[0][2]
+            expertises = self.env['expertise.area'].browse(expertise_ids)
 
-            #partner_ids = super(ContactExt, self)._search(args, offset, None, order, count=count, access_rights_uid=access_rights_uid)
-            #partners = self.browse(partner_ids)
+            partner_ids = super(ContactExt, self)._search(args, offset, None, order, count=count, access_rights_uid=access_rights_uid)
+            partners = self.browse(partner_ids)
+
+            #we filter out the
             
             #_logger.info("EXP IDS {} in {} of {}".format(expertise_ids,partners.mapped('expertise_area_ids.id'),partners.mapped('name')))
             
@@ -85,5 +88,4 @@ class ContactExt(models.Model):
         else:
             partner_ids = super(ContactExt, self)._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
             return partner_ids
-    """
 
