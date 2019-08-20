@@ -8,8 +8,8 @@
  
                 <tree string="User Skills" editable="bottom">
                     <field name="complete_name"/>
-                    <field name="user_id"/>
-                    <field name="skill_id"/>
+                    <field name="user_id" options="{'no_create': True}"/>
+                    <field name="skill_id" options="{'no_create': True}"/>
                     <field name="level"/>
                     <field name="time_spent"/>
                     <field name="comment"/>
