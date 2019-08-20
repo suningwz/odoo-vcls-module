@@ -27,7 +27,7 @@ class PurchaseOrder(models.Model):
     )
 
     deliverable_ids = fields.Many2many(
-        'product.deliverables',
+        'product.deliverable',
     )
 
     access_level = fields.Selection([
