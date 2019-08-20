@@ -7,7 +7,6 @@ from odoo.tools import float_compare
 import logging
 import datetime
 import math
-from odoo.doc._extensions.pyjsparser.parser import false
 _logger = logging.getLogger(__name__)
 
 class AnalyticLine(models.Model):
