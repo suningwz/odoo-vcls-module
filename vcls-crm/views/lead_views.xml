@@ -128,6 +128,7 @@
                                         <field name="country_id" placeholder="Country" class="o_address_country" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
                                     </div>
                                     <field name="website" widget="url" placeholder="e.g. www.odoo.com"/>
+                                    <field name = "linkedIn_url" widget="url" placeholder="e.g. linkedin.com/company/voisin-consulting-life-sciences"/>
                                 </group>
 
                                 <group class="mt48">
@@ -345,6 +346,7 @@
                                 <field name="country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}" required="True"/>
                             </div>
                             <field name="website" widget="url" placeholder="e.g. voisinconsulting.com"/>
+                            <field name = "linkedIn_url" widget="url" placeholder="e.g. linkedin.com/company/voisin-consulting-life-sciences"/>
                         </group>
                         <group>
                             <label for="contact_name"/>
