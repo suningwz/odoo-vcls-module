@@ -77,11 +77,9 @@ class ContactExt(models.Model):
             partner_ids = super(ContactExt, self)._search(args, offset, None, order, count=count, access_rights_uid=access_rights_uid)
             partners = self.browse(partner_ids)
 
-            #we filter out the
-            
-            #_logger.info("EXP IDS {} in {} of {}".format(expertise_ids,partners.mapped('expertise_area_ids.id'),partners.mapped('name')))
-            
-            partners = partners.filtered(lambda p: expertises in p.expertise_area_ids)
+            #we filter according to the expertises
+            if expertises:
+                partners = partners.filtered(lambda p: expertises in p.expertise_area_ids)
         
             return partners.ids
         
