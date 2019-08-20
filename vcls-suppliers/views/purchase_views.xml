@@ -20,7 +20,7 @@
                         </group>
                         <group string="Found Supplier">
                             <field name="partner_id" widget="res_partner_many2one" options="{'no_create': True}" context="{'supplier_search':True,'expertise_ids':expertise_id,'search_default_supplier':1, 'default_supplier':1, 'default_customer':0, 'show_vat': True}" domain="[('supplier','=',True)]" placeholder="Name, TIN, Email, or Reference"/>
-                            <field name="supplier_stage"/>
+                            <field name="supplier_stage" string="Supplier Stage" />
                             <field name="currency_id"/>
                             <field name="date_order" invisible="1"/>
                             <field name="access_level" invisible="1"/>
@@ -56,6 +56,19 @@
                         <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','purchase')]" context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}" options="{'no_create': True}"/>
                         <field name="price_subtotal" widget="monetary"/>
                     </tree>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="purchase_order_tree_inherit">
+            <field name="name">purchase.order.tree.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="decoration-warning">supplier_stage!=3</attribute>
                 </xpath>
 
             </field>
