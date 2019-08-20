@@ -23,8 +23,8 @@ class UserSkill(models.Model):
 
     skill_id = fields.Many2one(
         string='Skill',
-        comodel_name='product.template',
-        domain="[('is_skill','=',True)]",
+        comodel_name='product.deliverable',
+        #domain="[('is_skill','=',True)]",
     )
 
     level = fields.Selection(

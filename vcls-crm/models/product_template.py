@@ -40,10 +40,6 @@ class ProductTemplate(models.Model):
         'product.deliverable',
         string = 'Deliverable',
     )
-
-    is_skill = fields.Boolean(
-        default=False,
-    )
     
 class Product(models.Model):
 
