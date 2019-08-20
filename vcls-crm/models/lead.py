@@ -72,6 +72,11 @@ class Leads(models.Model):
         related = 'partner_id.opted_out',
         string = 'Opted Out'
     )
+
+    opted_in_date = fields.Datetime(
+        string = 'Opted In Date',
+        default = lambda self: self._get_default_opted_in_date(),
+    )
  
     lead_stage_id = fields.Many2one(
         'crm.lead.stage',
@@ -238,6 +243,13 @@ class Leads(models.Model):
 
     linkedIn_url = fields.Char(string = 'LinkedIn profile')
 
+    unsubscribed_campaign_id = fields.Many2one('utm.campaign', string = 'Opted Out Campaign')
+
+    opted_out_date = fields.Datetime(
+        string = 'Opted Out Date', 
+        related = 'unsubscribed_campaign_id.create_date'
+    )
+
     @api.multi
     def _create_lead_partner_data(self, name, is_company, parent_id=False):
         lead_partner_data = super(Leads, self)._create_lead_partner_data(
@@ -339,6 +351,10 @@ class Leads(models.Model):
         for lead in self:
             if lead.type == 'opportunity' and lead.internal_ref:
                 lead.name = lead.build_opp_name(lead.internal_ref,lead.name)
+    
+    def _get_default_opted_in_date(self):
+        for record in self:
+            return record.create_date
 
     
     """@api.onchange('partner_id','country_id')
