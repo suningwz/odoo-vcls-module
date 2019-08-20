@@ -73,12 +73,14 @@ class ContactExt(models.Model):
         if supplier_search:
             expertise_ids = self._context.get('expertise_ids')[0][2]
 
-            partner_ids = super(ContactExt, self)._search(args, offset, None, order, count=count, access_rights_uid=access_rights_uid)
-            partners = self.browse(partner_ids)
+            partners = self.search([('supplier','=',True),(expertise_ids,'in','expertise_area_ids')])
+
+            #partner_ids = super(ContactExt, self)._search(args, offset, None, order, count=count, access_rights_uid=access_rights_uid)
+            #partners = self.browse(partner_ids)
             
             _logger.info("EXP IDS {} in {} of {}".format(expertise_ids,partners.mapped('expertise_area_ids.id'),partners.mapped('name')))
             
-            partners = partners.filtered(lambda p: expertise_ids in p.expertise_area_ids.id)
+            #partners = partners.filtered(lambda p: expertise_ids in p.expertise_area_ids.id)
         
             return partners.ids
         
