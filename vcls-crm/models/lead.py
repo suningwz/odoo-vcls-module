@@ -250,6 +250,16 @@ class Leads(models.Model):
         related = 'unsubscribed_campaign_id.create_date'
     )
 
+    gdpr_status = fields.Selection(
+        [
+            ('undefined', 'Undefined'),
+            ('in', 'In'),
+            ('out', 'Out'),
+        ],
+        string = 'GDPR Status',
+        compute = '_compute_gdpr'
+    )
+
     @api.multi
     def _create_lead_partner_data(self, name, is_company, parent_id=False):
         lead_partner_data = super(Leads, self)._create_lead_partner_data(
@@ -339,6 +349,17 @@ class Leads(models.Model):
             else:
                 lead.age = "{} days old".format(delta.days)
     
+
+    @api.depends('campaign_id', 'unsubscribed_campaign_id')
+    def _compute_gdpr(self):
+        for record in self:
+            if record.campaign_id and not record.unsubscribed_campaign_id:
+                record.gdpr_status = 'in'
+            elif record.unsubscribed_campaign_id:
+                record.gdpr_status = 'out'
+            else:
+                record.gdpr_status = 'undefined'
+
     #if we change the partner_id, then we clean the ref to trigger a new creation at save
     @api.onchange('partner_id')
     def _clear_ref(self):

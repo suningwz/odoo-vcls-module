@@ -145,6 +145,7 @@
                                     <field name = "opted_in_date" attrs="{'invisible': [('campaign_id', '=', False)]}" />
                                     <field name = "unsubscribed_campaign_id" />
                                     <field name = "opted_out_date" attrs="{'invisible': [('unsubscribed_campaign_id', '=', False)]}" />
+                                    <field name = "gdpr_status" />
                                     <field name="medium_id"/>
                                     <field name="source_id"/>
                                 </group>
@@ -412,6 +413,7 @@
                                     <field name = "opted_in_date" attrs="{'invisible': [('campaign_id', '=', False)]}" />
                                     <field name = "unsubscribed_campaign_id" />
                                     <field name = "opted_out_date" attrs="{'invisible': [('unsubscribed_campaign_id', '=', False)]}" />
+                                    <field name = "gdpr_status" />
                                     <field name="medium_id" invisible="1"/>
                                     <field name="source_id"/>
                                     <field name="referent_id"/>
