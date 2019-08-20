@@ -50,3 +50,5 @@ class PurchaseOrder(models.Model):
             if user.has_group('vcls-suppliers.vcls_group_rm'):
                 rec.access_level = 'rm'
                 continue
+    
+    
