@@ -443,6 +443,7 @@ class Leads(models.Model):
         data['industry_id'] = self.industry_id.id
         data['client_activity_ids'] = [(6, 0, self.client_activity_ids.ids)]
         data['client_product_ids'] = [(6, 0, self.client_product_ids.ids)]
+        data['linkedin'] = self.linkedIn_url
 
         return data
 
@@ -476,6 +477,7 @@ class Leads(models.Model):
         data['client_product_ids'] = [(6, 0, self.client_product_ids.ids)]
         data['product_category_id'] = self.product_category_id.id
         data['converted_date'] = datetime.datetime.now()
+        data['linkedIn_url'] = self.linkedIn_url
         
         return data
 
