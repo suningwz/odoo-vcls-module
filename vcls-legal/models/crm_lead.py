@@ -6,6 +6,12 @@ class CrmLead(models.Model):
 
     agreement_count = fields.Integer(compute='_compute_agreement_count')
 
+    agreement_id = fields.Many2one(
+        'agreement',
+        string = 'Related Agreement',
+        domain  = "['|',('partner_id','=',partner_id),('partner_id','=',partner_id.parent_id)]",
+    )
+
     def _compute_agreement_count(self):
         """Compute the number of distinct subscriptions linked to the order."""
         for lead in self:

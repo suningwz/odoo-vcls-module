@@ -3,6 +3,9 @@
 from odoo import models, api, _, fields
 from odoo.exceptions import UserError
 
+import logging
+_logger = logging.getLogger(__name__)
+
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -70,32 +73,7 @@ class SaleOrder(models.Model):
         )
         return order_lines
     
-    @api.multi
-    def upsell(self):
-        for rec in self:
-            new_order = rec.copy({'order_line': False})
-            pending_section = None
-            for line in rec.order_line:
-                if line.display_type == 'line_section':
-                    pending_section = line
-                    continue
-                elif line.product_id.type == 'service' and \
-                    line.product_id.service_policy == 'delivered_timesheet' and \
-                    line.product_id.service_tracking in ('no', 'project_only'):
-                    if pending_section:
-                        pending_section.copy({'order_id': new_order.id})
-                        pending_section = None
-                    line.copy({'order_id': new_order.id,
-                               'project_id': line.project_id.id,
-                               'analytic_line_ids': [(6, 0, line.analytic_line_ids.ids)]})
-        return {
-                'type': 'ir.actions.act_window',
-                'view_type': 'form',
-                'view_mode': 'form',
-                'res_model': 'sale.order',
-                'target': 'current',
-                'res_id': new_order.id,
-            }
+    
 
 
 class SaleOrderLine(models.Model):

@@ -55,10 +55,9 @@
         </record>
 
         <!-- Action -->
-        
 
         <record id="vcls-project.action_program" model="ir.actions.act_window">
-            <field name="name">Project Programs</field>
+            <field name="name">Client Programs</field>
             <field name="res_model">project.program</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>

@@ -16,7 +16,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.7',
+    'version': '0.8',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -25,6 +25,7 @@
         'vcls-contact',
         'vcls-hr',
         'vcls-project',
+        'vcls-crm',
         'sale_purchase',
         ],
 
@@ -44,10 +45,12 @@
         'views/sup_employee_views.xml',
         'views/purchase_views.xml',
         'views/project_portal_templates.xml',
+        'views/skill_views.xml',
 
 
         ### MENUS
-        'views/supplier_menu.xml',  
+        'views/supplier_menu.xml', 
+        'views/rm_menus.xml', 
         
     ],
     # only loaded in demonstration mode
