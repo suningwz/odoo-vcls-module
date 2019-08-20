@@ -81,7 +81,7 @@ class ContactExt(models.Model):
             
             #_logger.info("EXP IDS {} in {} of {}".format(expertise_ids,partners.mapped('expertise_area_ids.id'),partners.mapped('name')))
             
-            #partners = partners.filtered(lambda p: expertise_ids in p.expertise_area_ids.id)
+            partners = partners.filtered(lambda p: expertises in p.expertise_area_ids)
         
             return partners.ids
         
