@@ -26,6 +26,7 @@
                     <field name="unit_amount_rounded" />
                     <field name="lc_comment" />
                     <field name="employee_id" readonly="1" />
+                    <button name="button_details_lc" string="Details" type="object" icon="fa-align-justify" />
                 </tree>
             </field>
         </record>
@@ -48,7 +49,8 @@
                         <field name="internal_comment" readonly="1" invisible="1" />
                         <field name="unit_amount" readonly="1" string="Duration (hours)" />
                         <field name="unit_amount_rounded" />
-                        <field name="lc_comment" attrs="{'required': [('unit_amount_rounded', '!=', 'unit_amount')]}" />
+                        <field name="required_lc_comment" rinvisible="1" />
+                        <field name="lc_comment" attrs="{'required': [('required_lc_comment', '=', True)]}" />
                         <field name="employee_id" readonly="1" />
                     </group>
                 </form>
@@ -77,37 +79,41 @@
             <field name="model">account.analytic.line</field>
             <field name="arch" type="xml">
                 <tree string="PC Review" colors="red:at_risk==True">
-                    <field name="date" />
-                    <field name="project_id" />
+                    <field name="date" readonly="1" />
+                    <field name="project_id" readonly="1" />
                     <field name="task_id" />
                     <field name="time_category_id" />
                     <field name="name" />
-                    <field name="unit_amount" string="Duration (hours)" />
-                    <field name="employee_id" />
+                    <field name="internal_comment" readonly="1" invisible="1" />
+                    <field name="unit_amount" readonly="1" string="Duration (hours)" />
+                    <field name="unit_amount_rounded" />
+                    <field name="employee_id" readonly="1" />
                     <field name="lc_comment" readonly="1" />
                     <field name="adjustment_reason_id" />
+                    <button name="button_details_pc" string="Details" type="object" icon="fa-align-justify" />
                 </tree>
             </field>
         </record>
-        
+
         <record id='vcls_timesheet_pc_view_form' model='ir.ui.view'>
             <field name="name">vcls-timesheet.view.form</field>
             <field name="model">account.analytic.line</field>
             <field name="arch" type="xml">
-                <form string="PC Review" >
+                <form string="PC Review">
                     <header>
                         <button name="_finalize_pc_review" type="object" string="Finalize Review" class="oe_highlight" />
                     </header>
                     <group>
-                    <field name="date" />
-                    <field name="project_id" />
-                    <field name="task_id" />
-                    <field name="time_category_id" />
-                    <field name="name" />
-                    <field name="unit_amount" string="Duration (hours)" readonly="1"/>
-                    <field name="employee_id" readonly="1"/>
-                    <field name="lc_comment" readonly="1" />
-                    <field name="adjustment_reason_id" />
+                        <field name="date" />
+                        <field name="project_id" />
+                        <field name="task_id" />
+                        <field name="time_category_id" />
+                        <field name="name" />
+                        <field name="unit_amount" string="Duration (hours)" readonly="1" />
+                        <field name="unit_amount_rounded" />
+                        <field name="employee_id" readonly="1" />
+                        <field name="lc_comment" />
+                        <field name="adjustment_reason_id" />
                     </group>
                 </form>
             </field>
@@ -117,7 +123,7 @@
             <field name="name">LC Review</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.analytic.line</field>
-            <field name="context">{'default_groupby_project':1, 'default_groupby_task':1, 'default_groupby_employee':1}</field>
+            <field name="context">{'search_default_groupby_project':1, 'search_default_groupby_task':1, 'search_default_groupby_employee':1}</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[('validated','=',True),'|',('stage_id', '=', 'lc_review'),('stage_id','=','draft')]</field>
         </record>
@@ -159,7 +165,7 @@
             <field name="domain">[('stage_id', '=', 'pc_review')]</field>
             <field name="context">{'search_default_comment': 1}</field>
         </record>
-        
+
         <record id="action_vcls_timesheet_tree_pc" model="ir.actions.act_window.view">
             <field name="view_mode">tree</field>
             <field name="sequence" eval="4" />
@@ -173,7 +179,7 @@
             <field name="view_id" ref="vcls_timesheet_pc_view_form" />
             <field name="act_window_id" ref="action_timesheet_pc_review" />
         </record>
-        
+
 
         <record id="action_timesheet_adjustment" model="ir.actions.act_window">
             <field name="name">Adjustment Validation</field>
