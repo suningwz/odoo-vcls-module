@@ -73,8 +73,6 @@ class ContactExt(models.Model):
         if supplier_search:
             expertise_ids = self._context.get('expertise_ids')[0][2]
 
-            #partners = self.search([('supplier','=',True),(expertise_ids,'in','expertise_area_ids')])
-
             #partner_ids = super(ContactExt, self)._search(args, offset, None, order, count=count, access_rights_uid=access_rights_uid)
             #partners = self.browse(partner_ids)
             
