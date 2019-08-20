@@ -15,16 +15,43 @@
             <field name="name">vcls-timesheet.view.tree</field>
             <field name="model">account.analytic.line</field>
             <field name="arch" type="xml">
-                <tree editable="top" string="Timesheets" create="false" colors="red:at_risk==True">
-                    <field name="date" readonly="1"/>
-                    <field name = "internal_comment" readonly="1"/>
+                <tree string="Timesheets" create="false" colors="red:at_risk==True">
+                    <field name="date" readonly="1" />
+                    <field name="project_id" readonly="1" />
+                    <field name="task_id" />
+                    <field name="time_category_id" />
                     <field name="name" readonly="1" />
-                    <field name="project_id" readonly="1"/>
-                    <field name="task_id"/>
-                    <field name="unit_amount" readonly="1" string="Duration (hours)"/>
-                    <field name="lc_comment"/>
-                    <field name="employee_id" readonly="1"/>
+                    <field name="internal_comment" readonly="1" invisible="1" />
+                    <field name="unit_amount" readonly="1" string="Duration (hours)" />
+                    <field name="unit_amount_rounded" />
+                    <field name="lc_comment" />
+                    <field name="employee_id" readonly="1" />
                 </tree>
+            </field>
+        </record>
+
+        <record id='vcls_timesheet_lc_view_form' model='ir.ui.view'>
+            <field name="name">vcls-timesheet.view.form</field>
+            <field name="model">account.analytic.line</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="_finalize_lc_review" type="object" string="Finalize Review" class="oe_highlight" />
+                    </header>
+
+                    <group>
+                        <field name="date" readonly="1" />
+                        <field name="project_id" readonly="1" />
+                        <field name="task_id" />
+                        <field name="time_category_id" />
+                        <field name="name" />
+                        <field name="internal_comment" readonly="1" invisible="1" />
+                        <field name="unit_amount" readonly="1" string="Duration (hours)" />
+                        <field name="unit_amount_rounded" />
+                        <field name="lc_comment" attrs="{'required': [('unit_amount_rounded', '!=', 'unit_amount')]}" />
+                        <field name="employee_id" readonly="1" />
+                    </group>
+                </form>
             </field>
         </record>
 
@@ -33,14 +60,14 @@
             <field name="model">account.analytic.line</field>
             <field name="arch" type="xml">
                 <tree editable="top" string="Timesheets" create="false" colors="red:at_risk==True">
-                    <field name="date" readonly="1"/>
-                    <field name = "internal_comment" readonly="1"/>
+                    <field name="date" readonly="1" />
+                    <field name="internal_comment" readonly="1" />
                     <field name="name" readonly="1" />
-                    <field name="project_id" readonly="1"/>
-                    <field name="task_id" readonly="1"/>
-                    <field name="unit_amount" readonly="1" string="Duration (hours)"/>
-                    <field name="lc_comment" readonly="1"/>
-                    <field name="employee_id" readonly="1"/>
+                    <field name="project_id" readonly="1" />
+                    <field name="task_id" readonly="1" />
+                    <field name="unit_amount" readonly="1" string="Duration (hours)" />
+                    <field name="lc_comment" readonly="1" />
+                    <field name="employee_id" readonly="1" />
                 </tree>
             </field>
         </record>
@@ -49,16 +76,40 @@
             <field name="name">vcls-timesheet.view.tree</field>
             <field name="model">account.analytic.line</field>
             <field name="arch" type="xml">
-                <tree editable="top" string="PC Review" colors="red:at_risk==True">
-                    <field name="date"/>
-                    <field name="employee_id"/>
-                    <field name = "internal_comment" />
+                <tree string="PC Review" colors="red:at_risk==True">
+                    <field name="date" />
+                    <field name="project_id" />
+                    <field name="task_id" />
+                    <field name="time_category_id" />
                     <field name="name" />
-                    <field name="project_id"/>
-                    <field name="task_id"/>
-                    <field name="unit_amount" string="Duration (hours)"/>
+                    <field name="unit_amount" string="Duration (hours)" />
+                    <field name="employee_id" />
+                    <field name="lc_comment" readonly="1" />
                     <field name="adjustment_reason_id" />
                 </tree>
+            </field>
+        </record>
+        
+        <record id='vcls_timesheet_pc_view_form' model='ir.ui.view'>
+            <field name="name">vcls-timesheet.view.form</field>
+            <field name="model">account.analytic.line</field>
+            <field name="arch" type="xml">
+                <form string="PC Review" >
+                    <header>
+                        <button name="_finalize_pc_review" type="object" string="Finalize Review" class="oe_highlight" />
+                    </header>
+                    <group>
+                    <field name="date" />
+                    <field name="project_id" />
+                    <field name="task_id" />
+                    <field name="time_category_id" />
+                    <field name="name" />
+                    <field name="unit_amount" string="Duration (hours)" readonly="1"/>
+                    <field name="employee_id" readonly="1"/>
+                    <field name="lc_comment" readonly="1" />
+                    <field name="adjustment_reason_id" />
+                    </group>
+                </form>
             </field>
         </record>
 
@@ -66,26 +117,35 @@
             <field name="name">LC Review</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.analytic.line</field>
-            <!-- <field name="context">{'group_by':['project_id']}</field> -->
-            <field name="view_mode">tree</field>
-            <field name="view_id" ref="vcls_timesheet_lc_view_tree"/>
+            <field name="context">{'default_groupby_project':1, 'default_groupby_task':1, 'default_groupby_employee':1}</field>
+            <field name="view_mode">tree,form</field>
             <field name="domain">[('validated','=',True),'|',('stage_id', '=', 'lc_review'),('stage_id','=','draft')]</field>
         </record>
 
-        
-        <!-- <record id="action_timesheet_lc_review" model="ir.actions.act_window">
-            <field name="name">LC Review</field>
-            <field name="res_model">account.analytic.line</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[('stage_id', '=', 'lc_review')]</field>
-        </record> -->
+        <record id="action_vcls_timesheet_tree_lc" model="ir.actions.act_window.view">
+            <field name="view_mode">tree</field>
+            <field name="sequence" eval="4" />
+            <field name="view_id" ref="vcls_timesheet_lc_view_tree" />
+            <field name="act_window_id" ref="action_vcls_timesheet_tree" />
+        </record>
+
+        <record id="action_vcls_timesheet_form_lc" model="ir.actions.act_window.view">
+            <field name="view_mode">form</field>
+            <field name="sequence" eval="5" />
+            <field name="view_id" ref="vcls_timesheet_lc_view_form" />
+            <field name="act_window_id" ref="action_vcls_timesheet_tree" />
+        </record>
+
+
+        <!-- <record id="action_timesheet_lc_review" model="ir.actions.act_window"> <field name="name">LC Review</field> <field name="res_model">account.analytic.line</field> <field name="view_mode">tree,form</field> <field name="domain">[('stage_id', 
+            '=', 'lc_review')]</field> </record> -->
 
         <record id="view_timesheet_pc_review_search" model="ir.ui.view">
             <field name="name">timesheet.pc.review.search</field>
             <field name="model">account.analytic.line</field>
             <field name="arch" type="xml">
                 <search string="PC Review">
-                    <filter string="With comment" name="comment" domain="[('lc_comment','=',True)]"/>
+                    <filter string="With comment" name="comment" domain="[('lc_comment','=',True)]" />
                 </search>
             </field>
         </record>
@@ -95,11 +155,25 @@
             <field name="name">PC Review</field>
             <field name="res_model">account.analytic.line</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="vcls_timesheet_pc_view_tree"/>
-            <field name="search_view_id" ref="view_timesheet_pc_review_search"/>
+            <field name="search_view_id" ref="view_timesheet_pc_review_search" />
             <field name="domain">[('stage_id', '=', 'pc_review')]</field>
             <field name="context">{'search_default_comment': 1}</field>
         </record>
+        
+        <record id="action_vcls_timesheet_tree_pc" model="ir.actions.act_window.view">
+            <field name="view_mode">tree</field>
+            <field name="sequence" eval="4" />
+            <field name="view_id" ref="vcls_timesheet_pc_view_tree" />
+            <field name="act_window_id" ref="action_timesheet_pc_review" />
+        </record>
+
+        <record id="action_vcls_timesheet_form_pc" model="ir.actions.act_window.view">
+            <field name="view_mode">form</field>
+            <field name="sequence" eval="5" />
+            <field name="view_id" ref="vcls_timesheet_pc_view_form" />
+            <field name="act_window_id" ref="action_timesheet_pc_review" />
+        </record>
+        
 
         <record id="action_timesheet_adjustment" model="ir.actions.act_window">
             <field name="name">Adjustment Validation</field>
@@ -115,7 +189,7 @@
             <field name="res_model">account.analytic.line</field>
             <field name="context">{'group_by':['partner_id', 'project_id']}</field>
             <field name="view_mode">tree</field>
-            <field name="view_id" ref="vcls_timesheet_read_view"/>
+            <field name="view_id" ref="vcls_timesheet_read_view" />
             <field name="domain">[('project_id.user_id','=',uid)]</field>
         </record>
 
@@ -125,7 +199,7 @@
             <field name="res_model">account.analytic.line</field>
             <field name="context">{'group_by':['partner_id', 'project_id']}</field>
             <field name="view_mode">tree</field>
-            <field name="view_id" ref="vcls_timesheet_read_view"/>
+            <field name="view_id" ref="vcls_timesheet_read_view" />
             <field name="domain">[('project_id.user_id','=',uid)]</field>
         </record>
 
@@ -135,94 +209,43 @@
             <field name="res_model">account.analytic.line</field>
             <field name="context">{'group_by':['employee_id', 'project_id']}</field>
             <field name="view_mode">tree</field>
-            <field name="view_id" ref="vcls_timesheet_read_view"/>
+            <field name="view_id" ref="vcls_timesheet_read_view" />
             <field name="domain">[('employee_id.timesheet_manager_id', '=', uid)]</field>
         </record>
 
-        <menuitem id="hr_timesheet.timesheet_menu_activity_mine"
-            name="My Timesheets"
-            sequence="1"
-            parent="hr_timesheet.timesheet_menu_root"
-            action="hr_timesheet.act_hr_timesheet_line"/>
+        <menuitem id="hr_timesheet.timesheet_menu_activity_mine" name="My Timesheets" sequence="1" parent="hr_timesheet.timesheet_menu_root" action="hr_timesheet.act_hr_timesheet_line" />
 
-        <menuitem id="hr_timesheet.timesheet_menu_activity_all"
-            name="All Timesheets"
-            parent="hr_timesheet.menu_hr_time_tracking"
-            action="hr_timesheet.timesheet_action_all"
-            groups="hr_timesheet.group_timesheet_manager,vcls_pc"/>
+        <menuitem id="hr_timesheet.timesheet_menu_activity_all" name="All Timesheets" parent="hr_timesheet.menu_hr_time_tracking" action="hr_timesheet.timesheet_action_all" groups="hr_timesheet.group_timesheet_manager,vcls_pc" />
 
-        <menuitem name="To Validate" id="timesheet_grid.menu_timesheet_grid_validate"
-                  parent="hr_timesheet.timesheet_menu_root"
-                  groups="hr_timesheet.group_timesheet_manager"
-                  sequence="10"
-                  active="False"/>
+        <menuitem name="To Validate" id="timesheet_grid.menu_timesheet_grid_validate" parent="hr_timesheet.timesheet_menu_root" groups="hr_timesheet.group_timesheet_manager" sequence="10" active="False" />
 
-        <menuitem id="menu_lc_review"
-            name="LC"
-            sequence="2"
-            parent="hr_timesheet.timesheet_menu_root"
-        />
-        
-        <menuitem id="timesheet_menu_lc_review"
-            name="LC Review"
-            sequence="1"
-            parent="menu_lc_review"
-            action="action_vcls_timesheet_tree"/>
-        
-        <menuitem id="timesheet_menu_lc_all"
-            name="Timesheets"
-            sequence="2"
-            parent="menu_lc_review"
-            action="action_lc_all_timesheet_tree"/>
-        
-        <menuitem id="menu_pc_review"
-            name="PC"
-            sequence="3"
-            parent="hr_timesheet.timesheet_menu_root"
-        />
+        <menuitem id="menu_lc_review" name="LC" sequence="2" parent="hr_timesheet.timesheet_menu_root" />
 
-        <menuitem id="timesheet_menu_pc_review"
-            name="PC Review"
-            sequence="1"
-            parent="menu_pc_review"
-            action="action_timesheet_pc_review"/>
-        
-        <menuitem id="timesheet_menu_pc_all"
-            name="Timesheets"
-            sequence="2"
-            parent="menu_pc_review"
-            action="action_pc_all_timesheet_tree"/>
+        <menuitem id="timesheet_menu_lc_review" name="LC Review" sequence="1" parent="menu_lc_review" action="action_vcls_timesheet_tree" />
 
-        <menuitem id="menu_lm_timesheet"
-            name="Line Manager"
-            sequence="4"
-            parent="hr_timesheet.timesheet_menu_root"
-        />
+        <menuitem id="timesheet_menu_lc_all" name="Timesheets" sequence="2" parent="menu_lc_review" action="action_lc_all_timesheet_tree" />
 
-        <menuitem id="menu_lm_timesheet_tree"
-            name="Tree"
-            sequence="1"
-            parent="menu_lm_timesheet"
-            action="action_lm_all_timesheet_tree"
-        />
+        <menuitem id="menu_pc_review" name="PC" sequence="3" parent="hr_timesheet.timesheet_menu_root" />
 
-        <!-- record id="menu_lm_timesheet" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_lm'))]"/>
-        </record -->
-        
-        <menuitem id="hr_timesheet.timesheet_menu_adjustment"
-            name="Adjustment Approval"
-            sequence="5"
-            parent="hr_timesheet.timesheet_menu_root"
-            action="action_timesheet_adjustment"/>
+        <menuitem id="timesheet_menu_pc_review" name="PC Review" sequence="1" parent="menu_pc_review" action="action_timesheet_pc_review" />
+
+        <menuitem id="timesheet_menu_pc_all" name="Timesheets" sequence="2" parent="menu_pc_review" action="action_pc_all_timesheet_tree" />
+
+        <menuitem id="menu_lm_timesheet" name="Line Manager" sequence="4" parent="hr_timesheet.timesheet_menu_root" />
+
+        <menuitem id="menu_lm_timesheet_tree" name="Tree" sequence="1" parent="menu_lm_timesheet" action="action_lm_all_timesheet_tree" />
+
+        <!-- record id="menu_lm_timesheet" model="ir.ui.menu"> <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_lm'))]"/> </record -->
+
+        <menuitem id="hr_timesheet.timesheet_menu_adjustment" name="Adjustment Approval" sequence="5" parent="hr_timesheet.timesheet_menu_root" action="action_timesheet_adjustment" />
 
         <record id="timesheet_view_tree_user_colored" model="ir.ui.view">
             <field name="name">account.analytic.line.view.tree.with.user.colored</field>
             <field name="model">account.analytic.line</field>
-            <field name="inherit_id" ref="hr_timesheet.timesheet_view_tree_user"/>
+            <field name="inherit_id" ref="hr_timesheet.timesheet_view_tree_user" />
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='date']" position="before">
-                    <field name="stage_id" invisible='1'/>
+                    <field name="stage_id" invisible='1' />
                 </xpath>
                 <xpath expr="//tree" position="attributes">
                     <attribute name="decoration-success">stage_id=='draft'</attribute>
@@ -234,74 +257,75 @@
             </field>
         </record>
 
-        <!-- <record id="timesheet_view_tree_colored" model="ir.ui.view">
-            <field name="name">account.analytic.line.tree.colored</field>
-            <field name="model">account.analytic.line</field>
-            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='date']" position="before">
-                    <field name="stage_id" invisible='1'/>
-                </xpath>
-                <xpath expr="//tree" position="attributes">
-                    <attribute name="decoration-success">stage_id=='draft'</attribute>
-                    <attribute name="decoration-primary">stage_id=='lc_review'</attribute>
-                    <attribute name="decoration-info">stage_id=='pc_review'</attribute>
-                    <attribute name="decoration-danger">stage_id=='carry_forward'</attribute>
-                    <attribute name="decoration-warning">stage_id=='invoiceable'</attribute>
-                </xpath>
-            </field>
-        </record> -->
+        <!-- <record id="timesheet_view_tree_colored" model="ir.ui.view"> <field name="name">account.analytic.line.tree.colored</field> <field name="model">account.analytic.line</field> <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/> 
+            <field name="arch" type="xml"> <xpath expr="//field[@name='date']" position="before"> <field name="stage_id" invisible='1'/> </xpath> <xpath expr="//tree" position="attributes"> <attribute name="decoration-success">stage_id=='draft'</attribute> <attribute 
+            name="decoration-primary">stage_id=='lc_review'</attribute> <attribute name="decoration-info">stage_id=='pc_review'</attribute> <attribute name="decoration-danger">stage_id=='carry_forward'</attribute> <attribute name="decoration-warning">stage_id=='invoiceable'</attribute> 
+            </xpath> </field> </record> -->
 
         <record id="timesheet_view_search" model="ir.ui.view">
             <field name="name">account.analytic.line.search</field>
             <field name="model">account.analytic.line</field>
-            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_search"/>
+            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_search" />
             <field name="arch" type="xml">
                 <xpath expr="//filter[@name='month']" position="before">
-                    <filter name="draft" string="Draft" domain="[('stage_id', '=', 'draft')]"/>
-                    <filter name="lc_review" string="LC Review" domain="[('stage_id', '=', 'lc_review')]"/>
-                    <filter name="pc_review" string="PC Review" domain="[('stage_id', '=', 'pc_review')]"/>
-                    <filter name="carry_forward" string="Carry Forward" domain="[('stage_id', '=', 'carry_forward')]"/>
-                    <filter name="invoiceable" string="Invoiceable" domain="[('stage_id', '=', 'invoiceable')]"/>
-                    <separator/>
+                    <filter name="draft" string="Draft" domain="[('stage_id', '=', 'draft')]" />
+                    <filter name="lc_review" string="LC Review" domain="[('stage_id', '=', 'lc_review')]" />
+                    <filter name="pc_review" string="PC Review" domain="[('stage_id', '=', 'pc_review')]" />
+                    <filter name="carry_forward" string="Carry Forward" domain="[('stage_id', '=', 'carry_forward')]" />
+                    <filter name="invoiceable" string="Invoiceable" domain="[('stage_id', '=', 'invoiceable')]" />
+                    <separator />
                 </xpath>
                 <xpath expr="//filter[@name='groupby_task']" position="before">
-                    <filter string="Deliverable" name="groupby_deliverable" domain="[]" context="{'group_by':'deliverable_id'}"/>
+                    <filter string="Deliverable" name="groupby_deliverable" domain="[]" context="{'group_by':'deliverable_id'}" />
                 </xpath>
             </field>
         </record>
-        
+
         <record id="hr_timesheet.act_hr_timesheet_line_by_project" model="ir.actions.act_window">
             <field name="name">Activities</field>
             <field name="res_model">account.analytic.line</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="hr_timesheet.timesheet_view_tree_user"/>
+            <field name="view_id" ref="hr_timesheet.timesheet_view_tree_user" />
             <field name="domain">[('project_id', '!=', False)]</field>
-            <field name="context">{"default_project_id": active_id, 
-                "search_default_project_id": [active_id], 
-                "search_default_groupby_deliverable":1, 
-                "search_default_groupby_task":1 
-                }</field>
-            <field name="search_view_id" ref="hr_timesheet.hr_timesheet_line_search"/>
+            <field name="context">{"default_project_id": active_id,
+                "search_default_project_id": [active_id],
+                "search_default_groupby_deliverable":1,
+                "search_default_groupby_task":1
+                }
+            </field>
+            <field name="search_view_id" ref="hr_timesheet.hr_timesheet_line_search" />
             <field name="help" type="html">
-              <p class="o_view_nocontent_smiling_face">
-                Record a new activity
-              </p><p>
-                You can register and track your workings hours by project every
-                day. Every time spent on a project will become a cost and can be re-invoiced to
-                customers if required.
-              </p>
+                <p class="o_view_nocontent_smiling_face">
+                    Record a new activity
+                </p>
+                <p>
+                    You can register and track your workings hours by project every
+                    day. Every time spent on a project will become a cost and can be re-invoiced to
+                    customers if required.
+                </p>
+            </field>
+        </record>
+
+        <record id="hr_timesheet.act_hr_timesheet_line" model="ir.actions.act_window">
+            <field name="name">My Timesheets</field>
+            <field name="res_model">account.analytic.line</field>
+            <field name="context">{
+                'grid_anchor': (datetime.date.today()).strftime('%Y-%m-%d'),
+                'search_default_draft':1,
+                'search_default_groupby_project':1,
+                'search_default_groupby_task':1,
+                }
             </field>
         </record>
 
         <record id="account_analytic_line_tree_inherit" model="ir.ui.view">
             <field name="name">account.analytic.line.tree.inherit</field>
             <field name="model">account.analytic.line</field>
-            <field name="inherit_id" ref="sale_timesheet_rounded.account_analytic_line_tree_inherit"/>
+            <field name="inherit_id" ref="sale_timesheet_rounded.account_analytic_line_tree_inherit" />
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='unit_amount_rounded']" position="replace">
-                    <field name="unit_amount_rounded" string="Revised Time" sum="Total quantity rounded" widget="float_time"/>
+                    <field name="unit_amount_rounded" string="Revised Time" sum="Total quantity rounded" widget="float_time" />
                 </xpath>
             </field>
         </record>
