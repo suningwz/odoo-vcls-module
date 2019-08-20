@@ -3,6 +3,9 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError, ValidationError
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class ExpertiseArea(models.Model):
 
     _name = 'expertise.area'
@@ -73,8 +76,8 @@ class ContactExt(models.Model):
             partner_ids = super(ContactExt, self)._search(args, offset, None, order, count=count, access_rights_uid=access_rights_uid)
             partners = self.browse(partner_ids)
             
-            #_logger.info("SEARCH found {} for mode {}".format(expertise_ids,business_mode))
-            partners = partners.filtered(lambda p: expertise_ids in p.expertise_area_ids)
+            _logger.info("EXP IDS {}".format(expertise_ids))
+            partners = partners.filtered(lambda p: expertise_ids in p.expertise_area_ids.ids)
         
             return partners.ids
         
