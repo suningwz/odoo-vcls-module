@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
 
-                <xpath expr="//button[@name='action_rfq_send']" position="attribute">
+                <xpath expr="//header" position="attributes">
                     <attribute name="groups">vcls-contact.vcls_group_ceo</attribute>
                 </xpath>
 
