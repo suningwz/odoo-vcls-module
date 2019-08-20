@@ -71,6 +71,10 @@
                     <attribute name="decoration-warning">supplier_stage!=3</attribute>
                 </xpath>
 
+                <field name="partner_id" position="after">
+                    <field name="supplier_stage"/>
+                </field>
+
             </field>
         </record>
     </data>
