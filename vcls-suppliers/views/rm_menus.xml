@@ -83,6 +83,7 @@
             id="menu_rm_expertise_main"
             name="Expertise"
             parent="menu_rm_root"
+            action="action_user_skills_rm"
             sequence="12"
         />
 

@@ -54,6 +54,12 @@ class ContactExt(models.Model):
         string="Area of Expertise",
     )
 
+    user_skill_ids = fields.One2many(
+        string='Skills',
+        comodel_name='res.partner.skill',
+        inverse_name='user_id',
+    ) 
+
     def action_po(self):
         return {
             'name': 'Purchase Order',

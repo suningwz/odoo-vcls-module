@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="user_skill_tree_view">
+            <field name="name">user_skill_tree_view</field>
+            <field name="model">res.partner.skill</field>
+            <field name="arch" type="xml">
+ 
+                <tree string="User Skills" editable="bottom">
+                    <field name="complete_name"/>
+                    <field name="user_id"/>
+                    <field name="skill_id"/>
+                    <field name="level"/>
+                    <field name="time_spent"/>
+                    <field name="comment"/>
+                </tree> 
+
+            </field>
+        </record>   
+    </data>
+
+    <record id="action_user_skills_rm" model="ir.actions.act_window">
+            <field name="name">Resource Skill</field>
+            <field name="res_model">res.partner.skill</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+    </record>
+
+</odoo>

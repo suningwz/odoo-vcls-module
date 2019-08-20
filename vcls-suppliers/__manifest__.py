@@ -45,6 +45,7 @@
         'views/sup_employee_views.xml',
         'views/purchase_views.xml',
         'views/project_portal_templates.xml',
+        'views/skill_views.xml',
 
 
         ### MENUS
