@@ -65,7 +65,7 @@ class ContactExt(models.Model):
             'context': {'search_default_partner_id': self.id},
         } 
     
-    @api.model
+   """ @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         supplier_search = self._context.get('supplier_search')
 
@@ -73,12 +73,12 @@ class ContactExt(models.Model):
         if supplier_search:
             expertise_ids = self._context.get('expertise_ids')[0][2]
 
-            partners = self.search([('supplier','=',True),(expertise_ids,'in','expertise_area_ids')])
+            #partners = self.search([('supplier','=',True),(expertise_ids,'in','expertise_area_ids')])
 
             #partner_ids = super(ContactExt, self)._search(args, offset, None, order, count=count, access_rights_uid=access_rights_uid)
             #partners = self.browse(partner_ids)
             
-            _logger.info("EXP IDS {} in {} of {}".format(expertise_ids,partners.mapped('expertise_area_ids.id'),partners.mapped('name')))
+            #_logger.info("EXP IDS {} in {} of {}".format(expertise_ids,partners.mapped('expertise_area_ids.id'),partners.mapped('name')))
             
             #partners = partners.filtered(lambda p: expertise_ids in p.expertise_area_ids.id)
         
@@ -86,5 +86,5 @@ class ContactExt(models.Model):
         
         else:
             partner_ids = super(ContactExt, self)._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
-            return partner_ids
+            return partner_ids"""
 
