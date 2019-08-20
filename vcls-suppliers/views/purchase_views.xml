@@ -7,18 +7,20 @@
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//group" position="replace">
-                    <group string="What are you looking for?">
-                        <field name="expertise_id" widget="many2many_tags" required="1"/>
-                        <field name="deliverable_ids" widget="many2many_tags"/>
-                        <field name="partner_ref" invisible="1"/>
-                    </group>
-                    <group string="Found Supplier">
-                        <field name="partner_id" widget="res_partner_many2one" context="{'search_default_supplier':1, 'default_supplier':1, 'default_customer':0, 'show_vat': True}" domain="[('supplier','=',True)]" placeholder="Name, TIN, Email, or Reference"/>
-                        <field name="currency_id"/>
-                        <field name="date_order" invisible="1"/>
-                        <field name="access_level" invisible="1"/>
-                        <field name="origin" attrs="{'invisible': [('origin','=',False)]}"/>
-                        <field name="company_id" options="{'no_create': True}" attrs="{'readonly': [('access_level', 'not in', ['rm'])]}"/>
+                    <group>
+                        <group string="What are you looking for?">
+                            <field name="expertise_id" widget="many2many_tags" required="1"/>
+                            <field name="deliverable_ids" widget="many2many_tags" string="Deliverable(s)"/>
+                            <field name="partner_ref" invisible="1"/>
+                        </group>
+                        <group string="Found Supplier">
+                            <field name="partner_id" widget="res_partner_many2one" context="{'search_default_supplier':1, 'default_supplier':1, 'default_customer':0, 'show_vat': True}" domain="[('supplier','=',True)]" placeholder="Name, TIN, Email, or Reference"/>
+                            <field name="currency_id"/>
+                            <field name="date_order" invisible="1"/>
+                            <field name="access_level" invisible="1"/>
+                            <field name="origin" attrs="{'invisible': [('origin','=',False)]}"/>
+                            <field name="company_id" options="{'no_create': True}" attrs="{'readonly': [('access_level', 'not in', ['rm'])]}"/>
+                        </group>
                     </group>
                 </xpath>
 

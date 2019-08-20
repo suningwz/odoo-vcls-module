@@ -21,7 +21,7 @@ class PurchaseOrder(models.Model):
     # CUSTOM FIELDS #
     #################
 
-    expertise_id = fields.Many2one(
+    expertise_id = fields.Many2many(
         'expertise.area',
         string="Area of Expertise",
     )
