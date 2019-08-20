@@ -57,7 +57,7 @@ class UserSkill(models.Model):
     def _compute_complete_name(self):
         levels = dict(self._fields['level'].selection)
         for skill in self:
-            skill.complete_name = _(
+            skill.complete_name = (
                 '%(user)s, %(skill)s (%(level)s)'
             ) % {
                 'user': skill.user_id.name,
