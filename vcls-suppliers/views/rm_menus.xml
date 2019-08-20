@@ -54,6 +54,14 @@
             sequence="6"
         />
 
+        <menuitem
+            id="menu_rm_suppliers_eval"
+            name="Evaluations"
+            parent="menu_rm_suppliers_main"
+            action=""
+            sequence="9"
+        />
+
         <!-- Forecasts -->
         <menuitem
             id="menu_rm_forecast_main"
