@@ -6,6 +6,11 @@
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
+
+                <xpath expr="//header" position="attribute">
+                    <attribute name="groups">vcls-suppliers.vcls_group_rm</attribute>
+                </xpath>
+
                 <xpath expr="//group" position="replace">
                     <group>
                         <group string="What are you looking for?">
