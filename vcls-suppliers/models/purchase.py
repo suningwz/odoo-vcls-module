@@ -37,6 +37,11 @@ class PurchaseOrder(models.Model):
         store=False,
         default='lc',)
 
+    supplier_stage = fields.Selection(
+        related='partner_id.stage',
+        readonly=True,
+    )
+
     ###################
     # COMPUTE METHODS #
     ###################
