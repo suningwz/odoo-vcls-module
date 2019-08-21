@@ -61,7 +61,7 @@ class SaleOrder(models.Model):
                     )
                 order.timesheet_ids = self.env[
                     'account.analytic.line'].search(domain)
-                _logger.info('{}'.format(domain))
+                _logger.info('{} found {}'.format(domain,order.timesheet_ids.mapped('name')))
             else:
                 order.timesheet_ids = []
             order.timesheet_count = len(order.timesheet_ids)
