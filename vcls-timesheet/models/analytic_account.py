@@ -2,6 +2,7 @@
 
 from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_compare
 
 import logging
 import datetime
@@ -63,6 +64,8 @@ class AnalyticLine(models.Model):
         default=0.0,
         copy=False,
     )
+    
+    required_lc_comment = fields.Boolean(compute='get_required_lc_comment')
 
 
     so_line_unit_price = fields.Float(
@@ -171,6 +174,14 @@ class AnalyticLine(models.Model):
                 record.at_risk = False
             else:
                 record.at_risk = True
+    
+    @api.onchange('unit_amount_rounded', 'unit_amount')
+    def get_required_lc_comment(self):
+        for record in self:
+            if float_compare(record.unit_amount_rounded, record.unit_amount, precision_digits=2) == 0:
+                record.required_lc_comment = False
+            else:
+                record.required_lc_comment = True    
 
     @api.onchange('project_id')
     def onchange_project_id(self):
@@ -183,6 +194,38 @@ class AnalyticLine(models.Model):
                 'task_id': [('project_id', '=', self.project_id.id), ('stage_id.allow_timesheet','=', True)]
             }}
 
-
+    @api.multi
+    def button_details_lc(self):
+        view = {
+            'name': _('Details'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'account.analytic.line',
+            'view_id': self.env.ref('vcls-timesheet.vcls_timesheet_lc_view_form').id,
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+            'context': {
+            'form_view_initial_mode': 'edit',
+            'force_detailed_view': True, },
+            'res_id': self.id,
+        }
+        return view
+    
+    @api.multi
+    def button_details_pc(self):
+        view = {
+            'name': _('Details'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'account.analytic.line',
+            'view_id': self.env.ref('vcls-timesheet.vcls_timesheet_pc_view_form').id,
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+            'context': {
+            'form_view_initial_mode': 'edit',
+            'force_detailed_view': True, },
+            'res_id': self.id,
+        }
+        return view
 
     
