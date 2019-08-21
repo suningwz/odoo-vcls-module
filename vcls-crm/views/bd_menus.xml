@@ -25,15 +25,6 @@
             ]"/>
         </record>
 
-        <!-- All client accounts -->
-        <record model="ir.actions.act_window" id="action_bd_clients">
-            <field name="name">Client</field>
-            <field name="domain" eval="[('is_internal','=',False),('stage','in',[2,3,4]),'|',('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
-            <field name="res_model">res.partner</field>
-            <field name="view_mode">kanban,tree,form,activity</field>
-            <field name="context" eval="{'default_is_company': True,'default_category_id': [ref('vcls-contact.category_account')]}"/>
-        </record>
-        
         <!-- 
         MENUS 
         ##### -->
@@ -80,22 +71,6 @@
             parent="menu_bd_root"
             action="sale.action_quotations"
             sequence="9"
-        />
-
-        <menuitem
-            id="menu_bd_client_main"
-            name="Clients"
-            parent="menu_bd_root"
-            action="action_bd_clients"
-            sequence="12"
-        />
-
-        <menuitem
-            id="menu_bd_program_main"
-            name="Client Programs"
-            parent="menu_bd_root"
-            action="vcls-project.action_program"
-            sequence="13"
         />
 
         <menuitem
