@@ -886,7 +886,7 @@ class Employee(models.Model):
             description = '<h2>Leaving employee : {} </h2><h3>Date of departure : {}'.format(self.name,self.employee_end_date)
             
         elif typeOfTicket == 'modify':
-            description = '<h2>Modified employee : {} </h2><h3>'.format(self.name)
+            description = '<h2>Modified employee (The name has changed) : {} </h2><h3>'.format(self.name)
            
         else:
             raise ValidationError("{}: Unknow type of ticket".format(typeOfTicket))
