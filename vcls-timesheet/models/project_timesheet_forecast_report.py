@@ -42,8 +42,8 @@ class TimesheetForecastReport(models.Model):
                         'temp' AS rate_product,
                         F.id AS id
                     FROM generate_series(
-                        TO_DATE('date', '2000/01/01'),
-                        TO_DATE('date', '2100/12/31'),
+                        (SELECT min(start_date) FROM project_forecast WHERE active=true)::date,
+                        (SELECT max(end_date) FROM project_forecast WHERE active=true)::date,
                         '1 day'::interval
                     ) d
                         LEFT JOIN project_forecast F ON d.date >= F.start_date AND d.date <= end_date
