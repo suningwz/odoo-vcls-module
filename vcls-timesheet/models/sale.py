@@ -2,6 +2,9 @@ from odoo import models, fields, tools, api
 from odoo.exceptions import UserError, ValidationError
 import datetime
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class SaleOrder(models.Model):
     _inherit='sale.order'
     @api.multi
@@ -58,6 +61,7 @@ class SaleOrder(models.Model):
                     )
                 order.timesheet_ids = self.env[
                     'account.analytic.line'].search(domain)
+                _logger.info('{}'.format(domain))
             else:
                 order.timesheet_ids = []
             order.timesheet_count = len(order.timesheet_ids)
