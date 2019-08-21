@@ -156,12 +156,14 @@
             ]"/>
         </record>
 
+        <!--
         <record id="action_vcls_timesheet_tree_lc" model="ir.actions.act_window.view">
             <field name="view_mode">tree</field>
             <field name="sequence" eval="4" />
             <field name="view_id" ref="vcls_timesheet_lc_view_tree" />
             <field name="act_window_id" ref="action_vcls_timesheet_tree" />
         </record>
+        -->
 
         <record id="action_vcls_timesheet_form_lc" model="ir.actions.act_window.view">
             <field name="view_mode">form</field>
