@@ -65,6 +65,7 @@
                             </page>
 
                             <page name="operations" string="Operational Info" groups="vcls-project.vcls_group_op_config">
+                                
                                 <group string="Default Rates">
                                     <field name="default_rate_ids" string="">
                                         <tree string="Default Rates">
@@ -74,6 +75,8 @@
                                         </tree>
                                     </field>
                                     <field name="seniority_level_id"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="timesheet_cost"/>
                                 </group>
                             </page>
                             
