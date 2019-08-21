@@ -11,6 +11,25 @@
             </field>
         </record>
 
+        <!-- We override the serach view to reader the groupby -->
+        <record model="ir.ui.view" id="hr_timesheet_line_search_inherited">
+            <field name="name">hr_timesheet_line_search_inherited</field>
+            <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_search" />
+            <field name="arch" type="xml">
+                <xpath expr="//group" position="replace">
+                    <group expand="0" string="Group By">
+                        
+                        <filter string="Project" name="groupby_project" domain="[]" context="{'group_by':'project_id'}"/>
+                        <filter string="Task" name="groupby_task" domain="[]" context="{'group_by':'task_id'}"/>
+                        <filter string="Employee" name="groupby_employee" domain="[]" context="{'group_by':'employee_id'}"/>
+                        <filter string="Timesheet Date" name="groupby_date" domain="[]" context="{'group_by':'date'}" help="Timesheet by Date"/>
+
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
         <record id='vcls_timesheet_lc_view_tree' model='ir.ui.view'>
             <field name="name">vcls-timesheet.view.tree</field>
             <field name="model">account.analytic.line</field>
@@ -41,17 +60,23 @@
                     </header>
 
                     <group>
-                        <field name="date" readonly="1" />
-                        <field name="project_id" readonly="1" />
-                        <field name="task_id" />
-                        <field name="time_category_id" />
-                        <field name="name" />
-                        <field name="internal_comment" readonly="1" invisible="1" />
-                        <field name="unit_amount" readonly="1" string="Duration (hours)" />
-                        <field name="unit_amount_rounded" />
-                        <field name="required_lc_comment" rinvisible="1" />
-                        <field name="lc_comment" attrs="{'required': [('required_lc_comment', '=', True)]}" />
                         <field name="employee_id" readonly="1" />
+                        <field name="project_id" readonly="1" />
+                        <field name="date" readonly="1" />
+                    </group>
+                    <group>
+                        <group string="Consultant Entries">
+                            <field name="task_id" />
+                            <field name="time_category_id" />
+                            <field name="name" />
+                            <field name="internal_comment" readonly="1" invisible="1" />
+                            <field name="unit_amount" readonly="1" string="Duration (hours)" />
+                        </group>
+                        <group string="LC inputs">
+                            <field name="unit_amount_rounded" />
+                            <field name="required_lc_comment" invisible="1" />
+                            <field name="lc_comment" attrs="{'required': [('required_lc_comment', '=', True)]}" string="LC Comment"/>
+                        </group>
                     </group>
                 </form>
             </field>
@@ -124,7 +149,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.analytic.line</field>
             <field name="context">{'search_default_groupby_project':1, 'search_default_groupby_task':1, 'search_default_groupby_employee':1}</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree</field>
             <field name="domain">[('validated','=',True),'|',('stage_id', '=', 'lc_review'),('stage_id','=','draft')]</field>
         </record>
 
