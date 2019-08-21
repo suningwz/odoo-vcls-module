@@ -855,6 +855,11 @@ class Employee(models.Model):
             if result.contract_id:
                 result.create_IT_ticket('modify')
         return result
+    
+    @api.depends('job_title')
+    def notify_title_changes(self):
+        for record in self:
+            record.create_IT_ticket('job_title_changed')
 
     
     def generate_ticket_description(self, typeOfTicket):
@@ -887,6 +892,9 @@ class Employee(models.Model):
             
         elif typeOfTicket == 'modify':
             description = '<h2>Modified employee (The name has changed) : {} </h2><h3>'.format(self.name)
+        
+        elif typeOfTicket == 'job_title_changed':
+            description = '<h2>Modified employee (The Job Title changed) : {} </h2><h3>'.format(self.name)
            
         else:
             raise ValidationError("{}: Unknow type of ticket".format(typeOfTicket))
