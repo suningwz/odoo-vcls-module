@@ -50,6 +50,7 @@
                             <th>Description</th>
                             <th>Responsible</th>
                             <th>Internal Comment</th>
+                            <th>Time Category</th>
                             <th class="text-right">Duration</th>
                         </tr>
                     </thead>
@@ -61,6 +62,7 @@
                                     <td><t t-esc="timesheet.name"/></td>
                                     <td><t t-esc="timesheet.sudo().user_id.name"/></td>
                                     <td><t t-esc="timesheet.sudo().internal_comment"/></td>
+                                    <td><t t-esc="timesheet.sudo().time_category_id.name"/></td>
                                     <td class="text-right"><span t-esc="timesheet.unit_amount" t-options='{"widget": "duration", "unit": "hour", "round": "minute"}'/></td>
                                 </tr>
                                 <!-- EDIT TIMESHEET -->
@@ -85,6 +87,19 @@
                                                     <div t-attf-class="form-group col-md-6">
                                                         <label class="col-form-label" for="name">Description</label>
                                                         <input type="text" name="name" class="form-control" t-attf-value = "#{ timesheet.name }"/>
+                                                    </div>
+                                                    <div class="form-group col-md-6">
+                                                        <label class="col-form-label" for="name">Time Category</label>
+                                                        <select class="form-control" name="time_category_id">
+                                                            <t t-foreach="time_categories" t-as="time_category">
+                                                                <t t-if="time_category.id == timesheet.time_category_id.id">
+                                                                    <option t-attf-value = "#{ time_category.id }" selected="selected"><t t-esc="time_category.name"/></option>
+                                                                </t>
+                                                                <t t-if="time_category.id != timesheet.time_category_id.id">
+                                                                    <option t-attf-value = "#{ time_category.id }"><t t-esc="time_category.name"/></option>
+                                                                </t>
+                                                            </t>
+                                                        </select>
                                                     </div>
                                                     <div t-attf-class="form-group col-sm-4">
                                                         <label class="col-form-label" for="name">Duration (hours)</label>
@@ -136,6 +151,14 @@
                                     <div t-attf-class="form-group col-md-6">
                                         <label class="col-form-label" for="name">Description</label>
                                         <input type="text" name="name" class="form-control" />
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label class="col-form-label" for="name">Time Category</label>
+                                        <select class="form-control" name="time_category_id">
+                                            <t t-foreach="time_categories" t-as="time_category">
+                                                <option t-attf-value = "#{ time_category.id }"><t t-esc="time_category.name"/></option>
+                                            </t>
+                                        </select>
                                     </div>
                                     <div t-attf-class="form-group col-sm-4">
                                         <label class="col-form-label" for="name">Duration (hours)</label>
