@@ -37,6 +37,31 @@ class SaleOrder(models.Model):
                                                                                     'project_id':pre_project, 
                                                                                     'stage_id':stage_id, 
                                                                                     'active':True}).id
+    
+    #We override the OCA to inject the stage domain
+    @api.multi
+    @api.depends('timesheet_limit_date')
+    def _compute_timesheet_ids(self):
+        # this method copy of base method, it injects date in domain
+        for order in self:
+            if order.analytic_account_id:
+                domain = [
+                    ('so_line', 'in', order.order_line.ids),
+                    ('amount', '<=', 0.0),
+                    ('project_id', '!=', False),
+                    #XXX OCA override
+                    ('stage', 'in', ['invoiceable','invoiced']),
+                ]
+                if order.timesheet_limit_date:
+                    domain.append(
+                        ('date', '<=', order.timesheet_limit_date)
+                    )
+                order.timesheet_ids = self.env[
+                    'account.analytic.line'].search(domain)
+            else:
+                order.timesheet_ids = []
+            order.timesheet_count = len(order.timesheet_ids)
+
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
