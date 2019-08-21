@@ -50,7 +50,7 @@ class SaleOrder(models.Model):
                     ('amount', '<=', 0.0),
                     ('project_id', '!=', False),
                     #XXX OCA override
-                    ('stage', 'in', ['invoiceable','invoiced']),
+                    ('stage_id', 'in', ['invoiceable','invoiced']),
                 ]
                 if order.timesheet_limit_date:
                     domain.append(
