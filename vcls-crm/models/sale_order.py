@@ -63,6 +63,7 @@ class SaleOrder(models.Model):
     )
 
     name = fields.Char(string='Order Reference', required=True, copy=False, readonly=True, states={'draft': [('readonly', False)]}, index=True, default=lambda self: 'New')
+    
 
     ###############
     # ORM METHODS #
