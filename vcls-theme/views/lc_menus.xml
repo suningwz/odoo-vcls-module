@@ -18,6 +18,19 @@
             </field>
         </record>
 
+        <record id="project_timesheet_forecast_report_view_search" model="ir.ui.view">
+            <field name="name">project_timesheet_forecast_report_view_search</field>
+            <field name="model">project.timesheet.forecast.report.analysis</field>
+            <field name="inherit_id" ref="project_timesheet_forecast.project_timesheet_forecast_report_view_search"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//filter[@name='year']" position="replace">
+                    <filter string="My Projects" name="my_projects" domain="[('project_id.user_id','=', uid)]"/>
+                </xpath>
+
+            </field>
+        </record> 
+
         <!-- ACTIONS -->
         <!-- ACTION OPEN PCLIENT PROJECT WITH DEFAULT FILTER MY PROJECT -->
         <record id="action_lc_client_project" model="ir.actions.act_window">
@@ -29,6 +42,36 @@
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')})]"/>
             <field name="domain">[('project_type','=', 'client')]</field>
             <field name="context">{"search_default_lead_projects":1}</field>
+        </record>
+
+        <record id="action_vcls_timesheet_tree" model="ir.actions.act_window">
+            <field name="name">LC Review</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">account.analytic.line</field>
+            <field name="context">{'search_default_groupby_project':1, 'search_default_groupby_task':1, 'search_default_groupby_employee':1}</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[('validated','=',True), ('project_id.user_id','=', uid), '|',('stage_id', '=', 'lc_review'),('stage_id','=','draft')]</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-timesheet.vcls_timesheet_lc_view_tree')}),
+            ]"/>
+        </record>
+
+        <record id="action_lc_ts_all" model="ir.actions.act_window">
+            <field name="name">All</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">account.analytic.line</field>
+            <field name="view_mode">tree</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-timesheet.vcls_timesheet_lc_view_tree')}),
+            ]"/>
+        </record>
+        
+        <record id="project_followup_report_action_hours" model="ir.actions.act_window">
+            <field name="name">Project Follow-up Report Hours</field>
+            <field name="res_model">project.timesheet.forecast.report.analysis</field>
+            <field name="view_mode">pivot</field>
+            <field name='view_id' ref='vcls-timesheet.project_followup_report_pivot_view_hours' />
+            <field name="context">{"search_default_my_projects":1}</field>
         </record>
 
 
@@ -47,11 +90,42 @@
         />
 
         <menuitem
-            id="menu_client"
+            id="menu_lc_client"
             name="Client Projects"
             parent="menu_lc_root"
             sequence="1"
             action="action_lc_client_project"
+        />
+
+        <menuitem
+            id="menu_lc_timesheets"
+            name="Timesheets"
+            parent="menu_lc_root"
+            sequence="2"
+        />
+
+        <menuitem
+            id="menu_lc_timesheets_review"
+            name="To Review"
+            parent="menu_lc_timesheets"
+            sequence="1"
+            action="action_vcls_timesheet_tree"
+        />
+
+        <menuitem
+            id="menu_lc_timesheets_all"
+            name="All"
+            parent="menu_lc_timesheets"
+            sequence="2"
+            action="action_lc_ts_all"
+        />
+
+        <menuitem
+            id="menu_lc_follow_up"
+            name="Project Follow-Up"
+            parent="menu_lc_root"
+            sequence="3"
+            action="project_followup_report_action_hours"
         />
 
     </data>
