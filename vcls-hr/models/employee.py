@@ -845,7 +845,6 @@ class Employee(models.Model):
                 employee.create_IT_ticket('newLM')
     '''
     # Override write to send only one ticket replace above
-    @api.model
     def write(self, vals):
         result = super(Employee, self).write(vals)
         if 'parent_id' in vals:
