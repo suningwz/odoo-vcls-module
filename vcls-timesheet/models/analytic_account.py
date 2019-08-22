@@ -97,6 +97,10 @@ class AnalyticLine(models.Model):
         for ts in self.filtered(lambda r: r.)"""
 
     @api.multi
+    def finalize_lc_review(self):
+        self._finalize_lc_review()
+
+    @api.multi
     def _finalize_lc_review(self):
         context = self.env.context
         timesheet_ids = context.get('active_ids',[])
@@ -115,7 +119,10 @@ class AnalyticLine(models.Model):
                 message += " - " + timesheet.name + "\n"
             raise ValidationError(_(message))
 
-    
+    @api.multi
+    def finalize_pc_review(self):
+        self._finalize_pc_review()
+
     @api.multi
     def _finalize_pc_review(self):
         context = self.env.context
