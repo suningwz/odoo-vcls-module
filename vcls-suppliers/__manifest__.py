@@ -50,7 +50,6 @@
 
         ### MENUS
         'views/supplier_menu.xml', 
-        'views/rm_menus.xml', 
         
     ],
     # only loaded in demonstration mode

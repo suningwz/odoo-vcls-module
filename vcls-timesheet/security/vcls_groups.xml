@@ -9,5 +9,9 @@
         <record id="vcls_pc" model="res.groups">
             <field name="name">VCLS Project Controller</field>
         </record>
+
+        <record id="vcls_lc" model="res.groups">
+            <field name="name">VCLS Lead Consultant</field>
+        </record>
     </data>
 </odoo>

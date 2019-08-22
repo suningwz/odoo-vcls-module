@@ -38,24 +38,17 @@
             <field name='view_id' ref='project_followup_report_pivot_view_revenue' />
         </record>
 
-        <record id="project_followup_report_action_hours" model="ir.actions.act_window">
-            <field name="name">Project Follow-up Report Hours</field>
-            <field name="res_model">project.timesheet.forecast.report.analysis</field>
-            <field name="view_mode">pivot</field>
-            <field name='view_id' ref='project_followup_report_pivot_view_hours' />
-        </record>
-
         <menuitem id="menu_report_followup_revenue"
             name="Project Follow-up (Revenue)"
             parent="project.menu_main_pm"
             action="vcls-timesheet.project_followup_report_action_revenue"
             sequence='6' />
         
-        <menuitem id="menu_report_followup_hours"
+        <!-- menuitem id="menu_report_followup_hours"
             name="Project Follow-up (Hours)"
             parent="project.menu_main_pm"
             action="vcls-timesheet.project_followup_report_action_hours"
-            sequence='7' />
+            sequence='7' / -->
     
     </data>
 </odoo>
