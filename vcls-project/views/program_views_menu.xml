@@ -124,14 +124,7 @@
             active="False"/>
 
 
-        <!-- All client accounts -->
-        <record model="ir.actions.act_window" id="action_bd_clients">
-            <field name="name">Client</field>
-            <field name="domain" eval="[('is_internal','=',False),('stage','in',[2,3,4]),'|',('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
-            <field name="res_model">res.partner</field>
-            <field name="view_mode">kanban,tree,form,activity</field>
-            <field name="context" eval="{'default_is_company': True,'default_category_id': [ref('vcls-contact.category_account')]}"/>
-        </record>
+        
 
         
 
