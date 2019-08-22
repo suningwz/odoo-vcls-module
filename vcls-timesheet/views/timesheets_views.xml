@@ -37,7 +37,7 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="_finalize_lc_review" type="object" string="Finalize Review" class="oe_highlight" />
+                        <button name="finalize_lc_review" type="object" string="Finalize Review" class="oe_highlight" />
                     </header>
 
                     <group>
@@ -101,7 +101,7 @@
             <field name="arch" type="xml">
                 <form string="PC Review">
                     <header>
-                        <button name="_finalize_pc_review" type="object" string="Finalize Review" class="oe_highlight" />
+                        <button name="finalize_pc_review" type="object" string="Finalize Review" class="oe_highlight" />
                     </header>
                     <group>
                         <field name="date" />
