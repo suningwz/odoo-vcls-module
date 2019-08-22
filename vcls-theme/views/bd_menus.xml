@@ -332,7 +332,7 @@
             id="menu_bd_program_main"
             name="Client Programs"
             parent="menu_bd_root"
-            action="action_program"
+            action="vcls-project.action_program"
             sequence="13"
         />
         
