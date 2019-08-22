@@ -1,0 +1,58 @@
+<odoo>
+    <data>
+
+        <!-- VIEWS -->
+
+        <!-- ADD FILTER TO PROJECT SEARCH VIEW -->
+        <record id="view_project_project_filter" model="ir.ui.view">
+            <field name="name">view_project_project_filter</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.view_project_project_filter"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <separator/>
+                    <filter string="My Projects" name="lead_projects" domain="[('user_id','=', uid)]"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- ACTIONS -->
+        <!-- ACTION OPEN PCLIENT PROJECT WITH DEFAULT FILTER MY PROJECT -->
+        <record id="action_lc_client_project" model="ir.actions.act_window">
+            <field name="name">Client Projects</field>
+            <field name="res_model">project.project</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')})]"/>
+            <field name="domain">[('project_type','=', 'client')]</field>
+            <field name="context">{"search_default_lead_projects":1}</field>
+        </record>
+
+
+
+
+
+
+        <!-- MENU ITEMS -->
+        <menuitem
+            id="menu_lc_root"
+            name="LC"
+            web_icon="fa fa-star,#f1c40f,#838383"
+            sequence="8"
+            active="True"
+            groups="vcls-hr.vcls_group_superuser_lvl1,vcls-timesheet.vcls_lc"
+        />
+
+        <menuitem
+            id="menu_client"
+            name="Client Projects"
+            parent="menu_lc_root"
+            sequence="1"
+            action="action_lc_client_project"
+        />
+
+    </data>
+</odoo>

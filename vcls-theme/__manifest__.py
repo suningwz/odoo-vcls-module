@@ -22,6 +22,8 @@
                 'web',
                 'vcls-crm',
                 'vcls-suppliers',
+                'vcls-timesheet',
+                'vcls-project',
             ],
 
     # always loaded
@@ -30,6 +32,7 @@
         'views/colors.xml',
         'views/bd_menus.xml',
         'views/rm_menus.xml',
+        'views/lc_menus.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
