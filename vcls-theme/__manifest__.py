@@ -21,6 +21,7 @@
     'depends': ['base', 
                 'web',
                 'vcls-crm',
+                'vcls-suppliers',
             ],
 
     # always loaded
@@ -28,6 +29,7 @@
         # 'security/ir.model.access.csv',
         'views/colors.xml',
         'views/bd_menus.xml',
+        'views/rm_menus.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
