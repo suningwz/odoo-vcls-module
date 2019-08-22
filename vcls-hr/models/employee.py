@@ -808,10 +808,10 @@ class Employee(models.Model):
                 'ticket_type_id' : self.env['helpdesk.ticket.type'].search([('name', '=', self.TYPE)], limit=1).id,
                 'dynamic_description' : self.generate_ticket_description(type_of_ticket),
             })
-    
+    '''
     @api.onchange('first_name', 'middle_name', 'family_name')
     def _ticket_onchange_employee(self):
-        ''' trigger in order to send ticket when an existing employee is modified
+       trigger in order to send ticket when an existing employee is modified
         When:
             used when first_name, middle_name, family_name, company_id or parent_id is changed
         Args:
@@ -820,15 +820,16 @@ class Employee(models.Model):
             Nothing
         Returns:
             Nothing
-        '''
+        
         for employee in self:
             #we create a modif only if a contract already exists
             if employee.contract_id:
                 employee.create_IT_ticket('modify')
-
+'''
+    '''
     @api.onchange('parent_id')
     def _ticket_onchange_LM(self):
-        ''' trigger in order to send ticket when an existing employee is modified
+        trigger in order to send ticket when an existing employee is modified
         When:
             used when Line Manager is changed
         Args:
@@ -837,11 +838,28 @@ class Employee(models.Model):
             Nothing
         Returns:
             Nothing
-        '''
+        
         for employee in self:
             #we create a modif only if a contract already exists
             if self._origin.parent_id:
                 employee.create_IT_ticket('newLM')
+    '''
+    # Override write to send only one ticket replace above
+    def write(self, vals):
+        result = super(Employee, self).write(vals)
+        if 'parent_id' in vals:
+            if result.contract_id:
+                result.create_IT_ticket('newLM')
+        if 'first_name' in vals or 'middle_name' in vals or 'last_name' in vals:
+            if result.contract_id:
+                result.create_IT_ticket('modify')
+        return result
+    
+    @api.depends('job_title')
+    def notify_title_changes(self):
+        for record in self:
+            record.create_IT_ticket('job_title_changed')
+
     
     def generate_ticket_description(self, typeOfTicket):
         
@@ -872,7 +890,10 @@ class Employee(models.Model):
             description = '<h2>Leaving employee : {} </h2><h3>Date of departure : {}'.format(self.name,self.employee_end_date)
             
         elif typeOfTicket == 'modify':
-            description = '<h2>Modified employee : {} </h2><h3>'.format(self.name)
+            description = '<h2>Modified employee (The name has changed) : {} </h2><h3>'.format(self.name)
+        
+        elif typeOfTicket == 'job_title_changed':
+            description = '<h2>Modified employee (The Job Title changed) : {} </h2><h3>'.format(self.name)
            
         else:
             raise ValidationError("{}: Unknow type of ticket".format(typeOfTicket))
