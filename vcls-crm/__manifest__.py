@@ -19,7 +19,7 @@
 
 
 
-    'version': '1.13.0',
+    'version': '1.14.0',
 
 
 
@@ -35,6 +35,7 @@
                 'partner_second_lastname',
                 'website_crm_score',
                 'vcls-contact',
+                'sale',
                 'sale_management',
                 'sale_crm',
                 'crm_lead_currency',
