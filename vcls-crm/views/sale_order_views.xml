@@ -130,7 +130,10 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//field[@name='currency_id']" position="after">
-                    <field name = 'risk_score' />
+                    <!-- field name = 'risk_score' />
+                    ADD RISK SCORE IN VCLS-INVOICING TO RESPECT DEPENDENCIES
+                    -->
+                    <field name = 'tag_ids' />
                 </xpath>
 
                 <xpath expr="//t[@t-esc='record.partner_id.value']" position="replace">
@@ -143,8 +146,17 @@
                     </div>
                 </xpath>
 
-                <xpath expr="//div[@class='o_kanban_record_top mb16']" position="inside">
-                    <span class="badge badge-pill badge-warning">Warning</span>
+                <xpath expr="//div[@class='o_kanban_record_top mb16']" position="after">
+                    <field name="tag_ids" widget = "many2many_tags" />
+                    <!-- field name="tag_ids" widget = "many2many_tags" options="{'color_field': 'color'}"/ -->
+                    <!-- 
+                        Code du dessus permet de coloriser les tags mais les tags avec aucune couleur associée n'apparaîtront pas dans la vue
+                        Il faudra mettre le field color du tag en mandatory alors
+                     -->
+                    <div t-if="record.user_id.raw_value">
+                        <span class="fa fa-user-circle" aria-label="Salesman" title="Salesman"/>
+                        <field name="user_id" />
+                    </div>
                 </xpath>
 
 

@@ -16,7 +16,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-crm.view_sale_order_kanban')}),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-invoicing.view_sale_order_kanban')}),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('sale.view_quotation_tree')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('sale.view_order_form')}),
                 (0, 0, {'view_mode': 'calendar', 'view_id': ref('sale.view_sale_order_calendar')}),
