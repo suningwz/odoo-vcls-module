@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="card_scanner_action_client" model="ir.actions.client">
+        <field name="name">Card scanner</field>
+        <field name="tag">card.scanner</field>
+    </record>
+
+    <menuitem name="Card scan"
+        id="menu_card_scanner"
+        action="card_scanner_action_client"
+        sequence="50"/>
+
+</odoo>

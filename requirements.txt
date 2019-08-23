@@ -2,3 +2,5 @@ simple-salesforce
 datetime
 pytz
 tzlocal
+google-cloud-vision
+google-cloud-language
