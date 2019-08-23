@@ -83,12 +83,12 @@ class AnalyticLine(models.Model):
 
     @api.model
     def create(self, vals):
-        _logger.info("Create {}".format(vals['unit_amount']))
+        _logger.info("Create {}".format(vals.get('unit_amount')))
         if 'unit_amount' in vals and vals.get('is_timesheet',False): #do time ceiling for timesheets only
-            _logger.info("Before round {}".format(vals['unit_amount']))
+            _logger.info("Before round {}".format(vals.get('unit_amount')))
             if vals['unit_amount'] % 0.25 != 0:
-                vals['unit_amount'] = math.ceil(vals['unit_amount']*4)/4
-                _logger.info("After round {}".format(vals['unit_amount']))
+                vals['unit_amount'] = math.ceil(vals.get('unit_amount', 0)*4)/4
+                _logger.info("After round {}".format(vals.get('unit_amount')))
 
         return super(AnalyticLine, self).create(vals)
     

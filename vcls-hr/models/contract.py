@@ -90,9 +90,10 @@ class Contract(models.Model):
         
         if len(rec.employee_id.contract_ids)==1:
             rec.employee_id.create_IT_ticket('join') #if 1st contract, trigger the join ticket
+        '''
         else:
             rec.employee_id.create_IT_ticket('modify')
-        
+        '''
         return rec
     
     #######################
