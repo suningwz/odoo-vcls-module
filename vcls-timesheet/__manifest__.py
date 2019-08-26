@@ -22,13 +22,14 @@
     # any module necessary for this one to work correctly
     'depends': [
         'base',
-        'sale_timesheet',
-        'project_timesheet_forecast',
-        'sale_timesheet_rounded',
         'hr_timesheet',
+        'project_timesheet_forecast',
+        'sale_timesheet',
+        'sale_timesheet_limit_date',
+        'sale_timesheet_rounded',
+        'timesheet_useability',
         'vcls-crm',
         'vcls-project',
-        'timesheet_useability',
         ],
 
     # always loaded

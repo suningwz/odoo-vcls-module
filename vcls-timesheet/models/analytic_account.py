@@ -20,6 +20,7 @@ class AnalyticLine(models.Model):
         ('carry_forward', 'Carry Forward'),
         ('adjustment_validation', 'Adjustment Validation'),
         ('invoiceable', 'Invoiceable'),
+        ('invoiced', 'Invoiced'),
         ('outofscope', 'Out Of Scope'),
         ], default='draft')
 

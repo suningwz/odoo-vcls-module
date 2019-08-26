@@ -67,12 +67,33 @@ class SaleOrder(models.Model):
             order.timesheet_count = len(order.timesheet_ids)
 
 
+class SaleOrderLine(models.Model):
+    _inherit = 'sale.order.line'
+
+    def _get_timesheet_for_amount_calculation(self, only_invoiced=False):
+        timesheets = super()._get_timesheet_for_amount_calculation()
+        timesheets = self.env['account.analytic.line'].search(
+            [('id', 'in', timesheets.ids),
+             ('state', '=', 'validated'),
+             ('stage_id', 'in', ('invoiceable', 'invoiced')),
+             ]
+        )
+
+        def ts_filter(rec):
+            sale = rec.task_id.sale_line_id.order_id
+            return (
+                sale.state in ('sale', 'done')
+                and
+                (sale.timesheet_limit_date or sale.timesheet_limit_date > rec.date)
+            )
+
+        timesheets = timesheets.filtered(ts_filter)
+        return timesheets
+
+
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     name = fields.Char(
         store = True
     )
-
-    
-
