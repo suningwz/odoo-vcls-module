@@ -76,7 +76,7 @@ class SaleOrderLine(models.Model):
             return timesheets
         timesheets = self.env['account.analytic.line'].search(
             [('id', 'in', timesheets.ids),
-             ('state', '=', 'validated'),
+             ('validated', '=', True),
              ('stage_id', 'in', ('invoiceable', 'invoiced')),
              ]
         )
