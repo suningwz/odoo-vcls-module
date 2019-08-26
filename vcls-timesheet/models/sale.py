@@ -86,7 +86,8 @@ class SaleOrderLine(models.Model):
             return (
                 sale.state in ('sale', 'done')
                 and
-                (sale.timesheet_limit_date or sale.timesheet_limit_date > rec.date)
+                #(sale.timesheet_limit_date or sale.timesheet_limit_date > rec.date)
+                (sale.timesheet_limit_date > rec.date if sale.timesheet_limit_date else True)
             )
 
         timesheets = timesheets.filtered(ts_filter)
