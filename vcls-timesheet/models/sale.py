@@ -74,11 +74,11 @@ class SaleOrderLine(models.Model):
         timesheets = super()._get_timesheet_for_amount_calculation(only_invoiced=only_invoiced)
         if not timesheets:
             return timesheets
-        timesheets = self.env['account.analytic.line'].search([
-            ('id', 'in', timesheets.ids),
-            ('validated','=',True),
-            #('state', '=', 'validated'),
-            ('stage_id', 'in', ('invoiceable', 'invoiced')),]
+        timesheets = self.env['account.analytic.line'].search(
+            [('id', 'in', timesheets.ids),
+             ('validated', '=', True),
+             ('stage_id', 'in', ('invoiceable', 'invoiced')),
+             ]
         )
 
         def ts_filter(rec):
