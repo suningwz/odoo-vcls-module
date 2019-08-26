@@ -24,6 +24,7 @@
                 'vcls-suppliers',
                 'vcls-timesheet',
                 'vcls-project',
+                'vcls-invoicing',
             ],
 
     # always loaded
