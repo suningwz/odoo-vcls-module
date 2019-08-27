@@ -51,7 +51,7 @@ class SaleOrder(models.Model):
             'name': 'Core Team',
             'view_type': 'form',
             'view_mode': 'form',
-            'target': new_team,
+            'target': team,
             'res_model': 'core.team',
             'view_id': view_id,
             'type': 'ir.actions.act_window',
