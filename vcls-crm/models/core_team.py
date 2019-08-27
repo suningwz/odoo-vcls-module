@@ -36,7 +36,7 @@ class SaleOrder(models.Model):
         view_id = self.env.ref('vcls-crm.view_core_team_form').id
 
         if not self.core_team_id: #if core team not defined by parent, then we create a default one
-            self.core_team_id = self.env['core.team'].create()
+            self.core_team_id = self.env['core.team'].create({})
 
         return {
             'name': 'Core Team',
