@@ -38,6 +38,7 @@
                 'sale',
                 'sale_management',
                 'sale_crm',
+                'sale_order_revision',
                 'crm_lead_currency',
                 'vcls-hr',
                 'crm_lead_firstname',
