@@ -5,13 +5,13 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="vcls-crm.view_order_form"/>
             <field name="arch" type="xml">
-                <!--<xpath expr="//div[@name='button_box']" position="inside">
+                <xpath expr="//div[@name='button_box']" position="inside">
                     <button class="oe_stat_button"
-                            name="contact_book"
+                            name="core_team"
                             type="object"
-                            icon="fa-book"
-                            string="Project Contact Book"/>
-                </xpath>-->
+                            icon="fa-stack-exchange"
+                            string="Core Team"/>
+                </xpath>
 
                 <field name="opportunity_id" position="after">
                     <field name="program_id" options="{'no_create': True}" domain="[('client_id','=',partner_id)]"/>
