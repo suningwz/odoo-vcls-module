@@ -22,12 +22,14 @@
     'depends': [
         'base',
         'hr_expense',
+        'sale_expense',
     ],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
         'views/expense_sheet_views.xml',
+        'views/expense_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

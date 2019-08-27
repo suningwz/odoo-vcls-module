@@ -75,7 +75,7 @@
             </xpath>
 
             <xpath expr="//button[@name='action_submit_sheet']" position="after">
-                <button name="%(action_pop_up_add_expense)d" string="ADD EXPENSE" type="action" class="oe_highlight" />
+                <button name="open_pop_up_add_expense" string="ADD EXPENSE" type="object" class="oe_highlight" />
             </xpath>
 
         </field>

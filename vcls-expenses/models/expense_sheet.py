@@ -54,3 +54,10 @@ class ExpenseSheet(models.Model):
             else:
                 if record.employee_id:
                     record.user_id = record.employee_id.parent_id.user_id
+    
+    @api.multi
+    def open_pop_up_add_expense(self):
+        for rec in self:
+            action = self.env.ref('vcls-expenses.action_pop_up_add_expense').read()[0]
+            action['context'] = {'default_employee_id': rec.employee_id.id, 'default_analytic_account_id': rec.analytic_account_id.id}
+            return action
