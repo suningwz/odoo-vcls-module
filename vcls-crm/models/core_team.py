@@ -3,6 +3,9 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError, ValidationError
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class CoreTeam(models.Model):
 
     _name = 'core.team'
@@ -32,17 +35,19 @@ class SaleOrder(models.Model):
         string = "Core Team"
     )
 
+
     def core_team(self):
         view_id = self.env.ref('vcls-crm.view_core_team_form').id
 
-        if not self.core_team_id: #if core team not defined by parent, then we create a default one
-            self.core_team_id = self.env['core.team'].create({})
+        for rec in self:
+            if not rec.core_team_id: #if core team not defined by parent, then we create a default one
+                rec.core_team_id = rec.env['core.team'].create({})
 
         return {
             'name': 'Core Team',
             'view_type': 'form',
             'view_mode': 'form',
-            'target': self.core_team_id,
+            'target': rec.core_team_id,
             'res_model': 'core.team',
             'view_id': view_id,
             'type': 'ir.actions.act_window',
