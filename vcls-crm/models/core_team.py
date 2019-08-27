@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 class CoreTeam(models.Model):
 
     _name = 'core.team'
-    _description = 'Link teams to quotations & projects'
+    _description = 'Core Team'
     
     lead_consultant = fields.Many2one(
         'hr.employee',
@@ -41,13 +41,15 @@ class SaleOrder(models.Model):
 
         for rec in self:
             if not rec.core_team_id: #if core team not defined by parent, then we create a default one
-                rec.core_team_id = rec.env['core.team'].create({'comment':'test it'})
+                new_team = rec.env['core.team'].create({})
+                rec.write({'core_team_id':new_team})
+
 
         return {
             'name': 'Core Team',
             'view_type': 'form',
             'view_mode': 'form',
-            'target': rec.core_team_id,
+            'target': new_team,
             'res_model': 'core.team',
             'view_id': view_id,
             'type': 'ir.actions.act_window',
