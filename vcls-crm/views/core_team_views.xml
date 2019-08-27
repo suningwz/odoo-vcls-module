@@ -20,7 +20,7 @@
                         <group>
                             <group string="Consultants">
                                 <field name='consultant_ids' mode="tree" nolabel="1">
-                                    <tree> editable="bottom"
+                                    <tree editable="bottom">
                                         <field name="name"/>
                                         <field name="job_id"/>
                                     </tree>
