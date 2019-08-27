@@ -43,23 +43,19 @@ class SaleOrder(models.Model):
 
         for rec in self:
             if not rec.core_team_id: #if core team not defined by parent, then we create a default one
-                team = rec.env['core.team'].create({'name':"Team {}".format(rec.internal_ref)})
+                rec.core_team_id = rec.env['core.team'].create({'name':"Team {}".format(rec.internal_ref)})
                 #rec.write({'core_team_id':team})
-                rec.core_team_id = team
-                _logger.info("{} | {}".format(team.name, rec.core_team_id.name))
-            else:
-                team = rec.core_team_id
+                #_logger.info("{} | {}".format(team.name, rec.core_team_id.name))
 
-
-        return {
-            'name': 'Core Team',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'target': team,
-            'res_model': 'core.team',
-            'view_id': view_id,
-            'type': 'ir.actions.act_window',
-        }
+            return {
+                'name': 'Core Team',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_id': rec.core_team_id,
+                'res_model': 'core.team',
+                'view_id': view_id,
+                'type': 'ir.actions.act_window',
+            }
 
 class Project(models.Model):
 
