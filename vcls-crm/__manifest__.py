@@ -68,6 +68,7 @@
         'views/product_views_menu.xml',
         'views/sale_order_views.xml',
         'views/lead2opp.xml',
+        'views/core_team_views.xml',
         #'views/sale_order_template_views.xml',
 
         ### MENUS ###
