@@ -41,8 +41,10 @@ class SaleOrder(models.Model):
 
         for rec in self:
             if not rec.core_team_id: #if core team not defined by parent, then we create a default one
-                new_team = rec.env['core.team'].create({})
-                rec.write({'core_team_id':new_team})
+                team = rec.env['core.team'].create({})
+                rec.write({'core_team_id':team})
+            else:
+                team = rec.core_team_id
 
 
         return {
