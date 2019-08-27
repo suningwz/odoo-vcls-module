@@ -10,6 +10,8 @@ class CoreTeam(models.Model):
 
     _name = 'core.team'
     _description = 'Core Team'
+
+    name = fields.Char()
     
     lead_consultant = fields.Many2one(
         'hr.employee',
@@ -41,7 +43,7 @@ class SaleOrder(models.Model):
 
         for rec in self:
             if not rec.core_team_id: #if core team not defined by parent, then we create a default one
-                team = rec.env['core.team'].create({})
+                team = rec.env['core.team'].create({'name':"Team {}".format(rec.internal_ref)})
                 rec.write({'core_team_id':team})
             else:
                 team = rec.core_team_id

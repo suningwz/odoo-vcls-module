@@ -19,16 +19,18 @@
                         </group>
                         <group>
                             <group string="Consultants">
-                                <field name='consultant_ids' mode="tree" nolabel="1">
-                                    <tree editable="bottom">
+                                <field name='consultant_ids' string="Consultants" widget="many2many_tags"/>
+                                <field name='consultant_ids' mode="tree" nolabel="1" readonly="1">
+                                    <tree>
                                         <field name="name"/>
                                         <field name="job_id"/>
                                     </tree>
                                 </field>  
                             </group>
                             <group string="Technical Advisors" >
-                                <field name='ta_ids' mode="tree" nolabel="1">
-                                    <tree editable="bottom">
+                                <field name='consultant_ids' string="Technical Advisors" widget="many2many_tags"/>
+                                <field name='ta_ids' mode="tree" nolabel="1" readonly="1">
+                                    <tree>
                                         <field name="name"/>
                                         <field name="job_id"/>
                                     </tree>
