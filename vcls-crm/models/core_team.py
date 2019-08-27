@@ -17,6 +17,11 @@ class CoreTeam(models.Model):
         'hr.employee',
         string='Lead Consultant',
        )
+    
+    lead_backup = fields.Many2one(
+        'hr.employee',
+        string='Lead Consultant Backup',
+       )
 
     consultant_ids = fields.Many2many(
         'hr.employee',

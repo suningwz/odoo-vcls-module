@@ -12,23 +12,16 @@
                         <group>
                             <group>
                                 <field name='lead_consultant' string="Lead Consultant"/>
+                                <field name='lead_backup'/>
                             </group>
                             <group>
                                 
                             </group>
                         </group>
                         <group>
-                            <group>
-                                <field name='consultant_ids' string="Consultants" widget="many2many_tags"/>
-                                  
-                            </group>
-                            <group >
-                                <field name='ta_ids' string="Technical Advisors" widget="many2many_tags"/>
-                                
-                            </group>
                             <group string="Consultants">
                                
-                                <field name='consultant_ids' mode="tree" nolabel="1" readonly="1">
+                                <field name='consultant_ids' mode="tree" nolabel="1" delete="1">
                                     <tree>
                                         <field name="name"/>
                                         <field name="job_id"/>
@@ -37,7 +30,7 @@
                             </group>
                             <group string="Technical Advisors" >
                             
-                                <field name='ta_ids' mode="tree" nolabel="1" readonly="1">
+                                <field name='ta_ids' mode="tree" nolabel="1" delete="1">
                                     <tree>
                                         <field name="name"/>
                                         <field name="job_id"/>
