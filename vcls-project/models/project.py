@@ -37,8 +37,8 @@ class Project(models.Model):
         compute = '_compute_child_task_count'
     )
 
-    consultant_ids = fields.Many2many('hr.employee', string='Consultants')
-    ta_ids = fields.Many2many('hr.employee', string='Ta')
+    #consultant_ids = fields.Many2many('hr.employee', string='Consultants')
+    #ta_ids = fields.Many2many('hr.employee', string='Ta')
     
     ###############
     # ORM METHODS #

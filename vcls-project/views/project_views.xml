@@ -12,6 +12,7 @@
             </field>
         </record>
         
+        <!-- 
         <record id="view_project_form_contact_book" model="ir.ui.view">
             <field name="name">project.form.contact.book</field>
             <field name="model">project.project</field>
@@ -45,28 +46,12 @@
                                 </field>
                             </group>
                         </group>
-                        <!--<notebook>
-                            <page string="Consultants" name="consultant">
-                                <field name='consultant_ids' mode="tree">
-                                    <tree editable="top">
-                                        <field name="name"/>
-                                        <field name="job_id"/>
-                                    </tree>
-                                </field>
-                            </page>
-
-                            <page string="Ta" name="ta">
-                                <field name='ta_ids'>
-                                    <tree editable="top">
-                                        <field name="name"/>
-                                        <field name="job_id"/>
-                                    </tree>
-                                </field>
-                            </page>
-                        </notebook>-->
+                        
                     </sheet>
                 </form>
             </field>
         </record>
+        -->
+
     </data>
 </odoo>
