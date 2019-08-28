@@ -128,5 +128,14 @@
             action="project_followup_report_action_hours"
         />
 
+        <!-- RFQ -->
+        <menuitem
+            id="menu_bd_supplier"
+            name="Request for Suppliers"
+            parent="menu_lc_root"
+            action="action_my_rfq"
+            sequence="6"
+        />
+
     </data>
 </odoo>

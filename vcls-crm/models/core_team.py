@@ -37,11 +37,11 @@ class CoreTeam(models.Model):
     def write(self,vals):
         if vals.get('lead_consultant',False):
             lc_user = self.env['hr.employee'].browse(vals.get('lead_consultant')).user_id
-            
+
             #we look for projects having the related core team, and we update the project manager
             for team in self:
                 projects = self.env['project.project'].search([('core_team_id','=',team.id)])
-                _logger.info("Projects {} for Core Team {}".format(projects.mapped('name'),team.id))
+                _logger.info("Updated Projects {} for Core Team {}".format(projects.mapped('name'),team.name))
                 if projects:
                     projects.write({'user_id':lc_user.id})
 
