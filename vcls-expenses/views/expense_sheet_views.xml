@@ -39,7 +39,7 @@
 
             <xpath expr="//field[@name='employee_id']" position="before">
                 <field name = 'type' />
-                <field name = 'project_id' attrs="{'invisible': [('type', '!=', 'project')]}" />
+                <field name = 'project_id' attrs="{'invisible': [('type', '!=', 'project')], 'required': [('type', '=', 'project')]}" />
             </xpath>
 
             <xpath expr="//field[@name='payment_mode']" position="after">
