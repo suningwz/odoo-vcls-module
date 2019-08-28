@@ -99,7 +99,7 @@ class AnalyticLine(models.Model):
 
     @api.multi
     def finalize_lc_review(self):
-        self._finalize_lc_review()
+        self.sudo()._finalize_lc_review()
 
     @api.multi
     def _finalize_lc_review(self):
