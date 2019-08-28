@@ -39,7 +39,7 @@ class CoreTeam(models.Model):
         for team in self:
             projects = self.env['project.project'].search([('core_team_id','=',team.id)])
             if projects:
-                projects.write({'user_id':team.lead_consultant.id})
+                projects.write({'user_id':team.lead_consultant.user_id.id})
     
 class SaleOrder(models.Model):
 
