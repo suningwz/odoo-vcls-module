@@ -120,21 +120,28 @@
             action="action_lc_ts_all"
         />
 
+        <!--<menuitem
+            id="menu_lc_forecast"
+            name="Project Forecasts"
+            parent="menu_lc_root"
+            action=""
+            sequence="3"
+        />-->
+
         <menuitem
             id="menu_lc_follow_up"
             name="Project Follow-Up"
             parent="menu_lc_root"
-            sequence="3"
+            sequence="6"
             action="project_followup_report_action_hours"
         />
-
-        <!-- RFQ -->
+        
         <menuitem
-            id="menu_bd_supplier"
+            id="menu_lc_supplier"
             name="Request for Suppliers"
             parent="menu_lc_root"
             action="action_my_rfq"
-            sequence="6"
+            sequence="9"
         />
 
     </data>
