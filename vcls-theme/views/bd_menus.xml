@@ -118,6 +118,15 @@
             name="Product Catalog"
             parent="menu_bd_root"
             action="sale.product_template_action"
+            sequence="13"
+        />
+
+        <!-- RFQ -->
+        <menuitem
+            id="menu_bd_supplier"
+            name="Request for Suppliers"
+            parent="menu_bd_root"
+            action="action_my_rfq"
             sequence="14"
         />
 
@@ -347,14 +356,7 @@
             sequence="13"
         />
 
-        <!-- Product Catalog -->
-        <menuitem
-            id="menu_bd_supplier"
-            name="Request for Suppliers"
-            parent="menu_bd_conf_main"
-            action="action_my_rfq"
-            sequence="15"
-        />
+        
         
         
     </data>
