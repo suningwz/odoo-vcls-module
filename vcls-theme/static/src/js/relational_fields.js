@@ -1,6 +1,20 @@
 odoo.define('vcls-theme.relational_fields', function (require) {
 "use strict";
-var FieldX2Many = require('web.FieldX2Many');
+var config = require('web.config');
+var core = require('web.core');
+var data = require('web.data');
+var Dialog = require('web.Dialog');
+var dom = require('web.dom');
+var ListController = require('web.ListController');
+var ListView = require('web.ListView');
+var pyUtils = require('web.py_utils');
+var SearchView = require('web.SearchView');
+var view_registry = require('web.view_registry');
+
+var _t = core._t;
+
+var relationnal_fields = require('web.relational_fields');
+var FieldX2Many = relationnal_fields.FieldX2Many;
 
 FieldX2Many.include({
 
