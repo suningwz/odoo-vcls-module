@@ -24,6 +24,7 @@ class TimesheetForecastReport(models.Model):
     date = fields.Boolean() # Override existing field
     
     # EDIT SQL REQUEST IN ORDER TO GET STAGE & REVENUE
+    #F.resource_hours / NULLIF(F.working_days_count, 0) AS number_hours,
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -35,7 +36,7 @@ class TimesheetForecastReport(models.Model):
                         F.employee_id AS employee_id,
                         F.task_id AS task_id,
                         F.project_id AS project_id,
-                        F.resource_hours / NULLIF(F.working_days_count, 0) AS number_hours,
+                        F.resource_hours AS number_hours,
                         'forecast' AS type,
                         'forecast' AS stage_id,
                         0 AS revenue,
