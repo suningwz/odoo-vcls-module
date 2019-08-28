@@ -25,6 +25,17 @@
             ]"/>
         </record>
 
+        <!-- Create a new RFQ action to filter My Purchases by default -->
+        <record id="action_my_rfq" model="ir.actions.act_window">
+            <field name="name">My Purchases</field>
+            <field name="res_model">purchase.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,pivot,graph,calendar,activity</field>
+            <field name="search_view_ref">purchase.view_purchase_order_filter</field>
+            <field name="context">{"filter_default_my_purchases":1}</field>
+            
+        </record>
+
         <!--    
             VIEWS FOR WON REASONS (EXACT COPY OF LOST REASONS ACTION)
             USED ON MENU ITEM "menu_bd_conf_won_reason"
@@ -334,6 +345,15 @@
             parent="menu_bd_root"
             action="vcls-project.action_program"
             sequence="13"
+        />
+
+        <!-- Product Catalog -->
+        <menuitem
+            id="menu_bd_supplier"
+            name="Request for Suppliers"
+            parent="menu_bd_conf_main"
+            action="action_my_rfq"
+            sequence="15"
         />
         
         
