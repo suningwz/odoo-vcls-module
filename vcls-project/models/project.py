@@ -50,6 +50,10 @@ class Project(models.Model):
                 vals['privacy_visibility'] = 'employees'
             else:
                 vals['privacy_visibility'] = 'followers'
+        
+        if vals.get('sale_order_id',False):
+            so = self.env['sale.order'].browse(vals.get('sale_order_id'))
+            _logger.info("SO info {}".format(so.core_team_id.lead_comsultant.name))
 
         project = super(Project, self).create(vals)
         ids = project._get_default_type_common()
