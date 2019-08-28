@@ -111,7 +111,7 @@ class AnalyticLine(models.Model):
 
         timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='lc_review' and (r.project_id.user_id.id == r.env.user.id or r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2'))))
         timesheets_out = timesheets - timesheets_in
-        _logger.info("names {} stage {} user {} out {}".format(timesheets.mapped('name'),timesheets.mapped('stage_id'),timesheets_out.mapped('name')))
+        #_logger.info("names {} stage {} user {} out {}".format(timesheets.mapped('name'),timesheets.mapped('stage_id'),timesheets_out.mapped('name')))
         #timesheets_out = timesheets.filtered(lambda r: (r.stage_id=='draft' and r.project_id.user_id.id != r.env.user.id and not r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2')))
         for timesheet in timesheets_in:
                 timesheet.write({'stage_id':'pc_review'})
