@@ -37,7 +37,7 @@ class CoreTeam(models.Model):
     def _onchange_lc(self):
         #we look for projects having the related core team, and we update the project manager
         for team in self:
-            projects = self.env['project.project'].search([('core_team_id','=',team)])
+            projects = self.env['project.project'].search([('core_team_id.id','=',team.id)])
             _logger.info("Projects {} for Core Team {}".format(projects.mapped('name'),team.id))
             if projects:
                 projects.write({'user_id':team.lead_consultant.user_id.id})
