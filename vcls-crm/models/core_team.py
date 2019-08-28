@@ -32,6 +32,14 @@ class CoreTeam(models.Model):
         string='Ta')
     
     comment = fields.Char()
+
+    @api.onchange('lead_consultant')
+    def _onchange_lc(self):
+        #we look for projects having the related core team, and we update the project manager
+        for team in self:
+            projects = self.env['project.project'].search([('core_team_id','=',team.id)])
+            if projects:
+                projects.write({'user_id':team.lead_consultant.id})
     
 class SaleOrder(models.Model):
 
