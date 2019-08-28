@@ -31,7 +31,7 @@
             <field name="res_model">purchase.order</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,kanban,form,pivot,graph,calendar,activity</field>
-            <field name="search_view_ref">purchase.view_purchase_order_filter</field>
+            <field name="search_view_id" ref="purchase.view_purchase_order_filter"/>
             <field name="context">{"search_default_my_purchases":1}</field>
             
         </record>
