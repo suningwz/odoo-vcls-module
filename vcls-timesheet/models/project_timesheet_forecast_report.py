@@ -40,7 +40,7 @@ class TimesheetForecastReport(models.Model):
                         'forecast' AS type,
                         'forecast' AS stage_id,
                         0 AS revenue,
-                        'temp' AS rate_product,
+                        (SELECT min(id)::char from product_template Z where Z.forecast_employee_id = F.employee_id) AS rate_product,
                         F.id AS id
                     FROM generate_series(
                         (SELECT min(start_date) FROM project_forecast WHERE active=true)::date,
