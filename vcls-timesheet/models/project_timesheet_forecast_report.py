@@ -25,6 +25,7 @@ class TimesheetForecastReport(models.Model):
     
     # EDIT SQL REQUEST IN ORDER TO GET STAGE & REVENUE
     #F.resource_hours / NULLIF(F.working_days_count, 0) AS number_hours,
+    #(SELECT min(id)::char from product_template Z where Z.forecast_employee_id = F.employee_id) AS rate_product,
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -40,7 +41,7 @@ class TimesheetForecastReport(models.Model):
                         'forecast' AS type,
                         'forecast' AS stage_id,
                         0 AS revenue,
-                        (SELECT min(id)::char from product_template Z where Z.forecast_employee_id = F.employee_id) AS rate_product,
+                        (SELECT name from product_template Z where Z.forecast_employee_id = F.employee_id limit 1) AS rate_product,
                         F.id AS id
                     FROM generate_series(
                         (SELECT min(start_date) FROM project_forecast WHERE active=true)::date,
