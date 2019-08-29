@@ -17,6 +17,7 @@
                             <field name="expertise_id" widget="many2many_tags" required="1"/>
                             <field name="deliverable_ids" widget="many2many_tags" string="Deliverable(s)"/>
                             <field name="partner_ref" invisible="1"/>
+                            <field name="date_planned" string="Expected Answer Date"/>
                         </group>
                         <group string="Found Supplier">
                             <field name="partner_id" widget="res_partner_many2one" options="{'no_create': True}" context="{'supplier_search':True,'expertise_ids':expertise_id,'search_default_supplier':1, 'default_supplier':1, 'default_customer':0, 'show_vat': True}" domain="[('supplier','=',True)]" placeholder="Name, TIN, Email, or Reference"/>
@@ -33,6 +34,7 @@
                             <field name="company_id" options="{'no_create': True}" attrs="{'readonly': [('access_level', 'not in', ['rm'])]}"/>
                         </group>
                         <group>
+                            <field name="activity_summary" string="Scope of Work"/>
                         </group>
                     </group>
                 </xpath>
@@ -45,7 +47,7 @@
                         <field name="sequence" widget="handle"/>
                         <field name="product_id" attrs="{'readonly': [('state', 'in', ('purchase', 'to approve','done', 'cancel'))]}" context="{'partner_id':parent.partner_id, 'quantity':product_qty,'uom':product_uom, 'company_id': parent.company_id}" force_save="1"/>
                         <field name="name"/>
-                        <field name="date_planned" string="Target Date"/>
+                        <field name="date_planned" invisible="1"/>
                         <field name="account_analytic_id" context="{'default_partner_id':parent.partner_id}" string="Project Code"/>
                         <field name="analytic_tag_ids" groups="analytic.group_analytic_tags" widget="many2many_tags" options="{'color_field': 'color'}"/>
                         <field name="product_qty"/>
@@ -69,6 +71,14 @@
 
                 <xpath expr="//tree" position="attributes">
                     <attribute name="decoration-warning">supplier_stage!=3</attribute>
+                </xpath>
+
+                <field name="partner_id" position="after">
+                    <field name="supplier_stage" string="Supplier Stage"/>
+                </field>
+
+                <xpath expr="//date_planned" position="attributes">
+                    <attribute name="string">Expected Answer Date</attribute>
                 </xpath>
 
                 <field name="partner_id" position="after">
