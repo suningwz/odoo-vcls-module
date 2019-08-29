@@ -7,7 +7,7 @@ class TimesheetForecastReport(models.Model):
     _inherit = "project.timesheet.forecast.report.analysis"
 
     stage_id = fields.Selection([
-        ('forecast', 'Budget'),
+        ('forecast', 'Stock'),
         ('draft', 'Draft'), 
         ('lc_review', 'LC review'), 
         ('pc_review', 'PC review'), 
