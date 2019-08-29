@@ -14,6 +14,7 @@ class AnalyticLine(models.Model):
     _inherit = 'account.analytic.line'
 
     stage_id = fields.Selection([
+        #('forecast', 'Stock'),
         ('draft', 'Draft'), 
         ('lc_review', 'LC review'), 
         ('pc_review', 'PC review'), 
@@ -99,7 +100,7 @@ class AnalyticLine(models.Model):
 
     @api.multi
     def finalize_lc_review(self):
-        self.sudo()._finalize_lc_review()
+        self._finalize_lc_review()
 
     @api.multi
     def _finalize_lc_review(self):
@@ -109,12 +110,11 @@ class AnalyticLine(models.Model):
         if len(timesheets) == 0:
             raise ValidationError(_("Please select at least one record!"))
 
-        timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='lc_review' and (r.project_id.user_id.id == r.env.user.id or r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2'))))
-        timesheets_out = timesheets - timesheets_in
+        timesheets_in = timesheets.filtered(lambda r: r.stage_id=='lc_review' and (r.project_id.user_id.id == r.env.user.id or r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2')))
+        timesheets_out = (timesheets - timesheets_in) if timesheets_in else timesheets
         #_logger.info("names {} stage {} user {} out {}".format(timesheets.mapped('name'),timesheets.mapped('stage_id'),timesheets_out.mapped('name')))
-        #timesheets_out = timesheets.filtered(lambda r: (r.stage_id=='draft' and r.project_id.user_id.id != r.env.user.id and not r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2')))
         for timesheet in timesheets_in:
-                timesheet.write({'stage_id':'pc_review'})
+                timesheet.sudo().write({'stage_id':'pc_review'})
         if len(timesheets_out) > 0:
             message = "You don't have the permission for the following timesheet(s) :\n"
             for timesheet in timesheets_out:
@@ -133,12 +133,13 @@ class AnalyticLine(models.Model):
         if len(timesheets) == 0:
             raise ValidationError(_("Please select at least one record!"))
         timesheets_in = timesheets.filtered(lambda r: (r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or r.env.user.has_group('vcls-timesheet.vcls_pc'))).write({'stage_id':'invoiceable'})
-        timesheets_out = timesheets - timesheets_in
+        #timesheets_out = timesheets - timesheets_in
+        timesheets_out = (timesheets - timesheets_in) if timesheets_in else timesheets
         for timesheet in timesheets_in:
             if timesheet.unit_amount_rounded != timesheet.unit_amount:
-                timesheet.write({'stage_id':'adjustment_validation'})
+                timesheet.sudo().write({'stage_id':'adjustment_validation'})
             else:
-                timesheet.write({'stage_id':'invoiceable'})
+                timesheet.sudo().write({'stage_id':'invoiceable'})
         if len(timesheets_out) > 0:
             message = "You don't have the permission for the following timesheet(s) :\n"
             for timesheet in timesheets_out:
