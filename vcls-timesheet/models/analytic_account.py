@@ -93,6 +93,16 @@ class AnalyticLine(models.Model):
                 _logger.info("After round {}".format(vals.get('unit_amount')))
 
         return super(AnalyticLine, self).create(vals)
+
+    @api.multi
+    def write(self,vals):
+        #we automatically update the stage if the ts is validated and stage = draft
+        if vals.get('validated',True):
+            if vals.get('stage_id',self.stage_id) == 'draft':
+                vals['stage_id']='lc_review'
+        
+        return super(AnalyticLine, self).write(vals)
+
     
     """ @api.onchange('unit_amount')
     def _round_ts(self,rounding=0.25):
