@@ -77,7 +77,7 @@
                     <field name="supplier_stage" string="Supplier Stage"/>
                 </field>
 
-                <xpath expr="//div[@name='date_planned']" position="attributes">
+                <xpath expr="//field[@name='date_planned']" position="attributes">
                     <attribute name="string">Expected Answer Date</attribute>
                 </xpath>
 
