@@ -4,6 +4,9 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class Contract(models.Model):
     
     _inherit = 'hr.contract'
@@ -87,9 +90,10 @@ class Contract(models.Model):
     @api.model
     def create(self,vals):
         rec = super().create(vals)
-        
+        _logger.info("CONTRACTS:{}".format(rec.employee_id.contracts_count))
         if len(rec.employee_id.contract_ids)==1:
             rec.employee_id.create_IT_ticket('join') #if 1st contract, trigger the join ticket
+            
         '''
         else:
             rec.employee_id.create_IT_ticket('modify')
