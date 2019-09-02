@@ -90,15 +90,23 @@ class Contract(models.Model):
     @api.model
     def create(self,vals):
         rec = super().create(vals)
-        _logger.info("CONTRACTS:{}".format(rec.employee_id.contracts_count))
-        if len(rec.employee_id.contract_ids)==1:
-            rec.employee_id.create_IT_ticket('join') #if 1st contract, trigger the join ticket
+        
+        if rec.employee_id.contracts_count==1: #if 1st contract, trigger the join ticket
+            rec.employee_id.create_IT_ticket('join') 
+            _logger.info("NEW JOIN TICKET CREATED: {}".format(rec.employee_id.name))
             
-        '''
-        else:
-            rec.employee_id.create_IT_ticket('modify')
-        '''
         return rec
+
+    def write(self,vals):
+        if vals.get('job_id',False): #if the job has been updated
+            #we grab the employee then raise the ticket
+            employee = self.env['hr.employee'].browse(vals.get('employee_id',self.employee_id))
+            employee.create_IT_ticket('job_title_changed')
+            _logger.info("NEW JOB CHANGED TICKET CREATED: {}".format(rec.employee_id.name))
+        
+        return super().write(vals)
+
+        
     
     #######################
     # Calculation Methods #
