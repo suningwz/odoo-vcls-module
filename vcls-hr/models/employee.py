@@ -8,6 +8,9 @@ from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class Employee(models.Model):
     
     _inherit = 'hr.employee'
@@ -844,15 +847,18 @@ class Employee(models.Model):
             if self._origin.parent_id:
                 employee.create_IT_ticket('newLM')
     '''
+    
     # Override write to send only one ticket replace above
     def write(self, vals):
+
         result = super(Employee, self).write(vals)
-        if 'parent_id' in vals:
+        _logger.info("{}".format(vals))
+        """if 'parent_id' in vals:
             if result.contract_id:
                 result.create_IT_ticket('newLM')
         if 'first_name' in vals or 'middle_name' in vals or 'last_name' in vals:
             if result.contract_id:
-                result.create_IT_ticket('modify')
+                result.create_IT_ticket('modify')"""
         return result
     
     @api.depends('job_title')
