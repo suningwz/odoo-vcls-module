@@ -38,7 +38,7 @@ class TimesheetForecastReport(models.Model):
                     SELECT
                         True AS date,
                         F.employee_id AS employee_id,
-                        'temp' AS deliverable
+                        'temp' AS deliverable,
                         F.task_id AS task_id,
                         F.project_id AS project_id,
                         F.resource_hours AS number_hours,
@@ -65,7 +65,7 @@ class TimesheetForecastReport(models.Model):
                     SELECT
                         True AS date,
                         E.id AS employee_id,
-                        A.deliverable_id AS deliverable
+                        A.deliverable_id AS deliverable,
                         A.task_id AS task_id,
                         A.project_id AS project_id,
                         -A.unit_amount AS number_hours,
