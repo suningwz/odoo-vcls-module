@@ -100,9 +100,9 @@ class Contract(models.Model):
     def write(self,vals):
         if vals.get('job_id',False): #if the job has been updated
             #we grab the employee then raise the ticket
-            employee = self.env['hr.employee'].browse(vals.get('employee_id',self.employee_id))
+            employee = self.env['hr.employee'].browse(vals.get('employee_id',self.employee_id.id))
             employee.create_IT_ticket('job_title_changed')
-            _logger.info("NEW JOB CHANGED TICKET CREATED: {}".format(rec.employee_id.name))
+            _logger.info("NEW JOB CHANGED TICKET CREATED: {}".format(employee.employee_id.name))
         
         return super().write(vals)
 
