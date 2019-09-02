@@ -825,7 +825,7 @@ class Employee(models.Model):
             #we create a modif only if a contract already exists
             if employee.contract_id:
                 employee.create_IT_ticket('modify')
-'''
+    '''
     '''
     @api.onchange('parent_id')
     def _ticket_onchange_LM(self):
@@ -846,14 +846,20 @@ class Employee(models.Model):
     '''
     # Override write to send only one ticket replace above
     def write(self, vals):
-        result = super(Employee, self).write(vals)
-        if 'parent_id' in vals: #if the lm changes
-            if vals.get('contract_id',self.contract_id):
+
+        has_contract = vals.get('contract_id',self.contract_id.id)
+
+        if has_contract:
+
+            if 'parent_id' in vals:
                 self.create_IT_ticket('newLM')
-        if 'first_name' in vals or 'middle_name' in vals or 'last_name' in vals: #if the name changes
-            if vals.get('contract_id',self.contract_id):
+                #_logger.info("NEW LM TICKET CREATED: {}".format(self.name))
+            
+            if 'first_name' in vals or 'middle_name' in vals or 'last_name' in vals or 'name' in vals:
                 self.create_IT_ticket('modify')
-        return result
+                #_logger.info("NEW MODIFY TICKET CREATED: {}".format(self.name))
+
+        return super(Employee, self).write(vals)
     
     @api.depends('job_title')
     def notify_title_changes(self):
