@@ -847,12 +847,12 @@ class Employee(models.Model):
     # Override write to send only one ticket replace above
     def write(self, vals):
         result = super(Employee, self).write(vals)
-        if 'parent_id' in vals:
-            if result.contract_id:
-                result.create_IT_ticket('newLM')
-        if 'first_name' in vals or 'middle_name' in vals or 'last_name' in vals:
-            if result.contract_id:
-                result.create_IT_ticket('modify')
+        if 'parent_id' in vals: #if the lm changes
+            if vals.get('contract_id',self.contract_id):
+                self.create_IT_ticket('newLM')
+        if 'first_name' in vals or 'middle_name' in vals or 'last_name' in vals: #if the name changes
+            if vals.get('contract_id',self.contract_id):
+                self.create_IT_ticket('modify')
         return result
     
     @api.depends('job_title')
