@@ -19,7 +19,7 @@
 
 
 
-    'version': '1.13.0',
+    'version': '1.14.0',
 
 
 
@@ -35,8 +35,10 @@
                 'partner_second_lastname',
                 'website_crm_score',
                 'vcls-contact',
+                'sale',
                 'sale_management',
                 'sale_crm',
+                'sale_order_revision',
                 'crm_lead_currency',
                 'vcls-hr',
                 'crm_lead_firstname',
@@ -66,12 +68,12 @@
         'views/product_views_menu.xml',
         'views/sale_order_views.xml',
         'views/lead2opp.xml',
+        'views/core_team_views.xml',
         #'views/sale_order_template_views.xml',
 
         ### MENUS ###
         'views/lead_menus.xml',
         'views/partner_relation_menus.xml',
-        'views/bd_menus.xml',
 
         ### RECORDS DATA ###
         'data/partner.relation.type.csv',

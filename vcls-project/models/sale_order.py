@@ -5,7 +5,7 @@ class SaleOrder(models.Model):
 
     _inherit = 'sale.order'
 
-    def contact_book(self):
+    """def contact_book(self):
         view_id = self.env.ref('vcls-project.view_project_form_contact_book').id
         return {
             'name': 'Project Contact Book',
@@ -15,4 +15,4 @@ class SaleOrder(models.Model):
             'res_model': 'project.project',
             'view_id': view_id,
             'type': 'ir.actions.act_window',
-        }
+        }"""

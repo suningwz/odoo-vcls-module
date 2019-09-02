@@ -17,6 +17,13 @@ class SaleOrder(models.Model):
 
     po_id = fields.Many2one('invoicing.po', string ='Purchase Order')
 
+    invoicing_frequency = fields.Selection([
+        ('month','Month'),
+        ('trimester','Trimester'),
+        ('milestone','Milestone')],
+        default =lambda self: self.partner_id.invoicing_frequency,
+    )
+
     @api.depends('partner_id.risk_ids')
     def _compute_risk_ids(self):
         resourceSo ="sale.order,{}".format(self.id)

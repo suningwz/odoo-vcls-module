@@ -845,7 +845,6 @@ class Employee(models.Model):
                 employee.create_IT_ticket('newLM')
     '''
     # Override write to send only one ticket replace above
-    @api.model
     def write(self, vals):
         result = super(Employee, self).write(vals)
         if 'parent_id' in vals:
@@ -855,6 +854,11 @@ class Employee(models.Model):
             if result.contract_id:
                 result.create_IT_ticket('modify')
         return result
+    
+    @api.depends('job_title')
+    def notify_title_changes(self):
+        for record in self:
+            record.create_IT_ticket('job_title_changed')
 
     
     def generate_ticket_description(self, typeOfTicket):
@@ -886,7 +890,10 @@ class Employee(models.Model):
             description = '<h2>Leaving employee : {} </h2><h3>Date of departure : {}'.format(self.name,self.employee_end_date)
             
         elif typeOfTicket == 'modify':
-            description = '<h2>Modified employee : {} </h2><h3>'.format(self.name)
+            description = '<h2>Modified employee (The name has changed) : {} </h2><h3>'.format(self.name)
+        
+        elif typeOfTicket == 'job_title_changed':
+            description = '<h2>Modified employee (The Job Title changed) : {} </h2><h3>'.format(self.name)
            
         else:
             raise ValidationError("{}: Unknow type of ticket".format(typeOfTicket))

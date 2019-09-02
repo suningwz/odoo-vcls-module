@@ -19,7 +19,7 @@ class Contact(models.Model):
     
     invoicing_frequency = fields.Selection([('month','Month'),
                                             ('trimester','Trimester'),
-                                            ('milestone','Miliestone')], default='month')
+                                            ('milestone','Milestone')], default='month')
     
     outsourcing_permission = fields.Boolean(default=False)
 

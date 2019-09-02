@@ -16,13 +16,44 @@
             <field name="view_type">form</field>
             <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'kanban', 'view_id': ref('sale.view_sale_order_kanban')}),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-invoicing.view_sale_order_kanban')}),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('sale.view_quotation_tree')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('sale.view_order_form')}),
                 (0, 0, {'view_mode': 'calendar', 'view_id': ref('sale.view_sale_order_calendar')}),
                 (0, 0, {'view_mode': 'pivot', 'view_id': ref('sale.view_sale_order_pivot')}),
                 (0, 0, {'view_mode': 'graph', 'view_id': ref('sale.view_sale_order_graph')}),
             ]"/>
+        </record>
+
+        <!-- Create a new RFQ action to filter My Purchases by default -->
+        <record id="action_my_rfq" model="ir.actions.act_window">
+            <field name="name">Request for Suppliers</field>
+            <field name="res_model">purchase.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,pivot,graph,calendar,activity</field>
+            <field name="search_view_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="context">{"search_default_my_purchases":1}</field>
+            
+        </record>
+
+        <!--    
+            VIEWS FOR WON REASONS (EXACT COPY OF LOST REASONS ACTION)
+            USED ON MENU ITEM "menu_bd_conf_won_reason"
+         -->
+        <record id="crm_won_reason_action" model="ir.actions.act_window">
+            <field name="name">Won Reasons</field>
+            <field name="res_model">crm.won.reason</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Define a new won reason
+              </p><p>
+                Use won reasons to explain why an opportunity is won.
+              </p><p>
+                Some examples of won reasons: "We are awesome !", "We are the best"
+              </p>
+            </field>
         </record>
 
         <!-- All client accounts -->
@@ -33,7 +64,7 @@
             <field name="view_mode">kanban,tree,form,activity</field>
             <field name="context" eval="{'default_is_company': True,'default_category_id': [ref('vcls-contact.category_account')]}"/>
         </record>
-        
+
         <!-- 
         MENUS 
         ##### -->
@@ -83,26 +114,19 @@
         />
 
         <menuitem
-            id="menu_bd_client_main"
-            name="Clients"
-            parent="menu_bd_root"
-            action="action_bd_clients"
-            sequence="12"
-        />
-
-        <menuitem
-            id="menu_bd_program_main"
-            name="Client Programs"
-            parent="menu_bd_root"
-            action="vcls-project.action_program"
-            sequence="13"
-        />
-
-        <menuitem
             id="menu_bd_product_main"
             name="Product Catalog"
             parent="menu_bd_root"
             action="sale.product_template_action"
+            sequence="13"
+        />
+
+        <!-- RFQ -->
+        <menuitem
+            id="menu_bd_supplier"
+            name="Request for Suppliers"
+            parent="menu_bd_root"
+            action="action_my_rfq"
             sequence="14"
         />
 
@@ -263,7 +287,7 @@
             id="menu_bd_conf_lead_stage"
             name="Lead Stages"
             parent="menu_bd_conf_sales"
-            action="action_lead_stage"
+            action="vcls-crm.action_lead_stage"
             sequence="6"
         />
 
@@ -279,7 +303,7 @@
             id="menu_bd_conf_won_reason"
             name="Won Reasons"
             parent="menu_bd_conf_sales"
-            action="vcls-crm.crm_lead_won_action"
+            action="crm_won_reason_action"
             sequence="12"
         />
 
@@ -315,6 +339,24 @@
             sequence="6"
         />
 
+        <menuitem
+            id="menu_bd_client_main"
+            name="Clients"
+            parent="menu_bd_root"
+            action="action_bd_clients"
+            sequence="12"
+        />
+
+
+        <menuitem
+            id="menu_bd_program_main"
+            name="Client Programs"
+            parent="menu_bd_root"
+            action="vcls-project.action_program"
+            sequence="13"
+        />
+
+        
         
         
     </data>

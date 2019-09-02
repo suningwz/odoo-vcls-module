@@ -7,14 +7,15 @@
             <field name="arch" type="xml">
                 <xpath expr="//div[@name='button_box']" position="inside">
                     <button class="oe_stat_button"
-                            name="contact_book"
+                            name="core_team"
                             type="object"
-                            icon="fa-book"
-                            string="Project Contact Book"/>
+                            icon="fa-stack-exchange"
+                            string="Core Team"/>
                 </xpath>
 
                 <field name="opportunity_id" position="after">
                     <field name="program_id" options="{'no_create': True}" domain="[('client_id','=',partner_id)]"/>
+                    <field name="core_team_id"/>
                 </field>
 
             </field>

@@ -62,6 +62,9 @@ class SaleOrder(models.Model):
         store = True,
     )
 
+    name = fields.Char(string='Order Reference', required=True, copy=False, readonly=True, states={'draft': [('readonly', False)]}, index=True, default=lambda self: 'New')
+    
+
     ###############
     # ORM METHODS #
     ###############
@@ -92,7 +95,7 @@ class SaleOrder(models.Model):
                     index = 1
                 vals['internal_ref'] = "{}-{}".format(opp.internal_ref,self.get_alpha_index(index))
 
-            vals['name'] = vals['internal_ref']
+            vals['name'] = "{} | {}".format(vals['internal_ref'],vals['name'])
 
             #default expected_start_date and expected_end_date
             expected_start_date = opp.expected_start_date

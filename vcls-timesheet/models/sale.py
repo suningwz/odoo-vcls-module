@@ -2,6 +2,9 @@ from odoo import models, fields, tools, api
 from odoo.exceptions import UserError, ValidationError
 import datetime
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class SaleOrder(models.Model):
     _inherit='sale.order'
     @api.multi
@@ -37,6 +40,59 @@ class SaleOrder(models.Model):
                                                                                     'project_id':pre_project, 
                                                                                     'stage_id':stage_id, 
                                                                                     'active':True}).id
+    
+    #We override the OCA to inject the stage domain
+    @api.multi
+    @api.depends('timesheet_limit_date')
+    def _compute_timesheet_ids(self):
+        # this method copy of base method, it injects date in domain
+        for order in self:
+            if order.analytic_account_id:
+                domain = [
+                    ('so_line', 'in', order.order_line.ids),
+                    ('amount', '<=', 0.0),
+                    ('project_id', '!=', False),
+                    #XXX OCA override
+                    ('stage_id', 'in', ['invoiceable','invoiced']),
+                ]
+                if order.timesheet_limit_date:
+                    domain.append(
+                        ('date', '<=', order.timesheet_limit_date)
+                    )
+                order.timesheet_ids = self.env[
+                    'account.analytic.line'].search(domain)
+                _logger.info('{} found {}'.format(domain,order.timesheet_ids.mapped('name')))
+            else:
+                order.timesheet_ids = []
+            order.timesheet_count = len(order.timesheet_ids)
+
+
+class SaleOrderLine(models.Model):
+    _inherit = 'sale.order.line'
+
+    def _get_timesheet_for_amount_calculation(self, only_invoiced=False):
+        timesheets = super()._get_timesheet_for_amount_calculation(only_invoiced=only_invoiced)
+        if not timesheets:
+            return timesheets
+        timesheets = self.env['account.analytic.line'].search(
+            [('id', 'in', timesheets.ids),
+             ('validated', '=', True),
+             ('stage_id', 'in', ('invoiceable', 'invoiced')),
+             ]
+        )
+
+        def ts_filter(rec):
+            sale = rec.task_id.sale_line_id.order_id
+            return (
+                sale.state in ('sale', 'done')
+                and
+                #(sale.timesheet_limit_date or sale.timesheet_limit_date > rec.date)
+                (sale.timesheet_limit_date > rec.date if sale.timesheet_limit_date else True)
+            )
+
+        timesheets = timesheets.filtered(ts_filter)
+        return timesheets
+
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
@@ -44,6 +100,3 @@ class ProductTemplate(models.Model):
     name = fields.Char(
         store = True
     )
-
-    
-

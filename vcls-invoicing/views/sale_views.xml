@@ -21,8 +21,28 @@
                 <xpath expr="//field[@name='payment_term_id']" position="after">    
                     <field name="po_id" domain="[('partner_id','=',partner_id)]"/>
                     <field name="risk_score" invisible="1"/>
+                    <field name="invoicing_frequency"/>
                     <field name="timesheet_limit_date"/>
                 </xpath>
             </field>
     </record>
+
+    <record id="view_sale_order_kanban" model="ir.ui.view">
+            <field name="name">view_sale_order_kanban</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="vcls-crm.view_sale_order_kanban"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='currency_id']" position="after">
+                    <field name = 'risk_score' />
+                </xpath>
+
+                <xpath expr="//div[@class='o_kanban_record_top mb16']" position="after">
+                    <span class="badge badge-pill badge-danger" style="border: none;" t-if="record.risk_score.value > 0">
+                        Risk Score : <t t-esc="record.risk_score.value" />
+                    </span>
+                </xpath>
+            </field>
+    </record>
+
 </odoo>

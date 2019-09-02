@@ -10,10 +10,18 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
 
+                <field name="name" position="attributes">
+                    <attribute name="readonly">0</attribute>
+                </field>
+
                 <xpath expr="//button[@name='action_confirm']" position="after">    
                     <button name="upsell" id="action_upsell"
                         string="Upsell" class="btn-primary" type="object"
                         attrs="{'invisible': [('state', 'in', ['draft'])]}"/>
+                </xpath>
+
+                <xpath expr="//button[@name='create_revision']" position="attributes">    
+                    <attribute name="invisible">1</attribute>
                 </xpath>
                 
                 <xpath expr="//group" position="replace">
@@ -116,6 +124,47 @@
                     <field name="currency_id" invisible="1"/>
                     <field name="amount_total" widget="monetary"/>
                 </calendar>
+            </field>
+        </record>
+
+        <record id="view_sale_order_kanban" model="ir.ui.view">
+            <field name="name">view_sale_order_kanban</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_sale_order_kanban"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='currency_id']" position="after">
+                    <!-- field name = 'risk_score' />
+                    ADD RISK SCORE IN VCLS-INVOICING TO RESPECT DEPENDENCIES
+                    -->
+                    <field name = 'tag_ids' />
+                </xpath>
+
+                <xpath expr="//t[@t-esc='record.partner_id.value']" position="replace">
+                    <t t-esc="record.name.value"/>
+                </xpath>
+
+                <xpath expr="//div[@class='oe_kanban_bottom_left text-muted']" position="replace">
+                    <div class="oe_kanban_bottom_left text-muted">
+                        <span><t t-esc="record.partner_id.value"/> <t t-esc="record.date_order.value"/></span>
+                    </div>
+                </xpath>
+
+                <xpath expr="//div[@class='o_kanban_record_top mb16']" position="after">
+                    <field name="tag_ids" widget = "many2many_tags" />
+                    <!-- field name="tag_ids" widget = "many2many_tags" options="{'color_field': 'color'}"/ -->
+                    <!-- 
+                        Code du dessus permet de coloriser les tags mais les tags avec aucune couleur associée n'apparaîtront pas dans la vue
+                        Il faudra mettre le field color du tag en mandatory alors
+                     -->
+                    <div t-if="record.user_id.raw_value">
+                        <span class="fa fa-user-circle" aria-label="Salesman" title="Salesman"/>
+                        <field name="user_id" />
+                    </div>
+                </xpath>
+
+
+
             </field>
         </record>
 

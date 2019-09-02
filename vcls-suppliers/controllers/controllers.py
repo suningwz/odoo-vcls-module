@@ -223,6 +223,10 @@ class CustomerPortal(CustomerPortal):
 
         values = self._task_get_page_view_values(task_sudo, access_token, **kw)
         values['errors'] = error
+
+        # GET ALL TIME_CATEGORY
+        values['time_categories'] = request.env['project.time_category'].search([])
+
         return request.render("project.portal_my_task", values)
     
     @http.route(['/my/task/<int:task_id>/timesheets/new'], type='http', auth='user', methods=['POST'], website=True)

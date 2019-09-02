@@ -37,8 +37,8 @@ class Project(models.Model):
         compute = '_compute_child_task_count'
     )
 
-    consultant_ids = fields.Many2many('hr.employee', string='Consultants')
-    ta_ids = fields.Many2many('hr.employee', string='Ta')
+    #consultant_ids = fields.Many2many('hr.employee', string='Consultants')
+    #ta_ids = fields.Many2many('hr.employee', string='Ta')
     
     ###############
     # ORM METHODS #
@@ -50,6 +50,15 @@ class Project(models.Model):
                 vals['privacy_visibility'] = 'employees'
             else:
                 vals['privacy_visibility'] = 'followers'
+        
+        #we automatically assign the project manager to be the one defined in the core team
+        if vals.get('sale_order_id',False):
+            so = self.env['sale.order'].browse(vals.get('sale_order_id'))
+            lc = so.core_team_id.lead_consultant
+            _logger.info("SO info {}".format(lc.name))
+            if lc:
+                vals['user_id']=lc.user_id.id
+
 
         project = super(Project, self).create(vals)
         ids = project._get_default_type_common()

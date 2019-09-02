@@ -7,7 +7,7 @@ class TimesheetForecastReport(models.Model):
     _inherit = "project.timesheet.forecast.report.analysis"
 
     stage_id = fields.Selection([
-        ('forecast', 'Budget'),
+        ('forecast', 'Stock'),
         ('draft', 'Draft'), 
         ('lc_review', 'LC review'), 
         ('pc_review', 'PC review'), 
@@ -24,6 +24,8 @@ class TimesheetForecastReport(models.Model):
     date = fields.Boolean() # Override existing field
     
     # EDIT SQL REQUEST IN ORDER TO GET STAGE & REVENUE
+    #F.resource_hours / NULLIF(F.working_days_count, 0) AS number_hours,
+    #(SELECT min(id)::char from product_template Z where Z.forecast_employee_id = F.employee_id) AS rate_product,
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -35,15 +37,15 @@ class TimesheetForecastReport(models.Model):
                         F.employee_id AS employee_id,
                         F.task_id AS task_id,
                         F.project_id AS project_id,
-                        F.resource_hours / NULLIF(F.working_days_count, 0) AS number_hours,
+                        F.resource_hours AS number_hours,
                         'forecast' AS type,
                         'forecast' AS stage_id,
                         0 AS revenue,
-                        'temp' AS rate_product,
+                        (SELECT name from product_template Z where Z.forecast_employee_id = F.employee_id limit 1) AS rate_product,
                         F.id AS id
                     FROM generate_series(
-                        TO_DATE('date', '2000/01/01'),
-                        TO_DATE('date', '2100/12/31'),
+                        (SELECT min(start_date) FROM project_forecast WHERE active=true)::date,
+                        (SELECT max(end_date) FROM project_forecast WHERE active=true)::date,
                         '1 day'::interval
                     ) d
                         LEFT JOIN project_forecast F ON d.date >= F.start_date AND d.date <= end_date

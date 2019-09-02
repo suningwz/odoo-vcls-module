@@ -2,6 +2,7 @@
 
 from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_compare
 
 import logging
 import datetime
@@ -13,12 +14,14 @@ class AnalyticLine(models.Model):
     _inherit = 'account.analytic.line'
 
     stage_id = fields.Selection([
+        #('forecast', 'Stock'),
         ('draft', 'Draft'), 
         ('lc_review', 'LC review'), 
         ('pc_review', 'PC review'), 
         ('carry_forward', 'Carry Forward'),
         ('adjustment_validation', 'Adjustment Validation'),
         ('invoiceable', 'Invoiceable'),
+        ('invoiced', 'Invoiced'),
         ('outofscope', 'Out Of Scope'),
         ], default='draft')
 
@@ -63,6 +66,8 @@ class AnalyticLine(models.Model):
         default=0.0,
         copy=False,
     )
+    
+    required_lc_comment = fields.Boolean(compute='get_required_lc_comment')
 
 
     so_line_unit_price = fields.Float(
@@ -80,18 +85,32 @@ class AnalyticLine(models.Model):
 
     @api.model
     def create(self, vals):
-        _logger.info("Create {}".format(vals['unit_amount']))
+        _logger.info("Create {}".format(vals.get('unit_amount')))
         if 'unit_amount' in vals and vals.get('is_timesheet',False): #do time ceiling for timesheets only
-            _logger.info("Before round {}".format(vals['unit_amount']))
+            _logger.info("Before round {}".format(vals.get('unit_amount')))
             if vals['unit_amount'] % 0.25 != 0:
-                vals['unit_amount'] = math.ceil(vals['unit_amount']*4)/4
-                _logger.info("After round {}".format(vals['unit_amount']))
+                vals['unit_amount'] = math.ceil(vals.get('unit_amount', 0)*4)/4
+                _logger.info("After round {}".format(vals.get('unit_amount')))
 
         return super(AnalyticLine, self).create(vals)
+
+    @api.multi
+    def write(self,vals):
+        #we automatically update the stage if the ts is validated and stage = draft
+        if vals.get('validated',self.validated):
+            if vals.get('stage_id',self.stage_id) == 'draft':
+                vals['stage_id']='lc_review'
+        
+        return super(AnalyticLine, self).write(vals)
+
     
     """ @api.onchange('unit_amount')
     def _round_ts(self,rounding=0.25):
         for ts in self.filtered(lambda r: r.)"""
+
+    @api.multi
+    def finalize_lc_review(self):
+        self._finalize_lc_review()
 
     @api.multi
     def _finalize_lc_review(self):
@@ -101,18 +120,21 @@ class AnalyticLine(models.Model):
         if len(timesheets) == 0:
             raise ValidationError(_("Please select at least one record!"))
 
-        timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='draft' and (r.project_id.user_id.id == r.env.user.id or r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2'))))
-        timesheets_out = timesheets - timesheets_in
-        #timesheets_out = timesheets.filtered(lambda r: (r.stage_id=='draft' and r.project_id.user_id.id != r.env.user.id and not r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2')))
+        timesheets_in = timesheets.filtered(lambda r: r.stage_id=='lc_review' and (r.project_id.user_id.id == r.env.user.id or r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2')))
+        timesheets_out = (timesheets - timesheets_in) if timesheets_in else timesheets
+        #_logger.info("names {} stage {} user {} out {}".format(timesheets.mapped('name'),timesheets.mapped('stage_id'),timesheets_out.mapped('name')))
         for timesheet in timesheets_in:
-                timesheet.write({'stage_id':'pc_review'})
+                timesheet.sudo().write({'stage_id':'pc_review'})
         if len(timesheets_out) > 0:
             message = "You don't have the permission for the following timesheet(s) :\n"
             for timesheet in timesheets_out:
                 message += " - " + timesheet.name + "\n"
             raise ValidationError(_(message))
 
-    
+    @api.multi
+    def finalize_pc_review(self):
+        self._finalize_pc_review()
+
     @api.multi
     def _finalize_pc_review(self):
         context = self.env.context
@@ -121,12 +143,13 @@ class AnalyticLine(models.Model):
         if len(timesheets) == 0:
             raise ValidationError(_("Please select at least one record!"))
         timesheets_in = timesheets.filtered(lambda r: (r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or r.env.user.has_group('vcls-timesheet.vcls_pc'))).write({'stage_id':'invoiceable'})
-        timesheets_out = timesheets - timesheets_in
+        #timesheets_out = timesheets - timesheets_in
+        timesheets_out = (timesheets - timesheets_in) if timesheets_in else timesheets
         for timesheet in timesheets_in:
             if timesheet.unit_amount_rounded != timesheet.unit_amount:
-                timesheet.write({'stage_id':'adjustment_validation'})
+                timesheet.sudo().write({'stage_id':'adjustment_validation'})
             else:
-                timesheet.write({'stage_id':'invoiceable'})
+                timesheet.sudo().write({'stage_id':'invoiceable'})
         if len(timesheets_out) > 0:
             message = "You don't have the permission for the following timesheet(s) :\n"
             for timesheet in timesheets_out:
@@ -171,6 +194,14 @@ class AnalyticLine(models.Model):
                 record.at_risk = False
             else:
                 record.at_risk = True
+    
+    @api.onchange('unit_amount_rounded', 'unit_amount')
+    def get_required_lc_comment(self):
+        for record in self:
+            if float_compare(record.unit_amount_rounded, record.unit_amount, precision_digits=2) == 0:
+                record.required_lc_comment = False
+            else:
+                record.required_lc_comment = True    
 
     @api.onchange('project_id')
     def onchange_project_id(self):
@@ -183,6 +214,38 @@ class AnalyticLine(models.Model):
                 'task_id': [('project_id', '=', self.project_id.id), ('stage_id.allow_timesheet','=', True)]
             }}
 
-
+    @api.multi
+    def button_details_lc(self):
+        view = {
+            'name': _('Details'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'account.analytic.line',
+            'view_id': self.env.ref('vcls-timesheet.vcls_timesheet_lc_view_form').id,
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+            'context': {
+            'form_view_initial_mode': 'edit',
+            'force_detailed_view': True, },
+            'res_id': self.id,
+        }
+        return view
+    
+    @api.multi
+    def button_details_pc(self):
+        view = {
+            'name': _('Details'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'account.analytic.line',
+            'view_id': self.env.ref('vcls-timesheet.vcls_timesheet_pc_view_form').id,
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+            'context': {
+            'form_view_initial_mode': 'edit',
+            'force_detailed_view': True, },
+            'res_id': self.id,
+        }
+        return view
 
     

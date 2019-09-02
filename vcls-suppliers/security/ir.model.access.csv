@@ -5,3 +5,4 @@ access_expertise_area_default,access_expertise_area_default,vcls-suppliers.model
 access_expertise_area_type_rm,access_expertise_area_rm,vcls-suppliers.model_expertise_area,vcls-suppliers.vcls_group_rm,1,1,1,1
 access_skill_default,access_skill_default,vcls-suppliers.model_res_partner_skill,,1,0,0,0
 access_skill_rm,access_skill_rm,vcls-suppliers.model_res_partner_skill,vcls-suppliers.vcls_group_rm,1,1,1,1
+access_core_team_rm,access_core_team_rm,vcls-crm.model_core_team,vcls-suppliers.vcls_group_rm,1,1,1,1

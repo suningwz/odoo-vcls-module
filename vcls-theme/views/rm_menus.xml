@@ -91,7 +91,7 @@
             id="menu_rm_expertise_main"
             name="Expertise"
             parent="menu_rm_root"
-            action="action_user_skills_rm"
+            action="vcls-suppliers.action_user_skills_rm"
             sequence="12"
         />
 
@@ -126,42 +126,6 @@
             action="vcls-suppliers.action_show_external_consultant"
             sequence="9"
         />
-
-        
-        <!-- 
-        ACTIONS 
-        ##### -->
-
-        <!-- Opp pipeline renaming 
-        <record id="crm.crm_lead_opportunities_tree_view" model="ir.actions.act_window">
-            <field name="name">Opportunities Pipeline</field>
-        </record>
-        -->
-
-        <!-- Quotations on KanBan by default 
-        <record id="sale.action_quotations" model="ir.actions.act_window">
-            <field name="view_type">form</field>
-            <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity</field>
-            <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'kanban', 'view_id': ref('sale.view_sale_order_kanban')}),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('sale.view_quotation_tree')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('sale.view_order_form')}),
-                (0, 0, {'view_mode': 'calendar', 'view_id': ref('sale.view_sale_order_calendar')}),
-                (0, 0, {'view_mode': 'pivot', 'view_id': ref('sale.view_sale_order_pivot')}),
-                (0, 0, {'view_mode': 'graph', 'view_id': ref('sale.view_sale_order_graph')}),
-            ]"/>
-        </record>
-        -->
-
-        <!-- All client accounts 
-        <record model="ir.actions.act_window" id="action_bd_clients">
-            <field name="name">Client</field>
-            <field name="domain" eval="[('is_internal','=',False),('stage','in',[2,3,4]),'|',('category_id','=',ref('vcls-contact.category_account')),('category_id','=',False)]"/>
-            <field name="res_model">res.partner</field>
-            <field name="view_mode">kanban,tree,form,activity</field>
-            <field name="context" eval="{'default_is_company': True,'default_category_id': [ref('vcls-contact.category_account')]}"/>
-        </record>
-        -->
         
     </data>
 </odoo>

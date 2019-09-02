@@ -8,6 +8,10 @@
             <field name="inherit_id" ref="project.view_task_form2"/>
             <field name="arch" type="xml">
 
+                <field name="user_id" position="attributes">
+                    <attribute name="option">{'no_create_edit':True}</attribute>
+                </field>
+
                 <field name="tag_ids" position="after">
                     <field name="completion_ratio" string="" widget="percentpie"/>
                 </field>
