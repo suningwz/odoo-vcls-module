@@ -1,0 +1,13 @@
+<odoo>
+    <record id="view_form_contact_all" model="ir.ui.view">
+        <field name="name">view_form_contact_all</field>
+        <field name="priority" eval="0" />
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="vcls-contact.view_form_contact_all" />
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="add_new_program" string="ADD NEW PROGRAM" type="object" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
