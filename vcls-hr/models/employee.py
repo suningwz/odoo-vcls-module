@@ -863,7 +863,7 @@ class Employee(models.Model):
                 self.create_IT_ticket('modify')
                 _logger.info("NEW MODIFY TICKET CREATED: {}".format(self.name))
 
-        return = super(Employee, self).write(vals)
+        return super(Employee, self).write(vals)
     
     @api.depends('job_title')
     def notify_title_changes(self):
