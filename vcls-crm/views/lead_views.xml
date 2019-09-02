@@ -114,7 +114,7 @@
                         <page string="Internal Notes">
                             <field name="description"/>
                         </page>
-                        <page name="lead" string="Followup">
+                        <page name="lead" string="Marketing Info">
                             <group>
                                 <group string="Initial Contact Information">
                                     <field name="partner_name"/>
