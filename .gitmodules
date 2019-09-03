@@ -23,3 +23,6 @@
 [submodule "VCLS-org/partner-contact"]
 	path = VCLS-org/partner-contact
 	url = https://github.com/VCLS-org/partner-contact.git
+[submodule "VCLS-org/web"]
+	path = VCLS-org/web
+	url = https://github.com/VCLS-org/web.git
