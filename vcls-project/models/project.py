@@ -28,6 +28,9 @@ class Project(models.Model):
         string = 'Project Type',
         default = 'client',
     )
+    
+    parent_id = fields.Many2one('project.project', 'Parent project', index=True, ondelete='cascade')
+    child_id = fields.One2many('project.project', 'parent_id', 'Child projects')
 
     parent_task_count = fields.Integer(
         compute = '_compute_parent_task_count'
@@ -89,4 +92,14 @@ class Project(models.Model):
         result = dict((data['project_id'][0], data['project_id_count']) for data in task_data)
         for project in self:
             project.child_task_count = result.get(project.id, 0)
+    
+    def _compute_task_count(self):
+        read_group_res = self.env['project.task'].read_group([('project_id', 'child_of', self.ids), '|', ('stage_id.fold', '=', False), ('stage_id', '=', False)], ['project_id'], ['project_id'])
+        group_data = dict((data['project_id'][0], data['project_id_count']) for data in read_group_res)
+        for project in self:
+            task_count = 0
+            for sub_project_id in project.search([('id', 'child_of', project.id)]).ids:
+                task_count += group_data.get(sub_project_id, 0)
+            project.task_count = task_count
+
         
