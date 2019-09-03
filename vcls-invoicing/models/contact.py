@@ -9,12 +9,12 @@ class Contact(models.Model):
     risk_ids = fields.Many2many('risk', string='Risk')
 
     communication_rate = fields.Selection([ (0.0, '0%'), 
-                                            (0.05, '0.5%'), 
-                                            (0.1, '1%'), 
-                                            (0.15, '1.5%'), 
-                                            (0.2, '2%'), 
-                                            (0.25, '2.5%'), 
-                                            (0.3, '3%'), 
+                                            (0.005, '0.5%'), 
+                                            (0.01, '1%'), 
+                                            (0.015, '1.5%'), 
+                                            (0.02, '2%'), 
+                                            (0.025, '2.5%'), 
+                                            (0.03, '3%'), 
                                             ], 'Communication Rate', default = 0.0)
     
     invoicing_frequency = fields.Selection([('month','Month'),
