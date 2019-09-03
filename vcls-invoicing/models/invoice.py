@@ -20,17 +20,17 @@ class Invoice(models.Model):
     def get_communication_amount(self):
         total_amount = 0
         lines = self.invoice_line_ids
-        _logger.info("Invoice Lines {}".format(lines.mapped('name')))
+        _logger.info("Invoice Lines {}".format(len(lines)))
         for line in lines:
             product = line.product_id
             _logger.info("Product {} elligible {}".format(product.name, product.communication_elligible))
             if product:
-                if product.id != self.env.ref('vcls-invoicing.product_communication_rate').id:
-                    if product.communication_elligible:
-                        total_amount += line.price_subtotal
-                        _logger.info("Communication Elligible {}".format(product.name))
-                else:
-                    line.unlink()
+                #if product.id != self.env.ref('vcls-invoicing.product_communication_rate').id:
+                if product.communication_elligible:
+                    total_amount += line.price_subtotal
+                    _logger.info("Communication Elligible {}".format(product.name))
+                #else:
+                    #line.unlink()
             else:
                 total_amount += line.price_subtotal
         return total_amount
