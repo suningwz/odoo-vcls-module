@@ -5,7 +5,7 @@
             <!--<field name="parent_id" ref="product.product_category_all"/>-->
             <field name="name">Invoicing</field>
         </record>
-        <record id="product_communication_rate" model="product.product">
+        <record id="product_communication_rate" model="product.template">
             <field name="name">Communication rate</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="False"/>

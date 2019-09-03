@@ -30,7 +30,7 @@ class Invoice(models.Model):
                     total_amount += line.price_subtotal
                     _logger.info("Communication Elligible {}".format(product.name))
                 #else:
-                    #line.unlink()
+                    #line.unlink() #we suppress the communication rate line if already existingin order to replace and recompute it
             else:
                 total_amount += line.price_subtotal
         return total_amount
