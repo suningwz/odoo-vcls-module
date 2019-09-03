@@ -4,6 +4,9 @@ from odoo import models, fields, api
 
 from odoo.exceptions import UserError, ValidationError
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class Invoice(models.Model):
     _inherit = 'account.invoice'
 
@@ -23,6 +26,7 @@ class Invoice(models.Model):
                 if product.id != self.env.ref('vcls-invoicing.product_communication_rate').id:
                     if product.communication_elligible:
                         total_amount += line.price_subtotal
+                        _logger.info("Communication Elligible {}".format(product.name))
                 else:
                     line.unlink()
             else:
@@ -35,6 +39,7 @@ class Invoice(models.Model):
         ret = super(Invoice, self).create(vals)       
         partner = ret.partner_id
         if partner.communication_rate:
+            _logger.info("COM RATE {}".format(partner.communication_rate))
             try:
                 total_amount = ret.get_communication_amount()
             except:
