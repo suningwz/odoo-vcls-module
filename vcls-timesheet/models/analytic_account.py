@@ -97,9 +97,10 @@ class AnalyticLine(models.Model):
     @api.multi
     def write(self,vals):
         #we automatically update the stage if the ts is validated and stage = draft
-        if vals.get('validated',self.validated):
-            if vals.get('stage_id',self.stage_id) == 'draft':
-                vals['stage_id']='lc_review'
+        for line in self:
+            if vals.get('validated',line.validated):
+                if vals.get('stage_id',line.stage_id) == 'draft':
+                    vals['stage_id']='lc_review'
         
         return super(AnalyticLine, self).write(vals)
 
