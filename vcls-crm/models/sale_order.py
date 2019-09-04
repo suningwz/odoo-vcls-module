@@ -37,6 +37,10 @@ class SaleOrder(models.Model):
     expected_start_date = fields.Date()
     expected_end_date = fields.Date()
 
+    scope_of_work = fields.Html(
+        string="Scope of Work"
+    )
+
     user_id = fields.Many2one(
         'res.users', 
         track_visibility='onchange', 

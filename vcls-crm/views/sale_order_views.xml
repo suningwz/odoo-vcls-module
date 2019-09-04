@@ -57,6 +57,7 @@
                         <group string="Operations">
                             <field name="expected_start_date"/>
                             <field name="expected_end_date"/>
+                            <field name="scope_of_work"/>
                         </group>
                     </group>
                     
