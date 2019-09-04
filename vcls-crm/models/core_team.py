@@ -24,11 +24,13 @@ class CoreTeam(models.Model):
        )
 
     consultant_ids = fields.Many2many(
-        'hr.employee',
+        comodel_name='hr.employee',
+        relation='rel_table_core_team_consultants',
         string='Consultants')
 
     ta_ids = fields.Many2many(
-        'hr.employee',
+        comodel_name='hr.employee',
+        relation='rel_table_core_team_tas',
         string='Ta')
     
     comment = fields.Char()
