@@ -72,6 +72,7 @@ class SaleOrderLine(models.Model):
 
     def _get_timesheet_for_amount_calculation(self, only_invoiced=False):
         timesheets = super()._get_timesheet_for_amount_calculation(only_invoiced=only_invoiced)
+        _logger.info('Amount before filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
         if not timesheets:
             _logger.info('No TS for amount calculation')
             return timesheets
@@ -82,7 +83,7 @@ class SaleOrderLine(models.Model):
              ('stage_id', 'in', ['invoiceable', 'invoiced']),
              ]
         )
-        _logger.info('Timesheets for amount {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
+        _logger.info('Amount after filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
 
         def ts_filter(rec):
             sale = rec.task_id.sale_line_id.order_id
