@@ -25,12 +25,12 @@ class Invoice(models.Model):
             product = line.product_id
             _logger.info("Product {} elligible {}".format(product.name, product.communication_elligible))
             if product:
-                #if product.id != self.env.ref('vcls-invoicing.product_communication_rate').id:
-                if product.communication_elligible:
-                    total_amount += line.price_subtotal
-                    _logger.info("Communication Elligible {}".format(product.name))
-                #else:
-                    #line.unlink() #we suppress the communication rate line if already existingin order to replace and recompute it
+                if product.id != self.env.ref('vcls-invoicing.product_communication_rate').id:
+                    if product.communication_elligible:
+                        total_amount += line.price_subtotal
+                        _logger.info("Communication Elligible {}".format(product.name))
+                else:
+                    line.unlink() #we suppress the communication rate line if already existingin order to replace and recompute it
             else:
                 total_amount += line.price_subtotal
         return total_amount
