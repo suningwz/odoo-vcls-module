@@ -52,7 +52,7 @@ class SaleOrder(models.Model):
                     ('so_line', 'in', order.order_line.ids),
                     ('amount', '<=', 0.0),
                     ('project_id', '!=', False),
-                    #XXX OCA override
+                    # OCA override
                     ('stage_id', 'in', ['invoiceable','invoiced']),
                 ]
                 if order.timesheet_limit_date:
@@ -73,13 +73,16 @@ class SaleOrderLine(models.Model):
     def _get_timesheet_for_amount_calculation(self, only_invoiced=False):
         timesheets = super()._get_timesheet_for_amount_calculation(only_invoiced=only_invoiced)
         if not timesheets:
+            _logger.info('No TS for amount calculation')
             return timesheets
+
         timesheets = self.env['account.analytic.line'].search(
             [('id', 'in', timesheets.ids),
              ('validated', '=', True),
-             ('stage_id', 'in', ('invoiceable', 'invoiced')),
+             ('stage_id', 'in', ['invoiceable', 'invoiced']),
              ]
         )
+        _logger.info('Timesheets for amount {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
 
         def ts_filter(rec):
             sale = rec.task_id.sale_line_id.order_id
