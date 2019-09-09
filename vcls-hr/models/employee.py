@@ -764,32 +764,82 @@ class Employee(models.Model):
                     self.leave_duration_type = False
         else:
             self.leave_duration_type = False
-        
+
+    @api.multi
+    def _is_worked_day(self, worked_day):
+        self.ensure_one()
+        if worked_day.weekday() in (5, 6):
+            return False
+        if self.env['hr.bank.holiday'].sudo().search([
+            ('company_id', '=', self.company_id.id),
+            ('date', '=', worked_day)
+        ]):
+            return False
+        for attendance_id in self.resource_calendar_id.attendance_ids:
+            if attendance_id.dayofweek == worked_day.weekday():
+                return True
+        return False
+
     @api.multi
     def _compute_leave_status(self):
         # Used SUPERUSER_ID to forcefully get status of other user's leave, to bypass record rule
-        today_date = datetime.utcnow().date()
+        super(Employee, self)._compute_leave_status()
+        today_date = fields.Date.context_today(self)
         today_start = fields.Datetime.to_string(today_date)  # get the midnight of the current utc day
         today_end = fields.Datetime.to_string(today_date + relativedelta(hours=23, minutes=59, seconds=59))
+        # for each employee get the holidays in date_to ascendant order
+        # then check if all dates between each two holidays are not worked days,
+        # if
         holidays = self.env['hr.leave'].sudo().search([
             ('employee_id', 'in', self.ids),
+            ('state', 'not in', ('cancel', 'refuse')),
+            '|', '&',
             ('date_from', '<=', today_end),
             ('date_to', '>=', today_start),
-            ('state', 'not in', ('cancel', 'refuse'))
-        ])
+            ('date_from', '>=', today_end),
+        ], order='employee_id, date_to asc')
         leave_data = {}
+        holidays_by_employee = {}
         for holiday in holidays:
-            leave_data[holiday.employee_id.id] = {}
-            leave_data[holiday.employee_id.id]['leave_date_from'] = holiday.date_from.date()
-            leave_data[holiday.employee_id.id]['leave_date_to'] = holiday.date_to.date()
-            leave_data[holiday.employee_id.id]['current_leave_state'] = holiday.state
-            leave_data[holiday.employee_id.id]['current_leave_id'] = holiday.holiday_status_id.id
-
+            employee_id = holiday.employee_id.id
+            if not holidays_by_employee.get(employee_id):
+                holidays_by_employee[employee_id] = holiday
+            else:
+                holidays_by_employee[employee_id] += holiday
+        for employee_id, holidays in holidays_by_employee.items():
+            if not holidays:
+                continue
+            most_recent_holiday = holidays[0]
+            valid_holidays = None
+            for holiday in holidays:
+                if holiday == most_recent_holiday:
+                    # first holiday is always considered to be valid for today
+                    valid_holidays = most_recent_holiday
+                    continue
+                day_between_holidays = holiday.date_from
+                iteration = 0
+                while valid_holidays[-1].date_to.date() < day_between_holidays.date():
+                    day_between_holidays -= relativedelta(days=1)
+                    employee = self.sudo().browse(employee_id)
+                    if employee.sudo()._is_worked_day(day_between_holidays.date()):
+                        break
+                    iteration += 1
+                    if iteration > 730:  # max iterations (2 years between two holidays)
+                        break
+                if valid_holidays[-1].date_to.date() == day_between_holidays.date():
+                    valid_holidays += holiday
+                else:
+                    break
+            if valid_holidays:
+                leave_data[employee_id] = valid_holidays
         for employee in self:
-            employee.leave_date_from = leave_data.get(employee.id, {}).get('leave_date_from')
-            employee.leave_date_to = leave_data.get(employee.id, {}).get('leave_date_to')
-            employee.current_leave_state = leave_data.get(employee.id, {}).get('current_leave_state')
-            employee.current_leave_id = leave_data.get(employee.id, {}).get('current_leave_id')
+            valid_holidays = leave_data.get(employee.id, [])
+            leave_date_from = valid_holidays and valid_holidays[0].date_from or False
+            leave_date_to = valid_holidays and valid_holidays[-1].date_to or False
+            if leave_date_from:
+                employee.leave_date_from = leave_date_from.date()
+            if leave_date_to:
+                employee.leave_date_to = leave_date_to.date()
 
     ########################
     # CREATE TICKET METHOD #
