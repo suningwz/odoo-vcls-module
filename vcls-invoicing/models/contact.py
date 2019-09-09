@@ -15,7 +15,7 @@ class Contact(models.Model):
                                             ('0.02', '2%'), 
                                             ('0.025', '2.5%'), 
                                             ('0.03', '3%'), 
-                                            ], 'Communication Rate', default = 0.0)
+                                            ], 'Communication Rate', default = '0.0')
     
     invoicing_frequency = fields.Selection([('month','Month'),
                                             ('trimester','Trimester'),

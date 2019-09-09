@@ -80,7 +80,7 @@ class ProjectTask(models.Model):
         self.ensure_one()
         action = self.env.ref('hr_timesheet.act_hr_timesheet_line').read()[0]
         action['views'] = [
-          (self.env.ref('hr_timesheet.hr_timesheet_line_form').id, 'form'),
+          (self.env.ref('timesheet_grid.timesheet_view_form').id, 'form'),
         ]
         ctx = self.env.context.copy()
         ctx.update(default_project_id=self.project_id.id,
