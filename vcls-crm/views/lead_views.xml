@@ -226,7 +226,7 @@
                         <group>
                             <field name="technical_adv_id" />
                         </group>
-                        <group string="Support team" colspan="2">
+                        <group string="Extended BID team" colspan="2">
                             <field name="support_team" nolabel="1" options="{'no_quick_create': True, 'no_create_edit': True, 'no_create': True}" string="Other Technical Experts">
                                 <tree editable="bottom" create = '1'>
                                     <field name="name" />

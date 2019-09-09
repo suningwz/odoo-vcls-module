@@ -16,6 +16,11 @@ class Invoice(models.Model):
     po_id = fields.Many2one('invoicing.po', 
                             default = _get_default_po_id,  
                             string ='Purchase Order')
+
+    user_id = fields.Many2one(
+        'res.users',
+        string='Account Manager',
+        )
     
     def get_communication_amount(self):
         total_amount = 0
