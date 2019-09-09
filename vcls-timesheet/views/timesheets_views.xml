@@ -34,10 +34,11 @@
             <field name="name">vcls-timesheet.view.tree</field>
             <field name="model">account.analytic.line</field>
             <field name="arch" type="xml">
-                <tree string="Timesheets" create="false" colors="red:at_risk==True">
+                <tree string="Timesheets" create="false" decoration-danger="at_risk==True">
                     <field name="date" readonly="1" />
                     <field name="project_id" readonly="1" />
                     <field name="task_id" />
+                    <field name="at_risk" invisible="1" />
                     <field name="time_category_id" />
                     <field name="name" readonly="1" />
                     <field name="internal_comment" readonly="1" invisible="1" />
@@ -86,7 +87,7 @@
             <field name="name">vcls-timesheet.view.tree.readonly</field>
             <field name="model">account.analytic.line</field>
             <field name="arch" type="xml">
-                <tree editable="top" string="Timesheets" create="false" colors="red:at_risk==True">
+                <tree editable="top" string="Timesheets" create="false" decoration-danger="at_risk==True">
                     <field name="date" readonly="1" />
                     <field name="internal_comment" readonly="1" />
                     <field name="name" readonly="1" />
@@ -95,6 +96,7 @@
                     <field name="unit_amount" readonly="1" string="Duration (hours)" />
                     <field name="lc_comment" readonly="1" />
                     <field name="employee_id" readonly="1" />
+                    <field name="at_risk" invisible="1" />
                 </tree>
             </field>
         </record>
@@ -103,7 +105,7 @@
             <field name="name">vcls-timesheet.view.tree</field>
             <field name="model">account.analytic.line</field>
             <field name="arch" type="xml">
-                <tree string="PC Review" colors="red:at_risk==True">
+                <tree string="PC Review" decoration-danger="at_risk==True">
                     <field name="date" readonly="1" />
                     <field name="project_id" readonly="1" />
                     <field name="task_id" />
@@ -115,6 +117,7 @@
                     <field name="employee_id" readonly="1" />
                     <field name="lc_comment" readonly="1" />
                     <field name="adjustment_reason_id" />
+                    <field name="at_risk" invisible="1" />
                     <button name="button_details_pc" string="Details" type="object" icon="fa-align-justify" />
                 </tree>
             </field>
@@ -282,12 +285,13 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='date']" position="before">
                     <field name="stage_id" invisible='1' />
+                    <field name="at_risk" invisible='1' />
                 </xpath>
                 <xpath expr="//tree" position="attributes">
                     <attribute name="decoration-success">stage_id=='draft'</attribute>
                     <attribute name="decoration-primary">stage_id=='lc_review'</attribute>
                     <attribute name="decoration-info">stage_id=='pc_review'</attribute>
-                    <attribute name="decoration-danger">stage_id=='carry_forward'</attribute>
+                    <attribute name="decoration-danger">stage_id=='carry_forward' or at_risk==True</attribute>
                     <attribute name="decoration-warning">stage_id=='invoiceable'</attribute>
                 </xpath>
             </field>
@@ -366,5 +370,18 @@
             </field>
         </record>
 
+        <record id="account_analytic_line_tree_inherited" model="ir.ui.view">
+            <field name="name">account.analytic.line.tree.inherited</field>
+            <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="decoration-danger">at_risk==True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='unit_amount']" position="after">
+                    <field name="at_risk" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

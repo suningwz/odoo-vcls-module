@@ -70,3 +70,23 @@ class ProjectTask(models.Model):
         return super(ProjectTask, self.with_context(allow_timesheets=True)).search(
             args = args, offset=offset, limit=limit,
             order=order, count=count)
+
+    ##########################
+    # Button Actions METHODS #
+    ##########################
+    
+    @api.multi
+    def action_log_time(self):
+        self.ensure_one()
+        action = self.env.ref('hr_timesheet.act_hr_timesheet_line').read()[0]
+        action['views'] = [
+          (self.env.ref('hr_timesheet.hr_timesheet_line_form').id, 'form'),
+        ]
+        ctx = self.env.context.copy()
+        ctx.update(default_project_id=self.project_id.id,
+                   default_task_id=self.id,
+                   # One Employee/USer
+                   default_employee_id=self.env.user.employee_ids)
+        action.update({'context': ctx,
+                       'target': 'new'})
+        return action
