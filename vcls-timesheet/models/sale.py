@@ -84,15 +84,16 @@ class SaleOrderLine(models.Model):
                 domain,
                 [('stage_id', 'in', ['invoiceable','invoiced'])]]
             )
+        _logger.info("TS DOMAIN | {}".format(domain))
         return domain
 
     def _get_timesheet_for_amount_calculation(self, only_invoiced=False):
         timesheets = super()._get_timesheet_for_amount_calculation(only_invoiced=only_invoiced)
         
         if not timesheets:
-            _logger.info('No TS for amount calculation')
+            #_logger.info('No TS for amount calculation')
             return timesheets
-        _logger.info('Amount before filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
+        #_logger.info('Amount before filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
 
         timesheets = self.env['account.analytic.line'].search(
             [('id', 'in', timesheets.ids),
@@ -100,7 +101,7 @@ class SaleOrderLine(models.Model):
              ('stage_id', 'in', ['invoiceable', 'invoiced']),
              ]
         )
-        _logger.info('Amount after filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
+        #_logger.info('Amount after filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
 
         def ts_filter(rec):
             sale = rec.task_id.sale_line_id.order_id
