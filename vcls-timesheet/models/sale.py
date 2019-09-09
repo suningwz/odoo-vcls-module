@@ -71,21 +71,15 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    def _timesheet_compute_delivered_quantity_domain(self):
+    """def _timesheet_compute_delivered_quantity_domain(self):
         domain = super()._timesheet_compute_delivered_quantity_domain()
-        order = self.mapped('order_id')
-        if order.timesheet_limit_date:
-            domain = expression.AND([
-                domain,
-                [('date', '<=', order.timesheet_limit_date)]]
-            )
         #We add the condition on the timesheet stage_id
         domain = expression.AND([
                 domain,
                 [('stage_id', 'in', ['invoiceable','invoiced'])]]
             )
         _logger.info("TS DOMAIN | {}".format(domain))
-        return domain
+        return domain"""
 
     def _get_timesheet_for_amount_calculation(self, only_invoiced=False):
         timesheets = super()._get_timesheet_for_amount_calculation(only_invoiced=only_invoiced)
