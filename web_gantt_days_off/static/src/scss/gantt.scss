@@ -1,0 +1,11 @@
+.o_gantt_view {
+    &.colored_weekends {
+        .weekend_task {
+            background-color: grey;
+        }
+        .gantt_task .gantt_scale_cell.weekend_scale {
+            background-color: grey;
+            color: white;
+        }
+    }
+}

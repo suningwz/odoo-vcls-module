@@ -19,17 +19,18 @@
 
 
     # any module necessary for this one to work correctly
-    'depends': ['base',
-                'contacts',
-                'fleet',
-                'hr',
-                'hr_contract',
-                'hr_holidays',
-                'mail',
-                'snailmail',
-                'vcls-helpdesk'
-               ],
-
+    'depends': [
+        'base',
+        'contacts',
+        'fleet',
+        'hr',
+        'hr_contract',
+        'hr_holidays',
+        'mail',
+        'snailmail',
+        'vcls-helpdesk',
+        'web_gantt_days_off',
+    ],
     # always loaded
     'data': [
         
