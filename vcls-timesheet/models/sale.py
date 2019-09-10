@@ -72,7 +72,7 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    def _timesheet_compute_delivered_quantity_domain(self):
+   """ def _timesheet_compute_delivered_quantity_domain(self):
         domain = super()._timesheet_compute_delivered_quantity_domain()
         #We add the condition on the timesheet stage_id
         domain = expression.AND([
@@ -80,10 +80,10 @@ class SaleOrderLine(models.Model):
                 [('stage_id', 'in', ['invoiceable','invoiced'])]]
             )
         _logger.info("TS PATH | vcls-timesheet | sale.order.line | _timesheet_compute_delivered_quantity_domain")
-        return domain
+        return domain"""
 
     def _get_timesheet_for_amount_calculation(self, only_invoiced=False):
-        _logger.info("TS PATH | vcls-timesheet | sale.order.line | _get_timesheet_for_amount_calculation")
+        #_logger.info("TS PATH | vcls-timesheet | sale.order.line | _get_timesheet_for_amount_calculation")
 
         timesheets = super()._get_timesheet_for_amount_calculation(only_invoiced=only_invoiced)
         
@@ -94,13 +94,6 @@ class SaleOrderLine(models.Model):
         timesheets = timesheets.filtered(
                 lambda r: r.stage_id in ['invoiceable', 'invoiced']
             )
-        """timesheets = self.env['account.analytic.line'].search(
-            [('id', 'in', timesheets.ids),
-             ('validated', '=', True),
-             ('stage_id', 'in', ['invoiceable', 'invoiced']),
-             ]
-        )"""
-        
 
         def ts_filter(rec):
             sale = rec.task_id.sale_line_id.order_id
@@ -114,6 +107,43 @@ class SaleOrderLine(models.Model):
 
         _logger.info('Amount after filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
         return timesheets
+    
+    # We need to override the OCA to take the rounded_unit_amount in account rather than the standard unit_amount
+    @api.multi
+    @api.depends(
+        'task_id',
+        'task_id.timesheet_ids.timesheet_invoice_id',
+        'task_id.timesheet_ids.unit_amount_rounded',
+    )
+    def _compute_amount_delivered_from_task(self):
+        _logger.info("TS PATH | vcls-timesheet | sale.order.line | _compute_amount_delivered_from_task")
+        for line in self:
+            total = 0
+            for ts in line._get_timesheet_for_amount_calculation():
+                rate_line = ts.project_id.sale_line_employee_ids.filtered(
+                    lambda r: r.employee_id == ts.employee_id
+                )
+                total += ts.unit_amount_rounded * rate_line.price_unit
+            line.amount_delivered_from_task = total
+            line.amount_delivered_from_task_company_currency = (
+                total * line.order_id.currency_rate
+            )
+
+    @api.multi
+    @api.depends('task_id', 'task_id.timesheet_ids.timesheet_invoice_id')
+    def _compute_amount_invoiced_from_task(self):
+        _logger.info("TS PATH | timesheet | sale.order.line | _compute_amount_invoiced_from_task")
+        for line in self:
+            total = 0
+            for ts in line._get_timesheet_for_amount_calculation(True):
+                rate_line = ts.project_id.sale_line_employee_ids.filtered(
+                    lambda r: r.employee_id == ts.employee_id
+                )
+                total += ts.unit_amount_rounded * rate_line.price_unit
+            line.amount_invoiced_from_task = total
+            line.amount_invoiced_from_task_company_currency = (
+                total * line.order_id.currency_rate
+            )
 
 
 class ProductTemplate(models.Model):
