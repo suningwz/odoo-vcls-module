@@ -46,6 +46,7 @@ class SaleOrder(models.Model):
     @api.multi
     @api.depends('timesheet_limit_date')
     def _compute_timesheet_ids(self):
+        _logger.info("TS PATH | vcls-timesheet | sale.order | _compute_timesheet_ids")
         # this method copy of base method, it injects date in domain
         for order in self:
             if order.analytic_account_id:
@@ -71,17 +72,18 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    """def _timesheet_compute_delivered_quantity_domain(self):
+    def _timesheet_compute_delivered_quantity_domain(self):
         domain = super()._timesheet_compute_delivered_quantity_domain()
         #We add the condition on the timesheet stage_id
         domain = expression.AND([
                 domain,
                 [('stage_id', 'in', ['invoiceable','invoiced'])]]
             )
-        _logger.info("TS DOMAIN | {}".format(domain))
-        return domain"""
+        _logger.info("TS PATH | vcls-timesheet | sale.order.line | _timesheet_compute_delivered_quantity_domain")
+        return domain
 
     def _get_timesheet_for_amount_calculation(self, only_invoiced=False):
+        _logger.info("TS PATH | vcls-timesheet | sale.order.line | _get_timesheet_for_amount_calculation")
         timesheets = super()._get_timesheet_for_amount_calculation(only_invoiced=only_invoiced)
         
         if not timesheets:
