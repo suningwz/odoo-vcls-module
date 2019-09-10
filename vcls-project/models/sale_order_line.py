@@ -19,3 +19,8 @@ class SaleOrderLine(models.Model):
                 line.product_uom_qty = 0
 
         return lines
+
+    def _timesheet_create_task_prepare_values(self, project):
+        task_vals = super(SaleOrderLine, self)._timesheet_create_task_prepare_values(project)
+        task_vals.update(completion_elligible=self.product_id.completion_elligible)
+        return task_vals

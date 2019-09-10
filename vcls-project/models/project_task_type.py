@@ -18,3 +18,8 @@ class ProjectTaskType(models.Model):
         ('internal', 'Internal')],
         string='Project Type for Default',
     )
+
+    status = fields.Selection([('not_started', 'Not Started'),
+                               ('progress_0', '0% Progress'),
+                               ('completed', 'Completed'),
+                               ('cancelled', 'Cancelled')], string='Status')

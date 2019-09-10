@@ -42,7 +42,23 @@ class Project(models.Model):
 
     #consultant_ids = fields.Many2many('hr.employee', string='Consultants')
     #ta_ids = fields.Many2many('hr.employee', string='Ta')
-    
+    completion_ratio = fields.Float('Project completion', compute='compute_project_completion_ratio', store=True)
+    consumed_value = fields.Float('Consumed value', compute='compute_project_consumed_value', store=True)
+    consummed_completed_ratio = fields.Float('Consumed value', compute='compute_project_consummed_completed_ratio',
+                                             store=True)
+
+    ##################
+    # CUSTOM METHODS #
+    ##################
+    @api.multi
+    def get_tasks_for_project_sub_project(self):
+        """This function will return all the tasks and subtasks found in the main and Child
+        Projects"""
+        self.ensure_one()
+        tasks = self.task_ids + self.child_id.task_ids
+        all_tasks = tasks + tasks.mapped('child_ids')
+        return all_tasks.filtered(lambda task: task.completion_elligible and task.stage_id.status != 'not_started')
+
     ###############
     # ORM METHODS #
     ###############
@@ -102,4 +118,26 @@ class Project(models.Model):
                 task_count += group_data.get(sub_project_id, 0)
             project.task_count = task_count
 
-        
+    @api.multi
+    @api.depends('task_ids.completion_ratio')
+    def compute_project_completion_ratio(self):
+        for project in self:
+            tasks = project.get_tasks_for_project_sub_project()
+            project.completion_ratio = sum(tasks.mapped('completion_ratio')) / len(tasks) if tasks \
+                else sum(tasks.mapped('completion_ratio'))
+
+    @api.multi
+    @api.depends('task_ids.effective_hours')
+    def compute_project_consumed_value(self):
+        for project in self:
+            tasks = project.get_tasks_for_project_sub_project()
+            project.consumed_value = sum(tasks.mapped('effective_hours')) / len(tasks) if tasks \
+                else sum(tasks.mapped('effective_hours'))
+
+    @api.multi
+    @api.depends('task_ids.consummed_completed_ratio')
+    def compute_project_consummed_completed_ratio(self):
+        for project in self:
+            tasks = project.get_tasks_for_project_sub_project()
+            project.consummed_completed_ratio = sum(tasks.mapped('consummed_completed_ratio')) / len(tasks) if tasks \
+                else sum(tasks.mapped('consummed_completed_ratio'))

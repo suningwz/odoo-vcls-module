@@ -11,6 +11,9 @@
                     <field name="project_type_default"/>
                     <field name="completion_ratio"/>
                 </field>
+                <field name="name" position="after">
+                    <field name="status"/>
+                </field>
             </field>
          </record>
        

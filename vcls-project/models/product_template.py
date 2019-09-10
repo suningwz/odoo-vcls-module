@@ -16,6 +16,7 @@ class ProductTemplate(models.Model):
         store = True,
         compute = '_compute_grouping_info',
     )
+    completion_elligible = fields.Boolean('Completion eligibility')
 
     ###################
     # COMPUTE METHODS #
