@@ -72,7 +72,7 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-   """ def _timesheet_compute_delivered_quantity_domain(self):
+    """ def _timesheet_compute_delivered_quantity_domain(self):
         domain = super()._timesheet_compute_delivered_quantity_domain()
         #We add the condition on the timesheet stage_id
         domain = expression.AND([
