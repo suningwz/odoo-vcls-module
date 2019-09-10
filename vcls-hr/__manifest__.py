@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '1.8.1',
+    'version': '1.8.2',
 
 
     # any module necessary for this one to work correctly
@@ -29,7 +29,7 @@
         'mail',
         'snailmail',
         'vcls-helpdesk',
-        #'web_gantt_days_off',
+        'web_gantt_days_off',
     ],
     # always loaded
     'data': [
