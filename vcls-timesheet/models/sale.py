@@ -42,9 +42,12 @@ class SaleOrder(models.Model):
                                                                                     'stage_id':stage_id, 
                                                                                     'active':True}).id
     
-    """#We override the OCA to inject the stage domain
+    #We override the OCA to inject the stage domain
     @api.multi
-    @api.depends('timesheet_limit_date')
+    @api.depends(
+        'timesheet_limit_date',
+        'order_line.task_id.timesheet_ids.stage_id')
+        
     def _compute_timesheet_ids(self):
         _logger.info("TS PATH | vcls-timesheet | sale.order | _compute_timesheet_ids")
         # this method copy of base method, it injects date in domain
@@ -66,7 +69,7 @@ class SaleOrder(models.Model):
                 _logger.info('{} found {}'.format(domain,order.timesheet_ids.mapped('name')))
             else:
                 order.timesheet_ids = []
-            order.timesheet_count = len(order.timesheet_ids)"""
+            order.timesheet_count = len(order.timesheet_ids)
 
 
 class SaleOrderLine(models.Model):
@@ -114,6 +117,7 @@ class SaleOrderLine(models.Model):
         'task_id',
         'task_id.timesheet_ids.timesheet_invoice_id',
         'task_id.timesheet_ids.unit_amount_rounded',
+        'task_id.timesheet_ids.stage_id',
     )
     def _compute_amount_delivered_from_task(self):
         _logger.info("TS PATH | vcls-timesheet | sale.order.line | _compute_amount_delivered_from_task")
