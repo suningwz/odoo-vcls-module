@@ -878,7 +878,7 @@ class Employee(models.Model):
             #we create a modif only if a contract already exists
             if employee.contract_id:
                 employee.create_IT_ticket('modify')
-'''
+    '''
     '''
     @api.onchange('parent_id')
     def _ticket_onchange_LM(self):
@@ -907,11 +907,12 @@ class Employee(models.Model):
 
             if 'parent_id' in vals:
                 self.create_IT_ticket('newLM')
-                _logger.info("NEW LM TICKET CREATED: {}".format(self.name))
+
+                #_logger.info("NEW LM TICKET CREATED: {}".format(self.name))
             
             if 'first_name' in vals or 'middle_name' in vals or 'last_name' in vals or 'name' in vals:
                 self.create_IT_ticket('modify')
-                _logger.info("NEW MODIFY TICKET CREATED: {}".format(self.name))
+                #_logger.info("NEW MODIFY TICKET CREATED: {}".format(self.name))
 
         return super(Employee, self).write(vals)
     
