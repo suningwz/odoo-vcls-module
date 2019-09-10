@@ -1,0 +1,86 @@
+<odoo>
+    <data>
+        <record id='vcls_times_category_view_tree' model='ir.ui.view'>
+            <field name="name">project.time_category.view.tree</field>
+            <field name="model">project.time_category</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        <record id='vcls_times_category_view_form' model='ir.ui.view'>
+            <field name="name">project.time_category.view.form</field>
+            <field name="model">project.time_category</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                            <group>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="act_time_categories" model="ir.actions.act_window">
+            <field name="name">Time Categories</field>
+            <field name="res_model">project.time_category</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls_times_category_view_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('vcls_times_category_view_form')})]"/>
+        </record>
+
+        <menuitem id="menu_time_categories"
+                    name="Time Categories"
+                    sequence="5"
+                    parent="hr_timesheet.hr_timesheet_menu_configuration"
+                    action="vcls-timesheet.act_time_categories"/>
+
+        <!-- <menuitem id="hr_timesheet.timesheet_menu_activity_mine"
+                    name="Time Categories "
+                    sequence="100"
+                    parent="hr_timesheet.timesheet_menu_root"
+                    action="vcls-project.act_time_categories"/> -->
+
+        <record id="account_analytic_line_grid_view_form" model="ir.ui.view">
+            <field name="name">account.analytic.line.grid.view.form</field>
+            <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="timesheet_grid.timesheet_view_form"/>
+            <field name="arch" type="xml">
+                <field name="task_id" position="replace">
+                    <field name="task_id" context="{'default_project_id': project_id}" required="1" class="o_timesheet_tour_task_name"/>
+                </field>
+                <field name="unit_amount" position="replace">
+                    <field name="unit_amount" string="Hours Spent" required="1"/>
+                </field>
+                <xpath expr="//field[@name='employee_id']" position="after">
+                    <field name="task_id" invisible="1"/>
+                    <field name="time_category_id" context="{'task_filter':True,'task_id':task_id}" option="{'no_create_edit': True}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- We Extend the task view with a time_category field-->
+        <record id="view_task_form2_inherit" model="ir.ui.view">
+            <field name="name">view_task_form2_inherit_timecat</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="hr_timesheet.view_task_form2_inherited"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='timesheet_ids']" position="after">
+                    <group>
+                        <field name="time_category_ids" widget="many2many_tags" option="{'no_create_edit': True}"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

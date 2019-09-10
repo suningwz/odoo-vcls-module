@@ -41,5 +41,22 @@
             <field name="view_mode">tree</field>
         </record>
 
+        <record model="ir.ui.view" id="view_lead_stage_tree">
+            <field name="name">view_lead_stage_tree</field>
+            <field name="model">crm.lead.stage</field>
+            <field name="arch" type="xml">
+                <tree create='1' editable='bottom'>
+                    <field name="name"/>
+                    <field name="active"/> 
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_lead_stage">
+            <field name="name">Lead Stages</field>
+            <field name="res_model">crm.lead.stage</field>
+            <field name="view_mode">tree</field>
+        </record>
+
     </data>
 </odoo>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_backend" name="web_gantt assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" type="text/scss" href="/web_gantt_days_off/static/src/scss/gantt.scss"/>
+            <script type="text/javascript" src="/web_gantt_days_off/static/src/js/gantt_renderer.js"></script>
+        </xpath>
+    </template>
+</odoo>

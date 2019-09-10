@@ -25,7 +25,15 @@
                     'vcls-crm',
                     'vcls-interfaces',
                     'vcls-project',
-                    'vcls-theme'
+                    'vcls-timesheet',
+                    'vcls-suppliers',
+                    'vcls-legal',
+                    'vcls-theme',
+                    'vcls-risk',
+                    'vcls-expenses',
+                    'vcls-invoicing',
+                    'vcls-accounting',
+                    
                 ],
 
     # always loaded
@@ -40,7 +48,7 @@
 
         ### VIEWS
         #'views/vcls_admin.xml',
-        'views/quick_VCLS_Filter.xml',
+        'views/quick_vcls_filter.xml',
         'views/new_template_restriction.xml'
 
     ],

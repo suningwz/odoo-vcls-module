@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.8',
+    'version': '0.12',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -45,11 +45,15 @@
         'views/task_views.xml',
         'views/employee_views.xml',
         'views/product_views.xml',
+        'views/sale_order_views.xml',
+        'views/lead_views.xml',
+        'views/res_partner_views.xml',
 
         ### MENUS ###
         'views/dev_project_menu.xml',
         'views/program_views_menu.xml',
         'views/project_views.xml',
+        'views/project_forecast_views.xml',
     ],
 
     # only loaded in demonstration mode

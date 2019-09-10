@@ -15,12 +15,19 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.3',
+
+    'version': '0.14.6',
+
 
     # any module necessary for this one to work correctly
     'depends': [
         'base',
+        'hr_timesheet',
+        'project_timesheet_forecast',
         'sale_timesheet',
+        'sale_timesheet_limit_date',
+        'sale_timesheet_rounded',
+        'timesheet_useability',
         'vcls-crm',
         'vcls-project',
         ],
@@ -32,11 +39,17 @@
         'security/record_rule.xml',
         'security/ir.model.access.csv',
         #'data/parameters.xml',
+        'data/project.xml',
 
         ### VIEWS ###
         'views/timesheets_views.xml',
         'views/projects_views.xml',
         'views/sale_order_views.xml',
+        'views/crm_views.xml',
+        'views/time_category_views.xml',
+        'views/timesheet_report_views.xml',
+        'views/report_views.xml',
+
 
         ### ACTIONS ###
         'actions/timesheet_cron.xml',

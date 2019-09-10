@@ -1,0 +1,21 @@
+<odoo>
+    <data>
+        <record id="sale_order_form_inherit" model="ir.ui.view">
+            <field name="name">sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="vcls-crm.view_order_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button class="oe_stat_button" name="core_team" type="object" icon="fa-stack-exchange" string="Core Team" />
+                </xpath>
+                <xpath expr="//header" position="inside">
+                    <button name="quotation_program_print" string="Print all program's quotation" type="object" states="draft" class="btn-primary"/>
+                </xpath>
+                <field name="opportunity_id" position="after">
+                    <field name="program_id" options="{'no_create': True}" domain="[('client_id','=',partner_id)]" />
+                    <field name="core_team_id" />
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -11,6 +11,9 @@
                     <field string="Agreements" name="agreement_count" widget="statinfo"/>
                 </button>
             </button>
+            <field name="CDA" position="before">
+                <field name="agreement_id" options="{'no_create_edit': True}"/>
+            </field>
         </field>
     </record>
 </odoo>

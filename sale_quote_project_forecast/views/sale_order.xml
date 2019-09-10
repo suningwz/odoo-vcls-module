@@ -10,6 +10,7 @@
                     string="Synchronize Project" class="btn-primary" type="object"
                     attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
             </xpath>
+            
             <xpath expr="//tree/field[@name='price_tax']" position="after">
                 <field name="service_policy" invisible="True" />
                 <button type="action"

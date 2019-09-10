@@ -11,5 +11,47 @@
                 </div>
             </field>
         </record>
+        
+        <!-- 
+        <record id="view_project_form_contact_book" model="ir.ui.view">
+            <field name="name">project.form.contact.book</field>
+            <field name="model">project.project</field>
+            <field name="priority" eval="500"/>
+            <field name="arch" type="xml">
+                <form string="Project Contact Book">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name='name' string="Project Name"/>
+                            </group>
+                            <group>
+                                <field name='alias_user_id' string="Lead Consultant"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Consultants">
+                                <field name='consultant_ids' mode="tree" nolabel="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="job_id"/>
+                                    </tree>
+                                </field>  
+                            </group>
+                            <group string="Technical Advisors" >
+                                <field name='ta_ids' mode="tree" nolabel="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="job_id"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </group>
+                        
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        -->
+
     </data>
 </odoo>

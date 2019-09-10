@@ -11,6 +11,7 @@
         <!--     <field name="value">10</field> -->
         <!--   </record> -->
         <!--  -->
+
         <!--   <record id="object2" model="vcls-theme.vcls-theme"> -->
         <!--     <field name="name">Object 2</field> -->
         <!--     <field name="value">20</field> -->

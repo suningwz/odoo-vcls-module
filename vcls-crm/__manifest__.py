@@ -15,7 +15,14 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.8',
+
+
+
+
+    'version': '1.14.0',
+
+
+
 
     # any module necessary for this one to work correctly
     'depends': ['base',
@@ -24,15 +31,19 @@
                 #'mass_mailing',
                 'website',
                 'website_crm',
+                'partner_firstname',
+                'partner_second_lastname',
                 'website_crm_score',
                 'vcls-contact',
+                'sale',
                 'sale_management',
                 'sale_crm',
+                'sale_order_revision',
                 'crm_lead_currency',
                 'vcls-hr',
-                #'sale_timesheet_limit_date',
-                #'sale_project_timesheet_by_seniority',
-                #'crm_lead_product',
+                'crm_lead_firstname',
+                'marketing_automation',
+                'vcls-risk',
                 ],
 
     # always loaded
@@ -45,6 +56,7 @@
         #'security/vcls_groups.xml',
         'security/ir.model.access.csv',
         'security/lead_rules.xml',
+        'security/security_groups.xml',
 
         ### VIEWS ###
         'views/dropdown_views.xml',
@@ -55,6 +67,8 @@
         'views/product_deliverable_views_menu.xml',
         'views/product_views_menu.xml',
         'views/sale_order_views.xml',
+        'views/lead2opp.xml',
+        'views/core_team_views.xml',
         #'views/sale_order_template_views.xml',
 
         ### MENUS ###
@@ -64,6 +78,9 @@
         ### RECORDS DATA ###
         'data/partner.relation.type.csv',
         'data/product.pricelist.csv',
+        'data/message_subtype.xml',
+        'data/risk_type.xml',
+        'data/lead_stage.xml',
 
     ],
     # only loaded in demonstration mode

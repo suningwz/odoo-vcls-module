@@ -1,16 +1,16 @@
-# Copyright 2018 Camptocamp SA
+# Copyright 2019 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     'name': 'Sale quote project forcast',
     'description': "create a quote from a project forcast",
-    'version': '12.0.2.0.0',
+    'version': '12.0.4.0.3',
     'author': 'Camptocamp',
     'license': 'AGPL-3',
     'category': 'Others',
     'depends': [
         'sale_project_timesheet_by_seniority',
         'project_timesheet_forecast',
-        'sale_milestone_profile_invoicing'
+        'sale_milestone_profile_invoicing',
     ],
     'website': 'http://www.camptocamp.com',
     'data': [

@@ -1,3 +1,5 @@
+# Copyright 2019 Camptocamp SA
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import models, fields
 
 
@@ -7,9 +9,4 @@ class ProductTemplate(models.Model):
     forecast_employee_id = fields.Many2one(
         comodel_name='hr.employee',
         string="Forecast employee",
-    )
-    seniority_level_id = fields.Many2one(
-        name='Seniority level',
-        comodel_name='hr.employee.seniority.level',
-        ondelete='restrict',
     )

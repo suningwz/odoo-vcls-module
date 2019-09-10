@@ -30,12 +30,6 @@
                                 icon="fa-coffee"
                                 attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"
                                 groups="vcls-hr.vcls_group_HR_local"/>
-                        
-                        <button name = "new_benefit_pop_up" string = "TEZST" type = "object"
-                                icon="fa-coffee"
-                                attrs="{'invisible': [('access_level', 'not in', ['hr','support'])]}"
-                                groups="vcls-hr.vcls_group_HR_local"/>
-
                     </header>
                     
                     <sheet>

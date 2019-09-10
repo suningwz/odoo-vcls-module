@@ -15,17 +15,27 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.1',
+    'version': '0.3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'web'],
+    'depends': ['base', 
+                'web',
+                'vcls-crm',
+                'vcls-suppliers',
+                'vcls-timesheet',
+                'vcls-project',
+                'vcls-invoicing',
+                'vcls-legal',
+            ],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
-        'views/views.xml',
-        'views/templates.xml',
-        'views/colors.xml'
+        'views/colors.xml',
+        'views/bd_menus.xml',
+        'views/rm_menus.xml',
+        'views/lc_menus.xml',
+        'views/backend.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

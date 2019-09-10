@@ -28,6 +28,9 @@ class Project(models.Model):
         string = 'Project Type',
         default = 'client',
     )
+    
+    parent_id = fields.Many2one('project.project', 'Parent project', index=True, ondelete='cascade')
+    child_id = fields.One2many('project.project', 'parent_id', 'Child projects')
 
     parent_task_count = fields.Integer(
         compute = '_compute_parent_task_count'
@@ -37,6 +40,9 @@ class Project(models.Model):
         compute = '_compute_child_task_count'
     )
 
+    #consultant_ids = fields.Many2many('hr.employee', string='Consultants')
+    #ta_ids = fields.Many2many('hr.employee', string='Ta')
+    
     ###############
     # ORM METHODS #
     ###############
@@ -47,6 +53,15 @@ class Project(models.Model):
                 vals['privacy_visibility'] = 'employees'
             else:
                 vals['privacy_visibility'] = 'followers'
+        
+        #we automatically assign the project manager to be the one defined in the core team
+        if vals.get('sale_order_id',False):
+            so = self.env['sale.order'].browse(vals.get('sale_order_id'))
+            lc = so.core_team_id.lead_consultant
+            _logger.info("SO info {}".format(lc.name))
+            if lc:
+                vals['user_id']=lc.user_id.id
+
 
         project = super(Project, self).create(vals)
         ids = project._get_default_type_common()
@@ -77,4 +92,14 @@ class Project(models.Model):
         result = dict((data['project_id'][0], data['project_id_count']) for data in task_data)
         for project in self:
             project.child_task_count = result.get(project.id, 0)
+    
+    def _compute_task_count(self):
+        read_group_res = self.env['project.task'].read_group([('project_id', 'child_of', self.ids), '|', ('stage_id.fold', '=', False), ('stage_id', '=', False)], ['project_id'], ['project_id'])
+        group_data = dict((data['project_id'][0], data['project_id_count']) for data in read_group_res)
+        for project in self:
+            task_count = 0
+            for sub_project_id in project.search([('id', 'child_of', project.id)]).ids:
+                task_count += group_data.get(sub_project_id, 0)
+            project.task_count = task_count
+
         

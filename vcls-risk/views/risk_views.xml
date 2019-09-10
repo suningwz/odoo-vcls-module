@@ -52,6 +52,7 @@
                 <field name="risk_level"/>
                 <field name="last_notification"/>
                 <field name="score"/>
+                <button string="Record" class="oe_highlight" name = 'go_to_record' type = 'object' />
             </tree>
         </field>
     </record>
@@ -135,4 +136,6 @@
 
     <menuitem action="action_view_risk_type" id="menu_risk_type" name="Risk Type" parent="menu_main_risk"
             sequence="100" groups="risk_user"/>
+    
+
 </odoo>

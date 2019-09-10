@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <!-- template id="portal_layout" name="Portal layout: project menu entry" inherit_id="project.portal_layout">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <t t-if="page_name == 'project_tasks'">
+                <li class="breadcrumb-item active">
+                    Tasks
+                </li>
+            </t>
+        </xpath>
+    </template -->
+
+    <template id="portal_my_task" name="My Task" inherit_id="project.portal_my_task">
+            <xpath expr="//t[@t-set='o_portal_fullwidth_alert']" position="replace">
+            </xpath>
+            <xpath expr="//div[@t-if='user.partner_id.id in task.sudo().project_id.message_partner_ids.ids']" position="before">
+                <div t-foreach="errors" t-as="error">
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <span t-esc="error" />
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span class='fa fa-times' aria-label="Close" title="Close"></span>
+                    </button>
+                </div> 
+                </div>
+            </xpath>
+
+            <xpath expr="//span[@t-field='task.stage_id.name']" position="replace">
+                <span t-esc="task.stage_id.name" class=" badge badge-pill badge-info" title="Current stage of this task"/>
+            </xpath>
+            <xpath expr="//div[@t-if='task.date_deadline']" position="after">
+                <div class="col-12 col-md-6">
+                    <strong>Planned Hours:</strong> <span t-esc="task.planned_hours" t-options='{"widget": "float", "precision": 1}'/>
+                </div>
+                <div class="col-12 col-md-6">
+                    <strong>Total Hours Spent:</strong> <span t-esc="task.total_hours_spent" t-options='{"widget": "float", "precision": 1}'/>
+                </div>
+                <div class="col-12 col-md-6">
+                    <strong>Progress: </strong> <span t-esc="task.progress" t-options='{"widget": "percentage"}'/><strong>%</strong>
+                </div>
+            </xpath>
+            <xpath expr="//div[@t-if='task.timesheet_ids']" position="replace">
+                <hr class="mt-4 mb-1"/>
+                <h5 class="mt-2 mb-2">Timesheets</h5>
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Responsible</th>
+                            <th>Internal Comment</th>
+                            <th>Time Category</th>
+                            <th class="text-right">Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="task.timesheet_ids" t-as="timesheet">
+                            <t t-if="timesheet.validated == False">
+                                <tr data-toggle="modal" t-attf-data-target="#editTimesheetModal#{ timesheet.id }" style="cursor: pointer;">
+                                    <td><t t-esc="timesheet.date"/></td>
+                                    <td><t t-esc="timesheet.name"/></td>
+                                    <td><t t-esc="timesheet.sudo().user_id.name"/></td>
+                                    <td><t t-esc="timesheet.sudo().internal_comment"/></td>
+                                    <td><t t-esc="timesheet.sudo().time_category_id.name"/></td>
+                                    <td class="text-right"><span t-esc="timesheet.unit_amount" t-options='{"widget": "duration", "unit": "hour", "round": "minute"}'/></td>
+                                </tr>
+                                <!-- EDIT TIMESHEET -->
+                                <!-- Modal -->
+                                <div class="modal fade" t-attf-id="editTimesheetModal#{ timesheet.id }" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Edit timesheet</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span class='fa fa-times' aria-label="Close" title="Close"></span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <t t-esc="timesheet.name"/>
+                                                <form t-attf-action="/my/task/#{ task.id }/timesheets/#{ timesheet.id }/edit" method="post">
+                                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                    <div t-attf-class="form-group col-md-6">
+                                                        <label class="col-form-label" for="name">Date</label>
+                                                        <input type="date" name="date" class="form-control" t-attf-value = "#{ timesheet.date }"/>
+                                                    </div>
+                                                    <div t-attf-class="form-group col-md-6">
+                                                        <label class="col-form-label" for="name">Description</label>
+                                                        <input type="text" name="name" class="form-control" t-attf-value = "#{ timesheet.name }"/>
+                                                    </div>
+                                                    <div class="form-group col-md-6">
+                                                        <label class="col-form-label" for="name">Time Category</label>
+                                                        <select class="form-control" name="time_category_id">
+                                                            <t t-foreach="time_categories" t-as="time_category">
+                                                                <t t-if="time_category.id == timesheet.time_category_id.id">
+                                                                    <option t-attf-value = "#{ time_category.id }" selected="selected"><t t-esc="time_category.name"/></option>
+                                                                </t>
+                                                                <t t-if="time_category.id != timesheet.time_category_id.id">
+                                                                    <option t-attf-value = "#{ time_category.id }"><t t-esc="time_category.name"/></option>
+                                                                </t>
+                                                            </t>
+                                                        </select>
+                                                    </div>
+                                                    <div t-attf-class="form-group col-sm-4">
+                                                        <label class="col-form-label" for="name">Duration (hours)</label>
+                                                        <input type="number" step = "any" name="unit_amount" class="form-control" t-attf-value = "#{ timesheet.unit_amount }"/>
+                                                    </div>
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Discard</button>
+                                                    <button type="submit" class="btn btn-primary">Save changes</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                            <t t-if="timesheet.validated == True">
+                                 <tr class="table-info">
+                                    <td><t t-esc="timesheet.date"/></td>
+                                    <td><t t-esc="timesheet.name"/></td>
+                                    <td><t t-esc="timesheet.sudo().user_id.name"/></td>
+                                    <td class="text-right"><span t-esc="timesheet.unit_amount" t-options='{"widget": "duration", "unit": "hour", "round": "minute"}'/></td>
+                                </tr>
+                            </t>
+                        </t>
+                    </tbody>
+                </table>
+
+                <!-- ADD NEW TIMESHEET-->
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newTimesheetModal">
+                    Add new timesheet
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="newTimesheetModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">New timesheet</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span class='fa fa-times' aria-label="Close" title="Close"></span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form t-attf-action="/my/task/#{task.id}/timesheets/new" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <div t-attf-class="form-group col-md-6">
+                                        <label class="col-form-label" for="name">Date</label>
+                                        <input type="date" name="date" class="form-control" />
+                                    </div>
+                                    <div t-attf-class="form-group col-md-6">
+                                        <label class="col-form-label" for="name">Description</label>
+                                        <input type="text" name="name" class="form-control" />
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label class="col-form-label" for="name">Time Category</label>
+                                        <select class="form-control" name="time_category_id">
+                                            <t t-foreach="time_categories" t-as="time_category">
+                                                <option t-attf-value = "#{ time_category.id }"><t t-esc="time_category.name"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div t-attf-class="form-group col-sm-4">
+                                        <label class="col-form-label" for="name">Duration (hours)</label>
+                                        <input type="number" name="unit_amount" class="form-control" step = "any"/>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary float-right mb32 ">
+                                        Confirm
+                                        <span class="fa fa-long-arrow-right"/>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+    </template>
+    <!-- https://github.com/OCA/web/tree/12.0/web_widget_x2many_2d_matrix -->
+
+    <!-- template id="portal_project_tasks" name="Project Tasks">
+            <t t-call="portal.portal_layout">
+            <t t-if="grouped_tasks">
+                <t t-call="portal.portal_table">
+                    <t t-foreach="grouped_tasks" t-as="tasks">
+                        <thead>
+                            <tr t-attf-class="{{'thead-light' if not groupby == 'none' else ''}}">
+                                <th t-if="groupby == 'none'">Name</th>
+                                <th t-else="">
+                                    <em class="font-weight-normal text-muted"><span t-field="tasks[0].sudo().project_id.label_tasks"/> for project:</em>
+                                    <span t-field="tasks[0].sudo().project_id.name"/></th>
+                                <th class="text-center">Stage</th>
+                                <th class="text-left">Ref</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="tasks" t-as="task">
+                                <tr>
+                                    <td>
+                                        <a t-attf-href="/my/task/#{task.id}?{{ keep_query() }}"><span t-field="task.name"/></a>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge badge-pill badge-info" title="Current stage of the task" t-esc="task.stage_id.name" />
+                                    </td>
+                                    <td class="text-left">
+                                        #<span t-esc="task.id"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template -->
+
+    <template id="portal_my_projects" name="My Projects" inherit_id="project.portal_my_projects">
+            <xpath expr="//t[@t-esc='project.task_count']" position="replace">
+                <p>My</p>
+            </xpath>
+    </template>
+</odoo>

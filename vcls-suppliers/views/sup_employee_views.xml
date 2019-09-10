@@ -65,6 +65,7 @@
                             </page>
 
                             <page name="operations" string="Operational Info" groups="vcls-project.vcls_group_op_config">
+                                
                                 <group string="Default Rates">
                                     <field name="default_rate_ids" string="">
                                         <tree string="Default Rates">
@@ -74,6 +75,8 @@
                                         </tree>
                                     </field>
                                     <field name="seniority_level_id"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="timesheet_cost"/>
                                 </group>
                             </page>
                             
@@ -120,7 +123,7 @@
         </record>
 
         <record id="hr_contract.action_hr_contract" model="ir.actions.act_window">
-             <field name="domain" eval="[('employee_id', '=', False),('type_id','!=',ref('vcls-suppliers.contract_type_project_supplier'))]"/>
+             <field name="domain" eval="[('type_id','!=',ref('vcls-suppliers.contract_type_project_supplier'))]"/>
         </record>
     </data>
 </odoo>

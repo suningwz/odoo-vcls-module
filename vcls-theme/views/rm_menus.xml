@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- 
+        MENUS 
+        ##### -->
+
+        <!-- Original Menus Only accessible to admins 
+        <record id="sale.sale_menu_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6,0,[ref('base.group_system')])]"/>
+        </record>
+        -->
+
+        <!-- Root Menu -->
+        <menuitem
+            id="menu_rm_root"
+            name="Resource Management"
+            sequence="8"
+            active="True"
+            web_icon="fa fa-spinner,#f1c40f,#838383"
+            groups="vcls-suppliers.vcls_group_rm"
+        />
+        
+        <!-- Purchases -->
+        <menuitem
+            id="menu_rm_request_main"
+            name="All Purchases"
+            parent="menu_rm_root"
+            action="purchase.purchase_rfq"
+            sequence="3"
+        />
+
+        <!-- Suppliers -->
+        <menuitem
+            id="menu_rm_suppliers_main"
+            name="Project Services"
+            parent="menu_rm_root"
+            sequence="6"
+        />
+
+        <menuitem
+            id="menu_rm_suppliers_contact"
+            name="Contact List"
+            parent="menu_rm_suppliers_main"
+            action="vcls-contact.action_suppliers_project"
+            sequence="3"
+        />
+
+        <menuitem
+            id="menu_rm_suppliers_agreements"
+            name="Contracts"
+            parent="menu_rm_suppliers_main"
+            action="agreement_legal.agreement_dashboard_agreement"
+            sequence="6"
+        />
+
+        <menuitem
+            id="menu_rm_suppliers_eval"
+            name="Evaluations"
+            parent="menu_rm_suppliers_main"
+            action=""
+            sequence="9"
+        />
+
+        <!-- Forecasts -->
+        <menuitem
+            id="menu_rm_forecast_main"
+            name="Forecast"
+            parent="menu_rm_root"
+            sequence="9"
+        />
+
+        <menuitem
+            id="menu_rm_forecast_employee"
+            name="By Employee"
+            parent="menu_rm_forecast_main"
+            action="project_forecast.project_forecast_action_server_by_user"
+            sequence="3"
+        />
+
+        <menuitem
+            id="menu_rm_forecast_project"
+            name="By Project"
+            parent="menu_rm_forecast_main"
+            action="project_forecast.project_forecast_action_server_by_project"
+            sequence="6"
+        />
+
+        <!-- Expertise -->
+        <menuitem
+            id="menu_rm_expertise_main"
+            name="Expertise"
+            parent="menu_rm_root"
+            action="vcls-suppliers.action_user_skills_rm"
+            sequence="12"
+        />
+
+        <!-- Configuration -->
+        <menuitem
+            id="menu_rm_config_main"
+            name="Configuration"
+            parent="menu_rm_root"
+            sequence="15"
+        />
+
+        <menuitem
+            id="menu_rm_config_expertise_area"
+            name="Expertise Area"
+            parent="menu_rm_config_main"
+            action="vcls-suppliers.action_expertise_area"
+            sequence="3"
+        />
+
+        <menuitem
+            id="menu_rm_config_product"
+            name="Products"
+            parent="menu_rm_config_main"
+            action="sale.product_template_action"
+            sequence="6"
+        />
+
+        <menuitem
+            id="menu_rm_config_ext_employees"
+            name="External Employees"
+            parent="menu_rm_config_main"
+            action="vcls-suppliers.action_show_external_consultant"
+            sequence="9"
+        />
+        
+    </data>
+</odoo>
+        

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_core_team_form" model="ir.ui.view">
+            <field name="name">view_core_team_form</field>
+            <field name="model">core.team</field>
+            <field name="priority" eval="500"/>
+            <field name="arch" type="xml">
+                <form string="Core Team">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name='lead_consultant' string="Lead Consultant"/>
+                                <field name='lead_backup'/>
+                            </group>
+                            <group>
+                                
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Consultants">
+                               
+                                <field name='consultant_ids' mode="tree" nolabel="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="job_id"/>
+                                    </tree>
+                                </field>  
+                            </group>
+                            <group string="Technical Advisors" >
+                            
+                                <field name='ta_ids' mode="tree" nolabel="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="job_id"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </group>
+                        
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

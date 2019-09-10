@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
-from odoo import models, fields, api
+from odoo import models, fields, api, http
 
 from odoo.exceptions import UserError, ValidationError
 
@@ -38,15 +38,20 @@ class Risk(models.Model):
 
     resource = fields.Char(string='Resource', index=True, help="If not set, acts as a default value for new resources")
 
-    risk_level = fields.Selection([(1, 'Low'), (2, 'Moderate'), (3, 'Significant'), (4, 'High')], 'Risk Level',)
+    risk_level = fields.Selection(
+        [(0, 'Solved'),(1, 'Low'), (2, 'Moderate'), (3, 'Significant'), (4, 'High')],
+         'Risk Level',
+         default = 2,
+         track_visibility="onchange",
+         )
 
     last_notification = fields.Datetime(readonly = True)
 
     score = fields.Integer(string = "Score", compute="_compute_score")
 
-    acknowledged = fields.Boolean(
+    """acknowledged = fields.Boolean(
         default = False,
-    )
+    )"""
 
     @api.depends('risk_level', 'risk_type_id.weight')
     def _compute_score(self):
@@ -54,7 +59,7 @@ class Risk(models.Model):
             if risk.risk_level:
                 risk.score = risk.risk_level * risk.risk_type_id.weight
             else:
-                risk.score = 1
+                risk.score = 0
 
     @api.model
     def _raise_risk(self, risk_type, resource):
@@ -72,4 +77,22 @@ class Risk(models.Model):
                 self.message_subscribe(partner_ids=partner_ids)
                 self.message_post(body="Risk created", partner_ids=[4, partner_ids])
                 self.last_notification = datetime.datetime.now()
+    
+    
+    @api.onchange('risk_level')
+    def _onchange_risk_level(self):
+        group_id = self.risk_type_id.group_id
+        if group_id:
+            if self.env.user not in self.risk_type_id.group_id.users:
+                raise UserError("You need to be part of {} to modify the risk level".format(group_id.name))
 
+    def go_to_record(self):
+        resource = str(self.resource).split(',')
+        if len(resource) == 2:
+            url = http.request.env['ir.config_parameter'].get_param('web.base.url')
+            link = "{}/web#id={}&model={}".format(url, resource[1], resource[0])
+            return {
+                'type': 'ir.actions.act_url',
+                'url': link,
+                'target': 'self',
+            }

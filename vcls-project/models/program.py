@@ -8,7 +8,9 @@ class ProjectProgram(models.Model):
     _name = 'project.program'
     _description = 'A Program of Projects'
 
-    name = fields.Char()
+    name = fields.Char(
+        required = True,
+    )
 
     active = fields.Boolean(
         default = True,
@@ -32,6 +34,35 @@ class ProjectProgram(models.Model):
     )
 
     indication = fields.Char()
+    
+    product_description = fields.Char()
+    
+    sale_order_count = fields.Integer(compute='_compute_sale_order_count', string='Sale Order Count')
+    opportunity_count = fields.Integer(compute='_compute_opportunity_count', string='Opportunity Count')
+    project_count = fields.Integer(compute='_compute_project_count', string='Main Project Count')
+
+    # Only 4 input so no need to create new object
+    stage_id =  fields.Selection([('pre', 'Preclinical'),('exploratory', 'Exploratory Clinical'),
+    ('confirmatory', 'Confirmatory Clinical'), ('post', 'Post Marketing')], 'Stage', default='pre')
+    
+    def _compute_sale_order_count(self):
+        order_data = self.env['sale.order'].read_group([('program_id', 'in', self.ids)], ['program_id'], ['program_id'])
+        result = dict((data['program_id'][0], data['program_id_count']) for data in order_data)
+        for program in self:
+            program.sale_order_count = result.get(program.id, 0)
+    
+    def _compute_opportunity_count(self):
+        lead_data = self.env['crm.lead'].read_group([('program_id', 'in', self.ids)], ['program_id'], ['program_id'])
+        result = dict((data['program_id'][0], data['program_id_count']) for data in lead_data)
+        for program in self:
+            program.opportunity_count = result.get(program.id, 0)
+            
+    def _compute_project_count(self):
+        project_data = self.env['project.project'].read_group([('program_id', 'in', self.ids), ('parent_id', '=', False)], ['program_id'], ['program_id'])
+        result = dict((data['program_id'][0], data['program_id_count']) for data in project_data)
+        for program in self:
+            program.project_count = result.get(program.id, 0)
+
 
 ### ADD PROGRAM TO OTHER MODELS ###
 class Client(models.Model):
@@ -63,6 +94,9 @@ class Lead(models.Model):
         comodel_name = 'project.program',
         string = 'Related Program',
     )
+
+    program_stage_id = fields.Selection([('pre', 'Preclinical'),('exploratory', 'Exploratory Clinical'),
+    ('confirmatory', 'Confirmatory Clinical'), ('post', 'Post Marketing')], 'Program Stage', related='program_id.stage_id')
 
 
 
