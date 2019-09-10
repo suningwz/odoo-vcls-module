@@ -110,6 +110,9 @@ class AnalyticLine(models.Model):
     @api.multi
     def write(self,vals):
         #we automatically update the stage if the ts is validated and stage = draft
+        so_update = False
+        orders = self.env['sale.order']
+
         for line in self:
             if vals.get('validated',line.validated):
                 if vals.get('stage_id',line.stage_id) == 'draft':
@@ -119,10 +122,14 @@ class AnalyticLine(models.Model):
             #if one of the 3 important value has changed, and the stage changes the delivered amount
             if (vals.get('date',False) or vals.get('unit_amount_rounded',False) or vals.get('stage_id',False)) and (vals.get('stage_id','no') in ['invoiced','invoiceable'] or line.stage_id in ['invoiced','invoiceable']):
                 _logger.info("Order timesheet update for {}".format(line.name))
-                line.so_line.order_id._compute_timesheet_ids()
+                so_update = True
+                orders |= line.so_line.order_id
+                
+        ok = super(AnalyticLine, self).write(vals)
+        if ok and so_update:
+            orders._compute_timesheet_ids()
 
-        
-        return super(AnalyticLine, self).write(vals)
+        return ok
 
     
     """ @api.onchange('unit_amount')
