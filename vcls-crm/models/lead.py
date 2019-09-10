@@ -58,6 +58,13 @@ class Leads(models.Model):
 
     source_id = fields.Many2one('utm.source', "Initial Lead Source")
 
+    user_id = fields.Many2one(
+        'res.users', 
+        string='Account Manager', 
+        track_visibility='onchange', 
+        domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
+        )
+
     #################
     # CUSTOM FIELDS #
     #################
@@ -85,12 +92,7 @@ class Leads(models.Model):
         )
 
     ### CUSTOM FIELDS RELATED TO MARKETING PURPOSES ###
-    user_id = fields.Many2one(
-        'res.users', 
-        string='Account Manager', 
-        track_visibility='onchange', 
-        domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
-        )
+    
     
     company_id = fields.Many2one(default = '')
 

@@ -25,6 +25,7 @@
                 'vcls-timesheet',
                 'vcls-project',
                 'vcls-invoicing',
+                'vcls-legal',
             ],
 
     # always loaded

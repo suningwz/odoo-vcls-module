@@ -54,11 +54,7 @@ class AnalyticLine(models.Model):
 
     internal_comment = fields.Char(string = 'Internal Comment')
 
-    at_risk = fields.Boolean(
-        string = 'Timesheet at risk',
-        compute = '_compute_at_risk',
-        store = True
-    )
+    at_risk = fields.Boolean(string='Timesheet at risk', readonly=True)
 
         # OVERWRITE IN ORDER TO UPDATE LABEL
     unit_amount_rounded = fields.Float(
@@ -84,24 +80,56 @@ class AnalyticLine(models.Model):
     )
 
     @api.model
+    def _get_at_risk_values(self, project_id):
+        project = self.env['project.project'].browse(project_id)
+        if project.sale_order_id.state == 'sale':
+            return True
+        employee_id = self.env.user.employee_ids
+        core_team = project.core_team_id
+        if employee_id and core_team:
+            project_employee = core_team.consultant_ids | \
+                           core_team.ta_ids | \
+                           core_team.lead_backup | \
+                           core_team.lead_consultant
+            if employee_id[0] not in project_employee:
+                return True
+        return False
+
+    @api.model
     def create(self, vals):
         _logger.info("Create {}".format(vals.get('unit_amount')))
-        if 'unit_amount' in vals and vals.get('is_timesheet',False): #do time ceiling for timesheets only
+        if 'unit_amount' in vals and vals.get('is_timesheet', False): #do time ceiling for timesheets only
             _logger.info("Before round {}".format(vals.get('unit_amount')))
             if vals['unit_amount'] % 0.25 != 0:
                 vals['unit_amount'] = math.ceil(vals.get('unit_amount', 0)*4)/4
                 _logger.info("After round {}".format(vals.get('unit_amount')))
-
+        if vals.get('project_id', False):
+            vals['at_risk'] = self._get_at_risk_values(vals.get('project_id'))
         return super(AnalyticLine, self).create(vals)
 
     @api.multi
     def write(self,vals):
         #we automatically update the stage if the ts is validated and stage = draft
-        if vals.get('validated',self.validated):
-            if vals.get('stage_id',self.stage_id) == 'draft':
-                vals['stage_id']='lc_review'
-        
-        return super(AnalyticLine, self).write(vals)
+        so_update = False
+        orders = self.env['sale.order']
+
+        for line in self:
+            if vals.get('validated',line.validated):
+                if vals.get('stage_id',line.stage_id) == 'draft':
+                    vals['stage_id']='lc_review'
+            
+            #_logger.info("Test Stage vals {} origin {}".format(vals.get('stage_id','no'),line.stage_id))
+            #if one of the 3 important value has changed, and the stage changes the delivered amount
+            if (vals.get('date',False) or vals.get('unit_amount_rounded',False) or vals.get('stage_id',False)) and (vals.get('stage_id','no') in ['invoiced','invoiceable'] or line.stage_id in ['invoiced','invoiceable']):
+                _logger.info("Order timesheet update for {}".format(line.name))
+                so_update = True
+                orders |= line.so_line.order_id
+                
+        ok = super(AnalyticLine, self).write(vals)
+        if ok and so_update:
+            orders._compute_timesheet_ids()
+
+        return ok
 
     
     """ @api.onchange('unit_amount')
@@ -186,15 +214,6 @@ class AnalyticLine(models.Model):
                 record.is_authorized = False"""
     
 
-    # NEED TO BE REFINED
-    @api.depends('so_line')
-    def _compute_at_risk(self):
-        for record in self:
-            if record.so_line:
-                record.at_risk = False
-            else:
-                record.at_risk = True
-    
     @api.onchange('unit_amount_rounded', 'unit_amount')
     def get_required_lc_comment(self):
         for record in self:

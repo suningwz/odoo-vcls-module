@@ -25,7 +25,15 @@
                     'vcls-crm',
                     'vcls-interfaces',
                     'vcls-project',
-                    'vcls-theme'
+                    'vcls-timesheet',
+                    'vcls-suppliers',
+                    'vcls-legal',
+                    'vcls-theme',
+                    'vcls-risk',
+                    'vcls-expenses',
+                    'vcls-invoicing',
+                    'vcls-accounting',
+                    
                 ],
 
     # always loaded
