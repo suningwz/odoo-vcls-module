@@ -8,13 +8,13 @@ class ProjectTaskType(models.Model):
     _inherit = 'project.task.type'
 
     completion_ratio = fields.Float(
-        string = "Completion Ratio",
-        help = "Task at this stage are inheriting related completion ratio."
+        string="Completion Ratio",
+        help="Task at this stage are inheriting related completion ratio."
     )
 
     project_type_default = fields.Selection([
         ('dev', 'Developement'),
         ('client', 'Client'),
-        ('internal','Internal')],
-        string = 'Project Type for Default',
+        ('internal', 'Internal')],
+        string='Project Type for Default',
     )
