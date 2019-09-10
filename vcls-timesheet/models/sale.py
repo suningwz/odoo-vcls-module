@@ -42,7 +42,7 @@ class SaleOrder(models.Model):
                                                                                     'stage_id':stage_id, 
                                                                                     'active':True}).id
     
-    #We override the OCA to inject the stage domain
+    """#We override the OCA to inject the stage domain
     @api.multi
     @api.depends('timesheet_limit_date')
     def _compute_timesheet_ids(self):
@@ -66,13 +66,13 @@ class SaleOrder(models.Model):
                 _logger.info('{} found {}'.format(domain,order.timesheet_ids.mapped('name')))
             else:
                 order.timesheet_ids = []
-            order.timesheet_count = len(order.timesheet_ids)
+            order.timesheet_count = len(order.timesheet_ids)"""
 
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    """ def _timesheet_compute_delivered_quantity_domain(self):
+    def _timesheet_compute_delivered_quantity_domain(self):
         domain = super()._timesheet_compute_delivered_quantity_domain()
         #We add the condition on the timesheet stage_id
         domain = expression.AND([
@@ -80,7 +80,7 @@ class SaleOrderLine(models.Model):
                 [('stage_id', 'in', ['invoiceable','invoiced'])]]
             )
         _logger.info("TS PATH | vcls-timesheet | sale.order.line | _timesheet_compute_delivered_quantity_domain")
-        return domain"""
+        return domain
 
     def _get_timesheet_for_amount_calculation(self, only_invoiced=False):
         #_logger.info("TS PATH | vcls-timesheet | sale.order.line | _get_timesheet_for_amount_calculation")
