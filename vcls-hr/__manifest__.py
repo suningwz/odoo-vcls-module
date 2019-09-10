@@ -29,7 +29,7 @@
         'mail',
         'snailmail',
         'vcls-helpdesk',
-        #'web_gantt_days_off',
+        'web_gantt_days_off',
     ],
     # always loaded
     'data': [
