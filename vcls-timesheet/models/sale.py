@@ -44,10 +44,7 @@ class SaleOrder(models.Model):
     
     #We override the OCA to inject the stage domain
     @api.multi
-    @api.depends(
-        'timesheet_limit_date',
-        'order_line.task_id.timesheet_ids.stage_id')
-        
+    @api.depends('timesheet_limit_date')
     def _compute_timesheet_ids(self):
         _logger.info("TS PATH | vcls-timesheet | sale.order | _compute_timesheet_ids")
         # this method copy of base method, it injects date in domain
@@ -82,7 +79,8 @@ class SaleOrderLine(models.Model):
                 domain,
                 [('stage_id', 'in', ['invoiceable','invoiced'])]]
             )
-        _logger.info("TS PATH | vcls-timesheet | sale.order.line | _timesheet_compute_delivered_quantity_domain")
+        #_logger.info("TS PATH | vcls-timesheet | sale.order.line | _timesheet_compute_delivered_quantity_domain | {}".format(domain))
+
         return domain
 
     def _get_timesheet_for_amount_calculation(self, only_invoiced=False):
@@ -93,7 +91,7 @@ class SaleOrderLine(models.Model):
         if not timesheets:
             return timesheets
 
-        _logger.info('Amount before filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
+        #_logger.info('Amount before filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
         timesheets = timesheets.filtered(
                 lambda r: r.stage_id in ['invoiceable', 'invoiced']
             )
@@ -108,7 +106,7 @@ class SaleOrderLine(models.Model):
             )
         timesheets = timesheets.filtered(ts_filter)
 
-        _logger.info('Amount after filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
+        #_logger.info('Amount after filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
         return timesheets
     
     # We need to override the OCA to take the rounded_unit_amount in account rather than the standard unit_amount
@@ -120,7 +118,7 @@ class SaleOrderLine(models.Model):
         'task_id.timesheet_ids.stage_id',
     )
     def _compute_amount_delivered_from_task(self):
-        _logger.info("TS PATH | vcls-timesheet | sale.order.line | _compute_amount_delivered_from_task")
+        #_logger.info("TS PATH | vcls-timesheet | sale.order.line | _compute_amount_delivered_from_task")
         for line in self:
             total = 0
             for ts in line._get_timesheet_for_amount_calculation():
@@ -136,7 +134,7 @@ class SaleOrderLine(models.Model):
     @api.multi
     @api.depends('task_id', 'task_id.timesheet_ids.timesheet_invoice_id')
     def _compute_amount_invoiced_from_task(self):
-        _logger.info("TS PATH | timesheet | sale.order.line | _compute_amount_invoiced_from_task")
+        #_logger.info("TS PATH | timesheet | sale.order.line | _compute_amount_invoiced_from_task")
         for line in self:
             total = 0
             for ts in line._get_timesheet_for_amount_calculation(True):
