@@ -114,6 +114,11 @@ class AnalyticLine(models.Model):
             if vals.get('validated',line.validated):
                 if vals.get('stage_id',line.stage_id) == 'draft':
                     vals['stage_id']='lc_review'
+            
+            if (vals.get('date',False) or vals.get('unit_amount_rounded',False)) and (vals.get('stage_id','no') in ['invoiced','invoiceable'] or line.stage_id in ['invoiced','invoiceable']):
+                _logger.info("Order timesheet update for {}".format(line.name))
+                line.so_line.order_id._compute_timesheet_ids()
+
         
         return super(AnalyticLine, self).write(vals)
 

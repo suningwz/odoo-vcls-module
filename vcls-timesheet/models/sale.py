@@ -43,12 +43,14 @@ class SaleOrder(models.Model):
                                                                                     'active':True}).id
     
     #We override the OCA to inject the stage domain
-    @api.multi
-    @api.depends(
+    
+    """@api.depends(
         'timesheet_limit_date',
         'analytic_account_id.line_ids.stage_id',
         'analytic_account_id.line_ids.unit_amount_rounded',
-        'analytic_account_id.line_ids.date')
+        'analytic_account_id.line_ids.date')"""
+    @api.multi
+    @api.depends('timesheet_limit_date')
     def _compute_timesheet_ids(self):
         _logger.info("TS PATH | vcls-timesheet | sale.order | _compute_timesheet_ids")
         # this method copy of base method, it injects date in domain
