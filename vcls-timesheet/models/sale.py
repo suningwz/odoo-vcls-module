@@ -84,20 +84,23 @@ class SaleOrderLine(models.Model):
 
     def _get_timesheet_for_amount_calculation(self, only_invoiced=False):
         _logger.info("TS PATH | vcls-timesheet | sale.order.line | _get_timesheet_for_amount_calculation")
+
         timesheets = super()._get_timesheet_for_amount_calculation(only_invoiced=only_invoiced)
         
         if not timesheets:
-            #_logger.info('No TS for amount calculation')
             return timesheets
-        #_logger.info('Amount before filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
 
-        timesheets = self.env['account.analytic.line'].search(
+        _logger.info('Amount before filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
+        timesheets = timesheets.filtered(
+                lambda r: r.stage_id in ['invoiceable', 'invoiced']
+            )
+        """timesheets = self.env['account.analytic.line'].search(
             [('id', 'in', timesheets.ids),
              ('validated', '=', True),
              ('stage_id', 'in', ['invoiceable', 'invoiced']),
              ]
-        )
-        #_logger.info('Amount after filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
+        )"""
+        
 
         def ts_filter(rec):
             sale = rec.task_id.sale_line_id.order_id
@@ -107,8 +110,9 @@ class SaleOrderLine(models.Model):
                 #(sale.timesheet_limit_date or sale.timesheet_limit_date > rec.date)
                 (sale.timesheet_limit_date > rec.date if sale.timesheet_limit_date else True)
             )
-
         timesheets = timesheets.filtered(ts_filter)
+
+        _logger.info('Amount after filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
         return timesheets
 
 
