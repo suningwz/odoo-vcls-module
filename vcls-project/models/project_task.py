@@ -81,13 +81,13 @@ class ProjectTask(models.Model):
         self.ensure_one()
         action = self.env.ref('hr_timesheet.act_hr_timesheet_line').read()[0]
         action['views'] = [
-          (self.env.ref('hr_timesheet.hr_timesheet_line_form').id, 'form'),
+          (self.env.ref('vcls-timesheet.account_analytic_line_grid_view_form').id, 'form'),
         ]
         ctx = self.env.context.copy()
         ctx.update(default_project_id=self.project_id.id,
                    default_task_id=self.id,
                    # One Employee/USer
-                   default_employee_id=self.env.user.employee_ids)
+                   default_employee_id=self.env.user.employee_ids.id)
         action.update({'context': ctx,
                        'target': 'new'})
         return action
