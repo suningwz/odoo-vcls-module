@@ -17,6 +17,8 @@ class ProjectForecast(models.Model):
         readonly=True
     )
 
+    task_id = fields.Many2one('project.task', string="Task", group_expand='_read_forecast_tasks_vcls')
+
     # planned_hours on a task must be equal to the sum of forecast hours related to this task
     # only if this sum it is superior to zero.
     @api.multi
@@ -39,3 +41,10 @@ class ProjectForecast(models.Model):
         forecast = super(ProjectForecast, self).create(values)
         forecast.sudo()._force_forecast_hours()
         return forecast
+
+    @api.model
+    def _read_forecast_tasks_vcls(self, tasks, domain, order):
+        search_domain = [('id', 'in', tasks.ids)]
+        if 'default_project_id' in self.env.context:
+            search_domain = ['|', ('project_id', 'child_of', [self.env.context['default_project_id']])] + search_domain
+        return tasks.sudo().search(search_domain, order=order)
