@@ -775,8 +775,12 @@ class Employee(models.Model):
             ('date', '=', worked_day)
         ]):
             return False
-        for attendance_id in self.resource_calendar_id.attendance_ids:
-            if attendance_id.dayofweek == worked_day.weekday():
+        attendance_ids = self.resource_calendar_id.attendance_ids
+        if not attendance_ids:
+            return True
+        for attendance_id in attendance_ids:
+            dayofweek = attendance_id.dayofweek
+            if dayofweek.isdigit() and int(dayofweek) == worked_day.weekday():
                 return True
         return False
 
