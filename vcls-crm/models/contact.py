@@ -48,7 +48,7 @@ class ContactExt(models.Model):
     )
 
     @api.model
-    def _get_computed_name(self, lastname, firstname, middlename):
+    def _get_computed_name(self, lastname, firstname, middlename=None):
         """Compute the 'name' field according to splitted data.
         You can override this method to change the order of lastname and
         firstname the computed name"""
@@ -56,7 +56,7 @@ class ContactExt(models.Model):
         if order == 'last_first_comma':
             return ", ".join((p for p in (lastname, firstname) if p))
         elif order == 'first_last':
-            return " ".join((p for p in (firstname, middlename, lastname) if p))
+            return " ".join((p for p in (firstname, middlename or '', lastname) if p))
         else:
             return " ".join((p for p in (lastname, firstname) if p))
 
