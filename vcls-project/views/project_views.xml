@@ -9,10 +9,32 @@
                 <div name="options_active" position="before">
                     <field name="project_type" readonly="1"/>
                 </div>
+                <div class="oe_title" position="replace">
+                    <group colspan="4">
+                        <group cols="2">
+                            <div class="oe_title">
+                                <h1>
+                                    <field name="name" placeholder="Project Name"/>
+                                </h1>
+                                <div name="options_active">
+                                    <div>
+                                        <label for="label_tasks" class="oe_inline" string="Name of the tasks :"/>
+                                        <field name="label_tasks" class="oe_inline oe_input_align"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </group>
+                        <group cols="2">
+                            <field name="completion_ratio" widget="percentpie" nolabel="1"/><br/>
+                            <field name="consumed_value" widget="percentpie" nolabel="1"/><br/>
+                            <field name="consummed_completed_ratio" widget="percentpie" nolabel="1"/>
+                        </group>
+                    </group>
+                </div>
             </field>
         </record>
         
-        <!-- 
+        <!--
         <record id="view_project_form_contact_book" model="ir.ui.view">
             <field name="name">project.form.contact.book</field>
             <field name="model">project.project</field>

@@ -61,4 +61,17 @@
                 </p>
             </field>
         </record>
+
+    <record id="product_template_completion_elligible_form_view" model="ir.ui.view">
+        <field name="name">product.template.completion.elligible.form</field>
+        <field name="model">product.template</field>
+        <field name="mode">primary</field>
+        <field name="priority" eval="8" />
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <field name="barcode" position="after">
+                <field name="completion_elligible"/>
+            </field>
+        </field>
+    </record>
 </odoo>
