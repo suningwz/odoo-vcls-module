@@ -29,6 +29,7 @@
         'project_task_default_stage',
         'project_parent_task_filter',
         'sale_quote_project_forecast',
+        'project_timeline_task_dependency',
         ],
 
     # always loaded
