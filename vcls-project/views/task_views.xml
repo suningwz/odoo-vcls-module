@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="project.view_task_form2"/>
             <field name="arch" type="xml">
                 <button name="action_assign_to_me" position="after">
-                    <button name="action_log_time" string="LOG TIME" type="object" class="oe_highlight"/>
+                    <button name="action_log_time" string="LOG TIME" type="object" class="oe_highlight" attrs="{'invisible': [('stage_id', 'in', ['Not Started','Completed','Cancelled'])]}"/>
                 </button>
                 <field name="user_id" position="attributes">
                     <attribute name="option">{'no_create_edit':True}</attribute>
