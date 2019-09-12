@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="project.view_task_form2"/>
             <field name="arch" type="xml">
                 <button name="action_assign_to_me" position="after">
-                    <button name="action_log_time" string="LOG TIME" type="object" class="oe_highlight"/>
+                    <button name="action_log_time" string="LOG TIME" type="object" class="oe_highlight" attrs="{'invisible': [('allow_timesheets', '=', False)]}"/>
                 </button>
                 <field name="user_id" position="attributes">
                     <attribute name="option">{'no_create_edit':True}</attribute>
@@ -16,6 +16,7 @@
 
                 <field name="tag_ids" position="after">
                     <field name="completion_ratio" string="" widget="percentpie"/>
+                    <field name="allow_timesheets" invisible="1"/>
                 </field>
 
                 <field name="progress" position="replace">

@@ -80,11 +80,14 @@ class AnalyticLine(models.Model):
     )
 
     @api.model
-    def _get_at_risk_values(self, project_id):
+    def _get_at_risk_values(self, project_id, employee_id):
         project = self.env['project.project'].browse(project_id)
-        if project.sale_order_id.state == 'sale':
+        if project.sale_order_id.state not in ['sale','done']:
+        #if project.sale_order_id.state == 'sale':
             return True
-        employee_id = self.env.user.employee_ids
+        #employee_id = self.env.user.employee_ids
+        employee_id = self.env['hr.employee'].browse(employee_id)
+
         core_team = project.core_team_id
         if employee_id and core_team:
             project_employee = core_team.consultant_ids | \
@@ -104,7 +107,7 @@ class AnalyticLine(models.Model):
                 vals['unit_amount'] = math.ceil(vals.get('unit_amount', 0)*4)/4
                 _logger.info("After round {}".format(vals.get('unit_amount')))
         if vals.get('project_id', False):
-            vals['at_risk'] = self._get_at_risk_values(vals.get('project_id'))
+            vals['at_risk'] = self._get_at_risk_values(vals.get('project_id'),vals.get('employee_id'))
         return super(AnalyticLine, self).create(vals)
 
     @api.multi
