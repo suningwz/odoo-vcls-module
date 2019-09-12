@@ -11,3 +11,4 @@ from . import project_task
 from . import timesheet_report
 from . import project_timesheet_forecast_report
 from . import forecast
+from . import partner

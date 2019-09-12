@@ -78,6 +78,7 @@ class AnalyticLine(models.Model):
         store = True,
         string = 'Sales Order Currency',
     )
+    adj_reason_required = fields.Boolean()
 
     @api.model
     def _get_at_risk_values(self, project_id, employee_id):
@@ -168,32 +169,33 @@ class AnalyticLine(models.Model):
 
     @api.multi
     def _finalize_pc_review(self):
-        context = self.env.context
-        timesheet_ids = context.get('active_ids',[])
-        timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
-        if len(timesheets) == 0:
-            raise ValidationError(_("Please select at least one record!"))
-        timesheets_in = timesheets.filtered(lambda r: (r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or r.env.user.has_group('vcls-timesheet.vcls_pc'))).write({'stage_id':'invoiceable'})
-        #timesheets_out = timesheets - timesheets_in
-        timesheets_out = (timesheets - timesheets_in) if timesheets_in else timesheets
-        for timesheet in timesheets_in:
-            if timesheet.unit_amount_rounded != timesheet.unit_amount:
-                timesheet.sudo().write({'stage_id':'adjustment_validation'})
-            else:
-                timesheet.sudo().write({'stage_id':'invoiceable'})
-        if len(timesheets_out) > 0:
-            message = "You don't have the permission for the following timesheet(s) :\n"
-            for timesheet in timesheets_out:
-                message += "- " + timesheet.name + "\n"
-            raise ValidationError(_(message))
-    
+        if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group(
+                'vcls-timesheet.vcls_pc'):
+            timesheets = self.env['account.analytic.line'].browse(self.env.context.get('active_ids', []))
+            adj_validation_timesheets = timesheets.filtered(lambda r: r.unit_amount_rounded != r.unit_amount)
+            invoiceable_timesheets = (
+                        timesheets - adj_validation_timesheets) if adj_validation_timesheets else timesheets
+            adj_validation_timesheets.write({'stage_id': 'adjustment_validation'})
+            invoiceable_timesheets.write({'stage_id': 'invoiceable'})
+        else:
+            raise ValidationError(_("You don't have the permission to finalize pc reviews "))
+
     @api.multi
     def set_outofscope(self):
-        context = self.env.context
-        timesheet_ids = context.get('active_ids',[])
-        timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
-        timesheets.filtered(lambda r: (r.task_id.project_id.user_id.id == self._uid or r.env.user.has_group('vcls-timesheet.vcls_pc'))).write({'stage_id':'outofscope'})
-    
+        if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group(
+                'vcls-timesheet.vcls_pc'):
+            self.env['account.analytic.line'].browse(self.env.context.get('active_ids', [])).write({'stage_id': 'outofscope'})
+        else:
+            raise ValidationError(_("You don't have the permission to set timesheets to Out of Scope stage."))
+
+    @api.multi
+    def set_carry_forward(self):
+        if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group(
+                'vcls-timesheet.vcls_pc'):
+            self.env['account.analytic.line'].browse(self._context.get('active_ids', False)).write(
+                {'stage_id': 'carry_forward'})
+        else:
+            raise ValidationError(_("You don't have the permission to set timesheets to Carry Forward stage."))
 
     @api.depends('user_id')
     def _compute_employee_id(self):
@@ -236,6 +238,13 @@ class AnalyticLine(models.Model):
                 'task_id': [('project_id', '=', self.project_id.id), ('stage_id.allow_timesheet','=', True)]
             }}
 
+    @api.onchange('unit_amount_rounded')
+    def onchange_adj_reason_readonly(self):
+        adj_reason_required = False
+        if self.unit_amount != self.unit_amount_rounded:
+            adj_reason_required = True
+        self.adj_reason_required = adj_reason_required
+
     @api.multi
     def button_details_lc(self):
         view = {
@@ -248,7 +257,8 @@ class AnalyticLine(models.Model):
             'target': 'new',
             'context': {
             'form_view_initial_mode': 'edit',
-            'force_detailed_view': True, },
+            'force_detailed_view': True,
+            'set_fields_readonly': self.stage_id != 'lc_review'},
             'res_id': self.id,
         }
         return view
@@ -270,4 +280,9 @@ class AnalyticLine(models.Model):
         }
         return view
 
-    
+    def lc_review_approve_timesheets(self):
+        self.search([('stage_id', '=', 'lc_review')]).write({'stage_id': 'pc_review'})
+
+    def pc_review_approve_timesheets(self):
+        self.search([('stage_id', '=', 'pc_review'), ('lc_comment', '=', False)]).\
+            write({'stage_id': 'invoiceable'})
