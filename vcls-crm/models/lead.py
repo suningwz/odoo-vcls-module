@@ -33,6 +33,15 @@ class LeadStage(models.Model):
 class Leads(models.Model):
 
     _inherit = 'crm.lead'
+    altname = fields.Char('Altname')
+    hide_altname = fields.Boolean()
+
+    @api.onchange('partner_id', 'partner_name')
+    def onchange_info(self):
+        hide_altname = False
+        if self.partner_id or not self.partner_name:
+            hide_altname = True
+        self.hide_altname = hide_altname
 
     ###################
     # DEFAULT METHODS #
@@ -262,23 +271,6 @@ class Leads(models.Model):
         compute = '_compute_gdpr'
     )
 
-    @api.multi
-    def _create_lead_partner_data(self, name, is_company, parent_id=False):
-        lead_partner_data = super(Leads, self)._create_lead_partner_data(
-            name,
-            is_company,
-            parent_id
-        )
-        if not is_company:
-            if self.contact_middlename:
-                lead_partner_data.update({
-                    "middlename": self.contact_middlename,
-                })
-                if 'name' in lead_partner_data:
-                    del lead_partner_data['name']
-        return lead_partner_data
-
-
     @api.model
     def create(self, vals):
         #############
@@ -474,7 +466,7 @@ class Leads(models.Model):
             :param parent_id : id of the parent partner (False if no parent)
             :returns res.partner record
         """
-        data = super()._create_lead_partner_data(name,is_company,parent_id)
+        data = super()._create_lead_partner_data(name, is_company, parent_id)
         data['country_group_id'] = self.country_group_id.id
         data['referent_id'] = self.referent_id.id
         data['functional_focus_id'] = self.functional_focus_id.id
@@ -483,7 +475,16 @@ class Leads(models.Model):
         data['client_activity_ids'] = [(6, 0, self.client_activity_ids.ids)]
         data['client_product_ids'] = [(6, 0, self.client_product_ids.ids)]
         data['linkedin'] = self.linkedIn_url
-
+        data['category_id'] = [(4, self.env.ref('vcls-contact.category_account').id, 0)]
+        if is_company:
+            data['altname'] = self.altname
+        else:
+            if self.contact_middlename:
+                data.update({
+                    "middlename": self.contact_middlename,
+                })
+                if 'name' in data:
+                    del data['name']
         return data
 
     @api.multi

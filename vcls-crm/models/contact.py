@@ -95,9 +95,9 @@ class ContactExt(models.Model):
             parts = name.split("," if order == 'last_first_comma' else " ", 2)
             if len(parts) == 2:
                 if order == 'first_last':
-                    parts = [" ".join(parts[1:]), parts[0]]
+                    parts = [" ".join(parts[1:]), False, parts[0]]
                 else:
-                    parts = [parts[0], " ".join(parts[1:])]
+                    parts = [parts[0], False, " ".join(parts[1:])]
             elif len(parts) == 3:
                 if order == 'first_last':
                     parts = [" ".join(parts[2:]),parts[1], parts[0]]
