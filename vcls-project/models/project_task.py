@@ -5,7 +5,7 @@ from odoo import models, fields, api
 
 class ProjectTask(models.Model):
     _inherit = 'project.task'
-
+    
     business_value = fields.Selection([
         ('1', 'Minor'),
         ('2', 'Moderate'),

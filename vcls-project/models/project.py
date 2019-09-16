@@ -44,8 +44,8 @@ class Project(models.Model):
     #ta_ids = fields.Many2many('hr.employee', string='Ta')
     completion_ratio = fields.Float('Project completion', compute='compute_project_completion_ratio', store=True)
     consumed_value = fields.Float('Consumed value', compute='compute_project_consumed_value', store=True)
-    consummed_completed_ratio = fields.Float('Consumed value', compute='compute_project_consummed_completed_ratio',
-                                             store=True)
+    consummed_completed_ratio = fields.Float('Consumed completed ratio',
+                                             compute='compute_project_consummed_completed_ratio', store=True)
 
     ##################
     # CUSTOM METHODS #
@@ -57,7 +57,8 @@ class Project(models.Model):
         self.ensure_one()
         tasks = self.task_ids + self.child_id.task_ids
         all_tasks = tasks + tasks.mapped('child_ids')
-        return all_tasks.filtered(lambda task: task.completion_elligible and task.stage_id.status != 'not_started')
+        return all_tasks.filtered(lambda task: task.sale_line_id.product_id.completion_elligible and
+                                  task.stage_id.status != 'not_started')
 
     ###############
     # ORM METHODS #
@@ -139,5 +140,5 @@ class Project(models.Model):
     def compute_project_consummed_completed_ratio(self):
         for project in self:
             tasks = project.get_tasks_for_project_sub_project()
-            project.consummed_completed_ratio = sum(tasks.mapped('consummed_completed_ratio')) / len(tasks) if tasks \
-                else sum(tasks.mapped('consummed_completed_ratio'))
+            project.consummed_completed_ratio = sum(tasks.mapped('consummed_completed_ratio')) / len(tasks) * 100\
+                if tasks else sum(tasks.mapped('consummed_completed_ratio'))

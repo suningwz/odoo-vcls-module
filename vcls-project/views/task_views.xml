@@ -17,6 +17,7 @@
                 <field name="tag_ids" position="after">
                     <field name="completion_ratio" string="" widget="percentpie"/>
                     <field name="allow_timesheets" invisible="1"/>
+                    <field name="completion_elligible" invisible="1"/>
                 </field>
 
                 <field name="progress" position="replace">
