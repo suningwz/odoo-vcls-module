@@ -23,15 +23,60 @@
                             </div>
                         </group>
                         <group cols="2">
-                            <field name="completion_ratio" widget="percentpie" nolabel="1"/><br/>
-                            <field name="consumed_value" widget="percentpie" nolabel="1"/><br/>
+                            <field name="completion_ratio" widget="percentpie" nolabel="1"/>
+                            <br/>
+                            <field name="consumed_value" widget="percentpie" nolabel="1"/>
+                            <br/>
                             <field name="consummed_completed_ratio" widget="percentpie" nolabel="1"/>
                         </group>
                     </group>
                 </div>
+                <xpath expr="//notebook" position="inside">
+                    <page string="Summaries" name="summaries">
+                        <field name="is_project_manager" invisible="1"/>
+                        <button name="%(project_summary_action_new)d"
+                            string="Create SUMMARY" class="oe_highlight" type="action"
+                            context="{
+                                'default_project_id': active_id,
+                                'default_completion_ratio': completion_ratio,
+                                'default_consumed_value': consumed_value,
+                                'default_consumed_completed_ratio': consummed_completed_ratio,
+                            }"
+                        attrs="{'invisible': [('is_project_manager', '=', False)]}"/>
+                        <field name="summary_ids" mode="kanban">
+                            <kanban create="0">
+                                <field name="completion_ratio"/>
+                                <field name="consumed_completed_ratio"/>
+                                <field name="consumed_value"/>
+                                <field name="create_date"/>
+                                <templates>
+                                    <t t-name="kanban-box">
+                                        <div class="oe_kanban_global_click">
+                                            <div class="oe_kanban_details">
+                                                <strong>
+                                                    <field name="create_date"/>
+                                                </strong>
+                                                <div>
+                                                    <field name="completion_ratio" widget="percentpie" nolabel="1"/>
+                                                </div>
+                                                <div>
+                                                    <field name="consumed_value" widget="percentpie" nolabel="1"/>
+                                                </div>
+                                                <div>
+                                                    <field name="consumed_completed_ratio" widget="percentpie"
+                                                           nolabel="1"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </templates>
+                            </kanban>
+                        </field>
+                    </page>
+                </xpath>
             </field>
         </record>
-        
+
         <!--
         <record id="view_project_form_contact_book" model="ir.ui.view">
             <field name="name">project.form.contact.book</field>

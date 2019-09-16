@@ -5,6 +5,7 @@ from odoo import models, fields, api
 import logging
 _logger = logging.getLogger(__name__)
 
+
 class Project(models.Model):
     _inherit = 'project.project'
 
@@ -46,6 +47,11 @@ class Project(models.Model):
     consumed_value = fields.Float('Consumed value', compute='compute_project_consumed_value', store=True)
     consummed_completed_ratio = fields.Float('Consumed / Completion',
                                              compute='compute_project_consummed_completed_ratio', store=True)
+    summary_ids = fields.One2many(
+        'project.summary', 'project_id',
+        'Project summaries'
+    )
+    is_project_manager = fields.Boolean(compute="_get_is_project_manager")
 
     ##################
     # CUSTOM METHODS #
@@ -141,3 +147,8 @@ class Project(models.Model):
         for project in self:
             tasks = project.get_tasks_for_project_sub_project()
             project.consummed_completed_ratio = sum(tasks.mapped('consummed_completed_ratio')) / len(tasks) if tasks else sum(tasks.mapped('consummed_completed_ratio'))
+
+    @api.multi
+    def _get_is_project_manager(self):
+        for p in self:
+            p.is_project_manager = p.user_id == self.env.user
