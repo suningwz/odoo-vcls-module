@@ -26,8 +26,12 @@ class TimesheetForecastReport(models.Model):
         readonly=True
     )
 
-    date = fields.Boolean() # Override existing field
-    
+    date = fields.Boolean()  # Override existing field
+    employee_seniority_level_id = fields.Many2one(
+        'hr.employee.seniority.level',
+        String='Seniority Level', readonly=True
+    )
+
     # EDIT SQL REQUEST IN ORDER TO GET STAGE & REVENUE
     #F.resource_hours / NULLIF(F.working_days_count, 0) AS number_hours,
     #(SELECT min(id)::char from product_template Z where Z.forecast_employee_id = F.employee_id) AS rate_product,
@@ -39,6 +43,14 @@ class TimesheetForecastReport(models.Model):
             CREATE or REPLACE VIEW %s as (
                 (
                     SELECT
+                        (select prod_template.seniority_level_id
+                            from hr_employee_product_template_rel emp_product_rel 
+                            join product_template prod_template
+                            on (emp_product_rel.hr_employee_id = F.employee_id
+                            and prod_template.id = emp_product_rel.product_template_id)
+                            order by prod_template.name
+                            limit 1
+                        ) AS employee_seniority_level_id,
                         F.employee_id AS employee_id,
                         F.task_id AS task_id,
                         F.project_id AS project_id,
@@ -69,6 +81,14 @@ class TimesheetForecastReport(models.Model):
                         F.active=true
                 ) UNION (
                     SELECT
+                        (select prod_template.seniority_level_id
+                            from hr_employee_product_template_rel emp_product_rel 
+                            join product_template prod_template
+                            on (emp_product_rel.hr_employee_id = E.id
+                            and prod_template.id = emp_product_rel.product_template_id)
+                            order by prod_template.name
+                            limit 1
+                        ) AS employee_seniority_level_id,
                         E.id AS employee_id,
                         A.task_id AS task_id,
                         A.project_id AS project_id,

@@ -66,13 +66,6 @@
             ]"/>
         </record>
 
-        <record id="project_followup_report_action_hours" model="ir.actions.act_window">
-            <field name="name">Project Follow-up Report Hours</field>
-            <field name="res_model">project.timesheet.forecast.report.analysis</field>
-            <field name="view_mode">pivot</field>
-            <field name='view_id' ref='vcls-timesheet.project_followup_report_pivot_view_hours' />
-            <field name="context">{"search_default_my_projects":1}</field>
-        </record>
 
 
 
@@ -133,7 +126,7 @@
             name="Project Follow-Up"
             parent="menu_lc_root"
             sequence="6"
-            action="project_followup_report_action_hours"
+            action="vcls-timesheet.project_followup_report_action_hours"
         />
 
         <menuitem

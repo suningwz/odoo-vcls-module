@@ -1,6 +1,6 @@
-#Odoo Imports
+# -*- coding: utf-8 -*-
 from odoo import api, fields, models
-from odoo.exceptions import UserError, ValidationError
+
 
 class Employee(models.Model):
     
@@ -8,14 +8,14 @@ class Employee(models.Model):
 
     default_rate_ids = fields.Many2many(
         'product.template',
-        string = 'Default Rates',
-        domain = "[('seniority_level_id','!=',False)]",
+        string='Default Rates',
+        domain="[('seniority_level_id','!=',False)]",
     )
 
     seniority_level_id = fields.Many2one(
-        comodel_name = 'hr.employee.seniority.level',
-        compute = '_compute_default_seniority',
-        string = 'Default Seniority',
+        comodel_name='hr.employee.seniority.level',
+        compute='_compute_default_seniority',
+        string='Default Seniority',
     )
 
     @api.depends('default_rate_ids')
