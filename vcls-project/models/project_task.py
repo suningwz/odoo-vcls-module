@@ -44,6 +44,10 @@ class ProjectTask(models.Model):
     completion_elligible = fields.Boolean(string='Completion eligibility')
     consummed_completed_ratio = fields.Float(compute='compute_consummed_completed_ratio', store=True)
     
+    stage_allow_ts = fields.Boolean(
+        related = 'stage_id.allow_timesheet'
+    )
+    
     ###################
     # COMPUTE METHODS #
     ###################
