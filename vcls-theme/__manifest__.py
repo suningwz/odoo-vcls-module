@@ -37,6 +37,8 @@
         'views/lc_menus.xml',
         'views/pc_menus.xml',
         'views/backend.xml',
+
+        'data/translation.sql',
     ],
     # only loaded in demonstration mode
     'demo': [
