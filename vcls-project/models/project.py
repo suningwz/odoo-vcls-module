@@ -53,12 +53,12 @@ class Project(models.Model):
     @api.multi
     def get_tasks_for_project_sub_project(self):
         """This function will return all the tasks and subtasks found in the main and Child
-        Projects"""
+        Projects which participates in KPI's"""
         self.ensure_one()
         tasks = self.task_ids + self.child_id.task_ids
         all_tasks = tasks + tasks.mapped('child_ids')
         return all_tasks.filtered(lambda task: task.sale_line_id.product_id.completion_elligible and
-                                  task.stage_id.status != 'not_started')
+                                  task.stage_id.status not in  ['not_started','cancelled'])
 
     ###############
     # ORM METHODS #
