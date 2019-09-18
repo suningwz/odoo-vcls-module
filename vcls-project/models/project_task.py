@@ -69,7 +69,7 @@ class ProjectTask(models.Model):
             else:
                 task.info_string = task.project_id.name
     
-    @api.depends('completion_elligible', 'stage_id')
+    @api.depends('completion_elligible', 'stage_id','timesheet_ids.unit_amount_rounded','timesheet_ids')
     def compute_consummed_completed_ratio(self):
         task_not_started = self.env['project.task.type'].search(
             [('status', '=', 'not_started')])
