@@ -128,12 +128,12 @@ class Project(models.Model):
                 else sum(tasks.mapped('completion_ratio'))
 
     @api.multi
-    @api.depends('task_ids.effective_hours')
+    @api.depends('task_ids.progress')
     def compute_project_consumed_value(self):
         for project in self:
             tasks = project.get_tasks_for_project_sub_project()
-            project.consumed_value = sum(tasks.mapped('effective_hours')) / len(tasks) if tasks \
-                else sum(tasks.mapped('effective_hours'))
+            project.consumed_value = sum(tasks.mapped('progress')) / len(tasks) if tasks \
+                else sum(tasks.mapped('progress'))
 
     @api.multi
     @api.depends('task_ids.consummed_completed_ratio')
