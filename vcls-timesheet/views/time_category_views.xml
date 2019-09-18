@@ -63,6 +63,22 @@
                 <xpath expr="//field[@name='employee_id']" position="after">
                     <field name="time_category_id" context="{'task_filter':True,'task_id':task_id}" option="{'no_create_edit': True}"/>
                 </xpath>
+                <xpath expr="//sheet" position="before">
+                    <header>
+                        <field name="connected_employee_seniority_level_id" invisible="1"/>
+                        <button name="%(vcls-timesheet.project_followup_report_action_hours_popup)d"
+                            type="action" string="Hours Report"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('project_id', '=', False)]}"
+                            context="{
+                                'search_default_project_id': project_id,
+                                'search_default_task_id': task_id,
+                                'search_default_employee_seniority_level_id': connected_employee_seniority_level_id,
+                                'default_employee_seniority_level_id': connected_employee_seniority_level_id,
+                            }"
+                        />
+                    </header>
+                </xpath>
             </field>
         </record>
 

@@ -122,8 +122,7 @@ class ContactExt(models.Model):
     #finance fields
     controller_id = fields.Many2one(
         'res.users',
-        string = 'Project Controller',
-        domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
+        string = 'Project Controller'
     )
 
     invoice_admin_id = fields.Many2one(

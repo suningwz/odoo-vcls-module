@@ -791,19 +791,44 @@ class Employee(models.Model):
         today_date = fields.Date.context_today(self)
         today_start = fields.Datetime.to_string(today_date)  # get the midnight of the current utc day
         today_end = fields.Datetime.to_string(today_date + relativedelta(hours=23, minutes=59, seconds=59))
-        # for each employee get the holidays in date_to ascendant order
-        # then check if all dates between each two holidays are not worked days,
-        # if
-        holidays = self.env['hr.leave'].sudo().search([
+        # for each employee check if all dates between each two holidays are not worked days,
+        current_holidays = self.env['hr.leave'].sudo().search([
             ('employee_id', 'in', self.ids),
             ('state', 'not in', ('cancel', 'refuse')),
-            '|', '&',
             ('date_from', '<=', today_end),
             ('date_to', '>=', today_start),
-            ('date_from', '>=', today_end),
-        ], order='employee_id, date_to asc')
+        ])
+        current_holidays_by_employee = {}
+        for current_holiday in current_holidays:
+            current_holidays_by_employee[current_holiday.employee_id.id] = current_holiday
+        # Process holidays coming next the current ones
+        self._get_holidays(current_holidays_by_employee, today_start, today_end, 'future')
+        # Process holidays coming next the current ones
+        self._get_holidays(current_holidays_by_employee, today_start, today_end, 'past')
+
+    @api.multi
+    def _get_holidays(
+            self, current_holidays_by_employee, today_start, today_end,
+            holiday_type
+    ):
+        # Fetch all future holidays (or past depending on holiday_type variable)
+        # for all employees who are absent today
+        domain = [
+            ('employee_id', 'in', self.ids),
+            ('state', 'not in', ('cancel', 'refuse')),
+        ]
+        order_by = 'employee_id'
+        if holiday_type == 'future':
+            domain += [('date_from', '>', today_end)]
+            order_by += ', date_to asc'
+        elif holiday_type == 'past':
+            domain += [('date_to', '<', today_start)]
+            order_by += ', date_from desc'
+        holidays = self.env['hr.leave'].sudo().search(domain, order=order_by)
         leave_data = {}
         holidays_by_employee = {}
+        ref_date_field = 'date_to' if holiday_type == 'future' else 'date_from'
+        # arrange holidays to be grouped by employee
         for holiday in holidays:
             employee_id = holiday.employee_id.id
             if not holidays_by_employee.get(employee_id):
@@ -811,39 +836,54 @@ class Employee(models.Model):
             else:
                 holidays_by_employee[employee_id] += holiday
         for employee_id, holidays in holidays_by_employee.items():
-            if not holidays:
+            # for each employee search all valid holidays
+            # A valid holiday is a holiday which all date between it and the current holiday (or the last valid hliday)
+            # today are not worked,
+            current_holiday = current_holidays_by_employee.get(employee_id)
+            if not holidays or not current_holiday:
                 continue
-            most_recent_holiday = holidays[0]
-            valid_holidays = None
+            valid_holidays = current_holiday
+            # Iterate over ordered by date_from (or date_to) holidays
+            # to guess the valid ones.
+            # We break this iterations when we find a worked day between two holidays
             for holiday in holidays:
-                if holiday == most_recent_holiday:
-                    # first holiday is always considered to be valid for today
-                    valid_holidays = most_recent_holiday
-                    continue
-                day_between_holidays = holiday.date_from
+                day_between_holidays = holiday.date_from if holiday_type == 'future' else holiday.date_to
                 iteration = 0
-                while valid_holidays[-1].date_to.date() < day_between_holidays.date():
-                    day_between_holidays -= relativedelta(days=1)
+                day_step = -1 if holiday_type == 'future' else 1
+                ref_date = valid_holidays[-1][ref_date_field].date()
+                no_stop_condition = ref_date < day_between_holidays.date() if holiday_type == 'future' else \
+                    ref_date > day_between_holidays.date()
+                # Check that there is not a worked day between two holidays
+                # in this case consider the second holiday as a valid one
+                while no_stop_condition:
+                    day_between_holidays += relativedelta(days=day_step)
                     employee = self.sudo().browse(employee_id)
                     if employee.sudo()._is_worked_day(day_between_holidays.date()):
                         break
+                    no_stop_condition = ref_date < day_between_holidays.date() if holiday_type == 'future' else \
+                        ref_date > day_between_holidays.date()
                     iteration += 1
-                    if iteration > 730:  # max iterations (2 years between two holidays)
+                    if iteration > 730:  # max iterations (730 days ~= 2 years between two holidays)
                         break
-                if valid_holidays[-1].date_to.date() == day_between_holidays.date():
+                if ref_date == day_between_holidays.date():
+                    # this holiday is valid
                     valid_holidays += holiday
                 else:
+                    # this holiday is not valid so we move on to the next employee
+                    # as there is no need to explore further future/past holidays
                     break
             if valid_holidays:
                 leave_data[employee_id] = valid_holidays
         for employee in self:
+            employee_holiday_field = 'leave_date_to' if holiday_type == 'future' else 'leave_date_from'
             valid_holidays = leave_data.get(employee.id, [])
-            leave_date_from = valid_holidays and valid_holidays[0].date_from or False
-            leave_date_to = valid_holidays and valid_holidays[-1].date_to or False
-            if leave_date_from:
-                employee.leave_date_from = leave_date_from.date()
-            if leave_date_to:
-                employee.leave_date_to = leave_date_to.date()
+            valid_holiday = valid_holidays and valid_holidays[-1]
+            current_holiday = current_holidays_by_employee.get(employee.id)
+            leave_date = valid_holiday and valid_holiday[ref_date_field] or False
+            leave_date = leave_date or (current_holiday and current_holiday[ref_date_field]) or False
+            if leave_date:
+                employee[employee_holiday_field] = leave_date.date()
+
 
     ########################
     # CREATE TICKET METHOD #

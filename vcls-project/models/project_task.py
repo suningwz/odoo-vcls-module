@@ -5,7 +5,7 @@ from odoo import models, fields, api
 
 class ProjectTask(models.Model):
     _inherit = 'project.task'
-
+    
     business_value = fields.Selection([
         ('1', 'Minor'),
         ('2', 'Moderate'),
@@ -43,6 +43,10 @@ class ProjectTask(models.Model):
     )
     completion_elligible = fields.Boolean(string='Completion eligibility')
     consummed_completed_ratio = fields.Float(compute='compute_consummed_completed_ratio', store=True)
+
+    stage_allow_ts = fields.Boolean(
+        related = 'stage_id.allow_timesheet', string='Stage allow timesheets'
+    )
     
     ###################
     # COMPUTE METHODS #
@@ -65,7 +69,7 @@ class ProjectTask(models.Model):
             else:
                 task.info_string = task.project_id.name
     
-    @api.depends('completion_elligible', 'stage_id')
+    @api.depends('completion_elligible', 'stage_id','progress')
     def compute_consummed_completed_ratio(self):
         task_not_started = self.env['project.task.type'].search(
             [('status', '=', 'not_started')])
@@ -75,10 +79,30 @@ class ProjectTask(models.Model):
             if not task.completion_elligible or task.stage_id in task_not_started:
                 task.consummed_completed_ratio = 0.0
             elif task.stage_id in task_0_progres:
-                task.consummed_completed_ratio = 1
+                task.consummed_completed_ratio = 100
             else:
-                task.consummed_completed_ratio = task.progress/task.completion_ratio if task.completion_ratio else \
-                    task.progress
+                task.consummed_completed_ratio = 100*(task.progress/task.completion_ratio if task.completion_ratio else \
+                    task.progress)
+
+    # We Override below method in order to take the unit_amount_rounded amount rather than the initial unit_amount
+    @api.depends('timesheet_ids.unit_amount_rounded')
+    def _compute_effective_hours(self):
+        for task in self:
+            task.effective_hours = round(sum(task.timesheet_ids.mapped('unit_amount_rounded')), 2)
+
+    # We Override below method to authorize the progress (i.e. consumption) to go higher than 100%
+    @api.depends('effective_hours', 'subtask_effective_hours', 'planned_hours')
+    def _compute_progress_hours(self):
+        for task in self:
+            if (task.planned_hours > 0.0):
+                task_total_hours = task.effective_hours + task.subtask_effective_hours
+                task.progress = round(100.0 * task_total_hours / task.planned_hours, 2)
+                """if task_total_hours > task.planned_hours:
+                    task.progress = 100
+                else:
+                    task.progress = round(100.0 * task_total_hours / task.planned_hours, 2)"""
+            else:
+                task.progress = 0.0
 
     ###############
     # ORM METHODS #
