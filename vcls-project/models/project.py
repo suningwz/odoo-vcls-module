@@ -140,5 +140,5 @@ class Project(models.Model):
     def compute_project_consummed_completed_ratio(self):
         for project in self:
             tasks = project.get_tasks_for_project_sub_project()
-            project.consummed_completed_ratio = sum(tasks.mapped('consummed_completed_ratio')) / len(tasks) * 100\
+            project.consummed_completed_ratio = sum(tasks.mapped('consummed_completed_ratio')) / len(tasks) \
                 if tasks else sum(tasks.mapped('consummed_completed_ratio'))
