@@ -41,6 +41,7 @@
                     <field name="progress" string="Consummed" widget="progressbar"/>
                 </field>
                 -->
+                
                 <field name="timesheet_ids" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </field>

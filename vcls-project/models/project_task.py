@@ -79,10 +79,10 @@ class ProjectTask(models.Model):
             if not task.completion_elligible or task.stage_id in task_not_started:
                 task.consummed_completed_ratio = 0.0
             elif task.stage_id in task_0_progres:
-                task.consummed_completed_ratio = 1
+                task.consummed_completed_ratio = 100
             else:
-                task.consummed_completed_ratio = task.progress/task.completion_ratio if task.completion_ratio else \
-                    task.progress
+                task.consummed_completed_ratio = 100*(task.progress/task.completion_ratio if task.completion_ratio else \
+                    task.progress)
 
     # We Override below method in order to take the unit_amount_rounded amount rather than the initial unit_amount
     @api.depends('timesheet_ids.unit_amount_rounded')
