@@ -124,8 +124,7 @@ class Project(models.Model):
     def compute_project_completion_ratio(self):
         for project in self:
             tasks = project.get_tasks_for_project_sub_project()
-            project.completion_ratio = sum(tasks.mapped('completion_ratio')) / len(tasks) if tasks \
-                else sum(tasks.mapped('completion_ratio'))
+            project.completion_ratio = sum(tasks.mapped('completion_ratio')) / len(tasks) if tasks else sum(tasks.mapped('completion_ratio'))
 
     @api.multi
     @api.depends('task_ids.progress')
@@ -140,5 +139,4 @@ class Project(models.Model):
     def compute_project_consummed_completed_ratio(self):
         for project in self:
             tasks = project.get_tasks_for_project_sub_project()
-            project.consummed_completed_ratio = sum(tasks.mapped('consummed_completed_ratio')) / len(tasks) \
-                if tasks else sum(tasks.mapped('consummed_completed_ratio'))
+            project.consummed_completed_ratio = sum(tasks.mapped('consummed_completed_ratio')) / len(tasks) if tasks else sum(tasks.mapped('consummed_completed_ratio'))
