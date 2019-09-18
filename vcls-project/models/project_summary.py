@@ -10,6 +10,7 @@ _logger = logging.getLogger(__name__)
 class ProjectSummary(models.Model):
     _name = 'project.summary'
     _order = "create_date desc"
+    _description = 'Project Summary'
 
     project_id = fields.Many2one(
         'project.project',
