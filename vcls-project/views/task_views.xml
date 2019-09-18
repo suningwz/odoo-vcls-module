@@ -14,6 +14,23 @@
                     <attribute name="option">{'no_create_edit':True}</attribute>
                 </field>
 
+                <xpath expr="//group" position="after">
+                    <group>
+                        <group>
+                            <field name="progress" string="Consummed" widget="progressbar"/>
+                        </group>
+                        <group>
+                            <field name="completion_ratio" string="Task Completion" widget="progressbar"/>
+                        </group>
+                        <group>
+                            <field name="consummed_completed_ratio" string="" widget="percentpie"/>
+                            <field name="stage_allow_ts" invisible="1"/>
+                            <field name="completion_elligible" invisible="1"/>
+                        </group>
+                    </group>
+                </xpath>
+
+                <!--
                 <field name="tag_ids" position="after">
                     <field name="completion_ratio" string="" widget="percentpie"/>
                     <field name="stage_allow_ts" invisible="1"/>
@@ -23,6 +40,7 @@
                 <field name="progress" position="replace">
                     <field name="progress" string="Consummed" widget="progressbar"/>
                 </field>
+                -->
                 <field name="timesheet_ids" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </field>
