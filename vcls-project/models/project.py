@@ -131,6 +131,7 @@ class Project(models.Model):
     def compute_project_consumed_value(self):
         for project in self:
             tasks = project.get_tasks_for_project_sub_project()
+            _logger.info("TASK FOUND {} with {}".format(tasks.mapped('name'),tasks.mapped('progress')))
             project.consumed_value = sum(tasks.mapped('progress')) / len(tasks) if tasks \
                 else sum(tasks.mapped('progress'))
 
