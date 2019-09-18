@@ -481,7 +481,7 @@ class Leads(models.Model):
         else:
             if self.contact_middlename:
                 data.update({
-                    "middlename": self.contact_middlename,
+                    "lastname2": self.contact_middlename,
                 })
                 if 'name' in data:
                     del data['name']
@@ -532,7 +532,7 @@ class Leads(models.Model):
             })
             if not partner.is_company:
                 result.update({
-                    "contact_middlename": partner.middlename,
+                    "contact_middlename": partner.lastname2,
                 })
         return result
     

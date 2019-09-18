@@ -39,9 +39,6 @@
                     <field name="vat"/>
                 </field>
 
-                <field name="firstname" position="after">
-                    <field name="middlename" placeholder="Middle name"/>
-                </field>
                 <xpath expr="/form/sheet/notebook/page[5]" position="after">
                     <page name="marketing" string="Marketing Info" attrs="{'invisible': [('see_segmentation', '=', False)]}">
                     <field name="see_segmentation" invisible="1"/>

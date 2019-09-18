@@ -39,6 +39,7 @@
                                                 "{'required': [('firstname', '=', False),
                                                 ('is_company', '=', False),
                                                 ('type', '=', 'contact')]}" placeholder="Lastname"/>
+                                            <field name="lastname2" placeholder="Second lastname"/>
 
                                     </div>
                                 </div>
