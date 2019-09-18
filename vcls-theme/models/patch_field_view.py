@@ -6,6 +6,7 @@ from odoo import models, api
 
 class PatchFieldView(models.AbstractModel):
     _name = 'patch.field.view'
+    _description = 'Patch fields view'
 
     @api.model_cr
     def _register_hook(self):

@@ -45,7 +45,7 @@ class ProjectTask(models.Model):
     consummed_completed_ratio = fields.Float(compute='compute_consummed_completed_ratio', store=True)
     
     stage_allow_ts = fields.Boolean(
-        related = 'stage_id.allow_timesheet'
+        related = 'stage_id.allow_timesheet', string='Stage allow timesheets'
     )
     
     ###################
