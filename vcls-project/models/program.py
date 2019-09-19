@@ -112,7 +112,7 @@ class Lead(models.Model):
         string = 'Related Program',
     )
 
-    """app_country_group_id = fields.Many2one(
+    app_country_group_id = fields.Many2one(
         'res.country.group',
         string = "Application Geographic Area",
         related = 'program_id.app_country_group_id',
@@ -122,16 +122,16 @@ class Lead(models.Model):
     therapeutic_area_ids = fields.Many2many(
         'therapeutic.area',
         string ='Therapeutic Area',
-        related = 'program_id.app_country_group_id',
+        related = 'program_id.therapeutic_area_ids',
         readonly = True
     )
     
     targeted_indication_ids = fields.Many2many(
         'targeted.indication',
         string ='Targeted Indication',
-        related = 'program_id.app_country_group_id',
+        related = 'program_id.targeted_indication_ids',
         readonly = True
-    )"""
+    
 
     program_stage_id = fields.Selection([
         ('pre', 'Preclinical'),
