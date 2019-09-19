@@ -218,18 +218,16 @@
             <xpath expr="//notebook/page" position="replace" />
             <xpath expr="//notebook/page" position="before">
                 <page string="Scope">
-                    <group>
-                        
+                        <group>
                             <field name="scope_of_work"/>
                             <field name="product_category_id" string="Business Line" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
-                        
+                        </group>
                         <group string="Program Info">
                             <field name="app_country_group_id"/>
                             <field name="therapeutic_area_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
-                            <field name="targeted_indication_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
-                            
+                            <field name="targeted_indication_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>     
                         </group>
-                    </group>
+                    
                 </page>
                 <page string="BID Team">
                     <group>
