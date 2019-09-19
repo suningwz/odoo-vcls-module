@@ -118,16 +118,12 @@
                         </button>
                     </div>
                     <group>
-                        <group>
-                            <field name="name"/>
-                            <field name="client_id"/>
-                            <field name="product_name"/>
-                            <field name="description"/>
-                            <field name="leader_id"/>
-                        </group>
-                        <group>
-                            <field name="stage_id"/>
-                        </group>
+                        <field name="name"/>
+                        <field name="client_id"/>
+                        <field name="product_name"/>
+                        <!--<field name="indication"/> -->
+                        <field name="leader_id"/>
+                        <field name="stage_id"/>
                     </group>
                 </form>
             </field>
