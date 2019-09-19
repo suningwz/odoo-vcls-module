@@ -5,11 +5,10 @@
             <field name="model">crm.lead</field>
             <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='product_category_id']" position="after">
+                
+                <xpath expr="//field[@name='app_country_group_id']" position="before">
                     <field name = 'product_name' />
                     <field name = 'product_description' />
-                </xpath>
-                <xpath expr="//field[@name='app_country_group_id']" position="before">
                     <field name = 'program_stage_id' />
                 </xpath>
                 
