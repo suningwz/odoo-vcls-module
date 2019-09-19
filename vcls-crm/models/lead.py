@@ -221,10 +221,10 @@ class Leads(models.Model):
         string ='Targeted Indication',
     )
     
-    stage_development_id = fields.Many2one(
+    """stage_development_id = fields.Many2one(
         'stage.development',
         string ='Stage of Development',
-    )
+    )"""
 
     meet_story = fields.Char(
     )

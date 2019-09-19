@@ -112,7 +112,7 @@ class Lead(models.Model):
         string = 'Related Program',
     )
 
-    app_country_group_id = fields.Many2one(
+    """app_country_group_id = fields.Many2one(
         'res.country.group',
         string = "Application Geographic Area",
         related = 'program_id.app_country_group_id',
@@ -140,7 +140,7 @@ class Lead(models.Model):
         ('post', 'Post Marketing')],
         'Program Stage',
         related='program_id.stage_id',
-        readonly=True,)
+        readonly=True,)"""
 
 
 
