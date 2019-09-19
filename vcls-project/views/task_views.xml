@@ -17,7 +17,7 @@
                 <xpath expr="//group" position="after">
                     <group>
                         <group>
-                            <field name="progress" string="Consummed" widget="progressbar"/>
+                            <field name="progress" string="Consumed" widget="progressbar"/>
                         </group>
                         <group>
                             <field name="completion_ratio" string="Task Completion" widget="progressbar"/>

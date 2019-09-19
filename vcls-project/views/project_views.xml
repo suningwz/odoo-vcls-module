@@ -27,7 +27,7 @@
                             <br/>
                             <field name="consumed_value" widget="percentpie" nolabel="1"/>
                             <br/>
-                            <field name="consummed_completed_ratio" widget="percentpie" nolabel="1"/>
+                            <field name="consummed_completed_ratio" string="Project Health Ratio" widget="percentpie" nolabel="1"/>
                         </group>
                     </group>
                 </div>
@@ -53,7 +53,7 @@
                                 'default_consumed_completed_ratio': consummed_completed_ratio,
                             }"
                         attrs="{'invisible': [('is_project_manager', '=', False)]}"/>-->
-                        
+
                         <field name="summary_ids" mode="kanban">
                             <kanban create="0">
                                 <field name="completion_ratio"/>
@@ -68,14 +68,14 @@
                                                     <field name="create_date"/>
                                                 </strong>
                                                 <div>
-                                                    <field name="completion_ratio" widget="percentpie" nolabel="1"/>
+                                                    <field name="completion_ratio" widget="percentage" nolabel="0"/>
                                                 </div>
                                                 <div>
-                                                    <field name="consumed_value" widget="percentpie" nolabel="1"/>
+                                                    <field name="consumed_value" widget="percentage" nolabel="0"/>
                                                 </div>
                                                 <div>
-                                                    <field name="consumed_completed_ratio" widget="percentpie"
-                                                           nolabel="1"/>
+                                                    <field name="consumed_completed_ratio" string= "Project Health Ratio" widget="percentage"
+                                                           nolabel="0"/>
                                                 </div>
                                             </div>
                                         </div>
