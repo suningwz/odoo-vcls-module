@@ -50,7 +50,7 @@ class PartnerRelations(models.Model):
 class PartnerRelationType(models.Model):
 
     _name = 'partner.relation.type'
-    _description = 'Predefined relations between partners.'
+    _description = 'Predefined partner relations.'
 
     name = fields.Char(
         required = True,

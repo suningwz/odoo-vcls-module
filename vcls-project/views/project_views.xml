@@ -42,7 +42,18 @@
                                 'default_consumed_value': consumed_value,
                                 'default_consumed_completed_ratio': consummed_completed_ratio,
                             }"
-                        attrs="{'invisible': [('is_project_manager', '=', False)]}"/>
+                        />
+                        <!--
+                        <button name="%(project_summary_action_new)d"
+                            string="Create SUMMARY" class="oe_highlight" type="action"
+                            context="{
+                                'default_project_id': active_id,
+                                'default_completion_ratio': completion_ratio,
+                                'default_consumed_value': consumed_value,
+                                'default_consumed_completed_ratio': consummed_completed_ratio,
+                            }"
+                        attrs="{'invisible': [('is_project_manager', '=', False)]}"/>-->
+                        
                         <field name="summary_ids" mode="kanban">
                             <kanban create="0">
                                 <field name="completion_ratio"/>
