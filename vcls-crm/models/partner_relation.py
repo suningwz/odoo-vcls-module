@@ -6,7 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 class PartnerRelations(models.Model):
 
     _name = 'res.partner.relation'
-    _description = 'Used to map a set of predefined relation types between partners.'
+    _description = 'Map partners relations'
     
     type_id = fields.Many2one(
         'partner.relation.type',
