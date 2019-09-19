@@ -141,8 +141,16 @@ class Lead(models.Model):
         'Program Stage',
         related='program_id.stage_id',
         readonly=True,)
+    
+    product_name = fields.Char(
+        string = "Product Name",
+        help = 'The client product name',
+        related='program_id.product_name',
+    )
 
-
+    product_description = fields.Char(
+        related="program_id.product_description",
+    )
 
 class SaleOrder(models.Model):
 
