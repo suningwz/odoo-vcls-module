@@ -131,7 +131,7 @@ class Lead(models.Model):
         string ='Targeted Indication',
         related = 'program_id.app_country_group_id',
         readonly = True
-    )
+    )"""
 
     program_stage_id = fields.Selection([
         ('pre', 'Preclinical'),
@@ -140,7 +140,7 @@ class Lead(models.Model):
         ('post', 'Post Marketing')],
         'Program Stage',
         related='program_id.stage_id',
-        readonly=True,)"""
+        readonly=True,)
 
 
 
