@@ -5,7 +5,19 @@
             <field name="model">crm.lead</field>
             <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
             <field name="arch" type="xml">
-                
+                <xpath expr="//button[@string='New Quotation']" position="replace">
+                    <button string="New Quotation" name="%(sale_action_quotations_new)d" type="action" class="oe_highlight"
+                        attrs="{'invisible': ['&amp;', ('probability', '=', 0), ('active', '=', False)]}"
+                        context="{'search_default_partner_id': partner_id,
+                                  'default_partner_id': partner_id,
+                                  'default_team_id': team_id,
+                                  'default_campaign_id': campaign_id,
+                                  'default_medium_id': medium_id,
+                                  'default_origin': name,
+                                  'default_source_id': source_id,
+                                  'default_program_id': program_id,
+                                  'default_scope_of_work': scope_of_work}"/>
+                </xpath>
                 <xpath expr="//field[@name='app_country_group_id']" position="before">
                     <field name = 'product_name' />
                     <field name = 'product_description' />
