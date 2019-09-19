@@ -130,7 +130,7 @@ class Lead(models.Model):
         'targeted.indication',
         string ='Targeted Indication',
         related = 'program_id.targeted_indication_ids',
-        readonly = True
+        readonly = True)
     
 
     program_stage_id = fields.Selection([
