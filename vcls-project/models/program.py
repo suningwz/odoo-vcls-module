@@ -6,7 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 class ProjectProgram(models.Model):
 
     _name = 'project.program'
-    _description = 'A Program of Projects'
+    _description = 'Client Program'
 
     name = fields.Char(
         required = True,
@@ -33,7 +33,26 @@ class ProjectProgram(models.Model):
         help = 'The client product name',
     )
 
-    indication = fields.Char()
+    #indication = fields.Char()
+
+    app_country_group_id = fields.Many2one(
+        'res.country.group',
+        string = "Application Geographic Area",
+    )
+
+    therapeutic_area_ids = fields.Many2many(
+        'therapeutic.area',
+        string ='Therapeutic Area',
+    )
+    
+    targeted_indication_ids = fields.Many2many(
+        'targeted.indication',
+        string ='Targeted Indication',
+    )
+
+     # Only 4 input so no need to create new object
+    stage_id =  fields.Selection([('pre', 'Preclinical'),('exploratory', 'Exploratory Clinical'),
+    ('confirmatory', 'Confirmatory Clinical'), ('post', 'Post Marketing')], 'Stage', default='pre')
     
     product_description = fields.Char()
     
@@ -41,9 +60,7 @@ class ProjectProgram(models.Model):
     opportunity_count = fields.Integer(compute='_compute_opportunity_count', string='Opportunity Count')
     project_count = fields.Integer(compute='_compute_project_count', string='Main Project Count')
 
-    # Only 4 input so no need to create new object
-    stage_id =  fields.Selection([('pre', 'Preclinical'),('exploratory', 'Exploratory Clinical'),
-    ('confirmatory', 'Confirmatory Clinical'), ('post', 'Post Marketing')], 'Stage', default='pre')
+   
     
     def _compute_sale_order_count(self):
         order_data = self.env['sale.order'].read_group([('program_id', 'in', self.ids)], ['program_id'], ['program_id'])

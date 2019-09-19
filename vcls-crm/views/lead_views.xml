@@ -263,7 +263,7 @@
                         <field name="product_category_id" string="Business Line" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
                         <field name="therapeutic_area_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
                         <field name="targeted_indication_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
-                        <field name="stage_development_id" widget="selection" />
+                        <!--<field name="stage_development_id" widget="selection" />-->
                         <field name="client_product_ids" widget="many2many_tags"/>
                         <field name="description" string="Scope of work" widget="html" placeholder="Summary in bullet points."/>
                     </group>
