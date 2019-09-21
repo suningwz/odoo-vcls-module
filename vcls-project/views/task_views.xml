@@ -45,6 +45,12 @@
                 <field name="timesheet_ids" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </field>
+                <xpath expr="//page[last()]" position="before">
+                    <page string="Description Evolutions">
+                    <field name="description_evolutions" type="html"/>
+                        <div class="oe_clear"/>
+                    </page>
+                </xpath>
 
             </field>
         </record>
@@ -70,6 +76,18 @@
                 <group expand="0">
                     <filter string="Deadline" name="date_deadline" context="{'group_by':'date_deadline'}"/>
                 </group>
+            </field>
+        </record>
+
+        <record id="view_project_task_descriptions_tree" model="ir.ui.view">
+            <field name="name">view_project_task_description_tree</field>
+            <field name="model">project.task</field>
+            <field name="arch" type="xml">
+                <tree string="Project Tasks">
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="description_evolutions"/>
+                </tree>
             </field>
         </record>
        

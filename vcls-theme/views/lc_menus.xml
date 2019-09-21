@@ -67,6 +67,16 @@
             ]"/>
         </record>
 
+         <record id="action_project_task_descriptions_tree" model="ir.actions.act_window">
+            <field name="name">Project Task </field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">project.task</field>
+            <field name="context">{'group_by':['project_id','deliverable_id']}</field>
+            <field name="view_mode">tree</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-project.view_project_task_descriptions_tree')}),
+            ]"/>
+        </record>
 
 
 
@@ -127,7 +137,21 @@
             name="Project Follow-Up"
             parent="menu_lc_root"
             sequence="6"
+        />
+
+         <menuitem
+            id="menu_hours_reporting"
+            name="Hours Reporting"
+            parent="menu_lc_follow_up"
+            sequence="7"
             action="vcls-timesheet.project_followup_report_action_hours"
+        />
+         <menuitem
+            id="menu_task_descriptions"
+            name="Project Tasks Description"
+            parent="menu_lc_follow_up"
+            sequence="9"
+            action="action_project_task_descriptions_tree"
         />
 
         <menuitem
