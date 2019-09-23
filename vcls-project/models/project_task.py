@@ -61,13 +61,13 @@ class ProjectTask(models.Model):
                 else:
                     task.task_type = 'dev.vers'
     
-    @api.depends('parent_id', 'project_id.name', 'task_type')
+    @api.depends('project_id.name')
     def _get_info_string(self):
         for task in self:
-            if task.task_type == 'dev.task':
-                task.info_string = task.parent_id.name
-            else:
-                task.info_string = task.project_id.name
+            info_string = task.project_id.name
+            if task.sale_line_id.product_id.deliverable_id:
+                info_string = "{} [{}]".format(info_string,task.sale_line_id.product_id.deliverable_id.name)
+            task.info_string = info_string
     
     @api.depends('completion_elligible', 'stage_id','progress')
     def compute_consummed_completed_ratio(self):
