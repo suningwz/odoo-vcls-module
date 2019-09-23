@@ -1,0 +1,39 @@
+<odoo>
+    <data>
+        <record id="view_project_summary_form" model="ir.ui.view">
+            <field name="name">project.summary.form</field>
+            <field name="model">project.summary</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <field name="project_id" invisible="1"/>
+                            <group>
+                                <field name="create_date" attrs="{'invisible': [('create_date', '=', False)]}"/>
+                            </group>
+                            <group colspan="6" col="6">
+                                <field name="completion_ratio" widget="percentpie" nolabel="1"/>
+                                <field name="consumed_value" widget="percentpie" nolabel="1"/>
+                                <field name="consumed_completed_ratio" widget="percentpie" nolabel="1"/>
+                            </group>
+                        <group>
+                            <group string="Internal summary">
+                                <field name="internal_summary" nolabel="1" required="1"/>
+                            </group>
+                            <group string="External summary">
+                                <field name="external_summary" nolabel="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="project_summary_action_new" model="ir.actions.act_window">
+            <field name="name">New Project summary</field>
+            <field name="res_model">project.summary</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

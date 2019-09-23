@@ -16,7 +16,7 @@
     # for the full list
     'category': 'Uncategorized',
 
-    'version': '0.15',
+    'version': '0.16',
 
 
     # any module necessary for this one to work correctly
@@ -30,6 +30,7 @@
         'timesheet_useability',
         'vcls-crm',
         'vcls-project',
+        'timesheet_grid',
         ],
 
     # always loaded
@@ -42,13 +43,13 @@
         'data/project.xml',
 
         ### VIEWS ###
+        'views/report_views.xml',
         'views/timesheets_views.xml',
         'views/projects_views.xml',
         'views/sale_order_views.xml',
         'views/crm_views.xml',
         'views/time_category_views.xml',
         'views/timesheet_report_views.xml',
-        'views/report_views.xml',
 
 
         ### ACTIONS ###

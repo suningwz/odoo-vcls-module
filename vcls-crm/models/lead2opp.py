@@ -11,7 +11,7 @@ class Lead2OpportunityPartner(models.TransientModel):
         ('merge', 'Merge with existing opportunity')
     ], 'Conversion Action', required=True)
 
-    opp_name = fields.Char(string = 'Opportunity Name', default =lambda self: self._get_opp_name())
+    opp_name = fields.Char(string = 'Opportunity Name', default = False)
 
     @api.model
     def _get_opp_name(self):

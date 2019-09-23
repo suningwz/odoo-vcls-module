@@ -5,6 +5,7 @@ from odoo import models, fields, api
 import logging
 _logger = logging.getLogger(__name__)
 
+
 class Project(models.Model):
     _inherit = 'project.project'
 
@@ -44,8 +45,13 @@ class Project(models.Model):
     #ta_ids = fields.Many2many('hr.employee', string='Ta')
     completion_ratio = fields.Float('Project completion', compute='compute_project_completion_ratio', store=True)
     consumed_value = fields.Float('Consumed value', compute='compute_project_consumed_value', store=True)
-    consummed_completed_ratio = fields.Float('Consumed value', compute='compute_project_consummed_completed_ratio',
-                                             store=True)
+    consummed_completed_ratio = fields.Float('Consumed / Completion',
+                                             compute='compute_project_consummed_completed_ratio', store=True)
+    summary_ids = fields.One2many(
+        'project.summary', 'project_id',
+        'Project summaries'
+    )
+    is_project_manager = fields.Boolean(compute="_get_is_project_manager")
 
     ##################
     # CUSTOM METHODS #
@@ -53,11 +59,12 @@ class Project(models.Model):
     @api.multi
     def get_tasks_for_project_sub_project(self):
         """This function will return all the tasks and subtasks found in the main and Child
-        Projects"""
+        Projects which participates in KPI's"""
         self.ensure_one()
         tasks = self.task_ids + self.child_id.task_ids
         all_tasks = tasks + tasks.mapped('child_ids')
-        return all_tasks.filtered(lambda task: task.completion_elligible and task.stage_id.status != 'not_started')
+        return all_tasks.filtered(lambda task: task.sale_line_id.product_id.completion_elligible and
+                                  task.stage_id.status not in  ['not_started','cancelled'])
 
     ###############
     # ORM METHODS #
@@ -123,21 +130,25 @@ class Project(models.Model):
     def compute_project_completion_ratio(self):
         for project in self:
             tasks = project.get_tasks_for_project_sub_project()
-            project.completion_ratio = sum(tasks.mapped('completion_ratio')) / len(tasks) if tasks \
-                else sum(tasks.mapped('completion_ratio'))
+            project.completion_ratio = sum(tasks.mapped('completion_ratio')) / len(tasks) if tasks else sum(tasks.mapped('completion_ratio'))
 
     @api.multi
-    @api.depends('task_ids.effective_hours')
+    @api.depends('task_ids.progress')
     def compute_project_consumed_value(self):
         for project in self:
             tasks = project.get_tasks_for_project_sub_project()
-            project.consumed_value = sum(tasks.mapped('effective_hours')) / len(tasks) if tasks \
-                else sum(tasks.mapped('effective_hours'))
+            #_logger.info("TASK FOUND {} with {}".format(tasks.mapped('name'),tasks.mapped('progress')))
+            project.consumed_value = sum(tasks.mapped('progress')) / len(tasks) if tasks \
+                else sum(tasks.mapped('progress'))
 
     @api.multi
     @api.depends('task_ids.consummed_completed_ratio')
     def compute_project_consummed_completed_ratio(self):
         for project in self:
             tasks = project.get_tasks_for_project_sub_project()
-            project.consummed_completed_ratio = sum(tasks.mapped('consummed_completed_ratio')) / len(tasks) if tasks \
-                else sum(tasks.mapped('consummed_completed_ratio'))
+            project.consummed_completed_ratio = sum(tasks.mapped('consummed_completed_ratio')) / len(tasks) if tasks else sum(tasks.mapped('consummed_completed_ratio'))
+
+    @api.multi
+    def _get_is_project_manager(self):
+        for p in self:
+            p.is_project_manager = p.user_id == self.env.user

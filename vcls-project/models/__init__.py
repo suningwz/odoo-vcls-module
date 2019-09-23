@@ -10,3 +10,4 @@ from . import sale_order_line
 from . import project_forecast
 from . import sale_order
 from . import res_partner
+from . import project_summary

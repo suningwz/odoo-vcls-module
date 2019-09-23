@@ -5,3 +5,7 @@ access_dev_project_manager,dev.project.manager,vcls-project.model_project_projec
 
 access_program_user,access_program_user,vcls-project.model_project_program,base.group_user,1,0,0,0
 access_program_manager,access_program_manager,vcls-project.model_project_program,project.group_project_manager,1,1,1,1
+
+access_project_summary_manager,project.summary,model_project_summary,project.group_project_manager,1,1,1,1
+access_project_summary_user,project.summary,model_project_summary,project.group_project_user,1,0,0,0
+
