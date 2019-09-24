@@ -185,7 +185,7 @@ class ContactExt(models.Model):
     # COMPUTE METHODS #
     ###################
     
-    @api.depends('category_id')
+    @api.depends('category_id','company_type')
     def _compute_visibility(self):
         for contact in self:
             try:
