@@ -81,19 +81,43 @@ class AnalyticLine(models.Model):
     )
     adj_reason_required = fields.Boolean()
 
-    connected_employee_seniority_level_id = fields.Many2one(
-        comodel_name='hr.employee.seniority.level',
-        compute='_get_connected_employee_seniority_level_id',
-        string='Default Seniority'
-    )
+    @api.model
+    def show_grid_cell(self, domain=[], column_value='', row_values={}):
+        line = self.sudo().search(domain, limit=1)
+        date = column_value
+        if not line:
+            # fetch the latest line
+            task_value = row_values.get('task_id')
+            task_id = task_value and task_value[0] or False
+            if task_id:
+                direct_previous_line = self.sudo().search([
+                    ('date', '<', date),
+                    ('task_id', '=', task_id),
+                ], limit=1, order='date desc')
+                if direct_previous_line:
+                    values = {
+                        'unit_amount': 0,
+                        'date': date,
+                        'project_id': direct_previous_line.project_id.id,
+                        'task_id': direct_previous_line.task_id.id,
+                        'name': direct_previous_line.name,
+                        'time_category_id': direct_previous_line.time_category_id.id,
+                    }
+                    line = self.create(values)
 
-    @api.multi
-    def _get_connected_employee_seniority_level_id(self):
-        user_id = self.env.user.id
-        connected_employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', user_id)], limit=1)
-        seniority_level_id = connected_employee_id.seniority_level_id
-        for line in self:
-            line.connected_employee_seniority_level_id = seniority_level_id
+        form_view_id = self.env.ref('timesheet_grid.timesheet_view_form').id
+        return {
+            'name': _('Timesheet'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': self._name,
+            'res_id': line.id,
+            'view_id': form_view_id,
+            'views': [(form_view_id, 'form')],
+            'target': 'new',
+            'context': {},
+        }
 
     @api.model
     def _get_at_risk_values(self, project_id, employee_id):

@@ -387,5 +387,18 @@
                 </xpath>
             </field>
         </record>
+
+
+        <record id="timesheet_view_grid_by_project" model="ir.ui.view">
+            <field name="name">account.analytic.line.grid.project.inherit</field>
+            <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="timesheet_grid.timesheet_view_grid_by_project"/>
+            <field name="arch" type="xml">
+                <range name="month" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </range>
+            </field>
+        </record>
+
     </data>
 </odoo>
