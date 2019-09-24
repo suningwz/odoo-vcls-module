@@ -66,9 +66,10 @@ class AnalyticLine(models.Model):
     
     required_lc_comment = fields.Boolean(compute='get_required_lc_comment')
 
-    so_line_unit_price = fields.Float(
+    so_line_unit_price = fields.Monetary(
         'Sales Oder Line Unit Price',
-        related='so_line.price_unit',
+        readonly = True,
+        #related='so_line.price_unit',
         store=True
     )
 
@@ -114,6 +115,16 @@ class AnalyticLine(models.Model):
     @api.model
     def create(self, vals):
         _logger.info("Create {}".format(vals.get('unit_amount')))
+
+        #when we create a timesheet, we capture the unit price of the so_line_product
+        if vals.get('is_timesheet', False) and vals.get('so_line', False) and vals.get('task_id', False):
+            task = self.env['project.task'].browse(vals['task_id'])
+            so_line = self.env['sale.order.line'].browse(vals['so_line'])
+            _logger.info("task line {} so line {}".format(task.sale_line_id,so_line))
+            
+            if task.sale_line_id != so_line: #if we map to a rate based product
+                vals['so_line_unit_price'] = task.sale_line_id.price_unit
+
         if 'unit_amount' in vals and vals.get('is_timesheet', False):  # do time ceiling for timesheets only
             _logger.info("Before round {}".format(vals.get('unit_amount')))
             if vals['unit_amount'] % 0.25 != 0:
