@@ -8,13 +8,14 @@ from odoo import fields, models, api
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    old_id = fields.Char()
+    old_id = fields.Char(copy=False, readonly=True)
 
     @api.model
     def get_alpha_index(self, index):
         return 'SF'
 
-    @api.model
-    def create(self, vals):
-        print(vals.get('company_id'))
-        return super(SaleOrder, self).create(vals)
+
+class SaleOrderLine(models.Model):
+    _inherit = 'sale.order.line'
+
+    old_id = fields.Char(copy=False, readonly=True)
