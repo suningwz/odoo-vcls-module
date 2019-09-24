@@ -57,11 +57,11 @@
             <field name="implied_ids" eval="[(4,ref('vcls_group_HR_global')),(4,ref('vcls_group_superuser_lvl2'))]"/>
         </record>
         
-        <!-- Create the superuser groups, which has almost all roles except HR ones to protect private data-->
+        <!-- Specific data access for controllers -->
         <record id="vcls_group_controlling" model="res.groups">
             <field name="name">Project Controller</field>
             <field name="category_id"/>
-        </record>
+        </record> 
         
     </data>
 </odoo>

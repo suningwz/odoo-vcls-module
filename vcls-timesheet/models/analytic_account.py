@@ -177,7 +177,7 @@ class AnalyticLine(models.Model):
     @api.multi
     def _finalize_pc_review(self):
         if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group(
-                'vcls-timesheet.vcls_pc'):
+                'vcls-hr.vcls_group_controlling'):
             timesheets = self.env['account.analytic.line'].browse(self.env.context.get('active_ids', []))
             adj_validation_timesheets = timesheets.filtered(lambda r: r.unit_amount_rounded != r.unit_amount)
             invoiceable_timesheets = (
@@ -190,7 +190,7 @@ class AnalyticLine(models.Model):
     @api.multi
     def set_outofscope(self):
         if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group(
-                'vcls-timesheet.vcls_pc'):
+                'vcls-hr.vcls_group_controlling'):
             self.env['account.analytic.line'].browse(self.env.context.get('active_ids', [])).write({'stage_id': 'outofscope'})
         else:
             raise ValidationError(_("You don't have the permission to set timesheets to Out of Scope stage."))
@@ -198,7 +198,7 @@ class AnalyticLine(models.Model):
     @api.multi
     def set_carry_forward(self):
         if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group(
-                'vcls-timesheet.vcls_pc'):
+                'vcls-hr.vcls_group_controlling'):
             self.env['account.analytic.line'].browse(self._context.get('active_ids', False)).write(
                 {'stage_id': 'carry_forward'})
         else:

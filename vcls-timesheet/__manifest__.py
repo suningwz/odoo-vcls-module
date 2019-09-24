@@ -28,6 +28,7 @@
         'sale_timesheet_limit_date',
         'sale_timesheet_rounded',
         'timesheet_useability',
+        'vcls-hr',
         'vcls-crm',
         'vcls-project',
         'timesheet_grid',
