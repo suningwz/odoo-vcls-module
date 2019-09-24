@@ -11,8 +11,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
     
     @api.multi
     def create_invoices(self):
-        context = self._context
-
+        context = self._context.copy()
         if self.group_invoice_method == 'project':
             projects = self.env['sale.order'].browse(self._context.get('active_ids', [])).mapped('project_ids')
             sale_orders = self.env['sale.order.line'].search([('project_id', 'in', projects.ids)]).mapped('order_id')
@@ -25,5 +24,5 @@ class SaleAdvancePaymentInv(models.TransientModel):
             agreements = self.env['sale.order'].browse(self._context.get('active_ids', [])).mapped('agreement_id')
             sale_orders = self.env['sale.order'].search([('agreement_id', 'in', agreements.ids)])
             context['active_ids'] = sale_orders.ids
-
+        context['company_id'] = self.env['sale.order'].browse(self._context.get('active_ids', [])).mapped('company_id').id
         return super(SaleAdvancePaymentInv, self.with_context(context)).create_invoices()
