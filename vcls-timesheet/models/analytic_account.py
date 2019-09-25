@@ -153,7 +153,7 @@ class AnalyticLine(models.Model):
 
                 # review of the lc needs sudo() to write on validated ts
                 if line.stage_id == 'lc_review':
-                    project = self.env['project-project'].browse(vals.get('project_id',line.project_id.id))
+                    project = self.env['project.project'].browse(vals.get('project_id',line.project_id.id))
                     if project.user_id.id == self._uid: #if the user is the lead consultant, we autorize the modification
                         self.sudo()
                         
