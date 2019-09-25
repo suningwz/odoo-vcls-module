@@ -47,6 +47,10 @@ class ProjectTask(models.Model):
     stage_allow_ts = fields.Boolean(
         related = 'stage_id.allow_timesheet', string='Stage allow timesheets'
     )
+    description_evolutions = fields.Html(string="Description Evolutions")
+    deliverable_id = fields.Many2one('product.deliverable', readonly=True,
+                                     store=True,
+                                     related='sale_line_id.product_id.deliverable_id')
     
     ###################
     # COMPUTE METHODS #

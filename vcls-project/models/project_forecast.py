@@ -22,8 +22,8 @@ class ProjectForecast(models.Model):
     @api.multi
     def _force_forecast_hours(self):
         for forecast in self:
-            if forecast.resource_hours <= 0 or not forecast.task_id:
-                return
+            if not forecast.task_id:
+                continue
             total_resource_hours = sum(self.search([('task_id', '=', forecast.task_id.id)]).mapped('resource_hours'))
             if total_resource_hours > 0:
                 forecast.task_id.planned_hours = total_resource_hours
@@ -31,8 +31,7 @@ class ProjectForecast(models.Model):
     @api.multi
     def write(self, values):
         result = super(ProjectForecast, self).write(values)
-        if values.get('resource_hours', 0) > 0:
-            self.sudo()._force_forecast_hours()
+        self.sudo()._force_forecast_hours()
         return result
 
     @api.model
