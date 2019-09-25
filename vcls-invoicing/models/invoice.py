@@ -21,6 +21,7 @@ class Invoice(models.Model):
         'res.users',
         string='Account Manager',
         )
+    invoice_sending_date = fields.Datetime()
     
     def get_communication_amount(self):
         total_amount = 0
@@ -63,7 +64,9 @@ class Invoice(models.Model):
     
     @api.multi
     def write(self, vals):
-        ret = super(Invoice, self).write(vals)       
+        if vals.get('sent'):
+            vals.update({'invoice_sending_date': fields.Datetime.now()})
+        ret = super(Invoice, self).write(vals)
         for rec in self:
             partner = rec.partner_id
             if partner.communication_rate and not self.env.context.get('communication_rate'):
