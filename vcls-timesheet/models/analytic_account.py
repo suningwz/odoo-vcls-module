@@ -157,7 +157,7 @@ class AnalyticLine(models.Model):
                 if line.stage_id == 'lc_review':
                     project = self.env['project.project'].browse(vals.get('project_id',line.project_id.id))
                     if project.user_id.id == self._uid: #if the user is the lead consultant, we autorize the modification
-                        self.sudo()
+                        self = self.sudo()
                         
                 #_logger.info("Test Stage vals {} origin {}".format(vals.get('stage_id','no'),line.stage_id))
                 # if one of the 3 important value has changed, and the stage changes the delivered amount
@@ -168,10 +168,15 @@ class AnalyticLine(models.Model):
 
 
         ok = super(AnalyticLine, self).write(vals)
+
         if ok and so_update:
             orders._compute_timesheet_ids()
+            #force recompute
+            for order in orders:
+                order.timesheet_limit_date = order.timesheet_limit_date
 
         return ok
+
 
     @api.multi
     def finalize_lc_review(self):
