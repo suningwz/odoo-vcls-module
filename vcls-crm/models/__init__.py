@@ -14,3 +14,4 @@ from . import crm_lead_won
 from . import sale_order_template
 from . import lead2opp
 from . import core_team
+from . import project

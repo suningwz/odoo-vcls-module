@@ -77,12 +77,3 @@ class SaleOrder(models.Model):
                 'view_id': view_id,
                 'type': 'ir.actions.act_window',
             }
-
-class Project(models.Model):
-
-    _inherit = 'project.project'
-
-    core_team_id = fields.Many2one(
-        'core.team',
-        related = "sale_order_id.core_team_id"
-    )

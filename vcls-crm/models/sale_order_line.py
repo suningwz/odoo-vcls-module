@@ -3,11 +3,17 @@
 from odoo import models, fields, tools, api
 from odoo.exceptions import UserError, ValidationError
 
+
 class SaleOrderLine(models.Model):
 
     _inherit = 'sale.order.line'
 
-    #Override the default ordered quantity to be 0 when we order rates items
+    vcls_type = fields.Selection(
+        related='product_id.vcls_type',
+        string="Vcls type",
+    )
+
+    # Override the default ordered quantity to be 0 when we order rates items
     product_uom_qty = fields.Float(
         default = 0,
         )

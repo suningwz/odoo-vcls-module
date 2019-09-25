@@ -31,7 +31,12 @@ class Project(models.Model):
         default = 'client',
     )
     
-    parent_id = fields.Many2one('project.project', 'Parent project', index=True, ondelete='cascade')
+    parent_id = fields.Many2one(
+        'project.project', 'Parent project',
+        index=True, ondelete='cascade',
+        compute='_get_parent_id',
+        store=True
+    )
     child_id = fields.One2many('project.project', 'parent_id', 'Child projects')
 
     parent_task_count = fields.Integer(
@@ -66,6 +71,17 @@ class Project(models.Model):
     ta_ids = fields.Many2many('hr.employee', relation='rel_project_tas', related='core_team_id.ta_ids',
                               string='Ta')
     extended = fields.Boolean('To be extended later')
+
+    @api.multi
+    @api.depends(
+        'sale_order_id', 'sale_order_id.parent_id',
+        'sale_order_id.parent_id.project_id'
+    )
+    def _get_parent_id(self):
+        for project in self:
+            if project.sale_order_id:
+                project.parent_id = project.sale_order_id.parent_id.project_id
+
     ##################
     # CUSTOM METHODS #
     ##################
@@ -91,7 +107,7 @@ class Project(models.Model):
         self.ensure_one()
         # TODO: This action will be later Described
         return True
-    
+
     @api.multi
     def sale_orders_tree_view(self):
         action = self.env.ref('sale.action_quotations_with_onboarding').read()[0]

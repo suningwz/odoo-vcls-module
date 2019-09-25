@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, tools, api
-from odoo.exceptions import UserError, ValidationError
 from dateutil.relativedelta import relativedelta
 import math
 
 import logging
 _logger = logging.getLogger(__name__)
+
 
 class SaleOrder(models.Model):
 
@@ -14,8 +14,8 @@ class SaleOrder(models.Model):
 
     product_category_id = fields.Many2one(
         'product.category',
-        string = 'Business Line',
-        domain = "[('is_business_line','=',True)]"
+        string='Business Line',
+        domain="[('is_business_line','=',True)]"
     )
     
     company_id = fields.Many2one(default=lambda self: self.env.ref('vcls-hr.company_VCFR'))
@@ -28,7 +28,7 @@ class SaleOrder(models.Model):
         ('rates', 'Rates'),
         ('subscriptions', 'Subscriptions'),
         ], default='all',
-        string = "Product Type")
+        string="Product Type")
 
     deliverable_id = fields.Many2one(
         'product.deliverable',
@@ -47,10 +47,10 @@ class SaleOrder(models.Model):
         domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
     )
 
-    #We never use several projects per quotation, so we highlight the 1st of the list
+    # We never use several projects per quotation, so we highlight the 1st of the list
     project_id = fields.Many2one(
         'project.project',
-        string = 'Project Name',
+        string='Project Name',
         compute='_compute_project_id',
         store=True,
     )
@@ -60,18 +60,37 @@ class SaleOrder(models.Model):
         string="Parent Quotation",
         copy=True,
     )
-    
-    internal_ref = fields.Char(
-        string="Ref",
-        store = True,
+
+    # Used as a hack to get the parent_id value
+    # as for odoo default_parent_id in context is assigned
+    # message.message parent_id
+    parent_sale_order_id = fields.Many2one(
+        'sale.order',
+        string="Parent Quotation",
     )
 
-    name = fields.Char(string='Order Reference', required=True, copy=False, readonly=True, states={'draft': [('readonly', False)]}, index=True, default=lambda self: 'New')
-    
+    internal_ref = fields.Char(
+        string="Ref",
+        store=True,
+    )
+
+    name = fields.Char(
+        string='Order Reference',
+        required=True, copy=False,
+        readonly=True,
+        states={'draft': [('readonly', False)]},
+        index=True, default=lambda self: 'New'
+    )
+
 
     ###############
     # ORM METHODS #
     ###############
+
+    @api.onchange('parent_sale_order_id')
+    def _onchange_parent_sale_order_id(self):
+        if self.parent_sale_order_id:
+            self.parent_id = self.parent_sale_order_id
 
     @api.model
     def create(self, vals):
@@ -79,6 +98,12 @@ class SaleOrder(models.Model):
         if 'opportunity_id' in vals:
             opp_id = vals.get('opportunity_id')
             opp = self.env['crm.lead'].browse(opp_id)
+
+            # parent_id is readonly, so it cant go on vals upon creation
+            # we use parent_sale_order_id as an intermediate value for that
+            if vals.get('parent_sale_order_id') and not vals.get('parent_id'):
+                vals['parent_id'] = vals['parent_sale_order_id']
+                vals.pop('parent_sale_order_id')
 
             if 'parent_id' in vals: #in this case, we are upselling and add a numerical index to the reference of the original quotation
                 parent_id = vals.get('parent_id')
@@ -99,16 +124,23 @@ class SaleOrder(models.Model):
                     index = 1
                 vals['internal_ref'] = "{}-{}".format(opp.internal_ref,self.get_alpha_index(index))
 
-            vals['name'] = "{} | {}".format(vals['internal_ref'],vals['name'])
+            quotation_original_name = vals['name']
+            if 'lead_quotation_type' in self._context:
+                lead_quotation_type = self._context.get('lead_quotation_type')
+                if lead_quotation_type in ('budget_extension', 'scope_extension'):
+                    additional_name = 'Budget extension' if lead_quotation_type == 'budget_extension' \
+                        else 'Scope extension'
+                    quotation_original_name = "{} | {}".format(quotation_original_name, additional_name)
+            vals['name'] = "{} | {}".format(vals['internal_ref'], quotation_original_name)
 
-            #default expected_start_date and expected_end_date
+            # default expected_start_date and expected_end_date
             expected_start_date = opp.expected_start_date
             if expected_start_date:
                 vals['expected_start_date'] = expected_start_date
                 vals['expected_end_date'] = expected_start_date + relativedelta(months=+3)
                 
-        result = super(SaleOrder, self).create(vals)
-        return result
+        order = super(SaleOrder, self).create(vals)
+        return order
 
     @api.model
     def write(self, vals):
@@ -116,13 +148,13 @@ class SaleOrder(models.Model):
             expected_start_date = fields.Date.from_string(vals['expected_start_date'])
             if self.expected_end_date and self.expected_start_date and expected_start_date:
                 vals['expected_end_date'] = expected_start_date + (self.expected_end_date - self.expected_start_date)
-            if self.tasks_ids:
-                for task_id in self.tasks_ids:
-                    forecasts = self.env['project.forecast'].search([('task_id','=',task_id.id)])
-                    for forecast in forecasts:
-                        forecast.write({'start_date':vals['expected_start_date']})
-       
-       
+                # Use sudo here to avoid access error for people having
+                # access to forecast but not to employees (which must be read on the forecast object)
+            tasks_ids = self.tasks_ids.ids
+            if tasks_ids:
+                forecasts = self.env['project.forecast'].sudo().search([('task_id', 'in', self.tasks_ids.ids)])
+                if forecasts:
+                    forecasts.write({'start_date': vals['expected_start_date']})
         return super(SaleOrder, self).write(vals)
 
     ###################
@@ -132,9 +164,7 @@ class SaleOrder(models.Model):
     @api.depends('project_ids')
     def _compute_project_id(self):
         for so in self:
-            if so.parent_id.project_id:
-                so.project_id = so.parent_id.project_id
-            elif so.project_ids:
+            if so.project_ids:
                 so.project_id = so.project_ids[0]
 
 
