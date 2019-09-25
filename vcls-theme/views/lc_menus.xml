@@ -34,7 +34,7 @@
         <!-- ACTIONS -->
         <!-- ACTION OPEN PCLIENT PROJECT WITH DEFAULT FILTER MY PROJECT -->
         <record id="action_lc_client_project" model="ir.actions.act_window">
-            <field name="name">Client Projects</field>
+            <field name="name">Projects</field>
             <field name="res_model">project.project</field>
             <field name="view_type">form</field>
             <field name="view_mode">kanban,form</field>
@@ -85,7 +85,7 @@
 
         <menuitem
             id="menu_lc_client"
-            name="Client Projects"
+            name="Projects"
             parent="menu_lc_root"
             sequence="1"
             action="action_lc_client_project"

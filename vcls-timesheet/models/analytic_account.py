@@ -152,7 +152,7 @@ class AnalyticLine(models.Model):
                 so_update = True
                 orders |= line.so_line.order_id
                 
-        ok = super(AnalyticLine, self).write(vals)
+        ok = super(AnalyticLine, self).sudo().write(vals)
         if ok and so_update:
             orders._compute_timesheet_ids()
 
