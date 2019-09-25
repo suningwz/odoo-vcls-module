@@ -81,6 +81,8 @@ class AnalyticLine(models.Model):
         string='Sales Order Currency',
     )
     adj_reason_required = fields.Boolean()
+    main_project_id = fields.Many2one('project.project', string='Main Project',
+                                      domain=[('parent_id', '=', False)])
 
     @api.model
     def show_grid_cell(self, domain=[], column_value='', row_values={}):
@@ -139,18 +141,21 @@ class AnalyticLine(models.Model):
 
     @api.model
     def create(self, vals):
-        #_logger.info("ANALYTIC CREATION {}".format(vals))
+        # _logger.info("ANALYTIC CREATION {}".format(vals))
 
         if vals.get('employee_id', False) and vals.get('project_id', False):
 
-            #rounding to 15 mins
+            # rounding to 15 mins
             if vals['unit_amount'] % 0.25 != 0:
                 old = vals.get('unit_amount', 0)
-                vals['unit_amount'] = math.ceil(old*4)/4
-                _logger.info("Timesheet Rounding from {} to {}".format(old,vals.get('unit_amount')))
-            
-            #check if this is a timesheet at risk
-            vals['at_risk'] = self._get_at_risk_values(vals.get('project_id'),vals.get('employee_id'))
+                vals['unit_amount'] = math.ceil(old * 4) / 4
+                _logger.info("Timesheet Rounding from {} to {}".format(old,
+                                                                       vals.get(
+                                                                           'unit_amount')))
+
+            # check if this is a timesheet at risk
+            vals['at_risk'] = self._get_at_risk_values(vals.get('project_id'),
+                                                       vals.get('employee_id'))
 
         return super(AnalyticLine, self).create(vals)
 
@@ -160,7 +165,7 @@ class AnalyticLine(models.Model):
         so_update = False
         orders = self.env['sale.order']
         _logger.info("ANALYTIC WRITE {}".format(vals))
-        
+
         # we loop the lines to manage specific usecases
         for line in self:
 
@@ -168,43 +173,51 @@ class AnalyticLine(models.Model):
             if line.is_timesheet and line.project_id and line.employee_id:
 
                 # automatically set the stage to lc_review according to the conditions
-                if vals.get('validated',line.validated):
-                    if vals.get('stage_id',line.stage_id) == 'draft':
+                if vals.get('validated', line.validated):
+                    if vals.get('stage_id', line.stage_id) == 'draft':
                         vals['stage_id'] = 'lc_review'
 
                 # review of the lc needs sudo() to write on validated ts
                 if line.stage_id == 'lc_review':
-                    project = self.env['project.project'].browse(vals.get('project_id',line.project_id.id))
-                    if project.user_id.id == self._uid: #if the user is the lead consultant, we autorize the modification
+                    project = self.env['project.project'].browse(
+                        vals.get('project_id', line.project_id.id))
+                    if project.user_id.id == self._uid:  # if the user is the lead consultant, we autorize the modification
                         self = self.sudo()
-                        
+
                 # if one of the 3 important value has changed, and the stage changes the delivered amount
-                if (vals.get('date',False) or vals.get('unit_amount_rounded',False) or vals.get('stage_id',False)) and (vals.get('stage_id','no') in ['invoiced','invoiceable'] or line.stage_id in ['invoiced','invoiceable']):
-                    _logger.info("Order timesheet update for {}".format(line.name))
+                if (vals.get('date', False) or vals.get('unit_amount_rounded',
+                                                        False) or vals.get(
+                        'stage_id', False)) and (
+                        vals.get('stage_id', 'no') in ['invoiced',
+                                                       'invoiceable'] or line.stage_id in [
+                            'invoiced', 'invoiceable']):
+                    _logger.info(
+                        "Order timesheet update for {}".format(line.name))
                     so_update = True
                     orders |= line.so_line.order_id
 
                 # if the sale order line price as not been captured yet
-                if vals.get('so_line',line.so_line.id) and line.so_line_unit_price == 0.0:
-                    task = self.env['project.task'].browse(vals.get('task_id',line.task_id.id))
-                    so_line = self.env['sale.order.line'].browse(vals.get('so_line',line.so_line.id))
-            
-                    if task.sale_line_id != so_line: #if we map to a rate based product
+                if vals.get('so_line',
+                            line.so_line.id) and line.so_line_unit_price == 0.0:
+                    task = self.env['project.task'].browse(
+                        vals.get('task_id', line.task_id.id))
+                    so_line = self.env['sale.order.line'].browse(
+                        vals.get('so_line', line.so_line.id))
+
+                    if task.sale_line_id != so_line:  # if we map to a rate based product
                         vals['so_line_unit_price'] = so_line.price_unit
                         so_update = True
                         orders |= line.so_line.order_id
-
 
         ok = super(AnalyticLine, self).write(vals)
 
         if ok and so_update:
             orders._compute_timesheet_ids()
-            #force recompute
+            # force recompute
             for order in orders:
                 order.timesheet_limit_date = order.timesheet_limit_date
 
         return ok
-
 
     @api.multi
     def finalize_lc_review(self):
@@ -233,7 +246,7 @@ class AnalyticLine(models.Model):
     def finalize_pc_review(self):
         self._pc_change_state('invoiceable')
         #self._finalize_pc_review()
-    
+
     @api.multi
     def _pc_change_state(self,new_stage='invoiceable'):
         """
@@ -249,9 +262,9 @@ class AnalyticLine(models.Model):
         user_authorized = (self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'))
         if not user_authorized:
             raise ValidationError(_("You need to be part of the 'Project Controller' group to perform this operation. Thank you."))
-        
+
         _logger.info("NEW TS STAGE:{}".format(new_stage))
-        
+
         if new_stage=='invoiceable':
             timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='pc_review' or r.stage_id=='carry_forward'))
 
@@ -260,20 +273,20 @@ class AnalyticLine(models.Model):
 
             adj_validation_timesheets.write({'stage_id': 'adjustment_validation'})
             invoiceable_timesheets.write({'stage_id': 'invoiceable'})
-        
+
         elif new_stage=='outofscope':
             timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='pc_review' or r.stage_id=='carry_forward'))
             _logger.info("NEW TS STAGE outofscope:{}".format(timesheets_in.mapped('name')))
             timesheets_in.write({'stage_id': 'outofscope'})
-        
+
         elif new_stage=='carry_forward':
             timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='pc_review'))
             _logger.info("NEW TS STAGE carry_forward:{}".format(timesheets_in.mapped('name')))
             timesheets_in.write({'stage_id': 'carry_forward'})
-        
+
         else:
             timesheets_in = False
-        
+
         timesheets_out = (timesheets - timesheets_in) if timesheets_in else timesheets
         if len(timesheets_out) > 0:
             message = "Following timesheet(s) are not in the proper stage to perform the required action:\n"
@@ -330,7 +343,7 @@ class AnalyticLine(models.Model):
                 resource = self.env['resource.resource'].search([('user_id','=',record.user_id.id)])
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
                 record.employee_id = employee
-    
+
 
     @api.onchange('unit_amount_rounded', 'unit_amount')
     def get_required_lc_comment(self):
@@ -340,23 +353,25 @@ class AnalyticLine(models.Model):
             else:
                 record.required_lc_comment = True    
 
-    @api.onchange('project_id')
-    def onchange_project_id(self):
-        # force domain on task when project is set
-        if self.project_id:
-            if self.project_id != self.task_id.project_id:
-                # reset task when changing project
-                self.task_id = False
-            return {'domain': {
-                'task_id': [('project_id', '=', self.project_id.id), ('stage_id.allow_timesheet','=', True)]
-            }}
-
     @api.onchange('unit_amount_rounded')
     def onchange_adj_reason_readonly(self):
         adj_reason_required = False
         if self.unit_amount != self.unit_amount_rounded:
             adj_reason_required = True
         self.adj_reason_required = adj_reason_required
+
+    @api.onchange('main_project_id')
+    def onchange_task_id_project_related(self):
+        if self.main_project_id:
+            projects = self.main_project_id | self.main_project_id.child_id
+            return {'domain': {
+                'task_id': [('project_id', 'in', projects.ids), ('stage_id.allow_timesheet', '=', True)]
+            }}
+
+    @api.onchange('task_id')
+    def onchange_project_id(self):
+        if self._context.get('desc_order_display'):
+            self.project_id = self.task_id.project_id
 
     @api.multi
     def button_details_lc(self):

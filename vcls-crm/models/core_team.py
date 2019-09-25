@@ -34,6 +34,7 @@ class CoreTeam(models.Model):
         string='Ta')
     
     comment = fields.Char()
+    user_ids = fields.Many2many('res.users', store=True, compute='compute_core_team_related_users_list')
 
     @api.multi
     def write(self,vals):
@@ -48,7 +49,15 @@ class CoreTeam(models.Model):
                     projects.write({'user_id':lc_user.id})
 
         return super(CoreTeam, self).write(vals)
-    
+
+    @api.one
+    @api.depends('lead_consultant', 'lead_backup', 'ta_ids', 'consultant_ids')
+    def compute_core_team_related_users_list(self):
+        self.user_ids = (self.consultant_ids | self.ta_ids |
+                         self.lead_backup |
+                         self.lead_consultant).mapped('user_id')
+
+
 class SaleOrder(models.Model):
 
     _inherit = 'sale.order'
