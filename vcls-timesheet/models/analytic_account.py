@@ -31,7 +31,7 @@ class AnalyticLine(models.Model):
     deliverable_id = fields.Many2one(
         'product.deliverable',
         string='Deliverable',
-        related='product_id.deliverable_id',
+        related='task_id.sale_line_id.product_id.deliverable_id',
         store=True,
     )
 
