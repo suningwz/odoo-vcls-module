@@ -16,7 +16,7 @@
     # for the full list
     'category': 'Uncategorized',
 
-    'version': '0.3',
+    'version': '0.3.1',
 
 
     # any module necessary for this one to work correctly
@@ -32,7 +32,7 @@
         'vcls-crm',
         'vcls-project',
         'timesheet_grid',
-        # 'web_grid_extend',
+        'web_grid_extend',
         ],
 
     # always loaded
