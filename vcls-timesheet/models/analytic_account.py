@@ -141,10 +141,12 @@ class AnalyticLine(models.Model):
         orders = self.env['sale.order']
         #user = self.env['res.users'].browse(self._uid)
 
-        # we manage specific timesheet cases
-        if self.is_timesheet and self.project_id:
-            # we loop the lines
-            for line in self:
+        
+        # we loop the lines
+        for line in self:
+
+            # we manage specific timesheet cases
+            if line.is_timesheet and line.project_id:
 
                 # automatically set the stage to lc_review according to the conditions
                 if vals.get('validated',line.validated):
