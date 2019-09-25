@@ -174,7 +174,7 @@ class AnalyticLine(models.Model):
         timesheets_out = (timesheets - timesheets_in) if timesheets_in else timesheets
         #_logger.info("names {} stage {} user {} out {}".format(timesheets.mapped('name'),timesheets.mapped('stage_id'),timesheets_out.mapped('name')))
         for timesheet in timesheets_in:
-                timesheet.sudo().write({'stage_id':'pc_review'})
+                timesheet.write({'stage_id':'pc_review'})
         if len(timesheets_out) > 0:
             message = "You don't have the permission for the following timesheet(s) :\n"
             for timesheet in timesheets_out:
