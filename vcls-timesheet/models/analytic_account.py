@@ -139,19 +139,32 @@ class AnalyticLine(models.Model):
         # we automatically update the stage if the ts is validated and stage = draft
         so_update = False
         orders = self.env['sale.order']
+        #user = self.env['res.users'].browse(self._uid)
 
-        for line in self:
-            if vals.get('validated',line.validated):
-                if vals.get('stage_id',line.stage_id) == 'draft':
-                    vals['stage_id'] = 'lc_review'
-            
-            #_logger.info("Test Stage vals {} origin {}".format(vals.get('stage_id','no'),line.stage_id))
-            # if one of the 3 important value has changed, and the stage changes the delivered amount
-            if (vals.get('date',False) or vals.get('unit_amount_rounded',False) or vals.get('stage_id',False)) and (vals.get('stage_id','no') in ['invoiced','invoiceable'] or line.stage_id in ['invoiced','invoiceable']):
-                _logger.info("Order timesheet update for {}".format(line.name))
-                so_update = True
-                orders |= line.so_line.order_id
-                
+        # we manage specific timesheet cases
+        if self.is_timesheet and self.project_id:
+            # we loop the lines
+            for line in self:
+
+                # automatically set the stage to lc_review according to the conditions
+                if vals.get('validated',line.validated):
+                    if vals.get('stage_id',line.stage_id) == 'draft':
+                        vals['stage_id'] = 'lc_review'
+
+                # review of the lc needs sudo() to write on validated ts
+                if line.stage_id == 'lc_review':
+                    project = self.env['project-project'].browse(vals.get('project_id',line.project_id.id))
+                    if project.user_id.id == self._uid: #if the user is the lead consultant, we autorize the modification
+                        self.sudo()
+                        
+                #_logger.info("Test Stage vals {} origin {}".format(vals.get('stage_id','no'),line.stage_id))
+                # if one of the 3 important value has changed, and the stage changes the delivered amount
+                if (vals.get('date',False) or vals.get('unit_amount_rounded',False) or vals.get('stage_id',False)) and (vals.get('stage_id','no') in ['invoiced','invoiceable'] or line.stage_id in ['invoiced','invoiceable']):
+                    _logger.info("Order timesheet update for {}".format(line.name))
+                    so_update = True
+                    orders |= line.so_line.order_id
+
+
         ok = super(AnalyticLine, self).write(vals)
         if ok and so_update:
             orders._compute_timesheet_ids()
