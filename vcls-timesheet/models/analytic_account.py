@@ -70,7 +70,8 @@ class AnalyticLine(models.Model):
         'Sales Oder Line Unit Price',
         readonly = True,
         #related='so_line.price_unit',
-        store=True
+        store=True,
+        default = 0.0,
     )
 
     so_line_currency_id = fields.Many2one(
@@ -138,7 +139,7 @@ class AnalyticLine(models.Model):
 
     @api.model
     def create(self, vals):
-        _logger.info("ANALYTIC CREATION {}".format(vals))
+        #_logger.info("ANALYTIC CREATION {}".format(vals))
 
         """ #when we create a timesheet, we capture the unit price of the so_line_product
         if vals.get('employee_id', False) and vals.get('task_id', False) and vals.get('unit_amount', False) and vals.get('project_id', False):
@@ -167,9 +168,7 @@ class AnalyticLine(models.Model):
         # we automatically update the stage if the ts is validated and stage = draft
         so_update = False
         orders = self.env['sale.order']
-        #user = self.env['res.users'].browse(self._uid)
         _logger.info("ANALYTIC WRITE {}".format(vals))
-
         
         # we loop the lines to manage specific usecases
         for line in self:
@@ -188,12 +187,21 @@ class AnalyticLine(models.Model):
                     if project.user_id.id == self._uid: #if the user is the lead consultant, we autorize the modification
                         self = self.sudo()
                         
-                #_logger.info("Test Stage vals {} origin {}".format(vals.get('stage_id','no'),line.stage_id))
                 # if one of the 3 important value has changed, and the stage changes the delivered amount
                 if (vals.get('date',False) or vals.get('unit_amount_rounded',False) or vals.get('stage_id',False)) and (vals.get('stage_id','no') in ['invoiced','invoiceable'] or line.stage_id in ['invoiced','invoiceable']):
                     _logger.info("Order timesheet update for {}".format(line.name))
                     so_update = True
                     orders |= line.so_line.order_id
+
+                # if the sale order line price as not been captured yet
+                if vals.get('so_line',line.so_line.id) and line.so_line_unit_price == 0.0:
+                    task = self.env['project.task'].browse(vals.get('task_id',line.task_id.id))
+                    so_line = self.env['sale.order.line'].browse(vals.get('so_line',line.so_line.id))
+            
+                    if task.sale_line_id != so_line: #if we map to a rate based product
+                        vals['so_line_unit_price'] = task.sale_line_id.price_unit
+                        so_update = True
+                        orders |= line.so_line.order_id
 
 
         ok = super(AnalyticLine, self).write(vals)
