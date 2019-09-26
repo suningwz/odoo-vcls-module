@@ -141,7 +141,7 @@ class AnalyticLine(models.Model):
         _logger.info("ANALYTIC CREATION {}".format(vals))
 
         #when we create a timesheet, we capture the unit price of the so_line_product
-        if vals.get('employee_id', False) and vals.get('so_line', False) and vals.get('task_id', False) and vals.get('unit_amount', False) and vals.get('project_id', False):
+        if vals.get('employee_id', False) and vals.get('task_id', False) and vals.get('unit_amount', False) and vals.get('project_id', False):
             task = self.env['project.task'].browse(vals['task_id'])
             so_line = self.env['sale.order.line'].browse(vals['so_line'])
             _logger.info("task line {} so line {}".format(task.sale_line_id,so_line))
