@@ -138,7 +138,7 @@ class AnalyticLine(models.Model):
 
     @api.model
     def create(self, vals):
-        _logger.info("Create {}".format(vals.get('unit_amount')))
+        _logger.info("ANALYTIC CREATION {}".format(vals))
 
         #when we create a timesheet, we capture the unit price of the so_line_product
         if vals.get('is_timesheet', False) and vals.get('so_line', False) and vals.get('task_id', False):
