@@ -141,15 +141,6 @@ class AnalyticLine(models.Model):
     def create(self, vals):
         #_logger.info("ANALYTIC CREATION {}".format(vals))
 
-        """ #when we create a timesheet, we capture the unit price of the so_line_product
-        if vals.get('employee_id', False) and vals.get('task_id', False) and vals.get('unit_amount', False) and vals.get('project_id', False):
-            task = self.env['project.task'].browse(vals['task_id'])
-            so_line = self.env['sale.order.line'].browse(vals['so_line'])
-            _logger.info("task line {} so line {}".format(task.sale_line_id,so_line))
-            
-            if task.sale_line_id != so_line: #if we map to a rate based product
-                vals['so_line_unit_price'] = task.sale_line_id.price_unit"""
-
         if vals.get('employee_id', False) and vals.get('project_id', False):
 
             #rounding to 15 mins
@@ -199,7 +190,7 @@ class AnalyticLine(models.Model):
                     so_line = self.env['sale.order.line'].browse(vals.get('so_line',line.so_line.id))
             
                     if task.sale_line_id != so_line: #if we map to a rate based product
-                        vals['so_line_unit_price'] = task.sale_line_id.price_unit
+                        vals['so_line_unit_price'] = so_line.price_unit
                         so_update = True
                         orders |= line.so_line.order_id
 
