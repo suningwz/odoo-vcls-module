@@ -167,6 +167,7 @@ class AnalyticLine(models.Model):
         so_update = False
         orders = self.env['sale.order']
         #user = self.env['res.users'].browse(self._uid)
+        _logger.info("ANALYTIC WRITE {}".format(vals))
 
         
         # we loop the lines
