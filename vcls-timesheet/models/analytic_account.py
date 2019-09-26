@@ -156,7 +156,9 @@ class AnalyticLine(models.Model):
                 vals['unit_amount'] = math.ceil(vals.get('unit_amount', 0)*4)/4
                 _logger.info("After round {}".format(vals.get('unit_amount')))
 
-
+        if vals.get('employee_id', False) and vals.get('project_id', False):
+            
+            #check if this is a timesheet at risk
             vals['at_risk'] = self._get_at_risk_values(vals.get('project_id'),vals.get('employee_id'))
 
         return super(AnalyticLine, self).create(vals)
@@ -170,11 +172,11 @@ class AnalyticLine(models.Model):
         _logger.info("ANALYTIC WRITE {}".format(vals))
 
         
-        # we loop the lines
+        # we loop the lines to manage specific usecases
         for line in self:
 
-            # we manage specific timesheet cases
-            if line.is_timesheet and line.project_id:
+            # Timesheet cases
+            if line.is_timesheet and line.project_id and line.employee_id:
 
                 # automatically set the stage to lc_review according to the conditions
                 if vals.get('validated',line.validated):
