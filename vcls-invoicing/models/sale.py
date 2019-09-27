@@ -3,6 +3,7 @@
 from odoo import models, fields, api
 from dateutil.relativedelta import relativedelta
 
+from lxml import etree
 from odoo.exceptions import UserError, ValidationError
 
 class SaleOrder(models.Model):
@@ -25,6 +26,18 @@ class SaleOrder(models.Model):
         default =lambda self: self.partner_id.invoicing_frequency,
     )
     timesheet_limit_date = fields.Date(compute='compute_timesheet_limite_date', inverse='inverse_timesheet_limite_date', store=True,)
+    invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
+    activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.analytic.line'),
+                                                                            ('report_name', '=', 'activity_report')])
+    communication_rate = fields.Selection([('0.0', '0%'),
+                                           ('0.005', '0.5%'),
+                                           ('0.01', '1%'),
+                                           ('0.015', '1.5%'),
+                                           ('0.02', '2%'),
+                                           ('0.025', '2.5%'),
+                                           ('0.03', '3%'),
+                                           ], 'Communication Rate', default='0.0')
+    financial_config_readonly = fields.Boolean(compute='compute_financial_config_readonly')
 
     @api.depends('partner_id.risk_ids')
     def _compute_risk_ids(self):
@@ -57,6 +70,12 @@ class SaleOrder(models.Model):
 
     def inverse_timesheet_limite_date(self):
         return
+
+    @api.one
+    @api.depends('project_id.user_id','partner_id.invoice_admin_id', 'parent_id')
+    def compute_financial_config_readonly(self):
+        self.financial_config_readonly =((self.project_id.user_id == self.env.user) or\
+                                        (self.partner_id.invoice_admin_id == self.env.user)) and not self.parent_id
 
     def action_risk(self):
         view_ids = [self.env.ref('vcls-risk.view_risk_tree').id,
@@ -139,6 +158,19 @@ class SaleOrder(models.Model):
     
     @api.multi
     def write(self, vals):
+        for rec in self:
+            childs = vals.get('child_ids', False) or rec.child_ids
+            if childs:
+                params = ('invoicing_frequency', 'invoice_template', 'activity_report_template', 'communication_rate'
+                          , 'pricelist_id')
+                keys = ('invoicing_frequency', 'invoice_template', 'activity_report_template', 'communication_rate'
+                        , 'pricelist_id')
+                values = [vals.get(key) for key in params]
+                dict_values = {keys[i]: values[i] for i in range(0, len(values)) if values[i]}
+                if len(dict_values):
+                        for child in childs:
+                            super(SaleOrder, child).write(dict_values)
+                            child.check_risk()
         result = super(SaleOrder, self).write(vals)
         self.check_risk()
         return result
@@ -148,3 +180,11 @@ class SaleOrder(models.Model):
         result = super(SaleOrder, self).create(vals)
         result.check_risk()
         return result
+
+    @api.onchange('partner_id')
+    def get_partner_financial_config(self):
+        self.invoicing_frequency = self.partner_id.invoicing_frequency
+        self.invoice_template = self.partner_id.invoice_template
+        self.activity_report_template = self.partner_id.activity_report_template
+        self.communication_rate = self.partner_id.communication_rate
+        self.pricelist_id = self.partner_id.property_product_pricelist
