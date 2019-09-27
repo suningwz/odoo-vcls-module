@@ -30,7 +30,8 @@ class Project(models.Model):
         string = 'Project Type',
         default = 'client',
     )
-    
+
+    # Maximum parent level here is meant to be 1 at max for now
     parent_id = fields.Many2one(
         'project.project', 'Parent project',
         index=True, ondelete='cascade',
@@ -40,11 +41,11 @@ class Project(models.Model):
     child_id = fields.One2many('project.project', 'parent_id', 'Child projects')
 
     parent_task_count = fields.Integer(
-        compute = '_compute_parent_task_count'
+        compute='_compute_parent_task_count'
     )
 
     child_task_count = fields.Integer(
-        compute = '_compute_child_task_count'
+        compute='_compute_child_task_count'
     )
 
     #consultant_ids = fields.Many2many('hr.employee', string='Consultants')
@@ -90,7 +91,7 @@ class Project(models.Model):
         """This function will return all the tasks and subtasks found in the main and Child
         Projects which participates in KPI's"""
         self.ensure_one()
-        tasks = self.task_ids + self.child_id.task_ids
+        tasks = self.task_ids + self.child_id.mapped('task_ids')
         all_tasks = tasks + tasks.mapped('child_ids')
         return all_tasks.filtered(lambda task: task.sale_line_id.product_id.completion_elligible and
                                   task.stage_id.status not in  ['not_started','cancelled'])

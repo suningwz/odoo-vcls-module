@@ -60,6 +60,10 @@ class SaleOrder(models.Model):
         string="Parent Quotation",
         copy=True,
     )
+    child_ids = fields.One2many(
+        'sale.order', 'parent_id',
+        'Child Quotations'
+    )
 
     # Used as a hack to get the parent_id value
     # as for odoo default_parent_id in context is assigned
@@ -81,7 +85,6 @@ class SaleOrder(models.Model):
         states={'draft': [('readonly', False)]},
         index=True, default=lambda self: 'New'
     )
-
 
     ###############
     # ORM METHODS #
@@ -167,6 +170,41 @@ class SaleOrder(models.Model):
             if so.project_ids:
                 so.project_id = so.project_ids[0]
 
+    @api.multi
+    def _get_family_sales_orders(self):
+        """
+        :return: parent sale order, children sales orders
+        """
+        self.ensure_one()
+        parent_order = self.parent_id or self
+        child_ids = parent_order.child_ids
+        return parent_order, child_ids
+
+    @api.multi
+    def _get_family_projects(self):
+        """
+        :return: parent project record, children projects records
+        """
+        parent_order, child_orders = self._get_family_sales_orders()
+        return parent_order.project_id, child_orders.mapped('project_id')
+
+    @api.multi
+    def action_view_family_quotations(self):
+        self.ensure_one()
+        action = self.env.ref('sale_crm.sale_action_quotations').read()[0]
+        parent_order_id, child_orders = self._get_family_sales_orders()
+        all_orders = parent_order_id | child_orders
+        action['domain'] = [('state', '=', 'draft'), ('id', 'in', all_orders.ids)]
+        return action
+
+    @api.multi
+    def action_view_family_sales_orders(self):
+        self.ensure_one()
+        action = self.env.ref('sale_crm.sale_action_quotations').read()[0]
+        parent_order_id, child_orders = self._get_family_sales_orders()
+        all_orders = parent_order_id | child_orders
+        action['domain'] = [('state', 'not in', ('draft', 'cancel')), ('id', 'in', all_orders.ids)]
+        return action
 
     ################
     # TOOL METHODS #
