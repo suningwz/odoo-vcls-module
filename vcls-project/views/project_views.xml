@@ -17,8 +17,8 @@
                     </header>
                     <sheet string="Project">
                         <div class="oe_button_box" name="button_box" groups="base.group_user">
-                            <button class="oe_stat_button" name="sale_orders_tree_view" type="object" icon="fa-usd">
-                                <field string="Sale Orders" name="orders_count" widget="statinfo"/>
+                            <button class="oe_stat_button" name="sale_orders_tree_view" type="object" icon="fa-barcode">
+                                <field string="Quotation(s)" name="orders_count" widget="statinfo"/>
                             </button>
                             <button class="oe_stat_button" name="invoices_tree_view" type="object" icon="fa-money">
                                 <field string="Invoices" name="invoices_count" widget="statinfo"/>

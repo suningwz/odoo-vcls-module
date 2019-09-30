@@ -112,7 +112,7 @@ class Project(models.Model):
 
     @api.multi
     def sale_orders_tree_view(self):
-        action = self.env.ref('sale.action_quotations_with_onboarding').read()[0]
+        action = self.env.ref('sale.action_quotations').read()[0]
         action['domain'] = [('project_id', 'child_of', self.id)]
         return action
 
@@ -159,7 +159,7 @@ class Project(models.Model):
                 
             else:
                 vals['privacy_visibility'] = 'followers'"""
-                
+
         #default visibility
         vals['privacy_visibility'] = 'employees'
         
