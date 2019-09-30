@@ -71,7 +71,8 @@ class Project(models.Model):
                                       string='Consultants')
     ta_ids = fields.Many2many('hr.employee', relation='rel_project_tas', related='core_team_id.ta_ids',
                               string='Ta')
-    extended = fields.Boolean('To be extended later')
+                              
+    #extended = fields.Boolean('To be extended later')
 
     @api.multi
     @api.depends(

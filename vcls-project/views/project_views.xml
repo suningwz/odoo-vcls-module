@@ -1,5 +1,188 @@
 <odoo>
     <data>
+
+        <!-- Project -->
+        <record id="vcls_specific_project_form" model="ir.ui.view">
+            <field name="name">vcls.specific.project.form</field>
+            <field name="model">project.project</field>
+            <field name="priority">500</field>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <form string="Project" create="false">
+                    <header>
+                        <button name="action_raise_new_invoice" string="Raise a new Invoice" type="object"
+                                class="oe_highlight oe_read_only"/>
+                        <button name="action_raise_new_risk" string="Raise a new Risk" type="object"
+                                class="oe_highlight oe_read_only"/>
+                    </header>
+                    <sheet string="Project">
+                        <div class="oe_button_box" name="button_box" groups="base.group_user">
+                            <button class="oe_stat_button" name="sale_orders_tree_view" type="object" icon="fa-usd">
+                                <field string="Sale Orders" name="orders_count" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" name="invoices_tree_view" type="object" icon="fa-money">
+                                <field string="Invoices" name="invoices_count" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" name="tasks_tree_view" type="object" icon="fa-tasks">
+                                <field string="Tasks" name="task_count" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" string="Forecasts" name="forecasts_tree_view" type="object"
+                                    icon="fa-wpforms"/>
+                            <button class="oe_stat_button" string="Timesheets" name="timesheets_tree_view" type="object" icon="fa-calendar"/>
+                            <button class="oe_stat_button" string="Report Analysis" name="report_analysis_tree_view"
+                                    type="object" icon="fa-pencil-square-o"/>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Project Name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="scope_of_work"/>
+                        </group>
+                        <group>
+                            <group string="Core Team">
+                                <field name="sale_order_id" invisible="1"/>
+                                <field name="core_team_id"/>
+                                <field name="lead_consultant" string="Lead Consultant"/>
+                                <field name="lead_backup"/>
+                            </group>
+                            <group string="Operations">
+                                <field name="date_start"/>
+                                <field name="date"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Consultants">
+                                <field name="consultant_ids" mode="tree" nolabel="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="job_id"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group string="Technical Advisors">
+                                <field name="ta_ids" mode="tree" nolabel="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="job_id"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </group>
+
+                        <notebook>
+                        <page name="settings" string="Settings" groups="vcls-hr.vcls_group_superuser_lvl2">
+                            <group>
+                                <field name="user_id" string="Project Manager" attrs="{'readonly':[('active','=',False)]}"/>
+                                <field name="privacy_visibility" widget="radio"/>
+                                <field name="project_type"/>
+                                <field name="allow_timesheets"/>
+                                <field name="allow_forecast"/>
+                                <field name="partner_id" string="Customer"/>
+                                <label for="rating_status" groups="project.group_project_rating"/>
+                                <div groups="project.group_project_rating">
+                                    <field name="rating_status" widget="radio"/>
+                                    <p attrs="{'invisible': [('rating_status','not in',('periodic','stage'))]}" class="text-muted oe_edit_only">
+                                        Edit project's stages and set an email template on the stages on which you want to activate the rating.
+                                    </p>
+                                </div>
+                                <field name="rating_status_period" class="oe_inline" attrs="{'required': [('rating_status','=','periodic')], 'invisible': [('rating_status','!=','periodic')]}" groups="project.group_project_rating"/>
+                                <field name="portal_show_rating" attrs="{'invisible': [('rating_status','==','no')]}" groups="project.group_project_rating"/>
+                                <field name="subtask_project_id" groups="project.group_subtask_project"/>
+                            </group>
+                            <group name="misc">
+                                <group string="Configuration" groups="base.group_no_one" name="configuration">
+                                    <field name="sequence" groups="base.group_no_one"/>
+                                    <field name="company_id" groups="base.group_multi_company"/>
+                                </group>
+                                <group string="Time Scheduling" groups="base.group_no_one">
+                                    <field name="resource_calendar_id" groups="base.group_no_one"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page name="emails" string="Emails" attrs="{'invisible': [('alias_domain', '=', False)]}" groups="vcls-hr.vcls_group_superuser_lvl2">
+                            <group name="group_alias">
+                                <label for="alias_name" string="Email Alias"/>
+                                <div name="alias_def">
+                                    <field name="alias_id" class="oe_read_only oe_inline" string="Email Alias" required="0"/>
+                                    <div class="oe_edit_only oe_inline" name="edit_alias" style="display: inline;">
+                                        <field name="alias_name" class="oe_inline"/>@<field name="alias_domain" class="oe_inline" readonly="1"/>
+                                    </div>
+                                </div>
+                                <field name="alias_contact" class="oe_inline oe_edit_only" string="Accept Emails From"/>
+                            </group>
+                        </page>
+                        <page string="Summaries" name="summaries">
+                            <field name="is_project_manager" invisible="1"/>
+                            <button name="%(project_summary_action_new)d"
+                                string="Create SUMMARY" class="oe_highlight" type="action"
+                                context="{
+                                    'default_project_id': active_id,
+                                    'default_completion_ratio': completion_ratio,
+                                    'default_consumed_value': consumed_value,
+                                    'default_consumed_completed_ratio': consummed_completed_ratio,
+                                }"
+                            />
+                            
+
+                            <field name="summary_ids" mode="kanban">
+                                <kanban create="0">
+                                    <field name="completion_ratio"/>
+                                    <field name="consumed_completed_ratio"/>
+                                    <field name="consumed_value"/>
+                                    <field name="create_date"/>
+                                    <templates>
+                                        <t t-name="kanban-box">
+                                            <div class="oe_kanban_global_click">
+                                                <div class="oe_kanban_details">
+                                                    <strong>
+                                                        <field name="create_date"/>
+                                                    </strong>
+                                                    <div>
+                                                        <field name="completion_ratio" widget="percentage" nolabel="0"/>
+                                                    </div>
+                                                    <div>
+                                                        <field name="consumed_value" widget="percentage" nolabel="0"/>
+                                                    </div>
+                                                    <div>
+                                                        <field name="consumed_completed_ratio" string= "Project Health Ratio" widget="percentage"
+                                                            nolabel="0"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                            </field>
+                        </page>
+                        <page name="billing_employee_rate" string="Invoicing" attrs="{'invisible': [('billable_type', '=', 'no')]}" groups="vcls-hr.vcls_group_superuser_lvl2">
+                            <group>
+                                <field name="billable_type" invisible="1"/>
+                                <field name="sale_order_id" attrs="{'invisible': [('billable_type', '=', 'no')]}"/>
+                                <field name="sale_line_id" attrs="{'invisible': [('billable_type', '=', 'no')]}" context="{'create': False, 'edit': False, 'delete': False}"/>
+                            </group>
+                            <field name="sale_line_employee_ids">
+                                <tree editable="top">
+                                    <field name="employee_id" options="{'no_create': True}"/>
+                                    <field name="sale_line_id" options="{'no_create': True}" domain="[('order_id','=',parent.sale_order_id), ('is_service', '=', True)]"/>
+                                    <field name="price_unit"/>
+                                </tree>
+                            </field>
+                        </page>
+                        </notebook>
+
+
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" help="Follow this project to automatically track the events associated to tasks and issues of this project." groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
         <record id="view_project_formm_inherit" model="ir.ui.view">
             <field name="name">project.form</field>
             <field name="model">project.project</field>
@@ -43,16 +226,7 @@
                                 'default_consumed_completed_ratio': consummed_completed_ratio,
                             }"
                         />
-                        <!--
-                        <button name="%(project_summary_action_new)d"
-                            string="Create SUMMARY" class="oe_highlight" type="action"
-                            context="{
-                                'default_project_id': active_id,
-                                'default_completion_ratio': completion_ratio,
-                                'default_consumed_value': consumed_value,
-                                'default_consumed_completed_ratio': consummed_completed_ratio,
-                            }"
-                        attrs="{'invisible': [('is_project_manager', '=', False)]}"/>-->
+                        
 
                         <field name="summary_ids" mode="kanban">
                             <kanban create="0">
