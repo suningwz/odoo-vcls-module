@@ -124,14 +124,15 @@ class SaleOrderLine(models.Model):
         'task_id.timesheet_ids.stage_id',
     )
     def _compute_amount_delivered_from_task(self):
-        #_logger.info("TS PATH | vcls-timesheet | sale.order.line | _compute_amount_delivered_from_task")
         for line in self:
             total = 0
             for ts in line._get_timesheet_for_amount_calculation():
-                rate_line = ts.project_id.sale_line_employee_ids.filtered(
+
+                """rate_line = ts.project_id.sale_line_employee_ids.filtered(
                     lambda r: r.employee_id == ts.employee_id
                 )
-                total += ts.unit_amount_rounded * rate_line.price_unit
+                total += ts.unit_amount_rounded * rate_line.price_unit"""
+                total += ts.unit_amount_rounded * ts.so_line_unit_price
             line.amount_delivered_from_task = total
             line.amount_delivered_from_task_company_currency = (
                 total * line.order_id.currency_rate
@@ -140,14 +141,14 @@ class SaleOrderLine(models.Model):
     @api.multi
     @api.depends('task_id', 'task_id.timesheet_ids.timesheet_invoice_id')
     def _compute_amount_invoiced_from_task(self):
-        #_logger.info("TS PATH | timesheet | sale.order.line | _compute_amount_invoiced_from_task")
         for line in self:
             total = 0
             for ts in line._get_timesheet_for_amount_calculation(True):
-                rate_line = ts.project_id.sale_line_employee_ids.filtered(
+                """rate_line = ts.project_id.sale_line_employee_ids.filtered(
                     lambda r: r.employee_id == ts.employee_id
                 )
-                total += ts.unit_amount_rounded * rate_line.price_unit
+                total += ts.unit_amount_rounded * rate_line.price_unit"""
+                total += ts.unit_amount_rounded * ts.so_line_unit_price
             line.amount_invoiced_from_task = total
             line.amount_invoiced_from_task_company_currency = (
                 total * line.order_id.currency_rate
