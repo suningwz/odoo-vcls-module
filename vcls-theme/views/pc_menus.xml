@@ -61,10 +61,26 @@
         />
 
         <menuitem
+                id="menu_pc_timesheets_cf"
+                name="Carry Forward"
+                parent="menu_pc_timesheets"
+                sequence="2"
+                action="vcls-timesheet.action_pc_cf_timesheet_tree"
+        />
+
+        <menuitem
+                id="menu_pc_timesheets_oos"
+                name="Out of Scope"
+                parent="menu_pc_timesheets"
+                sequence="3"
+                action="vcls-timesheet.action_pc_oos_timesheet_tree"
+        />
+
+        <menuitem
                 id="menu_pc_timesheets_all"
                 name="All"
                 parent="menu_pc_timesheets"
-                sequence="2"
+                sequence="5"
                 action="vcls-timesheet.action_pc_all_timesheet_tree"
         />
         <menuitem
