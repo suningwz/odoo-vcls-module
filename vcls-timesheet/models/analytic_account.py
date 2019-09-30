@@ -249,7 +249,9 @@ class AnalyticLine(models.Model):
         user_authorized = (self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'))
         if not user_authorized:
             raise ValidationError(_("You need to be part of the 'Project Controller' group to perform this operation. Thank you."))
-
+        
+        _logger.info("NEW TS STAGE:{}".format(new_stage))
+        
         if new_stage=='invoiceable':
             timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='pc_review' or r.stage_id=='carry_forward'))
 
@@ -259,12 +261,14 @@ class AnalyticLine(models.Model):
             adj_validation_timesheets.write({'stage_id': 'adjustment_validation'})
             invoiceable_timesheets.write({'stage_id': 'invoiceable'})
         
-        if new_stage=='outofscope':
+        elif new_stage=='outofscope':
             timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='pc_review' or r.stage_id=='carry_forward'))
+            _logger.info("NEW TS STAGE outofscope:{}".format(timesheets_in.mapped('name')))
             timesheets_in.write({'stage_id': 'outofscope'})
         
-        if new_stage=='carry_forward':
+        elif new_stage=='carry_forward':
             timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='pc_review'))
+            _logger.info("NEW TS STAGE carry_forward:{}".format(timesheets_in.mapped('name')))
             timesheets_in.write({'stage_id': 'carry_forward'})
         
         else:
