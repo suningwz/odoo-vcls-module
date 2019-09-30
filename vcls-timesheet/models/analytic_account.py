@@ -235,29 +235,38 @@ class AnalyticLine(models.Model):
 
     @api.multi
     def _finalize_pc_review(self):
-        if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group(
-                'vcls-hr.vcls_group_controlling'):
-            timesheets = self.env['account.analytic.line'].browse(self.env.context.get('active_ids', []))
-            adj_validation_timesheets = timesheets.filtered(lambda r: r.unit_amount_rounded != r.unit_amount)
-            invoiceable_timesheets = (
-                        timesheets - adj_validation_timesheets) if adj_validation_timesheets else timesheets
-            adj_validation_timesheets.write({'stage_id': 'adjustment_validation'})
-            invoiceable_timesheets.write({'stage_id': 'invoiceable'})
-        else:
-            raise ValidationError(_("You don't have the permission to finalize pc reviews "))
+        context = self.env.context
+        timesheet_ids = context.get('active_ids',[])
+        timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
+        if len(timesheets) == 0:
+            raise ValidationError(_("Please select at least one record!"))
+
+        timesheets_in = timesheets.filtered(lambda r: r.stage_id=='pc_review' and (r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or r.env.user.has_group('vcls-hr.vcls_group_controlling')))
+        timesheets_out = (timesheets - timesheets_in) if timesheets_in else timesheets
+
+        adj_validation_timesheets = timesheets_in.filtered(lambda r: r.required_lc_comment == True)
+        invoiceable_timesheets = (timesheets_in - adj_validation_timesheets) if adj_validation_timesheets else timesheets_in
+
+        adj_validation_timesheets.write({'stage_id': 'adjustment_validation'})
+        invoiceable_timesheets.write({'stage_id': 'invoiceable'})
+
+        if len(timesheets_out) > 0:
+            message = "You don't have the permission for the following timesheet(s) :\n"
+            for timesheet in timesheets_out:
+                message += " - " + timesheet.name + "\n"
+            raise ValidationError(_(message))
 
     @api.multi
     def set_outofscope(self):
-        if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group(
-                'vcls-hr.vcls_group_controlling'):
-            self.env['account.analytic.line'].browse(self.env.context.get('active_ids', [])).write({'stage_id': 'outofscope'})
+        if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'):
+            self.env['account.analytic.line'].browse(self.env.context.get('active_ids', [])).write(
+                {'stage_id': 'outofscope'})
         else:
             raise ValidationError(_("You don't have the permission to set timesheets to Out of Scope stage."))
 
     @api.multi
     def set_carry_forward(self):
-        if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group(
-                'vcls-hr.vcls_group_controlling'):
+        if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'):
             self.env['account.analytic.line'].browse(self._context.get('active_ids', False)).write(
                 {'stage_id': 'carry_forward'})
         else:
@@ -270,19 +279,6 @@ class AnalyticLine(models.Model):
                 resource = self.env['resource.resource'].search([('user_id','=',record.user_id.id)])
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
                 record.employee_id = employee
-    
-    
-    """@api.depends('user_id')
-    def _is_authorized_lm(self):
-        for record in self:
-            try:
-                resource = self.env['resource.resource'].search([('user_id','=',record.user_id.id)])
-                employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
-                record.is_authorized = self._uid == employee.parent_id.id
-            except Exception as err:
-                print(err)
-                # No project / project controller / project manager
-                record.is_authorized = False"""
     
 
     @api.onchange('unit_amount_rounded', 'unit_amount')
