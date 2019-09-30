@@ -10,6 +10,12 @@ class SaleOrder(models.Model):
 
     _inherit = 'sale.order'
 
+    def get_activity_report_template(self):
+        if self._context.get('params', False) and self._context['params']['id']:
+            order_id = self.env['sale.order'].browse(self._context['params']['id'])
+            return order_id.partner_id.activity_report_template
+        return False
+
     risk_ids = fields.Many2many('risk', string='Risk')
 
     risk_score = fields.Integer(
@@ -38,6 +44,9 @@ class SaleOrder(models.Model):
                                            ('0.03', '3%'),
                                            ], 'Communication Rate', default='0.0')
     financial_config_readonly = fields.Boolean(compute='compute_financial_config_readonly')
+
+    activity_report_template = fields.Many2one('ir.actions.report',
+                                               default=lambda self: self.get_activity_report_template())
 
     @api.depends('partner_id.risk_ids')
     def _compute_risk_ids(self):
