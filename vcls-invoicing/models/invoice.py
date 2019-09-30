@@ -97,6 +97,19 @@ class Invoice(models.Model):
                         timesheet.stage_id = 'invoiceable'
         return ret
 
+    def action_print_activity_report(self):
+        ctx = self._context.copy()
+        ctx.update(default_invoice_id=self.id, invoice_id=self.id)
+        activity_form_id = self.env.ref('vcls-invoicing.activity_report_form_view').id
+        return {
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+            'res_model': 'activity.report.groupment',
+            'views': [(activity_form_id, 'form')],
+            'view_id': activity_form_id,
+            'context': ctx,
+        }
+
     @api.depends('invoice_line_ids')
     def compute_parent_quotation_timesheet_limite_date(self):
         for invoice in self:

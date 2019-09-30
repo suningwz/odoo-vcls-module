@@ -41,6 +41,12 @@
         'wizard/sale_make_invoice_advance_views.xml',
         # reports
         'reports/report_project_invoice.xml',
+        'reports/activity_reports.xml',
+        
+        # Wizards #
+        'wizard/activity_report_views.xml',
+        
+       
     ],
     # only loaded in demonstration mode
     'demo': [
