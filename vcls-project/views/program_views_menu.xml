@@ -10,7 +10,9 @@
             <field name="arch" type="xml">
                 <xpath expr="//kanban" position="attributes">
                     <attribute name="create">0</attribute>
-                </xpath> 
+                    <attribute name="class">oe_background_grey o_kanban_dashboard o_project_kanban o_emphasize_colors o_vcls_open_form</attribute>
+                </xpath>
+                <a name="action_view_timesheet" position="replace"/>
             </field>
         </record>
 
@@ -26,6 +28,86 @@
                     <!--<field name="indication"/> -->
                     <field name="leader_id"/>
                 </tree>
+            </field>
+        </record>
+
+        <!-- Project -->
+        <record id="vcls_specific_project_form" model="ir.ui.view">
+            <field name="name">vcls.specific.project.form</field>
+            <field name="model">project.project</field>
+            <field name="priority">500</field>
+            <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <form string="Project" create="false">
+                    <header>
+                        <button name="action_raise_new_invoice" string="Raise a new Invoice" type="object"
+                                class="oe_highlight oe_read_only"/>
+                        <button name="action_raise_new_risk" string="Raise a new Risk" type="object"
+                                class="oe_highlight oe_read_only"/>
+                    </header>
+                    <sheet string="Project">
+                        <div class="oe_button_box" name="button_box" groups="base.group_user">
+                            <button class="oe_stat_button" name="sale_orders_tree_view" type="object" icon="fa-usd">
+                                <field string="Sale Orders" name="orders_count" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" name="invoices_tree_view" type="object" icon="fa-money">
+                                <field string="Invoices" name="invoices_count" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" name="tasks_tree_view" type="object" icon="fa-tasks">
+                                <field string="Tasks" name="task_count" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" string="Forecasts" name="forecasts_tree_view" type="object"
+                                    icon="fa-wpforms"/>
+                            <button class="oe_stat_button" string="Timesheets" name="timesheets_tree_view" type="object" icon="fa-calendar"/>
+                            <button class="oe_stat_button" string="Report Analysis" name="report_analysis_tree_view"
+                                    type="object" icon="fa-pencil-square-o"/>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Project Name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="scope_of_work"/>
+                        </group>
+                        <group>
+                            <group string="Core Team">
+                                <field name="sale_order_id" invisible="1"/>
+                                <field name="core_team_id"/>
+                                <field name="lead_consultant" string="Lead Consultant"/>
+                                <field name="lead_backup"/>
+                            </group>
+                            <group string="Operations">
+                                <field name="date_start"/>
+                                <field name="date"/>
+                                <field name="extended"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Consultants">
+                                <field name="consultant_ids" mode="tree" nolabel="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="job_id"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group string="Technical Advisors">
+                                <field name="ta_ids" mode="tree" nolabel="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="job_id"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" help="Follow this project to automatically track the events associated to tasks and issues of this project." groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                    </div>
+                </form>
             </field>
         </record>
         
@@ -180,8 +262,9 @@
             <field name="view_type">form</field>
             <field name="view_mode">kanban,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')})]"/>
-            <field name="domain">[('project_type','=', 'client')]</field>
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>
+            <field name="domain">[('project_type','=', 'client'), ('parent_id','=', False)]</field>
         </record>
 
         <record id="vcls-project.action_internal" model="ir.actions.act_window">
