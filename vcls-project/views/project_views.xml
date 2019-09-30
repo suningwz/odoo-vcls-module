@@ -39,12 +39,18 @@
                         </div>
                         <group invisible="1" string="Hidden Fields">
                             <field name="active"/>
-                            <field name="completion_ratio"/>
-                            <field name="consumed_value"/>
-                            <field name="consummed_completed_ratio"/>
                         </group>
                         <group>
-                            <field name="scope_of_work"/>
+                            <group>
+                                <field name="scope_of_work"/>
+                            </group>
+                            <group>
+                                <field name="completion_ratio" widget="percentpie" nolabel="1"/>
+                                <br/>
+                                <field name="consumed_value" widget="percentpie" nolabel="1"/>
+                                <br/>
+                                <field name="consummed_completed_ratio" string="Project Health Ratio" widget="percentpie" nolabel="1"/>
+                            </group>
                         </group>
                         <group>
                             <group string="Core Team">
