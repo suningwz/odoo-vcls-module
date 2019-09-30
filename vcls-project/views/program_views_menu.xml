@@ -275,7 +275,7 @@
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>
-            <field name="domain">[('project_type','=', 'client'),('parent_id','=', False)]</field>
+            <field name="domain">[('project_type','=', 'client'),('parent_id','=', False),('sale_order_id.state','not in', ['sale','done'])]</field>
         </record>
 
         <record id="vcls-project.action_internal" model="ir.actions.act_window">
@@ -306,17 +306,25 @@
         />
 
         <menuitem
+            id="menu_pre_project"
+            name="Pre Projects"
+            parent="project.menu_main_pm"
+            sequence="3"
+            action="vcls-project.action_pre_project"
+        />
+
+        <menuitem
             id="menu_internal"
             name="Internal Projects"
             parent="project.menu_main_pm"
-            sequence="3"
+            sequence="4"
             action="vcls-project.action_internal"
         />
 
         <menuitem id="project_forecast.project_forecast_menu"
             name="Forecast"
             parent="project.menu_main_pm"
-            sequence="4"/>
+            sequence="5"/>
 
         <menuitem name="All Tasks" id="project.menu_project_management" parent="project.menu_main_pm"
             action="project.action_view_task" sequence="2" groups="base.group_no_one,project.group_project_user"
