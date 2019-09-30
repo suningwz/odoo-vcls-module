@@ -71,7 +71,7 @@ class Project(models.Model):
                                       string='Consultants')
     ta_ids = fields.Many2many('hr.employee', relation='rel_project_tas', related='core_team_id.ta_ids',
                               string='Ta')
-                              
+
     #extended = fields.Boolean('To be extended later')
 
     @api.multi
@@ -154,11 +154,14 @@ class Project(models.Model):
     ###############
     @api.model
     def create(self, vals):
-        if 'project_type' in vals: 
+        """if 'project_type' in vals: 
             if vals['project_type'] == 'client':
-                vals['privacy_visibility'] = 'employees'
+                
             else:
-                vals['privacy_visibility'] = 'followers'
+                vals['privacy_visibility'] = 'followers'"""
+                
+        #default visibility
+        vals['privacy_visibility'] = 'employees'
         
         #we automatically assign the project manager to be the one defined in the core team
         if vals.get('sale_order_id',False):
@@ -173,6 +176,9 @@ class Project(models.Model):
         project = super(Project, self).create(vals)
         ids = project._get_default_type_common()
         project.type_ids = ids if ids else project.type_ids
+
+        if project.project_type != 'client':
+            project.privacy_visibility = 'followers'
         
         return project
     
