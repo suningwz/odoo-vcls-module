@@ -187,7 +187,7 @@
         <record id="view_timesheet_pc_review_search" model="ir.ui.view">
             <field name="name">timesheet.pc.review.search</field>
             <field name="model">account.analytic.line</field>
-            <field name="inherit_id" ref="vcls-timesheets.hr_timesheet_line_search_inherited" />
+            <field name="inherit_id" ref="vcls-timesheet.hr_timesheet_line_search_inherited" />
             <field name="arch" type="xml">
                 <filter name="month" position='after'>
                     <separator/>
