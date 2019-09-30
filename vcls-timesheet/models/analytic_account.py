@@ -259,6 +259,14 @@ class AnalyticLine(models.Model):
             adj_validation_timesheets.write({'stage_id': 'adjustment_validation'})
             invoiceable_timesheets.write({'stage_id': 'invoiceable'})
         
+        if new_stage=='outofscope':
+            timesheets_in = timesheets.filtered(lambda r: (r.stage_id in ['pc_review','carry_forward']))
+            timesheets_in.write({'stage_id': 'outofscope'})
+        
+        if new_stage=='carry_forward':
+            timesheets_in = timesheets.filtered(lambda r: (r.stage_id in ['pc_review']))
+            timesheets_in.write({'stage_id': 'carry_forward'})
+        
         else:
             timesheets_in = False
         
@@ -295,19 +303,21 @@ class AnalyticLine(models.Model):
 
     @api.multi
     def set_outofscope(self):
-        if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'):
+        self._pc_change_state('outofscope')
+        """if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'):
             self.env['account.analytic.line'].browse(self.env.context.get('active_ids', [])).write(
                 {'stage_id': 'outofscope'})
         else:
-            raise ValidationError(_("You don't have the permission to set timesheets to Out of Scope stage."))
+            raise ValidationError(_("You don't have the permission to set timesheets to Out of Scope stage."))"""
 
     @api.multi
     def set_carry_forward(self):
-        if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'):
+        self._pc_change_state('carry_forward')
+        """if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'):
             self.env['account.analytic.line'].browse(self._context.get('active_ids', False)).write(
                 {'stage_id': 'carry_forward'})
         else:
-            raise ValidationError(_("You don't have the permission to set timesheets to Carry Forward stage."))
+            raise ValidationError(_("You don't have the permission to set timesheets to Carry Forward stage."))"""
 
     @api.depends('user_id')
     def _compute_employee_id(self):
