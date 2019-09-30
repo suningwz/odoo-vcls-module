@@ -231,17 +231,54 @@ class AnalyticLine(models.Model):
 
     @api.multi
     def finalize_pc_review(self):
-        self._finalize_pc_review()
-
+        self._pc_change_state('invoiceable')
+        #self._finalize_pc_review()
+    
     @api.multi
-    def _finalize_pc_review(self):
+    def _pc_change_state(self,new_stage='invoiceable'):
+        """
+            THis method covers all the use cases of the project controller, modifying timesheet stages.
+            Server actions and buttons are calling this method.
+        """
         context = self.env.context
         timesheet_ids = context.get('active_ids',[])
         timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
         if len(timesheets) == 0:
             raise ValidationError(_("Please select at least one record!"))
 
-        timesheets_in = timesheets.filtered(lambda r: r.stage_id=='pc_review' and (r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or r.env.user.has_group('vcls-hr.vcls_group_controlling')))
+        user_authorized = (self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'))
+        if not user_authorized:
+            raise ValidationError(_("You need to be part of the 'Project Controller' group to perform this operation. Thank you."))
+
+        if new_stage=='invoiceable':
+            timesheets_in = timesheets.filtered(lambda r: (r.stage_id in ['pc_review','carry_forward']))
+
+            adj_validation_timesheets = timesheets_in.filtered(lambda r: r.required_lc_comment == True)
+            invoiceable_timesheets = (timesheets_in - adj_validation_timesheets) if adj_validation_timesheets else timesheets_in
+
+            adj_validation_timesheets.write({'stage_id': 'adjustment_validation'})
+            invoiceable_timesheets.write({'stage_id': 'invoiceable'})
+        
+        else:
+            timesheets_in = False
+        
+        timesheets_out = (timesheets - timesheets_in) if timesheets_in else timesheets
+        if len(timesheets_out) > 0:
+            message = "Following timesheet(s) are not in the proper stage to perform the required action:\n"
+            for timesheet in timesheets_out:
+                message += " - " + timesheet.name + "\n"
+            raise ValidationError(_(message))
+
+    @api.multi
+    def _finalize_pc_review(self):
+        self._pc_change_state('invoiceable')
+        """context = self.env.context
+        timesheet_ids = context.get('active_ids',[])
+        timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
+        if len(timesheets) == 0:
+            raise ValidationError(_("Please select at least one record!"))
+
+        timesheets_in = timesheets.filtered(lambda r: (r.stage_id in ['pc_review','carry_forward']) and (r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or r.env.user.has_group('vcls-hr.vcls_group_controlling')))
         timesheets_out = (timesheets - timesheets_in) if timesheets_in else timesheets
 
         adj_validation_timesheets = timesheets_in.filtered(lambda r: r.required_lc_comment == True)
@@ -254,7 +291,7 @@ class AnalyticLine(models.Model):
             message = "You don't have the permission for the following timesheet(s) :\n"
             for timesheet in timesheets_out:
                 message += " - " + timesheet.name + "\n"
-            raise ValidationError(_(message))
+            raise ValidationError(_(message))"""
 
     @api.multi
     def set_outofscope(self):
