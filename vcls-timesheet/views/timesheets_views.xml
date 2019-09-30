@@ -181,15 +181,20 @@
 
 
         <!-- <record id="action_timesheet_lc_review" model="ir.actions.act_window"> <field name="name">LC Review</field> <field name="res_model">account.analytic.line</field> <field name="view_mode">tree,form</field> <field name="domain">[('stage_id', 
-            '=', 'lc_review')]</field> </record> -->
+            '=', 'lc_review')]</field> </record> 
+            hr_timesheet.hr_timesheet_line_search -->
 
         <record id="view_timesheet_pc_review_search" model="ir.ui.view">
             <field name="name">timesheet.pc.review.search</field>
             <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_search" />
             <field name="arch" type="xml">
-                <search string="PC Review">
+                <filter name="month" position='after'>
+                    <separator/>
                     <filter string="With comment" name="comment" domain="[('lc_comment','!=', False)]" />
-                </search>
+                    <filter string="At Risk" name="at_risk" domain="[('at_risk','=', True)]" />
+                    <filter string="Revised Time" name="revised_time" domain="[('required_lc_comment','=', True)]" />
+                </filter>
             </field>
         </record>
 
