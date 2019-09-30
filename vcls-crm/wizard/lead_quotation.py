@@ -5,6 +5,7 @@ from odoo import api, fields, models
 
 class LeadQuotation(models.TransientModel):
     _name = 'lead.quotation.wizard'
+    _description = 'Lead Quotation Wizard'
 
     quotation_type = fields.Selection([
         ('new', 'New project'),

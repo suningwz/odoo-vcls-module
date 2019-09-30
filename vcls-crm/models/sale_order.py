@@ -70,7 +70,7 @@ class SaleOrder(models.Model):
     # message.message parent_id
     parent_sale_order_id = fields.Many2one(
         'sale.order',
-        string="Parent Quotation",
+        string="Hack Parent Quotation",
     )
 
     internal_ref = fields.Char(
