@@ -175,7 +175,6 @@
             ]"/>
         </record>
 
-
         <record id="vcls-project.action_client" model="ir.actions.act_window">
             <field name="name">Client Projects</field>
             <field name="res_model">project.project</field>
@@ -205,6 +204,7 @@
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('project.view_project_kanban')})]"/>
             <field name="domain">['|',('project_type','!=', 'client'),('project_type','=',False)]</field>
         </record>
+
 
         <!-- Menu -->
         <menuitem

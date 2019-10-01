@@ -56,9 +56,8 @@
 
         ### MENUS ###
         'views/dev_project_menu.xml',
-        
-        'views/program_views_menu.xml',
         'views/project_views.xml',
+        'views/program_views_menu.xml',
         'views/project_forecast_views.xml',
     ],
 
