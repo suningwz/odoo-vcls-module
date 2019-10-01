@@ -182,8 +182,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">kanban,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')})]"/>
             <field name="domain">[('project_type','=', 'client'), ('parent_id','=', False), ('sale_order_id.state','in', ['sale','done'])]</field>
         </record>
 
@@ -193,8 +192,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">kanban,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')})]"/>
             <field name="domain">[('project_type','=', 'client'),('parent_id','=', False),('sale_order_id.state','not in', ['sale','done'])]</field>
         </record>
 
