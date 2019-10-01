@@ -30,7 +30,7 @@
                 <xpath expr="//button[@name='action_confirm']" position="after">    
                     <button name="upsell" id="action_upsell"
                         string="Upsell" class="btn-primary" type="object"
-                        attrs="{'invisible': [('state', 'in', ['draft'])]}"/>
+                        invisible="1"/>
                 </xpath>
 
                 <xpath expr="//button[@name='create_revision']" position="attributes">    

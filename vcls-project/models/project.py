@@ -128,6 +128,7 @@ class Project(models.Model):
     @api.multi
     def tasks_tree_view(self):
         action = self.env.ref('project.act_project_project_2_project_task_all').read()[0]
+        action['context'] = False
         return action
 
     @api.multi
