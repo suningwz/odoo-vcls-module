@@ -5,10 +5,11 @@
         <record id="ts_lock_bypass" model="res.groups">
                 <field name="name">Timesheet Lock Bypass</field>
         </record>-->
-            
+
+        <!-- NOT NEDEED ANYMORE | we use vcls-hr.vcls_group_controlling   
         <record id="vcls_pc" model="res.groups">
             <field name="name">VCLS Project Controller</field>
-        </record>
+        </record>-->
 
         <record id="vcls_lc" model="res.groups">
             <field name="name">VCLS Lead Consultant</field>

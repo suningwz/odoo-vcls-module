@@ -150,26 +150,6 @@
             </field>
         </record>
 
-        <record id="crm_case_form_view_oppor" model="ir.ui.view">
-            <field name="name">crm.lead.oppor.inherited.vcls_crm</field>
-            <field name="model">crm.lead</field>
-            <field name="inherit_id" ref="sale_crm.crm_case_form_view_oppor"/>
-            <field name="arch" type="xml">
-                <xpath expr="//button[@name=%(sale_crm.sale_action_quotations_new)d]" position="attributes">
-                    <attribute name="context">{'search_default_partner_id': partner_id,
-                                  'default_partner_id': partner_id,
-                                  'default_team_id': team_id,
-                                  'default_campaign_id': campaign_id,
-                                  'default_medium_id': medium_id,
-                                  'default_program_id':program_id,
-                                  'default_product_category_id' : product_category_id,
-                                  'default_origin': name,
-                                  'default_source_id': source_id}
-                    </attribute>
-                </xpath>
-            </field>
-        </record>
-
         <!--Inherit Sale Order form view to add the program_id -->
         <record id="view_sale_order_form" model="ir.ui.view">
             <field name="name">view_sale_order_form</field>
@@ -194,16 +174,5 @@
             </field>
         </record>
 
-        <!--Inherit Sale Order tree view to add the program_id -->
-        <!-- <record id="project_view_kanban" model="ir.ui.view">
-            <field name="name">project_view_kanban</field>
-            <field name="model">project.project</field>
-            <field name="inherit_id" ref="project.project_view_kanban"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='contact_name']" position="after">
-                    <field name="program_id"/>
-                </xpath>
-            </field>
-        </record>-->
     </data>
 </odoo>

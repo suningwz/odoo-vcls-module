@@ -24,7 +24,7 @@
             </field>
         </record>
         
-        <record model="ir.ui.view" id="view_stage_tree">
+        <!--<record model="ir.ui.view" id="view_stage_tree">
             <field name="name">Stage of Development</field>
             <field name="model">stage.development</field>
             <field name="arch" type="xml">
@@ -33,7 +33,7 @@
                     <field name="active"/> 
                 </tree>
             </field>
-        </record>
+        </record>-->
         
         <record model="ir.actions.act_window" id="action_therapeutic_area">
             <field name="name">Therapeutic Area</field>

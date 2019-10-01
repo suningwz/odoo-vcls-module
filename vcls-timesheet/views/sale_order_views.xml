@@ -11,8 +11,20 @@
                             icon="fa-calendar"
                             name="action_view_forecast"
                             string="Forecast"
-                            invisible="1"
+                            attrs="{'invisible': [('project_id', '=', False)]}"
                             >
+                    </button>
+                </xpath>
+                <xpath expr="//button[@name='action_view_timesheet']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_view_forecast']" position="after">
+                    <button type="object"
+                        name="action_view_family_timesheet"
+                        class="oe_stat_button"
+                        icon="fa-clock-o"
+                        string="Timesheets"
+                        groups="hr_timesheet.group_hr_timesheet_user">
                     </button>
                 </xpath>
             </field>

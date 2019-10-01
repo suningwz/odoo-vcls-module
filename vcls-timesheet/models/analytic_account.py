@@ -31,7 +31,7 @@ class AnalyticLine(models.Model):
     deliverable_id = fields.Many2one(
         'product.deliverable',
         string='Deliverable',
-        related='product_id.deliverable_id',
+        related='task_id.sale_line_id.product_id.deliverable_id',
         store=True,
     )
 
@@ -66,10 +66,12 @@ class AnalyticLine(models.Model):
     
     required_lc_comment = fields.Boolean(compute='get_required_lc_comment')
 
-    so_line_unit_price = fields.Float(
+    so_line_unit_price = fields.Monetary(
         'Sales Oder Line Unit Price',
-        related='so_line.price_unit',
-        store=True
+        readonly = True,
+        #related='so_line.price_unit',
+        store=True,
+        default = 0.0,
     )
 
     so_line_currency_id = fields.Many2one(
@@ -79,20 +81,46 @@ class AnalyticLine(models.Model):
         string='Sales Order Currency',
     )
     adj_reason_required = fields.Boolean()
+    main_project_id = fields.Many2one('project.project', string='Main Project',
+                                      domain=[('parent_id', '=', False)])
 
-    connected_employee_seniority_level_id = fields.Many2one(
-        comodel_name='hr.employee.seniority.level',
-        compute='_get_connected_employee_seniority_level_id',
-        string='Default Seniority'
-    )
+    @api.model
+    def show_grid_cell(self, domain=[], column_value='', row_values={}):
+        line = self.sudo().search(domain, limit=1)
+        date = column_value
+        if not line:
+            # fetch the latest line
+            task_value = row_values.get('task_id')
+            task_id = task_value and task_value[0] or False
+            if task_id:
+                direct_previous_line = self.sudo().search([
+                    ('date', '<', date),
+                    ('task_id', '=', task_id),
+                ], limit=1, order='date desc')
+                if direct_previous_line:
+                    values = {
+                        'unit_amount': 0,
+                        'date': date,
+                        'project_id': direct_previous_line.project_id.id,
+                        'task_id': direct_previous_line.task_id.id,
+                        'name': direct_previous_line.name,
+                        'time_category_id': direct_previous_line.time_category_id.id,
+                    }
+                    line = self.create(values)
 
-    @api.multi
-    def _get_connected_employee_seniority_level_id(self):
-        user_id = self.env.user.id
-        connected_employee_id = self.env['hr.employee'].sudo().search([('user_id', '=', user_id)], limit=1)
-        seniority_level_id = connected_employee_id.seniority_level_id
-        for line in self:
-            line.connected_employee_seniority_level_id = seniority_level_id
+        form_view_id = self.env.ref('timesheet_grid.timesheet_view_form').id
+        return {
+            'name': _('Timesheet'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': self._name,
+            'res_id': line.id,
+            'view_id': form_view_id,
+            'views': [(form_view_id, 'form')],
+            'target': 'new',
+            'context': {},
+        }
 
     @api.model
     def _get_at_risk_values(self, project_id, employee_id):
@@ -113,14 +141,22 @@ class AnalyticLine(models.Model):
 
     @api.model
     def create(self, vals):
-        _logger.info("Create {}".format(vals.get('unit_amount')))
-        if 'unit_amount' in vals and vals.get('is_timesheet', False):  # do time ceiling for timesheets only
-            _logger.info("Before round {}".format(vals.get('unit_amount')))
+        # _logger.info("ANALYTIC CREATION {}".format(vals))
+
+        if vals.get('employee_id', False) and vals.get('project_id', False):
+
+            # rounding to 15 mins
             if vals['unit_amount'] % 0.25 != 0:
-                vals['unit_amount'] = math.ceil(vals.get('unit_amount', 0)*4)/4
-                _logger.info("After round {}".format(vals.get('unit_amount')))
-        if vals.get('project_id', False):
-            vals['at_risk'] = self._get_at_risk_values(vals.get('project_id'),vals.get('employee_id'))
+                old = vals.get('unit_amount', 0)
+                vals['unit_amount'] = math.ceil(old * 4) / 4
+                _logger.info("Timesheet Rounding from {} to {}".format(old,
+                                                                       vals.get(
+                                                                           'unit_amount')))
+
+            # check if this is a timesheet at risk
+            vals['at_risk'] = self._get_at_risk_values(vals.get('project_id'),
+                                                       vals.get('employee_id'))
+
         return super(AnalyticLine, self).create(vals)
 
     @api.multi
@@ -128,22 +164,58 @@ class AnalyticLine(models.Model):
         # we automatically update the stage if the ts is validated and stage = draft
         so_update = False
         orders = self.env['sale.order']
+        _logger.info("ANALYTIC WRITE {}".format(vals))
 
+        # we loop the lines to manage specific usecases
         for line in self:
-            if vals.get('validated',line.validated):
-                if vals.get('stage_id',line.stage_id) == 'draft':
-                    vals['stage_id'] = 'lc_review'
-            
-            #_logger.info("Test Stage vals {} origin {}".format(vals.get('stage_id','no'),line.stage_id))
-            # if one of the 3 important value has changed, and the stage changes the delivered amount
-            if (vals.get('date',False) or vals.get('unit_amount_rounded',False) or vals.get('stage_id',False)) and (vals.get('stage_id','no') in ['invoiced','invoiceable'] or line.stage_id in ['invoiced','invoiceable']):
-                _logger.info("Order timesheet update for {}".format(line.name))
-                so_update = True
-                orders |= line.so_line.order_id
-                
+
+            # Timesheet cases
+            if line.is_timesheet and line.project_id and line.employee_id:
+
+                # automatically set the stage to lc_review according to the conditions
+                if vals.get('validated', line.validated):
+                    if vals.get('stage_id', line.stage_id) == 'draft':
+                        vals['stage_id'] = 'lc_review'
+
+                # review of the lc needs sudo() to write on validated ts
+                if line.stage_id == 'lc_review':
+                    project = self.env['project.project'].browse(
+                        vals.get('project_id', line.project_id.id))
+                    if project.user_id.id == self._uid:  # if the user is the lead consultant, we autorize the modification
+                        self = self.sudo()
+
+                # if one of the 3 important value has changed, and the stage changes the delivered amount
+                if (vals.get('date', False) or vals.get('unit_amount_rounded',
+                                                        False) or vals.get(
+                        'stage_id', False)) and (
+                        vals.get('stage_id', 'no') in ['invoiced',
+                                                       'invoiceable'] or line.stage_id in [
+                            'invoiced', 'invoiceable']):
+                    _logger.info(
+                        "Order timesheet update for {}".format(line.name))
+                    so_update = True
+                    orders |= line.so_line.order_id
+
+                # if the sale order line price as not been captured yet
+                if vals.get('so_line',
+                            line.so_line.id) and line.so_line_unit_price == 0.0:
+                    task = self.env['project.task'].browse(
+                        vals.get('task_id', line.task_id.id))
+                    so_line = self.env['sale.order.line'].browse(
+                        vals.get('so_line', line.so_line.id))
+
+                    if task.sale_line_id != so_line:  # if we map to a rate based product
+                        vals['so_line_unit_price'] = so_line.price_unit
+                        so_update = True
+                        orders |= line.so_line.order_id
+
         ok = super(AnalyticLine, self).write(vals)
+
         if ok and so_update:
             orders._compute_timesheet_ids()
+            # force recompute
+            for order in orders:
+                order.timesheet_limit_date = order.timesheet_limit_date
 
         return ok
 
@@ -172,37 +244,97 @@ class AnalyticLine(models.Model):
 
     @api.multi
     def finalize_pc_review(self):
-        self._finalize_pc_review()
+        self._pc_change_state('invoiceable')
+        #self._finalize_pc_review()
+
+    @api.multi
+    def _pc_change_state(self,new_stage='invoiceable'):
+        """
+            THis method covers all the use cases of the project controller, modifying timesheet stages.
+            Server actions and buttons are calling this method.
+        """
+        context = self.env.context
+        timesheet_ids = context.get('active_ids',[])
+        timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
+        if len(timesheets) == 0:
+            raise ValidationError(_("Please select at least one record!"))
+
+        user_authorized = (self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'))
+        if not user_authorized:
+            raise ValidationError(_("You need to be part of the 'Project Controller' group to perform this operation. Thank you."))
+
+        _logger.info("NEW TS STAGE:{}".format(new_stage))
+
+        if new_stage=='invoiceable':
+            timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='pc_review' or r.stage_id=='carry_forward'))
+
+            adj_validation_timesheets = timesheets_in.filtered(lambda r: r.required_lc_comment == True)
+            invoiceable_timesheets = (timesheets_in - adj_validation_timesheets) if adj_validation_timesheets else timesheets_in
+
+            adj_validation_timesheets.write({'stage_id': 'adjustment_validation'})
+            invoiceable_timesheets.write({'stage_id': 'invoiceable'})
+
+        elif new_stage=='outofscope':
+            timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='pc_review' or r.stage_id=='carry_forward'))
+            _logger.info("NEW TS STAGE outofscope:{}".format(timesheets_in.mapped('name')))
+            timesheets_in.write({'stage_id': 'outofscope'})
+
+        elif new_stage=='carry_forward':
+            timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='pc_review'))
+            _logger.info("NEW TS STAGE carry_forward:{}".format(timesheets_in.mapped('name')))
+            timesheets_in.write({'stage_id': 'carry_forward'})
+
+        else:
+            timesheets_in = False
+
+        timesheets_out = (timesheets - timesheets_in) if timesheets_in else timesheets
+        if len(timesheets_out) > 0:
+            message = "Following timesheet(s) are not in the proper stage to perform the required action:\n"
+            for timesheet in timesheets_out:
+                message += " - " + timesheet.name + "\n"
+            raise ValidationError(_(message))
 
     @api.multi
     def _finalize_pc_review(self):
-        if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group(
-                'vcls-timesheet.vcls_pc'):
-            timesheets = self.env['account.analytic.line'].browse(self.env.context.get('active_ids', []))
-            adj_validation_timesheets = timesheets.filtered(lambda r: r.unit_amount_rounded != r.unit_amount)
-            invoiceable_timesheets = (
-                        timesheets - adj_validation_timesheets) if adj_validation_timesheets else timesheets
-            adj_validation_timesheets.write({'stage_id': 'adjustment_validation'})
-            invoiceable_timesheets.write({'stage_id': 'invoiceable'})
-        else:
-            raise ValidationError(_("You don't have the permission to finalize pc reviews "))
+        self._pc_change_state('invoiceable')
+        """context = self.env.context
+        timesheet_ids = context.get('active_ids',[])
+        timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
+        if len(timesheets) == 0:
+            raise ValidationError(_("Please select at least one record!"))
+
+        timesheets_in = timesheets.filtered(lambda r: (r.stage_id in ['pc_review','carry_forward']) and (r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or r.env.user.has_group('vcls-hr.vcls_group_controlling')))
+        timesheets_out = (timesheets - timesheets_in) if timesheets_in else timesheets
+
+        adj_validation_timesheets = timesheets_in.filtered(lambda r: r.required_lc_comment == True)
+        invoiceable_timesheets = (timesheets_in - adj_validation_timesheets) if adj_validation_timesheets else timesheets_in
+
+        adj_validation_timesheets.write({'stage_id': 'adjustment_validation'})
+        invoiceable_timesheets.write({'stage_id': 'invoiceable'})
+
+        if len(timesheets_out) > 0:
+            message = "You don't have the permission for the following timesheet(s) :\n"
+            for timesheet in timesheets_out:
+                message += " - " + timesheet.name + "\n"
+            raise ValidationError(_(message))"""
 
     @api.multi
     def set_outofscope(self):
-        if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group(
-                'vcls-timesheet.vcls_pc'):
-            self.env['account.analytic.line'].browse(self.env.context.get('active_ids', [])).write({'stage_id': 'outofscope'})
+        self._pc_change_state('outofscope')
+        """if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'):
+            self.env['account.analytic.line'].browse(self.env.context.get('active_ids', [])).write(
+                {'stage_id': 'outofscope'})
         else:
-            raise ValidationError(_("You don't have the permission to set timesheets to Out of Scope stage."))
+            raise ValidationError(_("You don't have the permission to set timesheets to Out of Scope stage."))"""
 
     @api.multi
     def set_carry_forward(self):
-        if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group(
-                'vcls-timesheet.vcls_pc'):
+        self._pc_change_state('carry_forward')
+        """if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'):
             self.env['account.analytic.line'].browse(self._context.get('active_ids', False)).write(
                 {'stage_id': 'carry_forward'})
         else:
-            raise ValidationError(_("You don't have the permission to set timesheets to Carry Forward stage."))
+            raise ValidationError(_("You don't have the permission to set timesheets to Carry Forward stage."))"""
 
     @api.depends('user_id')
     def _compute_employee_id(self):
@@ -211,20 +343,7 @@ class AnalyticLine(models.Model):
                 resource = self.env['resource.resource'].search([('user_id','=',record.user_id.id)])
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
                 record.employee_id = employee
-    
-    
-    """@api.depends('user_id')
-    def _is_authorized_lm(self):
-        for record in self:
-            try:
-                resource = self.env['resource.resource'].search([('user_id','=',record.user_id.id)])
-                employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
-                record.is_authorized = self._uid == employee.parent_id.id
-            except Exception as err:
-                print(err)
-                # No project / project controller / project manager
-                record.is_authorized = False"""
-    
+
 
     @api.onchange('unit_amount_rounded', 'unit_amount')
     def get_required_lc_comment(self):
@@ -234,23 +353,25 @@ class AnalyticLine(models.Model):
             else:
                 record.required_lc_comment = True    
 
-    @api.onchange('project_id')
-    def onchange_project_id(self):
-        # force domain on task when project is set
-        if self.project_id:
-            if self.project_id != self.task_id.project_id:
-                # reset task when changing project
-                self.task_id = False
-            return {'domain': {
-                'task_id': [('project_id', '=', self.project_id.id), ('stage_id.allow_timesheet','=', True)]
-            }}
-
     @api.onchange('unit_amount_rounded')
     def onchange_adj_reason_readonly(self):
         adj_reason_required = False
         if self.unit_amount != self.unit_amount_rounded:
             adj_reason_required = True
         self.adj_reason_required = adj_reason_required
+
+    @api.onchange('main_project_id')
+    def onchange_task_id_project_related(self):
+        if self.main_project_id:
+            projects = self.main_project_id | self.main_project_id.child_id
+            return {'domain': {
+                'task_id': [('project_id', 'in', projects.ids), ('stage_id.allow_timesheet', '=', True)]
+            }}
+
+    @api.onchange('task_id')
+    def onchange_project_id(self):
+        if self._context.get('desc_order_display'):
+            self.project_id = self.task_id.project_id
 
     @api.multi
     def button_details_lc(self):

@@ -141,6 +141,10 @@ class Leads(models.Model):
         string = "Industry",
     )
 
+    scope_of_work = fields.Html(
+        placeholder = 'Summary in bullet points'
+    )
+
     product_category_id = fields.Many2one(
         'product.category',
         string = 'Business Line',
@@ -181,7 +185,7 @@ class Leads(models.Model):
     
     technical_adv_id = fields.Many2one(
         'hr.employee', 
-        string='Main Technical Advisor', 
+        string='PIC', 
         track_visibility='onchange', 
         )
     

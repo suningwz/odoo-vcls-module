@@ -22,6 +22,7 @@ class Deliverable(models.Model):
         domain = "[('is_business_line','=',True)]"
     )
 
+
 class ProductTemplate(models.Model):
 
     _inherit = 'product.template'
@@ -32,15 +33,35 @@ class ProductTemplate(models.Model):
 
     department_id = fields.Many2one(
         'hr.department',
-        domain = "[('parent_id.name','=','Operations')]",
-        string = 'VCLS Activity',
+        domain="[('parent_id.name','=','Operations')]",
+        string='VCLS Activity',
     )
 
     deliverable_id = fields.Many2one(
         'product.deliverable',
-        string = 'Deliverable',
+        string='Deliverable',
     )
-    
+    vcls_type = fields.Selection([
+        ('rate', 'Rate'),
+        ('vcls_service', 'Vcls service'),
+        ('subscription', 'Subscription'),
+        ('invoice', 'Invoice'),
+        ('project_supplier', 'Project supplier'),
+        ('admin_supplier', 'Admin supplier'),
+    ], string="Vcls type",
+        compute='_get_vcls_type'
+    )
+
+    @api.multi
+    @api.depends('seniority_level_id', 'type')
+    def _get_vcls_type(self):
+        for product in self:
+            if product.seniority_level_id:
+                product.vcls_type = 'rate'
+            elif product.type == 'service':
+                product.vcls_type = 'vcls_service'
+
+
 class Product(models.Model):
 
     _inherit = 'product.product'

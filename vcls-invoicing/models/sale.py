@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from dateutil.relativedelta import relativedelta
 
 from odoo.exceptions import UserError, ValidationError
 
@@ -23,6 +24,7 @@ class SaleOrder(models.Model):
         ('milestone','Milestone')],
         default =lambda self: self.partner_id.invoicing_frequency,
     )
+    timesheet_limit_date = fields.Date(compute='compute_timesheet_limite_date', inverse='inverse_timesheet_limite_date', store=True,)
 
     @api.depends('partner_id.risk_ids')
     def _compute_risk_ids(self):
@@ -33,6 +35,28 @@ class SaleOrder(models.Model):
             risk_ids |= self.env['risk'].search([('resource','=',resourcePrtn)])
         if risk_ids:
             self.risk_ids |= risk_ids
+
+    @api.one
+    @api.depends('partner_id.invoice_ids', 'partner_id.invoice_ids.state',
+                 'invoicing_frequency')
+    def compute_timesheet_limite_date(self):
+        customer_last_invoice = sorted(
+            self.partner_id.invoice_ids.filtered(lambda inv: inv.invoice_sending_date and inv.state != 'cancel')
+            , key=lambda inv: inv.invoice_sending_date, reverse=True)
+        if customer_last_invoice and customer_last_invoice[0].timesheet_limit_date and\
+                self.invoicing_frequency and self.invoicing_frequency != 'milestone':
+            if self.invoicing_frequency == 'month':
+                new_date = (customer_last_invoice[0].timesheet_limit_date + relativedelta(day=1,
+                                                                                          months=2)) - relativedelta(
+                    day=1)
+            if self.invoicing_frequency == 'trimester':
+                new_date = (customer_last_invoice[0].timesheet_limit_date + relativedelta(day=1,
+                                                                                          months=4)) - relativedelta(
+                    day=1)
+            self.timesheet_limit_date = new_date
+
+    def inverse_timesheet_limite_date(self):
+        return
 
     def action_risk(self):
         view_ids = [self.env.ref('vcls-risk.view_risk_tree').id,

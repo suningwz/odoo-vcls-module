@@ -7,7 +7,8 @@ _logger = logging.getLogger(__name__)
 
 
 class Project(models.Model):
-    _inherit = 'project.project'
+    _name = 'project.project'
+    _inherit = ['project.project', 'mail.thread', 'mail.activity.mixin']
 
     # We Override this method from 'project_task_default_stage
     def _get_default_type_common(self):
@@ -29,16 +30,22 @@ class Project(models.Model):
         string = 'Project Type',
         default = 'client',
     )
-    
-    parent_id = fields.Many2one('project.project', 'Parent project', index=True, ondelete='cascade')
+
+    # Maximum parent level here is meant to be 1 at max for now
+    parent_id = fields.Many2one(
+        'project.project', 'Parent project',
+        index=True, ondelete='cascade',
+        compute='_get_parent_id',
+        store=True
+    )
     child_id = fields.One2many('project.project', 'parent_id', 'Child projects')
 
     parent_task_count = fields.Integer(
-        compute = '_compute_parent_task_count'
+        compute='_compute_parent_task_count'
     )
 
     child_task_count = fields.Integer(
-        compute = '_compute_child_task_count'
+        compute='_compute_child_task_count'
     )
 
     #consultant_ids = fields.Many2many('hr.employee', string='Consultants')
@@ -52,6 +59,30 @@ class Project(models.Model):
         'Project summaries'
     )
     is_project_manager = fields.Boolean(compute="_get_is_project_manager")
+    scope_of_work = fields.Html(string='Scope of work')
+    orders_count = fields.Integer(compute='compute_orders_count')
+    invoices_count = fields.Integer(compute='compute_invoices_count')
+    tasks_count = fields.Integer()
+    timesheets_count = fields.Integer()
+    lead_consultant = fields.Many2one('hr.employee', related='core_team_id.lead_consultant', string='Lead Consultant')
+    lead_backup = fields.Many2one('hr.employee', related='core_team_id.lead_backup',
+                                  string='Lead Consultant Backup')
+    consultant_ids = fields.Many2many('hr.employee', 'rel_project_consultants', related='core_team_id.consultant_ids',
+                                      string='Consultants')
+    ta_ids = fields.Many2many('hr.employee', relation='rel_project_tas', related='core_team_id.ta_ids',
+                              string='Ta')
+
+    #extended = fields.Boolean('To be extended later')
+
+    @api.multi
+    @api.depends(
+        'sale_order_id', 'sale_order_id.parent_id',
+        'sale_order_id.parent_id.project_id'
+    )
+    def _get_parent_id(self):
+        for project in self:
+            if project.sale_order_id:
+                project.parent_id = project.sale_order_id.parent_id.project_id
 
     ##################
     # CUSTOM METHODS #
@@ -61,25 +92,81 @@ class Project(models.Model):
         """This function will return all the tasks and subtasks found in the main and Child
         Projects which participates in KPI's"""
         self.ensure_one()
-        tasks = self.task_ids + self.child_id.task_ids
+        tasks = self.task_ids + self.child_id.mapped('task_ids')
         all_tasks = tasks + tasks.mapped('child_ids')
         return all_tasks.filtered(lambda task: task.sale_line_id.product_id.completion_elligible and
                                   task.stage_id.status not in  ['not_started','cancelled'])
+
+    @api.multi
+    def action_raise_new_invoice(self):
+        """This function will trigger the Creation of invoice regrouping all the sale orders."""
+        # TODO: This action will be later Described
+        return True
+
+    @api.multi
+    def action_raise_new_risk(self):
+        """This function will trigger the Creation of Risks."""
+        self.ensure_one()
+        # TODO: This action will be later Described
+        return True
+
+    @api.multi
+    def sale_orders_tree_view(self):
+        action = self.env.ref('sale.action_quotations').read()[0]
+        action['domain'] = [('project_id', 'child_of', self.id)]
+        return action
+
+    @api.multi
+    def invoices_tree_view(self):
+        action = self.env.ref('account.action_invoice_tree1').read()[0]
+        projects = self.env['project.project'].search([('id', 'child_of', self.id)])
+        sale_orders = projects.mapped('sale_line_id.order_id') | projects.mapped('tasks.sale_order_id')
+        invoices = sale_orders.mapped('invoice_ids').filtered(lambda inv: inv.type == 'out_invoice')
+        action['domain'] = [('id', 'in', invoices.ids)]
+        return action
+
+    @api.multi
+    def tasks_tree_view(self):
+        action = self.env.ref('project.act_project_project_2_project_task_all').read()[0]
+        return action
+
+    @api.multi
+    def forecasts_tree_view(self):
+        action = self.env.ref('project_forecast.project_forecast_action_from_project').read()[0]
+        action['domain'] = [('project_id', 'child_of', self.id)]
+        return action
+
+    @api.multi
+    def timesheets_tree_view(self):
+        action = self.env.ref('hr_timesheet.act_hr_timesheet_line_by_project').read()[0]
+        action['domain'] = [('project_id', 'child_of', self.id)]
+        return action
+
+    @api.multi
+    def report_analysis_tree_view(self):
+        action = self.env.ref('vcls-timesheet.project_timesheet_forecast_report_action').read()[0]
+        action['domain'] = [('project_id', 'child_of', self.id)]
+        action['context'] = {'active_id': self.id, 'active_model': 'project.project'}
+        return action
 
     ###############
     # ORM METHODS #
     ###############
     @api.model
     def create(self, vals):
-        if 'project_type' in vals: 
+        """if 'project_type' in vals: 
             if vals['project_type'] == 'client':
-                vals['privacy_visibility'] = 'employees'
+                
             else:
-                vals['privacy_visibility'] = 'followers'
+                vals['privacy_visibility'] = 'followers'"""
+
+        #default visibility
+        vals['privacy_visibility'] = 'employees'
         
         #we automatically assign the project manager to be the one defined in the core team
         if vals.get('sale_order_id',False):
             so = self.env['sale.order'].browse(vals.get('sale_order_id'))
+            vals['scope_of_work'] = so.scope_of_work
             lc = so.core_team_id.lead_consultant
             _logger.info("SO info {}".format(lc.name))
             if lc:
@@ -89,6 +176,9 @@ class Project(models.Model):
         project = super(Project, self).create(vals)
         ids = project._get_default_type_common()
         project.type_ids = ids if ids else project.type_ids
+
+        if project.project_type != 'client':
+            project.privacy_visibility = 'followers'
         
         return project
     
@@ -152,3 +242,16 @@ class Project(models.Model):
     def _get_is_project_manager(self):
         for p in self:
             p.is_project_manager = p.user_id == self.env.user
+
+    @api.multi
+    def compute_orders_count(self):
+        for project in self:
+            project.orders_count = self.env['sale.order'].search_count([('project_id', 'child_of', project.id)])
+
+    @api.multi
+    def compute_invoices_count(self):
+        self.ensure_one()
+        projects = self.env['project.project'].search([('id', 'child_of', self.id)])
+        sale_orders = projects.mapped('sale_line_id.order_id') | projects.mapped('tasks.sale_order_id')
+        invoices = sale_orders.mapped('invoice_ids').filtered(lambda inv: inv.type == 'out_invoice')
+        self.invoices_count = len(invoices)

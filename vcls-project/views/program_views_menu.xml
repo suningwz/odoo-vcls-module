@@ -10,7 +10,9 @@
             <field name="arch" type="xml">
                 <xpath expr="//kanban" position="attributes">
                     <attribute name="create">0</attribute>
-                </xpath> 
+                    <attribute name="class">oe_background_grey o_kanban_dashboard o_project_kanban o_emphasize_colors o_vcls_open_form</attribute>
+                </xpath>
+                <a name="action_view_timesheet" position="replace"/>
             </field>
         </record>
 
@@ -23,12 +25,12 @@
                     <field name="name"/>
                     <field name="client_id"/>
                     <field name="product_name"/>
-                    <field name="indication"/> 
+                    <!--<field name="indication"/> -->
                     <field name="leader_id"/>
                 </tree>
             </field>
         </record>
-        
+
         <record id="act_res_partner_2_sale_order" model="ir.actions.act_window">
             <field name="name">Quotations and Sales</field>
             <field name="res_model">sale.order</field>
@@ -118,12 +120,19 @@
                         </button>
                     </div>
                     <group>
-                        <field name="name"/>
-                        <field name="client_id"/>
-                        <field name="product_name"/>
-                        <field name="indication"/> 
-                        <field name="leader_id"/>
-                        <field name="stage_id"/>
+                        <group>
+                            <field name="name"/>
+                            <field name="client_id"/>
+                            <field name="product_name"/>
+                            <field name="product_description"/>
+                            <field name="leader_id"/>
+                        </group>
+                        <group>
+                            <field name="stage_id"/>
+                            <field name="app_country_group_id"/>
+                            <field name="therapeutic_area_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
+                            <field name="targeted_indication_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
+                        </group>
                     </group>
                 </form>
             </field>
@@ -173,8 +182,20 @@
             <field name="view_type">form</field>
             <field name="view_mode">kanban,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')})]"/>
-            <field name="domain">[('project_type','=', 'client')]</field>
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>
+            <field name="domain">[('project_type','=', 'client'), ('parent_id','=', False), ('sale_order_id.state','in', ['sale','done'])]</field>
+        </record>
+
+        <record id="vcls-project.action_pre_project" model="ir.actions.act_window">
+            <field name="name">Pre-Projects</field>
+            <field name="res_model">project.project</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>
+            <field name="domain">[('project_type','=', 'client'),('parent_id','=', False),('sale_order_id.state','not in', ['sale','done'])]</field>
         </record>
 
         <record id="vcls-project.action_internal" model="ir.actions.act_window">
@@ -205,17 +226,25 @@
         />
 
         <menuitem
+            id="menu_pre_project"
+            name="Pre Projects"
+            parent="project.menu_main_pm"
+            sequence="3"
+            action="vcls-project.action_pre_project"
+        />
+
+        <menuitem
             id="menu_internal"
             name="Internal Projects"
             parent="project.menu_main_pm"
-            sequence="3"
+            sequence="4"
             action="vcls-project.action_internal"
         />
 
         <menuitem id="project_forecast.project_forecast_menu"
             name="Forecast"
             parent="project.menu_main_pm"
-            sequence="4"/>
+            sequence="5"/>
 
         <menuitem name="All Tasks" id="project.menu_project_management" parent="project.menu_main_pm"
             action="project.action_view_task" sequence="2" groups="base.group_no_one,project.group_project_user"

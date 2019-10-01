@@ -16,7 +16,7 @@
     # for the full list
     'category': 'Uncategorized',
 
-    'version': '0.16',
+    'version': '0.3.4',
 
 
     # any module necessary for this one to work correctly
@@ -28,9 +28,11 @@
         'sale_timesheet_limit_date',
         'sale_timesheet_rounded',
         'timesheet_useability',
+        'vcls-hr',
         'vcls-crm',
         'vcls-project',
         'timesheet_grid',
+        'web_grid_extend',
         ],
 
     # always loaded
