@@ -45,7 +45,7 @@
                                 </div>
                                 <field name="category_id" string='' widget="many2many_tags" required="True" options="{'no_create_edit': True}" placeholder="Client, Supplier, etc."/>
                                 <field name="sharepoint_folder" widget="url" readonly="1" text="|   Open Document Folder" string='' attrs="{'invisible': [('create_folder', '=', False)]}"/>
-                                <!--<field name="company_group_id" attrs="{'invisible': [('is_company', '=', False)]}"/>-->
+                                <field name="company_group_id" attrs="{'invisible': [('is_company', '=', False)]}"/>
                                 <separator string="   "/>
 
                                 <group attrs="{'invisible': [('is_company', '=', True)]}">

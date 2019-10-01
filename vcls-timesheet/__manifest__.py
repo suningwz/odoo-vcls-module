@@ -32,7 +32,7 @@
         'vcls-crm',
         'vcls-project',
         'timesheet_grid',
-        #'web_grid_extend',
+        'web_grid_extend',
         ],
 
     # always loaded

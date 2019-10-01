@@ -23,7 +23,7 @@
         'base',
         'contacts',
         'survey',
-        #'partner_company_group',
+        'partner_company_group',
         ],
 
     # always loaded

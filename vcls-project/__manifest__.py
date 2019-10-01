@@ -53,6 +53,7 @@
         'views/lead_views.xml',
         'views/res_partner_views.xml',
         'views/template.xml',
+        
 
         ### MENUS ###
         'views/dev_project_menu.xml',
