@@ -63,6 +63,16 @@
                 <xpath expr="//field[@name='employee_id']" position="after">
                     <field name="time_category_id" context="{'task_filter':True,'task_id':task_id}" option="{'no_create_edit': True}"/>
                 </xpath>
+                <field name="project_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="required">0</attribute>
+                </field>
+                <field name="task_id" position="attributes">
+                    <attribute name="context">{'desc_order_display':True}</attribute>
+                </field>
+                <field name="task_id" position="before">
+                    <field name="main_project_id" context="{'related_core_team_projects':True}" required="1"/>
+                </field>
             </field>
         </record>
 

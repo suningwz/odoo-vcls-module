@@ -436,25 +436,6 @@
             </field>
         </record>
 
-        <record id="account_analytic_line_grid_view_form_inherited" model="ir.ui.view">
-            <field name="name">account.analytic.line.grid.view.form</field>
-            <field name="model">account.analytic.line</field>
-            <field name="inherit_id" ref="timesheet_grid.timesheet_view_form"/>
-            <field name="arch" type="xml">
-                <field name="project_id" position="attributes">
-                    <attribute name="invisible">1</attribute>
-                    <attribute name="required">0</attribute>
-                </field>
-                <field name="task_id" position="attributes">
-                    <attribute name="context">{'desc_order_display':True}</attribute>
-                </field>
-                <field name="task_id" position="before">
-                    <field name="main_project_id" context="{'related_core_team_projects':True}" required="1"/>
-                </field>
-            </field>
-        </record>
-
-
         <record id="timesheet_view_grid_by_project" model="ir.ui.view">
             <field name="name">account.analytic.line.grid.project.inherit</field>
             <field name="model">account.analytic.line</field>
