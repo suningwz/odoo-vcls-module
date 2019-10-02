@@ -59,6 +59,7 @@ class salesforceSync(models.Model):
     def run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
         # run the ETL
         sfInstance = self.getSFInstance()
+        _logger.info(" SF Instance {}".format(sfInstance))
         translator = self.getSFTranslator(sfInstance)
         #cronId = self.getCronId(isFullUpdate)
 
