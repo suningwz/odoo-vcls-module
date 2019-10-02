@@ -5,6 +5,7 @@ access_vcls-timesheet_adjustement_reason_pc,access_vcls-timesheet_adjustement_re
 
 access_time_category_user,access_time_category_user,vcls-timesheet.model_project_time_category,base.group_user,1,0,1,0
 access_time_category_manager,access_time_category_manager,vcls-timesheet.model_project_time_category,project.group_project_manager,1,1,1,1
+access_time_category_portal,access_time_category_portal,vcls-timesheet.model_project_time_category,base.group_portal,1,0,0,0
 
 access_ts_report_user,access_ts_report_user,vcls-timesheet.model_timesheet_report,project.group_project_user,1,0,1,0
 access_ts_report_manager,access_ts_report_manager,vcls-timesheet.model_timesheet_report,project.group_project_manager,1,1,1,1

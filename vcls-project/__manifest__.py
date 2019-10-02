@@ -39,6 +39,7 @@
 
         ### SECURITY ###
         'security/vcls_groups.xml',
+        'security/security.xml',
         'security/ir.model.access.csv',
 
         ### VIEWS ###
