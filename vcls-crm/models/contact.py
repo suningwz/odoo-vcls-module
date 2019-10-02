@@ -55,7 +55,7 @@ class ContactExt(models.Model):
             if rec.default_currency_id:
                 pricelist = self.sudo().env['product.pricelist'].search([('company_id', '=', False), ('currency_id', '=', rec.default_currency_id.id)], limit=1)
                 if not pricelist:
-                    raise UserError(('Please define a company independent pricelist with currency %s') % rec.default_currency_id.name)
+                    raise UserError('Please define a company independent pricelist with currency {} for Contact {}'.format(rec.default_currency_id.name,rec.name))
                 for company in self.sudo().env['res.company'].search([]):
                     rec.with_context(force_company=company.id).property_product_pricelist = pricelist[0].id
     
