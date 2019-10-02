@@ -7,6 +7,6 @@
             <field name="name">Resource Manager</field>
             <field name="category_id"/>
         </record>
-        
+
     </data>
 </odoo>

@@ -23,6 +23,7 @@
         'base',
         'hr_expense',
         'sale_expense',
+        'project',
     ],
 
     # always loaded
@@ -30,6 +31,7 @@
         # 'security/ir.model.access.csv',
         'views/expense_sheet_views.xml',
         'views/expense_views.xml',
+        'views/project_portal_templates.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

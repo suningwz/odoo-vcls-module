@@ -2,16 +2,6 @@
 <odoo>
 
 
-    <!-- template id="portal_layout" name="Portal layout: project menu entry" inherit_id="project.portal_layout">
-        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
-            <t t-if="page_name == 'project_tasks'">
-                <li class="breadcrumb-item active">
-                    Tasks
-                </li>
-            </t>
-        </xpath>
-    </template -->
-
     <template id="portal_my_task" name="My Task" inherit_id="project.portal_my_task">
             <xpath expr="//t[@t-set='o_portal_fullwidth_alert']" position="replace">
             </xpath>
