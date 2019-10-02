@@ -28,7 +28,8 @@ class ProjectForecast(models.Model):
                 continue
             total_resource_hours = sum(self.search([('task_id', '=', forecast.task_id.id)]).mapped('resource_hours'))
             if total_resource_hours > 0:
-                forecast.task_id.planned_hours = total_resource_hours
+                #forecast.task_id.planned_hours = total_resource_hours
+                forecast.task_id.with_context(tracking_disable=True).write({'planned_hours':total_resource_hours})
 
     @api.multi
     def write(self, values):
