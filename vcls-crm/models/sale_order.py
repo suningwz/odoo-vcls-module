@@ -128,7 +128,7 @@ class SaleOrder(models.Model):
                 vals['internal_ref'] = "{}-{}".format(opp.internal_ref,self.get_alpha_index(index))
 
             quotation_original_name = vals['name']
-            if 'lead_quotation_type' in self._context:
+            if 'lead_quotation_type' in self._context and vals.get('parent_id'):
                 lead_quotation_type = self._context.get('lead_quotation_type')
                 if lead_quotation_type in ('budget_extension', 'scope_extension'):
                     additional_name = 'Budget extension' if lead_quotation_type == 'budget_extension' \

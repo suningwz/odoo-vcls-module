@@ -15,17 +15,13 @@ class SaleOrder(models.Model):
     def action_view_forecast(self):
         self.ensure_one()
         parent_project_id, child_ids = self._get_family_projects()
-        action = self.env.ref('project_forecast.project_forecast_action_by_project').read()[0]
-        all_project_ids = (parent_project_id | child_ids).ids
+        action = self.env.ref('project_forecast.project_forecast_action_from_project').read()[0]
         action['context'] = {
-            'search_default_future': 1,
-            'group_by': ['project_id', 'task_id', 'employee_id'],
+            'grid_anchor': (datetime.date.today()).strftime('%Y-%m-%d'),
+            'default_project_id': parent_project_id.id,
+            'forecast_hide_range_week': 1,
+            'forecast_hide_range_year': 1,
         }
-        action['domain'] = [('project_id', 'in',  all_project_ids)]
-        if len(parent_project_id) == 1 and not child_ids:
-            action['context'].update({
-                'default_project_id': parent_project_id.id,
-            })
         return action
 
     @api.multi
