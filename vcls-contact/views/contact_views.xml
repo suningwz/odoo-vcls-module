@@ -362,43 +362,40 @@
             <field name="name">res.partner.select</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_res_partner_filter"/>
-            <field name="arch" type="xml" position="Replace">
-                <field name="arch" type="xml">
-                    <search string="Search Contacts">
-                        <!-- SEARCH FIELDS -->
-                        <field name="name" filter_domain="['|','|',('display_name','ilike',self),('ref','=',self),('email','ilike',self)]"/>
-                        <field name="parent_id" domain="[('is_company','=',True)]" operator="child_of"/>
-                        <field name="user_id" string="Account Manager"/>
+            <field name="arch" type="xml">
 
-                        <field name="industry_id" string="Client Industry" filter_domain="[('industry_id','ilike', self)]"/>
-                        <field name="client_activity_ids" string="Client Activities" filter_domain="[('client_activity_ids','ilike', self)]"/>
-                        <field name="client_product_ids" string="Client Products" filter_domain="[('client_product_ids','ilike', self)]"/>
-
-                        <field name="phone" filter_domain="['|',('phone','ilike',self),('mobile','=',self)]"/>
-                        <field name="category_id" string="Tag" filter_domain="[('category_id','ilike', self)]"/>
-                    
-                        <!-- FILTERS -->
-                        <filter name="filter_my_partners" help="My Contacts" domain="['|',('user_id','=',uid),'|',('expert_id','=',uid),'|',('assistant_id','=',uid),'|',('controller_id','=',uid),('invoice_admin_id','=',uid)]"/>
-                        <separator/>
-                        <filter string="Individuals" name="type_person" domain="[('is_company','=',False)]"/>
-                        <filter string="Companies" name="type_company" domain="[('is_company','=',True)]"/>
-                        <separator/>
-                        <filter string="Clients" name="customer" domain="[('customer','=',True)]"/>
-                        <filter string="Suppliers" name="supplier" domain="[('supplier','=',True)]"/>
-                        <separator/>
-                        <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
-                        <separator/>
-
-                        <!-- GROUP BY -->
-                        <group expand="0" name="group_by" string="Group By">
-                            <filter name="salesperson" string="Account Manager" domain="[]" context="{'group_by' : 'user_id'}"/>
-                            <filter name="group_country" string="Country" context="{'group_by': 'country_id'}"/>
-                            <filter name="group_industry" string="Industry" context="{'group_by': 'industry_id'}"/>
-                            <filter name="group_company" string="Company" context="{'group_by': 'parent_id'}"/>
-                        </group>
-                        
-                    </search>
+                <!-- SEARCH FIELDS -->
+                <field name="parent_id" position="after">
+                    <field name="industry_id" string="Client Industry" filter_domain="[('industry_id','ilike', self)]"/>
+                    <field name="client_activity_ids" string="Client Activities" filter_domain="[('client_activity_ids','ilike', self)]"/>
+                    <field name="client_product_ids" string="Client Products" filter_domain="[('client_product_ids','ilike', self)]"/>
                 </field>
+
+                <field name="user_id" position="replace">
+                    <field name="user_id" string="Account Manager"/>
+                </field>
+            
+                <!-- FILTERS -->
+                <filter name="filter_my_partners" position="replace">
+                    <filter name="filter_my_partners" help="My Contacts" domain="['|',('user_id','=',uid),'|',('expert_id','=',uid),'|',('assistant_id','=',uid),'|',('controller_id','=',uid),('invoice_admin_id','=',uid)]"/>
+                </filter>
+                <filter name="customer" position="replace">
+                    <filter string="Clients" name="customer" domain="[('customer','=',True)]"/>
+                </filter>
+                <filter name="supplier" position="replace">
+                    <filter string="Suppliers" name="supplier" domain="[('supplier','=',True)]"/>
+                </filter>
+
+                <!-- GROUP BY -->
+                <group name="group_by" position="replace">
+                    <group expand="0" name="group_by" string="Group By">
+                        <filter name="salesperson" string="Account Manager" domain="[]" context="{'group_by' : 'user_id'}"/>
+                        <filter name="group_country" string="Country" context="{'group_by': 'country_id'}"/>
+                        <filter name="group_industry" string="Industry" context="{'group_by': 'industry_id'}"/>
+                        <filter name="group_company" string="Company" context="{'group_by': 'parent_id'}"/>
+                    </group>
+                </group>
+                
             </field>
         </record>
 
