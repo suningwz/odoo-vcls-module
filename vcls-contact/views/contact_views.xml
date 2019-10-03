@@ -357,14 +357,13 @@
             </field>
         </record>  
 
-        <!-- OVERRIDE of the default search view to suppress some -->
-        <record id="view_res_partner_filter" model="ir.ui.view">
+        <!-- OVERRIDE of the default search view to suppress some 
+        <record id="view_res_partner_filter_" model="ir.ui.view">
             <field name="name">res.partner.select</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_res_partner_filter"/>
-            <field name="arch" type="xml">
-
-                <!-- SEARCH FIELDS -->
+            <field name="arch" type="xml"> -->
+                <!-- SEARCH FIELDS 
                 <field name="parent_id" position="after">
                     <field name="industry_id" string="Client Industry" filter_domain="[('industry_id','ilike', self)]"/>
                     <field name="client_activity_ids" string="Client Activities" filter_domain="[('client_activity_ids','ilike', self)]"/>
@@ -373,9 +372,9 @@
 
                 <field name="user_id" position="replace">
                     <field name="user_id" string="Account Manager"/>
-                </field>
+                </field>-->
             
-                <!-- FILTERS -->
+                <!-- FILTERS 
                 <filter name="filter_my_partners" position="replace">
                     <filter name="filter_my_partners" help="My Contacts" domain="['|',('user_id','=',uid),'|',('expert_id','=',uid),'|',('assistant_id','=',uid),'|',('controller_id','=',uid),('invoice_admin_id','=',uid)]"/>
                 </filter>
@@ -384,9 +383,9 @@
                 </filter>
                 <filter name="supplier" position="replace">
                     <filter string="Suppliers" name="supplier" domain="[('supplier','=',True)]"/>
-                </filter>
+                </filter>-->
 
-                <!-- GROUP BY -->
+                <!-- GROUP BY 
                 <group name="group_by" position="replace">
                     <group expand="0" name="group_by" string="Group By">
                         <filter name="salesperson" string="Account Manager" domain="[]" context="{'group_by' : 'user_id'}"/>
@@ -397,7 +396,7 @@
                 </group>
                 
             </field>
-        </record>
+        </record>-->
 
 
         <!-- Add Account Manager in partner kanban view -->
