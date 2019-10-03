@@ -362,8 +362,8 @@
             <field name="name">res.partner.select</field>
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_res_partner_filter"/>
-            <field name="arch" type="xml">
-                <search string="Search Partner" position="Replace">
+            <field name="arch" type="xml" position="Replace">
+                <field name="arch" type="xml" position="Replace">
                     <search string="Search Contacts">
                         <!-- SEARCH FIELDS -->
                         <field name="name" filter_domain="['|','|',('display_name','ilike',self),('ref','=',self),('email','ilike',self)]"/>
@@ -396,8 +396,9 @@
                             <filter name="group_industry" string="Industry" context="{'group_by': 'industry_id'}"/>
                             <filter name="group_company" string="Company" context="{'group_by': 'parent_id'}"/>
                         </group>
+                        
                     </search>
-                </search>
+                </field>
             </field>
         </record>
 
