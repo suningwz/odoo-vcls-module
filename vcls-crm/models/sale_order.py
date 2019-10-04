@@ -67,8 +67,10 @@ class SaleOrder(models.Model):
     )
 
     name = fields.Char(string='Order Reference', required=True, copy=False, readonly=True, states={'draft': [('readonly', False)]}, index=True, default=lambda self: 'New')
-    
 
+    ts_invoicing_mode = fields.Selection([('tm', 'T&M'),
+                                          ('fp', 'fixed_price')],
+                                         'Invoicing mode')
     ###############
     # ORM METHODS #
     ###############

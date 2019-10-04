@@ -12,6 +12,10 @@ class SaleOrderLine(models.Model):
         default = 0,
         )
 
+    ts_invoicing_mode = fields.Selection([('tm', 'T&M'),
+                                          ('fp', 'fixed_price')],
+                                         'Invoicing mode')
+
     def _timesheet_create_project(self):
         project = super(SaleOrderLine, self)._timesheet_create_project()
         project.update({'project_type': 'client'})
