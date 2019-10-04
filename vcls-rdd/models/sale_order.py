@@ -10,6 +10,12 @@ class CoreTeam(models.Model):
 
     old_id = fields.Char(copy=False, readonly=True)
 
+    @api.multi
+    def write(self, vals):
+        if isinstance(vals.get('consultant_ids'), int) and \
+                self.env.user.context_data_integration:
+            vals['consultant_ids'] = [(4, vals['consultant_ids'])]
+        return super(CoreTeam, self).write(vals)
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
