@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.16',
+    'version': '0.7',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -30,6 +30,8 @@
         'project_parent_task_filter',
         'sale_quote_project_forecast',
         'project_timeline_task_dependency',
+        'sale_timesheet',
+        'account',
         ],
 
     # always loaded
@@ -50,11 +52,13 @@
         'views/sale_order_views.xml',
         'views/lead_views.xml',
         'views/res_partner_views.xml',
+        'views/template.xml',
+        
 
         ### MENUS ###
         'views/dev_project_menu.xml',
-        'views/program_views_menu.xml',
         'views/project_views.xml',
+        'views/program_views_menu.xml',
         'views/project_forecast_views.xml',
     ],
 

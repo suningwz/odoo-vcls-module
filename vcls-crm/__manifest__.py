@@ -19,7 +19,7 @@
 
 
 
-    'version': '1.15.2',
+    'version': '1.15.6',
 
 
 
@@ -44,6 +44,7 @@
                 'crm_lead_firstname',
                 'marketing_automation',
                 'vcls-risk',
+                'sale_timesheet',
                 ],
 
     # always loaded
@@ -69,6 +70,7 @@
         'views/sale_order_views.xml',
         'views/lead2opp.xml',
         'views/core_team_views.xml',
+        'wizard/lead_quotation_views.xml',
         #'views/sale_order_template_views.xml',
 
         ### MENUS ###

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="ooc_filter_internal_users" model="res.partner.filter">
+            <field name="name">Users</field>
+            <field name="active">1</field>
+            <field name="default_enabled">1</field>
+            <field name="filter_level">global</field>
+            <field name="filter_type">python</field>
+            <field name="python_filter">result = env['res.partner'].browse([u.partner_id.id for u in env['res.users'].search([])])</field>
+        </record>
+
+        <record id="ooc_filter_vendors" model="res.partner.filter">
+            <field name="name">Vendors</field>
+            <field name="active">1</field>
+            <field name="default_enabled">1</field>
+            <field name="filter_level">global</field>
+            <field name="filter_type">domain</field>
+            <field name="domain_filter">[('supplier', '=', True)]</field>
+        </record>
+
+        <record id="ooc_filter_customers" model="res.partner.filter">
+            <field name="name">Customers</field>
+            <field name="active">1</field>
+            <field name="default_enabled">1</field>
+            <field name="filter_level">global</field>
+            <field name="filter_type">domain</field>
+            <field name="domain_filter">[('customer', '=', True)]</field>
+        </record>
+
+        <record id="ooc_filter_sales_team" model="res.partner.filter">
+            <field name="name">Sales Team</field>
+            <field name="active">0</field>
+            <field name="default_enabled">0</field>
+            <field name="filter_level">user</field>
+            <field name="filter_type">python</field>
+            <field name="python_filter">result = env['res.partner'].search([('user_id', 'in', [u.id for u in user.sale_team_id.member_ids])])</field>
+        </record>
+
+        <record id="ooc_filter_sales_person" model="res.partner.filter">
+            <field name="name">Sales Person</field>
+            <field name="active">0</field>
+            <field name="default_enabled">0</field>
+            <field name="filter_level">user</field>
+            <field name="filter_type">domain</field>
+            <field name="domain_filter">[('user_id', '=', user.id)]</field>
+        </record>
+    </data>
+</odoo>

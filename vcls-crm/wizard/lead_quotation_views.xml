@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="lead_quotation_wizard_form">
+            <field name="name">lead.quotation.wizard.form</field>
+            <field name="model">lead.quotation.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Generate quotation">
+                    <group>
+                        <field name="quotation_type" widget="radio"/>
+                    </group>
+                    <group>
+                        <field name="existing_quotation_id"
+                               options="{
+                                    'no_show':True,'no_create':True,'no_open':True
+                               }"
+                               attrs="{
+                                    'invisible': [('quotation_type', '=', 'new')],
+                                    'required': [('quotation_type', '!=', 'new')],
+                               }"
+                               domain="[
+                                    ('opportunity_id', '=', active_id),
+                                    ('parent_id', '=', False)
+                               ]"
+                        />
+                    </group>
+                    <footer>
+                        <button string="Confirm"
+                            name="confirm" type="object" class="btn-primary o_mail_send"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="lead_quotation_wizard_form_action" model="ir.actions.act_window">
+            <field name="name">Generate quotation</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">lead.quotation.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="lead_quotation_wizard_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="crm_case_form_view_oppor" model="ir.ui.view">
+            <field name="name">crm.lead.oppor.inherited.crm</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="sale_crm.crm_case_form_view_oppor"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='%(sale_crm.sale_action_quotations_new)d']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(sale_crm.sale_action_quotations_new)d']" position="after">
+                    <button string="New Quotation"
+                        name="%(vcls-crm.lead_quotation_wizard_form_action)d"
+                        type="action" class="oe_highlight"
+                        attrs="{'invisible': ['&amp;', ('probability', '=', 0), ('active', '=', False)]}"
+                        context="{'search_default_partner_id': partner_id,
+                                  'default_partner_id': partner_id,
+                                  'default_team_id': team_id,
+                                  'default_campaign_id': campaign_id,
+                                  'default_medium_id': medium_id,
+                                  'default_origin': name,
+                                  'default_source_id': source_id}"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+
+</odoo>

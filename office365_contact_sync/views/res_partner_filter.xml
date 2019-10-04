@@ -1,0 +1,76 @@
+<odoo>
+	<data>
+		<record id="res_partner_filter_view_tree" model="ir.ui.view">
+			<field name="name">res.partner.filter.tree.view</field>
+			<field name="model">res.partner.filter</field>
+			<field name="arch" type="xml">
+				<tree string="Outlook Connector Partner Filters">
+					<field name="id"/>
+					<field name="name"/>
+					<field name="default_enabled"/>
+					<field name="active"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="res_partner_filter_view_form" model="ir.ui.view">
+			<field name="name">res.partner.filter.view.form</field>
+			<field name="model">res.partner.filter</field>
+			<field name="arch" type="xml">
+				<form string="Outlook Connector Partner Filter">
+					<sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                         <div class="oe_title">
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="default_enabled"/>
+                                <field name="filter_level"/>
+                                <field name="filter_type"/>
+                            </group>
+                            <group/>
+                        </group>
+
+                        <group string="Domain" attrs="{'invisible': [('filter_type', '!=', 'domain')]}">
+                            <field name="domain_filter" attrs="{'required': [('filter_type', '=', 'domain')]}"/>
+                        </group>
+
+                        <group string="Python" attrs="{'invisible': [('filter_type', '!=', 'python')]}">
+                            <field name="python_filter" attrs="{'required': [('filter_type', '=', 'python')]}"/>
+                        </group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_res_partner_filter" model="ir.actions.act_window">
+			<field name="name">Outlook Connector Partner Filters</field>
+			<field name="res_model">res.partner.filter</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+            <field name="domain">['|', ('active', '=', True), ('active', '=', False)]</field>
+			<field name="help" type="html">
+				<p class="oe_view_nocontent_create">
+					Click to define a new filter.
+				</p>
+			</field>
+		</record>
+
+        <menuitem id="menu_ooc" name="Outlook Connector" parent="base.menu_custom" sequence="100"/>
+
+        <menuitem
+            parent="menu_ooc"
+            id="menu_action_res_partner_filter"
+            action="action_res_partner_filter"
+            name="Partner Filters"
+            sequence="1"
+        />
+	</data>
+</odoo>

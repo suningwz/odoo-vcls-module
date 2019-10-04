@@ -1,11 +1,10 @@
-from odoo import models, fields, tools, api
-from odoo.exceptions import UserError, ValidationError
+# -*- coding: utf-8 -*-
+from odoo import models, fields, tools, api, _
+
 
 class SaleOrder(models.Model):
 
     _inherit = 'sale.order'
-    
-    child_ids = fields.One2many('sale.order', 'parent_id', string='Childs orders')
     
     @api.multi
     def quotation_program_print(self):
@@ -15,14 +14,45 @@ class SaleOrder(models.Model):
         quot = self.search([('program_id', 'in', programs.ids), ('state', '=', 'draft')])
         return self.env.ref('sale.action_report_saleorder').report_action(quot)
 
-    """def contact_book(self):
-        view_id = self.env.ref('vcls-project.view_project_form_contact_book').id
+    @api.multi
+    def action_view_project_ids(self):
+        self.ensure_one()
+        parent_project = self.parent_id.project_id
+        if parent_project and self.env.user.has_group('project.group_project_manager'):
+            action = parent_project.action_view_timesheet_plan()
+            return action
+        return super(SaleOrder, self).action_view_project_ids()
+
+    @api.multi
+    def action_view_family_parent_project(self):
+        self.ensure_one()
+        parent_project_id = self.parent_id.project_id if self.parent_id else self.project_id
+        if not parent_project_id:
+            return {'type': 'ir.actions.act_window_close'}
         return {
-            'name': 'Project Contact Book',
+            'name': _('Project'),
+            'type': 'ir.actions.act_window',
             'view_type': 'form',
             'view_mode': 'form',
-            'target': 'current',
             'res_model': 'project.project',
-            'view_id': view_id,
+            'res_id': parent_project_id.id,
+            'view_id': False,
+            'context': self.env.context,
+        }
+
+    @api.multi
+    def action_view_family_parent_tasks(self):
+        self.ensure_one()
+        parent_project, child_projects = self._get_family_projects()
+        return {
+            'name': _('Tasks'),
             'type': 'ir.actions.act_window',
-        }"""
+            'view_type': 'form',
+            'view_mode': 'kanban,tree,form,calendar,pivot,graph,activity',
+            'res_model': 'project.task',
+            'domain': [('project_id', 'in', (parent_project | child_projects).ids)],
+            'context': {
+                'search_default_project_id': parent_project.id,
+            },
+        }
+

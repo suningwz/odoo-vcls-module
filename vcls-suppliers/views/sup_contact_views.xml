@@ -25,6 +25,8 @@
                     <page name="suppliers" string="Supplier Info" attrs="{'invisible': [('see_supplier', '=', False)]}">
                     <field name="see_supplier" invisible="1"/>
                     <group>
+                        <field name="property_product_pricelist" string="Trading Pricelist"/>
+                        <field name="default_currency_id"/>
                         <field name="project_supplier_type_id"/>
                         <field name="expertise_area_ids" widget="many2many_tags"/>
                     </group>
