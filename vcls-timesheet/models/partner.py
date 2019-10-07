@@ -11,3 +11,5 @@ class ContactExt(models.Model):
         domain=lambda self: [("groups_id", "=",
                               self.env.ref('vcls-hr.vcls_group_controlling').id)]
     )
+
+    travel_invoicing_ratio = fields.Float(string="Travel Invoicing Ratio")
