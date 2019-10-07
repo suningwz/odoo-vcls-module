@@ -3,11 +3,12 @@
 from odoo import models, fields, api
 import lxml
 from itertools import groupby
+from datetime import date
 
-from odoo.exceptions import UserError, ValidationError
 
 import logging
 _logger = logging.getLogger(__name__)
+
 
 class Invoice(models.Model):
     _inherit = 'account.invoice'
@@ -24,6 +25,10 @@ class Invoice(models.Model):
         string='Account Manager',
         )
     invoice_sending_date = fields.Datetime()
+    parent_quotation_timesheet_limite_date = fields.Date(string='Timesheet Limit Date',
+                                                         compute='compute_parent_quotation_timesheet_limite_date')
+    vcls_due_date = fields.Date(string='Due Date', compute='_compute_vcls_due_date')
+    origin_sale_orders = fields.Char(compute='compute_origin_sale_orders',string='Origin')
     
     def get_communication_amount(self):
         total_amount = 0
@@ -48,6 +53,8 @@ class Invoice(models.Model):
     def create(self, vals):
         ret = super(Invoice, self).create(vals)       
         partner = ret.partner_id
+        if ret.partner_id.invoice_admin_id:
+            ret.user_id = ret.partner_id.invoice_admin_id
         if partner.communication_rate:
             _logger.info("COM RATE {}".format(partner.communication_rate))
             try:
@@ -89,6 +96,33 @@ class Invoice(models.Model):
                     for timesheet in self.timesheet_ids:
                         timesheet.stage_id = 'invoiceable'
         return ret
+
+    @api.depends('invoice_line_ids')
+    def compute_parent_quotation_timesheet_limite_date(self):
+        for invoice in self:
+            so_with_timesheet_limit_date = invoice._get_parents_quotations().filtered(
+                lambda so: so.timesheet_limit_date)
+            if so_with_timesheet_limit_date:
+                invoice.parent_quotation_timesheet_limite_date = so_with_timesheet_limit_date[0].timesheet_limit_date
+
+    def _get_parents_quotations(self):
+        return self.mapped('invoice_line_ids.sale_line_ids.order_id')
+
+    @api.depends('payment_term_id', 'invoice_sending_date')
+    def _compute_vcls_due_date(self):
+        for rec in self:
+            if rec.payment_term_id and rec.invoice_sending_date:
+                pterm = rec.payment_term_id
+                pterm_list = \
+                    pterm.with_context(currency_id=rec.company_id.currency_id.id).compute(value=1,
+                                                                                          date_ref=date.today())[0]
+                rec.vcls_due_date = max(line[0] for line in pterm_list)
+
+    @api.depends('invoice_line_ids')
+    def compute_origin_sale_orders(self):
+        for rec in self:
+            sale_orders = rec._get_parents_quotations()
+            rec.origin_sale_orders = ','.join(sale_orders.mapped('name'))
 
     @api.multi
     def unlink(self):

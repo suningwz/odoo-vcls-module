@@ -36,6 +36,7 @@
         'views/rm_menus.xml',
         'views/lc_menus.xml',
         'views/pc_menus.xml',
+        'views/ia_menus.xml',
         'views/backend.xml',
 
         'data/translation.sql',
