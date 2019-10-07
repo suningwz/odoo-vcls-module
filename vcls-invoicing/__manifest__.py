@@ -39,6 +39,8 @@
         'views/invoice_views.xml',
         'views/contact_views.xml',
         'wizard/sale_make_invoice_advance_views.xml',
+        # reports
+        'reports/report_project_invoice.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
