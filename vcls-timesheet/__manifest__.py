@@ -43,6 +43,7 @@
         'security/ir.model.access.csv',
         #'data/parameters.xml',
         'data/project.xml',
+        'data/time_categories.xml',
 
         ### VIEWS ###
         'views/report_views.xml',
@@ -52,6 +53,7 @@
         'views/crm_views.xml',
         'views/time_category_views.xml',
         'views/timesheet_report_views.xml',
+        'views/contact_view.xml',
 
 
         ### ACTIONS ###
