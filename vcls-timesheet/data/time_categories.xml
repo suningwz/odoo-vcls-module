@@ -1,0 +1,8 @@
+<odoo>
+    <data noupdate="1">
+        <record id="travel_time_category" model="project.time_category">
+            <field name="name">Travel</field>
+            <field name="active">True</field>
+        </record>
+    </data>
+</odoo>

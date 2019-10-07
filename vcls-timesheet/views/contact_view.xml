@@ -1,0 +1,14 @@
+<odoo>
+    <data>
+        <record id="view_contact_form" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="vcls-contact.view_form_contact_all"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='invoicing_frequency']" position="after">
+                    <field name="travel_invoicing_ratio"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
