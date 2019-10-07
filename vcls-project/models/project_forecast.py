@@ -41,7 +41,7 @@ class ProjectForecast(models.Model):
     @api.multi
     def write(self, values):
         for forecast in self:
-            values['hourly_rate'] = forecast._get_hourly_rate(values)
+            values['hourly_rate'] = forecast._get_hourly_rate(values)[0]
             _logger.info('FORECAST WRITE {}'.format(values))
             result = super(ProjectForecast, forecast).write(values)
         self.sudo()._force_forecast_hours()
@@ -49,7 +49,7 @@ class ProjectForecast(models.Model):
 
     @api.model
     def create(self, values):
-        values['hourly_rate'] = self._get_hourly_rate(values)
+        values['hourly_rate'] = self._get_hourly_rate(values)[0]
         _logger.info('FORECAST CREATE {}'.format(values))
         forecast = super(ProjectForecast, self).create(values)
         forecast.sudo()._force_forecast_hours()
@@ -68,6 +68,6 @@ class ProjectForecast(models.Model):
             ('employee_id','=',vals.get('employee_id',self.employee_id.id)),
             ('project_id','=',vals.get('project_id',self.employee_id.id))])
         if rate_map:
-            return rate_map[0].price_unit[0]
+            return rate_map[0].price_unit
         else:
             return 0.0
