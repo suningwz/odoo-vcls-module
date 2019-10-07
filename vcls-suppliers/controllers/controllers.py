@@ -225,35 +225,35 @@ class CustomerPortal(CustomerPortal):
         values['errors'] = error
 
         # GET ALL TIME_CATEGORY
-        values['time_categories'] = request.env['project.time_category'].search([])
+        values['time_categories'] = request.env['project.time_category'].sudo().search([])
 
         return request.render("project.portal_my_task", values)
     
     @http.route(['/my/task/<int:task_id>/timesheets/new'], type='http', auth='user', methods=['POST'], website=True)
     def add_new_timesheet(self, task_id, redirect=None, **post):
         try:
-            project_sudo = self._document_check_access('project.task', task_id, None)
+            task_sudo = self._document_check_access('project.task', task_id, None)
         except (AccessError, MissingError):
             return request.render("website.403")
 
-        if post:
+        if post and task_sudo.user_id == request.env.user:
             # START PROCESSING DATA
             error = CustomerPortal.check_timesheet(post)
             if not error:
-                task = request.env['project.task'].sudo().browse(task_id)
-                project = task.project_id
+                project = task_sudo.project_id
                 if not project:
                     error += [_('PLease ask the website administrator to link this task to a project')]
                 else:
                     values = {
                         'date': datetime.strptime(post['date'], '%Y-%m-%d'),
                         'project_id': project.id,
-                        'task_id': task.id,
+                        'task_id': task_sudo.id,
                         'unit_amount': post['unit_amount'],
                         'name': post['name'],
                     }
                     analytic_line = request.env['account.analytic.line'].sudo().create(values)
-            # END OF PROCESSING DATA
+                    analytic_line._link_portal_analytic_line_purchase(request.env.user)
+                    # END OF PROCESSING DATA
             return self.portal_my_task(task_id, error=error)
         else:
             return request.render("website.403")
@@ -261,18 +261,19 @@ class CustomerPortal(CustomerPortal):
     @http.route(['/my/task/<int:task_id>/timesheets/<int:timesheet_id>/edit'], type='http', auth='user', methods=['POST'], website=True)
     def edit_timesheet(self, task_id, timesheet_id, redirect=None, **post):
         try:
-            project_sudo = self._document_check_access('project.task', task_id, None)
+            task_sudo = self._document_check_access('project.task', task_id, None)
         except (AccessError, MissingError):
             return request.render("website.403")
 
-        if post:
+        if post and task_sudo.user_id == request.env.user:
             # START PROCESSING DATA
             error = CustomerPortal.check_timesheet(post)
             if len(error) == 0:
                 vals = post
                 vals['date'] = datetime.strptime(vals['date'], '%Y-%m-%d')
                 vals['stage_id'] = 'draft'
-                request.env['account.analytic.line'].search([('id','=',timesheet_id)]).write(vals)
-            return self.portal_my_task(task_id, error = error)
+                request.env['account.analytic.line'].sudo().search([('id','=',timesheet_id)]).write(vals)
+            task_url = '/my/task/{}'.format(task_id)
+            return request.redirect(task_url)
         else:
             return request.render("website.403")

@@ -5,3 +5,4 @@ from . import invoicingPo
 from . import invoice
 #from . import res_partner
 from . import product
+from . import invoice_line
