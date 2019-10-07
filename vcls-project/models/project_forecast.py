@@ -38,19 +38,17 @@ class ProjectForecast(models.Model):
                 #forecast.task_id.with_context(tracking_disable=True).write({'planned_hours':total_resource_hours})
                 #_logger.info("new hours {}".format(total_resource_hours))
             
-            #We get the price of the related rate (if exists)
-            rate_map = self.env['project.sale.line.employee.map'].search([('employee_id','=',forecast.employee_id.id),('project_id','=',forecast.project_id.id)])
-            if rate_map:
-                forecast.hourly_rate = rate_map[0].price_unit
-
     @api.multi
     def write(self, values):
-        result = super(ProjectForecast, self).write(values)
+        for forecast in self:
+            values['hourly_rate'] = forecast._get_hourly_rate(values)
+            result = super(ProjectForecast, forecast).write(values)
         self.sudo()._force_forecast_hours()
         return result
 
     @api.model
     def create(self, values):
+        values['hourly_rate'] = self._get_hourly_rate(values)
         forecast = super(ProjectForecast, self).create(values)
         forecast.sudo()._force_forecast_hours()
         return forecast
@@ -61,3 +59,13 @@ class ProjectForecast(models.Model):
         if 'default_project_id' in self.env.context:
             search_domain = ['|', ('project_id', 'child_of', [self.env.context['default_project_id']])] + search_domain
         return tasks.sudo().search(search_domain, order=order)
+    
+    @api.one
+    def _get_hourly_rate(self,vals):  
+        rate_map = self.env['project.sale.line.employee.map'].search([
+            ('employee_id','=',vals.get('employee_id',self.employee_id.id)),
+            ('project_id','=',vals.get('project_id',self.employee_id.id))])
+        if rate_map:
+            return rate_map[0].price_unit
+        else:
+            return False
