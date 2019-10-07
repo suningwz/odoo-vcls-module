@@ -55,4 +55,34 @@
             </field>
     </record>
 
+    <record id="view_ia_sale_orders_filter" model="ir.ui.view">
+        <field name="name">view_ia_sale_orders_filter</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_sale_orders_filter']" position="after">
+                <separator/>
+                <filter string="My IA orders" name="ia_orders" domain="[('partner_id.invoice_admin_id','=', uid)]"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="ia_action_sale_orders" model="ir.actions.act_window">
+        <field name="name">Sale Orders</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-invoicing.view_sale_order_kanban')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('sale.view_quotation_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('sale.view_order_form')}),
+                (0, 0, {'view_mode': 'calendar', 'view_id': ref('sale.view_sale_order_calendar')}),
+                (0, 0, {'view_mode': 'pivot', 'view_id': ref('sale.view_sale_order_pivot')}),
+                (0, 0, {'view_mode': 'graph', 'view_id': ref('sale.view_sale_order_graph')}),
+            ]"/>
+        <field name="domain">[('state','in',['done','sale'])]</field>
+        <field name="context">{'search_default_ia_orders':1}</field>
+    </record>
+
 </odoo>
