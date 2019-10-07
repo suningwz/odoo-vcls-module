@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form_inherit_contacts" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.ooc.setup.contacts</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="office365_framework.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <div name="ooc" position="inside">
+                <div class="col-xs-12 col-md-6 o_setting_box" attrs="{'invisible': [('aad_oauth_enabled', '=', False)]}">
+                    <div class="o_setting_right_pane">
+                        <label for="aad_contact_sync_direction"/>
+                        <div class="text-muted">
+                            Set the sync direction for the Contact sync
+                        </div>
+                        <field name="aad_contact_sync_direction"/>
+                    </div>
+                </div>
+            </div>
+        </field>
+    </record>
+</odoo>
