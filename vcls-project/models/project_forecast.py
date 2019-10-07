@@ -68,6 +68,6 @@ class ProjectForecast(models.Model):
             ('employee_id','=',vals.get('employee_id',self.employee_id.id)),
             ('project_id','=',vals.get('project_id',self.employee_id.id))])
         if rate_map:
-            return rate_map[0].price_unit
+            return rate_map[0].price_unit[0]
         else:
             return 0.0
