@@ -39,7 +39,7 @@ class ProjectForecast(models.Model):
                 #_logger.info("new hours {}".format(total_resource_hours))
             
             #We get the price of the related rate (if exists)
-            rate_map = self.env['project.sale.line.employee.map'].search([('employee_id','=',forecast.employee_id),('project_id','=',forecast.project_id)])
+            rate_map = self.env['project.sale.line.employee.map'].search([('employee_id','=',forecast.employee_id.id),('project_id','=',forecast.project_id.id)])
             if rate_map:
                 forecast.hourly_rate = rate_map[0].price_unit
 
