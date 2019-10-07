@@ -84,7 +84,18 @@ class Invoice(models.Model):
                     line.price_unit = total_amount * partner.communication_rate / 100
                     line.quantity = 1
                     rec.with_context(communication_rate=True).invoice_line_ids += line
+            if rec.state == 'cancel':
+                if self.timesheet_ids:
+                    for timesheet in self.timesheet_ids:
+                        timesheet.stage_id = 'invoiceable'
         return ret
+
+    @api.multi
+    def unlink(self):
+        if self.timesheet_ids:
+            for timesheet in self.timesheet_ids:
+                timesheet.stage_id = 'invoiceable'
+        return super(Invoice, self).unlink()
 
     @api.multi
     def html_to_string(self, html_format):

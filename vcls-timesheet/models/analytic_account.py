@@ -209,6 +209,8 @@ class AnalyticLine(models.Model):
                         so_update = True
                         orders |= line.so_line.order_id
 
+        if vals['timesheet_invoice_id']:
+            vals['stage_id'] = 'invoiced'
         ok = super(AnalyticLine, self).write(vals)
 
         if ok and so_update:
