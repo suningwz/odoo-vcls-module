@@ -194,22 +194,22 @@ class CustomerPortal(CustomerPortal):
     
     def check_timesheet(post):
         error = []
-        if post['date'] == '':
-            error += ['Date not specified.']
-        if post['name'] == '':
-            error += ['Description not specified.']
-        if post['unit_amount'] == '':
-            error += ['Duration not specified.']
+        if not post.get('date'):
+            error += [_('Date not specified.')]
+        if not post.get('name'):
+            error += [_('Description not specified.')]
+        if not post.get('unit_amount'):
+            error += [_('Duration not specified.')]
         else:
             try:
                 if float(post['unit_amount']) < 0:
-                    error += ['Negative duration.']
+                    error += [_('Duration cannot be negative.')]
             except:
-                error += ['Invalid duration.']
+                error += [_('Invalid duration format.')]
         try:
             datetime.strptime(post['date'], '%Y-%m-%d')
         except:
-            error += ['Invalid date.']
+            error += [_('Invalid date format. Valid format should be YYYY-MM-DD')]
         
         return error
     
@@ -225,174 +225,55 @@ class CustomerPortal(CustomerPortal):
         values['errors'] = error
 
         # GET ALL TIME_CATEGORY
-        values['time_categories'] = request.env['project.time_category'].search([])
+        values['time_categories'] = request.env['project.time_category'].sudo().search([])
 
         return request.render("project.portal_my_task", values)
     
     @http.route(['/my/task/<int:task_id>/timesheets/new'], type='http', auth='user', methods=['POST'], website=True)
     def add_new_timesheet(self, task_id, redirect=None, **post):
         try:
-            project_sudo = self._document_check_access('project.task', task_id, None)
+            task_sudo = self._document_check_access('project.task', task_id, None)
         except (AccessError, MissingError):
             return request.render("website.403")
 
-        if post:
+        if post and task_sudo.user_id == request.env.user:
             # START PROCESSING DATA
             error = CustomerPortal.check_timesheet(post)
-            if len(error) == 0:
-                vals = post
-                vals['date'] = datetime.strptime(vals['date'], '%Y-%m-%d')
-                vals['project_id'] = request.env['project.task'].sudo().search([('id','=',task_id)]).project_id.id
-                vals['task_id'] = task_id
-                request.env['account.analytic.line'].create(vals)
-            # END OF PROCESSING DATA
-            return self.portal_my_task(task_id, error = error)
+            if not error:
+                project = task_sudo.project_id
+                if not project:
+                    error += [_('PLease ask the website administrator to link this task to a project')]
+                else:
+                    values = {
+                        'date': datetime.strptime(post['date'], '%Y-%m-%d'),
+                        'project_id': project.id,
+                        'task_id': task_sudo.id,
+                        'unit_amount': post['unit_amount'],
+                        'name': post['name'],
+                    }
+                    analytic_line = request.env['account.analytic.line'].sudo().create(values)
+                    analytic_line._link_portal_analytic_line_purchase(request.env.user)
+                    # END OF PROCESSING DATA
+            return self.portal_my_task(task_id, error=error)
         else:
             return request.render("website.403")
     
     @http.route(['/my/task/<int:task_id>/timesheets/<int:timesheet_id>/edit'], type='http', auth='user', methods=['POST'], website=True)
     def edit_timesheet(self, task_id, timesheet_id, redirect=None, **post):
         try:
-            project_sudo = self._document_check_access('project.task', task_id, None)
+            task_sudo = self._document_check_access('project.task', task_id, None)
         except (AccessError, MissingError):
             return request.render("website.403")
 
-        if post:
+        if post and task_sudo.user_id == request.env.user:
             # START PROCESSING DATA
             error = CustomerPortal.check_timesheet(post)
             if len(error) == 0:
                 vals = post
                 vals['date'] = datetime.strptime(vals['date'], '%Y-%m-%d')
                 vals['stage_id'] = 'draft'
-                request.env['account.analytic.line'].search([('id','=',timesheet_id)]).write(vals)
-            return self.portal_my_task(task_id, error = error)
+                request.env['account.analytic.line'].sudo().search([('id','=',timesheet_id)]).write(vals)
+            task_url = '/my/task/{}'.format(task_id)
+            return request.redirect(task_url)
         else:
             return request.render("website.403")
-
-    '''
-    @http.route(['/my/projects/<int:project_id>/tasks'], type='http', auth="user", website=True)
-    def portal_project_tasks(self, page=1, date_begin=None, date_end=None, sortby=None, filterby=None, search=None, search_in='content', groupby='project', project_id=None, access_token=None, **kw):
-        try:
-            projects_id = request.env['project.project'].browse(project_id)
-            if projects_id:
-                for task_id in projects_id.task_ids.ids:
-                    project_sudo = self._document_check_access('project.task', task_id, access_token)
-        except (AccessError, MissingError):
-            return request.render("website.403")
-        values = self._prepare_portal_layout_values()
-        searchbar_sortings = {
-            'date': {'label': _('Newest'), 'order': 'create_date desc'},
-            'name': {'label': _('Title'), 'order': 'name'},
-            'stage': {'label': _('Stage'), 'order': 'stage_id'},
-            'update': {'label': _('Last Stage Update'), 'order': 'date_last_stage_update desc'},
-        }
-        searchbar_filters = {
-            'all': {'label': _('All'), 'domain': []},
-        }
-        searchbar_inputs = {
-            'content': {'input': 'content', 'label': _('Search <span class="nolabel"> (in Content)</span>')},
-            'message': {'input': 'message', 'label': _('Search in Messages')},
-            'customer': {'input': 'customer', 'label': _('Search in Customer')},
-            'stage': {'input': 'stage', 'label': _('Search in Stages')},
-            'all': {'input': 'all', 'label': _('Search in All')},
-        }
-        searchbar_groupby = {
-            'none': {'input': 'none', 'label': _('None')},
-            'project': {'input': 'project', 'label': _('Project')},
-        }
-
-        # extends filterby criteria with project the customer has access to
-        projects = request.env['project.project'].search([])
-        for project in projects:
-            searchbar_filters.update({
-                str(project.id): {'label': project.name, 'domain': [('project_id', '=', project.id)]}
-            })
-
-        # extends filterby criteria with project (criteria name is the project id)
-        # Note: portal users can't view projects they don't follow
-        project_groups = request.env['project.task'].read_group([('project_id', 'not in', projects.ids)],
-                                                                ['project_id'], ['project_id'])
-        for group in project_groups:
-            proj_id = group['project_id'][0] if group['project_id'] else False
-            proj_name = group['project_id'][1] if group['project_id'] else _('Others')
-            searchbar_filters.update({
-                str(proj_id): {'label': proj_name, 'domain': [('project_id', '=', proj_id)]}
-            })
-
-        # default sort by value
-        if not sortby:
-            sortby = 'date'
-        order = searchbar_sortings[sortby]['order']
-        # default filter by value
-        if not filterby:
-            filterby = 'all'
-        domain = searchbar_filters[filterby]['domain']
-
-        ## ADD DOMAIN FILTER HERE ##
-
-        # ADD FILTER TO SHOW ONLY ASSIGNED TASK
-        uid = request.env.context.get('uid')
-        domain += [('project_id','=', project_id)]
-
-        ## END OF VCLS MODIFICATIONS ##
-
-        # archive groups - Default Group By 'create_date'
-        archive_groups = self._get_archive_groups('project.task', domain)
-        if date_begin and date_end:
-            domain += [('create_date', '>', date_begin), ('create_date', '<=', date_end)]
-
-        # search
-        if search and search_in:
-            search_domain = []
-            if search_in in ('content', 'all'):
-                search_domain = OR([search_domain, ['|', ('name', 'ilike', search), ('description', 'ilike', search)]])
-            if search_in in ('customer', 'all'):
-                search_domain = OR([search_domain, [('partner_id', 'ilike', search)]])
-            if search_in in ('message', 'all'):
-                search_domain = OR([search_domain, [('message_ids.body', 'ilike', search)]])
-            if search_in in ('stage', 'all'):
-                search_domain = OR([search_domain, [('stage_id', 'ilike', search)]])
-            domain += search_domain
-
-        # task count
-        task_count = request.env['project.task'].search_count(domain)
-        # pager
-        pager = portal_pager(
-            url="/my/tasks",
-            url_args={'date_begin': date_begin, 'date_end': date_end, 'sortby': sortby, 'filterby': filterby, 'search_in': search_in, 'search': search},
-            total=task_count,
-            page=page,
-            step=self._items_per_page
-        )
-        # content according to pager and archive selected
-        if groupby == 'project':
-            order = "project_id, %s" % order  # force sort on project first to group by project in view
-        tasks = request.env['project.task'].search(domain, order=order, limit=self._items_per_page, offset=(page - 1) * self._items_per_page)
-        request.session['my_tasks_history'] = tasks.ids[:100]
-        if groupby == 'project':
-            grouped_tasks = [request.env['project.task'].concat(*g) for k, g in groupbyelem(tasks, itemgetter('project_id'))]
-        else:
-            grouped_tasks = [tasks]
-        
-        project = request.env['project.project'].search([('id','=',project_id)])
-
-        values.update({
-            'date': date_begin,
-            'date_end': date_end,
-            'grouped_tasks': grouped_tasks,
-            'page_name': 'project_tasks',
-            'archive_groups': archive_groups,
-            'default_url': '/my/tasks',
-            'pager': pager,
-            'searchbar_sortings': searchbar_sortings,
-            'searchbar_groupby': searchbar_groupby,
-            'searchbar_inputs': searchbar_inputs,
-            'search_in': search_in,
-            'sortby': sortby,
-            'groupby': groupby,
-            'searchbar_filters': OrderedDict(sorted(searchbar_filters.items())),
-            'filterby': filterby,
-            'project': project
-        })
-        return request.render("vcls-suppliers.portal_project_tasks", values)
-    '''

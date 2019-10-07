@@ -2,16 +2,6 @@
 <odoo>
 
 
-    <!-- template id="portal_layout" name="Portal layout: project menu entry" inherit_id="project.portal_layout">
-        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
-            <t t-if="page_name == 'project_tasks'">
-                <li class="breadcrumb-item active">
-                    Tasks
-                </li>
-            </t>
-        </xpath>
-    </template -->
-
     <template id="portal_my_task" name="My Task" inherit_id="project.portal_my_task">
             <xpath expr="//t[@t-set='o_portal_fullwidth_alert']" position="replace">
             </xpath>
@@ -43,6 +33,7 @@
             <xpath expr="//div[@t-if='task.timesheet_ids']" position="replace">
                 <hr class="mt-4 mb-1"/>
                 <h5 class="mt-2 mb-2">Timesheets</h5>
+                <t t-if="task.stage_id.allow_timesheet">
                 <table class="table table-sm table-hover">
                     <thead>
                         <tr>
@@ -173,6 +164,13 @@
                         </div>
                     </div>
                 </div>
+                </t>
+                <t t-else="">
+                    <p>This task is in a state that does not allow timesheet yet.
+                        If you want to log time, please ask a project manager or a
+                        system administrator to change the task stage.
+                    </p>
+                </t>
             </xpath>
     </template>
     <!-- https://github.com/OCA/web/tree/12.0/web_widget_x2many_2d_matrix -->

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="assets_frontend" inherit_id="web.assets_frontend" name="Expenses Frontend Assets">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/vcls-expenses/static/src/js/website_expense.js"/>
+        </xpath>
+    </template>
+
+    <template id="portal_expense_lines" name="Expenses">
+        <div class="row website_portal_project_expenses">
+        <t t-set="expenses"
+           t-value="project.expense_sheet_ids
+            .filtered(lambda sheet:
+                sheet.state == 'draft'
+                and sheet.employee_id.id in request.env.user.employee_ids.ids)
+            .mapped('expense_line_ids')"/>
+        <div class="row col-md-12">
+        <span class="h5 col-md-4"
+              style="margin-top: auto;margin-bottom: auto;">
+            My draft expenses</span>
+        <form t-if="expenses" class="col-md-8"
+              t-attf-action="/my/project/expense/validate" method="post">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <input type="hidden" name="project_id" t-attf-value="#{project.id}"/>
+            <button type="submit" class="btn btn-primary float-right">
+                Validate expenses
+            </button>
+        </form>
+        </div>
+        <table class="table table-sm table-hover mt-2">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th/>
+                    <th/>
+                </tr>
+            </thead>
+            <tbody>
+                <span id="project_id" t-attf-value="#{project.id}"/>
+                <t t-foreach="expenses" t-as="expense">
+                    <tr t-attf-value="#{expense.id}">
+                    <t t-set="currency_id" t-value="expense.currency_id"/>
+                    <t t-set="product_uom_id" t-value="expense.product_uom_id"/>
+                    <td><t t-esc="expense.name"/></td>
+                    <td><t t-esc="expense.description"/></td>
+                    <td><t t-esc="expense.product_id.name"/></td>
+                    <td><span t-esc="expense.unit_amount"/> <span t-esc="currency_id.symbol"/></td>
+                    <td><span t-esc="expense.quantity"/> <span t-esc="product_uom_id.name"/></td>
+                    <td><span t-esc="expense.total_amount"/> <span t-esc="currency_id.symbol"/></td>
+                    <td><button class="expense_edit fa fa-pencil btn btn-sm"></button></td>
+                    <td>
+                        <form t-attf-action="/my/project/expense/delete" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="expense_id" t-attf-value="#{expense.id}"/>
+                            <button class="expense_delete fa fa-times btn btn-sm"></button>
+                        </form>
+                    </td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+        <span class="add_expense btn btn-link">Add expense</span>
+        </div>
+    </template>
+
+    <template id="expense_modal" name="Expense modal for portal project">
+        <div class="modal fade" id="expense_modal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 t-if="expense" class="modal-title">Edit Expense</h5>
+                        <h5 t-else="" class="modal-title">New Expense</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span class='fa fa-times' aria-label="Close" title="Close"></span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form t-attf-action="/my/project/expense/edit" method="post">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <input type="hidden" name="expense_id" t-attf-value="#{expense.id}"/>
+                            <input type="hidden" name="project_id" t-attf-value="#{project_id}"/>
+                            <div t-attf-class="form-group col-md-12">
+                                <label class="col-form-label" for="name">Name</label>
+                                <input name="name" required="true" type="text" class="form-control"
+                                       t-attf-value="#{expense.name}"/>
+                            </div>
+                            <div t-attf-class="form-group col-md-12">
+                                <label class="col-form-label" for="description">Description</label>
+                                <textarea type="text" name="description" class="form-control"
+                                    t-attf-value="#{expense.description}"/>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label class="col-form-label" for="product_id">Product</label>
+                                <select class="form-control" name="product_id">
+                                    <t t-foreach="products" t-as="product">
+                                        <option t-attf-value="#{product.id}"
+                                        t-att-selected="1 if expense.product_id == product else None">
+                                            <t t-esc="product.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <label class="col-form-label col-md-12" for="unit_amount">Price</label>
+                            <div class="row col-md-12">
+                            <div class="col-md-6">
+                                <input type="number" name="unit_amount" class="form-control" step="any"
+                                t-attf-value="#{expense.unit_amount}"/>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-control" name="currency_id">
+                                    <t t-foreach="currencies" t-as="currency">
+                                        <option t-attf-value="#{currency.id}"
+                                        t-att-selected="1 if expense.currency_id == currency else None">
+                                            <t t-esc="currency.symbol"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="col-form-label" for="quantity">Quantity</label>
+                                <input type="number" name="quantity" class="form-control" step="any"
+                                t-attf-value="#{expense.quantity}"/>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary float-right mb32 ">
+                                Confirm
+                                <span class="fa fa-long-arrow-right"/>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+
+    <template id="portal_expense_project"
+              name="Project portal expenses"
+              inherit_id="project.portal_my_project">
+        <xpath expr="//t[@t-set='card_body']" position="inside">
+            <t t-if="not request.env.user.employee_ids">
+                <h5 class="mt-2 mb-2">My draft expenses</h5>
+                <p>You cannot add expenses, as you don't have an employee
+                   attached to your user account.<br/>
+                   Please ask the system administrator to link an employee to your user account.
+                </p>
+            </t>
+            <t t-else="">
+                <t t-call="vcls-expenses.portal_expense_lines"/>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>

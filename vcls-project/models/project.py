@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 import logging
 _logger = logging.getLogger(__name__)
 
 
 class Project(models.Model):
+
     _name = 'project.project'
     _inherit = ['project.project', 'mail.thread', 'mail.activity.mixin']
 
@@ -255,3 +257,27 @@ class Project(models.Model):
         sale_orders = projects.mapped('sale_line_id.order_id') | projects.mapped('tasks.sale_order_id')
         invoices = sale_orders.mapped('invoice_ids').filtered(lambda inv: inv.type == 'out_invoice')
         self.invoices_count = len(invoices)
+
+    @api.multi
+    def toggle_active(self):
+        if any(project.activity_ids for project in self):
+            raise ValidationError(_("Its not possible to archive a project while there is still undone activities "))
+        super(Project, self).toggle_active()
+
+    @api.model
+    def end_project_activities_scheduling(self):
+        for project in self.search([('active', '=', True)]):
+            if project.tasks and all(task.stage_id.status in ("completed", "cancelled") for task in project.task_ids):
+                users_summary = {
+                    project.partner_id.user_id.id: _('Client Feedback'),
+                    project.user_id.id: _('End of project form filling'),
+                    project.partner_id.invoice_admin_id.id: _('Invoicing Closing')
+                }
+                activity_vals = {
+                    'act_type_xmlid': 'mail.mail_activity_data_todo',
+                    'automated': True
+                }
+                for user_id, summary in users_summary.items():
+                    if user_id:
+                        activity_vals.update({'user_id': user_id, 'summary': summary})
+                        project.sudo().activity_schedule(**activity_vals)

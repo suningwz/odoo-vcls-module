@@ -45,6 +45,7 @@
                 'marketing_automation',
                 'vcls-risk',
                 'sale_timesheet',
+                'sale_purchase',
                 ],
 
     # always loaded
@@ -68,6 +69,7 @@
         'views/product_deliverable_views_menu.xml',
         'views/product_views_menu.xml',
         'views/sale_order_views.xml',
+        'views/purchase_views.xml',
         'views/lead2opp.xml',
         'views/core_team_views.xml',
         'wizard/lead_quotation_views.xml',
