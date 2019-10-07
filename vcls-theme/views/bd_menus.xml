@@ -252,6 +252,14 @@
         />
 
         <menuitem
+            id="menu_bd_conf_target_indication"
+            name="Target Indication "
+            parent="menu_bd_conf_segmentation"
+            action="vcls-crm.action_targeted_indication"
+            sequence="14"
+        />
+
+        <menuitem
             id="menu_bd_conf_functional_focus"
             name="Contact Functional Focus"
             parent="menu_bd_conf_segmentation"
