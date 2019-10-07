@@ -68,4 +68,4 @@ class ProjectForecast(models.Model):
         if rate_map:
             return rate_map[0].price_unit
         else:
-            return False
+            return 0.0
