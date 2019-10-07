@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="view_model_tree" model="ir.ui.view">
+            <field name="model">ir.model</field>
+            <field name="priority">1000</field>
+            <field name="arch" type="xml">
+                <tree string="Models" editable="top"
+                      create="0" edit="0" delete="0">
+                    <field name="transient" invisible="1"/>
+                    <field name="model" readonly="1"/>
+                    <field name="name" readonly="1"/>
+                    <field name="allow_customer_follow"/>
+                    <field name="allow_supplier_follow"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_view_model_auto_follow">
+            <field name="name">Customer auto follow Models</field>
+            <field name="res_model">ir.model</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[('transient', '=', False)]</field>
+            <field name="view_id" ref="view_model_tree"/>
+        </record>
+        <menuitem name="Customer auto follow Models"
+                  sequence="31"
+                  id="menu_models_allow_customer_auto_follow"
+                  parent="base.menu_email"
+                  action="action_view_model_auto_follow"/>
+
+</odoo>
