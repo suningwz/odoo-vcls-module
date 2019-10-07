@@ -33,6 +33,7 @@
             <xpath expr="//div[@t-if='task.timesheet_ids']" position="replace">
                 <hr class="mt-4 mb-1"/>
                 <h5 class="mt-2 mb-2">Timesheets</h5>
+                <t t-if="task.stage_id.allow_timesheet">
                 <table class="table table-sm table-hover">
                     <thead>
                         <tr>
@@ -163,6 +164,13 @@
                         </div>
                     </div>
                 </div>
+                </t>
+                <t t-else="">
+                    <p>This task is in a state that does not allow timesheet yet.
+                        If you want to log time, please ask a project manager or a
+                        system administrator to change the task stage.
+                    </p>
+                </t>
             </xpath>
     </template>
     <!-- https://github.com/OCA/web/tree/12.0/web_widget_x2many_2d_matrix -->
