@@ -50,7 +50,7 @@
                     <field name = 'risk_score' />
                 </xpath>
 
-                <xpath expr="//div[@class='o_kanban_record_top mb16']" position="after">
+                <xpath expr="//div[hasclass('o_kanban_record_top')]" position="after">
                     <span class="badge badge-pill badge-danger" style="border: none;" t-if="record.risk_score.value > 0">
                         Risk Score : <t t-esc="record.risk_score.value" />
                     </span>
