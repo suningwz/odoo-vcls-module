@@ -140,25 +140,37 @@ class SaleOrder(models.Model):
             expected_start_date = opp.expected_start_date
             if expected_start_date:
                 vals['expected_start_date'] = expected_start_date
-                vals['expected_end_date'] = expected_start_date + relativedelta(months=+3)
+                #vals['expected_end_date'] = expected_start_date + relativedelta(months=+3)
                 
         order = super(SaleOrder, self).create(vals)
         return order
 
-    @api.model
+    @api.multi
     def write(self, vals):
+        # we keep the duration fixed, even if we change the start date
         if 'expected_start_date' in vals:
             expected_start_date = fields.Date.from_string(vals['expected_start_date'])
-            if self.expected_end_date and self.expected_start_date and expected_start_date:
-                vals['expected_end_date'] = expected_start_date + (self.expected_end_date - self.expected_start_date)
-                # Use sudo here to avoid access error for people having
-                # access to forecast but not to employees (which must be read on the forecast object)
+            for so in self:
+                if so.expected_end_date and so.expected_start_date and expected_start_date:
+                    vals['expected_end_date'] = expected_start_date + (so.expected_end_date - so.expected_start_date)
+                    write_ok = super(SaleOrder, so).write(vals)
+                else:
+                    write_ok = True
+
+            return write_ok
+
+            """
+            # Use sudo here to avoid access error for people having
+            # access to forecast but not to employees (which must be read on the forecast object)
             tasks_ids = self.tasks_ids.ids
             if tasks_ids:
                 forecasts = self.env['project.forecast'].sudo().search([('task_id', 'in', self.tasks_ids.ids)])
                 if forecasts:
                     forecasts.write({'start_date': vals['expected_start_date']})
-        return super(SaleOrder, self).write(vals)
+            """
+            
+        else:
+            return super(SaleOrder, self).write(vals)
 
     ###################
     # COMPUTE METHODS #
