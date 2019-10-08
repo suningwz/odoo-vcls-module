@@ -12,7 +12,6 @@ class Contact(models.Model):
 
     def action_agre(self):
         agre_ids = self.env['agreement'].search([('partner_id','=',self.id)]).ids
-
         return {
             'name': 'Agreement',
             'view_type': 'form',
@@ -20,6 +19,6 @@ class Contact(models.Model):
             'target': 'current',
             'res_model': 'agreement',
             'type': 'ir.actions.act_window',
-            'context': {"default_partner_id": agre_ids, 
-            "search_default_partner_id": [agre_ids], },
+            'domain': [('id', 'in', agre_ids)],
+            'context': {"default_partner_id": self.id},
         } 

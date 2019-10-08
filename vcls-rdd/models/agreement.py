@@ -16,18 +16,18 @@ class Agreement(models.Model):
         name = partner.name
         agreement_type_id = vals.get('agreement_type_id')
         start_date = vals.get('start_date')
-        if agreement_type_id == 1:
-            name = '.'.join([name, 'agreement'])
+        if agreement_type_id == 11:
+            name = '.'.join([name, 'ECA'])
         elif agreement_type_id == 13:
             name = '.'.join([name, 'CDA'])
         elif agreement_type_id == 10:
             name = '.'.join([name, 'MECA'])
         if start_date:
             name = '_'.join([name, start_date])
-        if vals.get('end_date'):
+        if vals.get('end_date') and agreement_type_id != 11:
             name = '_'.join([name, vals.get('end_date')])
         vals['name'] = name
-        if agreement_type_id == 10 and start_date:
+        if agreement_type_id == 11 and start_date:
             vals['end_date'] = fields.Date.to_string(
                 fields.Date.from_string(start_date) + relativedelta(
                     years=2))
