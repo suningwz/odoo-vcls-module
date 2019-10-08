@@ -66,7 +66,7 @@ class ProjectForecast(models.Model):
     def _get_hourly_rate(self,vals):  
         rate_map = self.env['project.sale.line.employee.map'].search([
             ('employee_id','=',vals.get('employee_id',self.employee_id.id)),
-            ('project_id','=',vals.get('project_id',self.employee_id.id))])
+            ('project_id','=',vals.get('project_id',self.project_id.id))])
         if rate_map:
             return rate_map[0].price_unit
         else:
