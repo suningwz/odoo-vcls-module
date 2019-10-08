@@ -21,7 +21,8 @@ class PatchFieldView(models.AbstractModel):
                 res = do_fields_get.origin(self, allfields, attributes)
                 for field_name, result in res.items():
                     if 'salesperson' in result.get('string', '').lower() \
-                            and self._context.get('lang', '')[:2] == 'en':
+                            and self._context.get('lang', '') and \
+                            self._context.get('lang', '')[:2] == 'en':
                         string = result['string']
                         result['string'] = string.replace('Salesperson', 'Account Manager') \
                             .replace('salesperson', 'account manager')
