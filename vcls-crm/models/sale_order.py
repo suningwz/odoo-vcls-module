@@ -159,16 +159,6 @@ class SaleOrder(models.Model):
 
             return write_ok
 
-            """
-            # Use sudo here to avoid access error for people having
-            # access to forecast but not to employees (which must be read on the forecast object)
-            tasks_ids = self.tasks_ids.ids
-            if tasks_ids:
-                forecasts = self.env['project.forecast'].sudo().search([('task_id', 'in', self.tasks_ids.ids)])
-                if forecasts:
-                    forecasts.write({'start_date': vals['expected_start_date']})
-            """
-            
         else:
             return super(SaleOrder, self).write(vals)
 
