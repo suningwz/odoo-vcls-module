@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_users_form_simple_modif_contact_sync" model="ir.ui.view">
+            <field name="name">res.users.preferences.form.contact.sync</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='office365_oauth_connected']/group" position="inside">
+                    <h3 colspan="2">Contact Sync</h3>
+                    <group>
+                        <label for="contact_sync_use_category" style="white-space: nowrap;"/>
+                        <field name="contact_sync_use_category" attrs="{'readonly': [('azure_ad_sync_started', '=', True)]}" nolabel="1"/>
+
+                        <div colspan="2">
+                            <label for="contact_sync_filter_options" style="font-weight: bold; margin-bottom: 5px;"/>
+                            <div>
+                                <field name="contact_sync_filter_options" widget="radio" nolabel="1" style="padding-left: 10px;" readonly="0"/>
+                                <div attrs="{'invisible': [('contact_sync_filter_options', '!=', 'filter')]}" style="padding-left: 30px;">
+                                    <field name="contact_sync_filters" widget="many2many_checkboxes" readonly="0"/>
+                                </div>
+                            </div>
+                        </div>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

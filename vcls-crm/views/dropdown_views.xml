@@ -41,6 +41,12 @@
             <field name="view_mode">tree</field>
         </record>
 
+        <record model="ir.actions.act_window" id="action_targeted_indication">
+            <field name="name">Targeted Indication</field>
+            <field name="res_model">targeted.indication</field>
+            <field name="view_mode">tree</field>
+        </record>
+
         <record model="ir.ui.view" id="view_lead_stage_tree">
             <field name="name">view_lead_stage_tree</field>
             <field name="model">crm.lead.stage</field>
