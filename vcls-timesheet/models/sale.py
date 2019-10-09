@@ -17,13 +17,8 @@ class SaleOrder(models.Model):
     def action_view_forecast(self):
         self.ensure_one()
         parent_project_id, child_ids = self._get_family_projects()
-        action = self.env.ref('project_forecast.project_forecast_action_from_project').read()[0]
-        action['context'] = {
-            'grid_anchor': (datetime.date.today()).strftime('%Y-%m-%d'),
-            'default_project_id': parent_project_id.id,
-            'forecast_hide_range_week': 1,
-            'forecast_hide_range_year': 1,
-        }
+        action = self.env.ref('vcls-project.project_forecast_action').read()[0]
+        action['domain'] = [('project_id', 'in', (parent_project_id | child_ids).ids)]
         return action
 
     @api.multi

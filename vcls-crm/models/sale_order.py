@@ -152,15 +152,8 @@ class SaleOrder(models.Model):
             expected_start_date = fields.Date.from_string(vals['expected_start_date'])
             for so in self:
                 if so.expected_end_date and so.expected_start_date and expected_start_date:
-                    vals['expected_end_date'] = expected_start_date + (so.expected_end_date - so.expected_start_date)
-                    write_ok = super(SaleOrder, so).write(vals)
-                else:
-                    write_ok = True
-
-            return write_ok
-
-        else:
-            return super(SaleOrder, self).write(vals)
+                    so.expected_end_date = expected_start_date + (so.expected_end_date - so.expected_start_date)
+        return super(SaleOrder, self).write(vals)
 
     ###################
     # COMPUTE METHODS #
