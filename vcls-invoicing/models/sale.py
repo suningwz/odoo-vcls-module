@@ -11,8 +11,9 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     def get_activity_report_template(self):
-        if self._context.get('params', False) and self._context['params']['id']:
-            order_id = self.env['sale.order'].browse(self._context['params']['id'])
+        order_id = self._context.get('params', {}).get('id')
+        if order_id:
+            order_id = self.env['sale.order'].browse(order_id)
             return order_id.partner_id.activity_report_template
         return False
 
