@@ -34,5 +34,28 @@
                 </field>
         </record>
 
+        <record id="view_task_form2" model="ir.ui.view">
+            <field name="name">view_task_form2 </field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+                <button name="action_assign_to_me" position="after">
+                    <field name="connected_employee_seniority_level_id" invisible="1"/>
+                    <field name="id" invisible="1"/>
+                    <button name="%(vcls-timesheet.project_followup_report_action_hours_popup)d"
+                        type="action" string="Hours Report"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('project_id', '=', False)]}"
+                        context="{
+                            'search_default_project_id': project_id,
+                            'search_default_task_id': id,
+                            'search_default_employee_seniority_level_id': connected_employee_seniority_level_id,
+                            'default_employee_seniority_level_id': connected_employee_seniority_level_id,
+                        }"
+                    />
+                </button>
+            </field>
+        </record>
+
     </data>
 </odoo>

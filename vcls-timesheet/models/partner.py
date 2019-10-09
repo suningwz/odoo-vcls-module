@@ -9,5 +9,5 @@ class ContactExt(models.Model):
 
     controller_id = fields.Many2one(
         domain=lambda self: [("groups_id", "=",
-                              self.env.ref('vcls-timesheet.vcls_pc').id)]
+                              self.env.ref('vcls-hr.vcls_group_controlling').id)]
     )

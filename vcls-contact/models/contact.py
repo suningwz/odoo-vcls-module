@@ -185,12 +185,12 @@ class ContactExt(models.Model):
     # COMPUTE METHODS #
     ###################
     
-    @api.depends('category_id')
+    @api.depends('category_id','company_type')
     def _compute_visibility(self):
         for contact in self:
             try:
                 contact.see_segmentation = False
-                if self.env.ref('vcls-contact.category_account') in contact.category_id:
+                if self.env.ref('vcls-contact.category_account') in contact.category_id and contact.is_company:
                     contact.see_segmentation = True
                 
                 contact.see_supplier = False

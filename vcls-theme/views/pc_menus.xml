@@ -16,13 +16,14 @@
         </record>
 
         <record id="action_pc_client_project" model="ir.actions.act_window">
-            <field name="name">Client Projects</field>
+            <field name="name">Projects</field>
             <field name="res_model">project.project</field>
             <field name="view_type">form</field>
             <field name="view_mode">kanban,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')})]"/>
-            <field name="domain">[('project_type','=', 'client')]</field>
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>
+            <field name="domain">[('project_type','=', 'client'),('parent_id','=', False)]</field>
             <field name="context">{"search_default_project_controller":1}</field>
         </record>
 
@@ -34,7 +35,7 @@
                 web_icon="fa fa-crosshairs,#f1c40f,#838383"
                 sequence="8"
                 active="True"
-                groups="vcls-hr.vcls_group_superuser_lvl1,vcls-timesheet.vcls_pc"
+                groups="vcls-hr.vcls_group_superuser_lvl1,vcls-hr.vcls_group_controlling"
         />
 
         <menuitem
@@ -61,10 +62,26 @@
         />
 
         <menuitem
+                id="menu_pc_timesheets_cf"
+                name="Carry Forward"
+                parent="menu_pc_timesheets"
+                sequence="2"
+                action="vcls-timesheet.action_pc_cf_timesheet_tree"
+        />
+
+        <menuitem
+                id="menu_pc_timesheets_oos"
+                name="Out of Scope"
+                parent="menu_pc_timesheets"
+                sequence="3"
+                action="vcls-timesheet.action_pc_oos_timesheet_tree"
+        />
+
+        <menuitem
                 id="menu_pc_timesheets_all"
                 name="All"
                 parent="menu_pc_timesheets"
-                sequence="2"
+                sequence="5"
                 action="vcls-timesheet.action_pc_all_timesheet_tree"
         />
         <menuitem

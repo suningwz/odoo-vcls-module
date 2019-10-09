@@ -943,18 +943,16 @@ class Employee(models.Model):
     '''
     
     # Override write to send only one ticket replace above
-    def write(self, vals):
+    def write(self, vals): 
 
-        has_contract = vals.get('contract_id',self.contract_id.id)
-
-        if has_contract:
-
-            if 'parent_id' in vals:
+        if 'parent_id' in vals:
+            if vals.get('contract_id',self.contract_id.id):
                 self.create_IT_ticket('newLM')
 
                 #_logger.info("NEW LM TICKET CREATED: {}".format(self.name))
-            
-            if 'first_name' in vals or 'middle_name' in vals or 'last_name' in vals or 'name' in vals:
+        
+        if 'first_name' in vals or 'middle_name' in vals or 'last_name' in vals or 'name' in vals:
+            if vals.get('contract_id',self.contract_id.id):
                 self.create_IT_ticket('modify')
                 #_logger.info("NEW MODIFY TICKET CREATED: {}".format(self.name))
 

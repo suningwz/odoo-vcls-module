@@ -9,7 +9,20 @@
             <field name="priority">3000</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-
+                <xpath expr="//button[@name='action_view_timesheet']" position="after">
+                    <button type="object"
+                        name="action_view_family_quotations"
+                        class="oe_stat_button"
+                        icon="fa-pencil-square-o"
+                        string="Quotations">
+                    </button>
+                    <button type="object"
+                        name="action_view_family_sales_orders"
+                        class="oe_stat_button"
+                        icon="fa-pencil-square-o"
+                        string="Sales Orders">
+                    </button>
+                </xpath>
                 <field name="name" position="attributes">
                     <attribute name="readonly">0</attribute>
                 </field>
@@ -17,7 +30,7 @@
                 <xpath expr="//button[@name='action_confirm']" position="after">    
                     <button name="upsell" id="action_upsell"
                         string="Upsell" class="btn-primary" type="object"
-                        attrs="{'invisible': [('state', 'in', ['draft'])]}"/>
+                        invisible="1"/>
                 </xpath>
 
                 <xpath expr="//button[@name='create_revision']" position="attributes">    
@@ -42,6 +55,7 @@
                             <field name="currency_id" invisible="1"/>
                             <field name="payment_term_id" options="{'no_create': True}"/>
                             <field name="parent_id" options="{'no_create': True}" readonly="1"/>
+                            <field name="parent_sale_order_id" invisible="1"/>
                             <field name="project_id" options="{'no_create': True}" string="Linked Project"/>
                         </group>
                     </group>
