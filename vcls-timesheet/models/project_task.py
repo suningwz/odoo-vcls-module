@@ -26,15 +26,17 @@ class ProjectTask(models.Model):
 
     last_updated_timesheet_date = fields.Datetime(compute='get_last_updated_timesheet_date', compute_sudo=True,
                                                   store=True)
+
     @api.model
     def create(self, vals):
-        travel_category_id = self.env.ref('vcls-timesheet.travel_time_category').id
-        time_categories = vals.get('time_category_ids',False)
-        if time_categories:
-            vals['time_category_ids'][0][2].append(travel_category_id) if travel_category_id not in \
-                                                                      vals['time_category_ids'][0][2] else vals['time_category_ids'][0][2]
-        else:
-            vals.update({'time_category_ids': [[6, False, [1]]]})
+        travel_category_id = self.env.ref('vcls-timesheet.travel_time_category')
+        time_categories = vals.get('time_category_ids', False)
+        if travel_category_id:
+            if time_categories:
+                if travel_category_id not in vals['time_category_ids'][0][2]:
+                    vals['time_category_ids'][0][2].append(travel_category_id.id)
+            else:
+                vals.update({'time_category_ids': [[6, False, [travel_category_id.id]]]})
         return super(ProjectTask, self).create(vals)
 
     @api.one
