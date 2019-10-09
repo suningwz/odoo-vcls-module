@@ -32,6 +32,7 @@ class SaleOrder(models.Model):
         ('milestone','Milestone')],
         default =lambda self: self.partner_id.invoicing_frequency,
     )
+    
     timesheet_limit_date = fields.Date(compute='compute_timesheet_limite_date', inverse='inverse_timesheet_limite_date', store=True,)
     invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
     activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.analytic.line'),
