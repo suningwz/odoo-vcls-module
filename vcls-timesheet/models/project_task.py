@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from datetime import datetime
 
 
 class ProjectTask(models.Model):
@@ -15,6 +16,18 @@ class ProjectTask(models.Model):
         compute='_get_connected_employee_seniority_level_id',
         string='Default Seniority'
     )
+    date_start = fields.Datetime(default=False)
+
+    @api.onchange('sale_line_id')
+    def _onchange_lead_id(self):
+        if not self.date_start:
+            date_start = self.sale_line_id.order_id.expected_start_date
+            if date_start:
+                self.date_start = datetime.fromordinal(date_start.toordinal())
+        if not self.date_end:
+            date_end = self.sale_line_id.order_id.expected_end_date or fields.Datetime.now()
+            if date_end:
+                self.date_end = datetime.fromordinal(date_end.toordinal())
 
     @api.multi
     def _get_connected_employee_seniority_level_id(self):
@@ -37,7 +50,19 @@ class ProjectTask(models.Model):
                     vals['time_category_ids'][0][2].append(travel_category_id.id)
             else:
                 vals.update({'time_category_ids': [[6, False, [travel_category_id.id]]]})
-        return super(ProjectTask, self).create(vals)
+
+        task = super(ProjectTask, self).create(vals)
+
+        # Update end and start date according to related sale_order estimated dates
+        if not task.date_start:
+            date_start = task.sale_line_id.order_id.expected_start_date
+            if date_start:
+                task.date_start = datetime.fromordinal(date_start.toordinal())
+        if not task.date_end:
+            date_end = task.sale_line_id.order_id.expected_end_date
+            if date_end:
+                task.date_end = datetime.fromordinal(date_end.toordinal())
+        return task
 
     @api.one
     @api.depends('timesheet_ids', 'timesheet_ids.write_date', 'child_ids', 'child_ids.timesheet_ids',
@@ -63,6 +88,18 @@ class ProjectTask(models.Model):
             return las_res + res
         return super(ProjectTask, self)._search(args, offset=offset, limit=limit, order=order,
                                                 count=count, access_rights_uid=access_rights_uid)
+
+    @api.multi
+    def action_view_forecast(self):
+        self.ensure_one()
+        action = self.env.ref('vcls-project.project_forecast_action').read()[0]
+        action['domain'] = [('task_id', '=', self.id)]
+        action['context'] = {
+            'group_by': ['project_id', 'deliverable_id', 'task_id'],
+            'default_task_id': self.id,
+            'default_project_id': self.project_id.id,
+        }
+        return action
 
 
 class Project(models.Model):
@@ -108,3 +145,13 @@ class Project(models.Model):
             return las_res + res
         return super(Project, self)._search(args, offset=offset, limit=limit, order=order,
                                             count=count, access_rights_uid=access_rights_uid)
+
+    def action_view_project_forecast(self):
+        self.ensure_one()
+        action = self.env.ref('vcls-project.project_forecast_action').read()[0]
+        action['domain'] = [('project_id', '=', self.id)]
+        action['context'] = {
+            'group_by': ['project_id', 'deliverable_id', 'task_id'],
+            'default_project_id': self.id,
+        }
+        return action
