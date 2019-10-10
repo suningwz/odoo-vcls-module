@@ -11,21 +11,14 @@ class SaleOrder(models.Model):
 
     _inherit = 'sale.order'
 
+    travel_invoicing_ratio = fields.Float(string="Travel Invoicing Ratio")
+
     @api.multi
     def action_view_forecast(self):
         self.ensure_one()
         parent_project_id, child_ids = self._get_family_projects()
-        action = self.env.ref('project_forecast.project_forecast_action_by_project').read()[0]
-        all_project_ids = (parent_project_id | child_ids).ids
-        action['context'] = {
-            'search_default_future': 1,
-            'group_by': ['project_id', 'task_id', 'employee_id'],
-        }
-        action['domain'] = [('project_id', 'in',  all_project_ids)]
-        if len(parent_project_id) == 1 and not child_ids:
-            action['context'].update({
-                'default_project_id': parent_project_id.id,
-            })
+        action = self.env.ref('vcls-project.project_forecast_action').read()[0]
+        action['domain'] = [('project_id', 'in', (parent_project_id | child_ids).ids)]
         return action
 
     @api.multi
@@ -86,6 +79,9 @@ class SaleOrder(models.Model):
                 order.timesheet_ids = []
             order.timesheet_count = len(order.timesheet_ids)
 
+    @api.onchange('partner_id')
+    def set_travel_invoicing_ratio(self):
+        self.travel_invoicing_ratio = self.partner_id.travel_invoicing_ratio
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'

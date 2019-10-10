@@ -1,0 +1,38 @@
+<odoo>
+    <data>
+        <!-- MENU ITEMS -->
+        <menuitem
+                id="menu_ia_root"
+                name="IA"
+                web_icon="fa fa-file-text-o,#f1c40f,#838383"
+                sequence="8"
+                active="True"
+                groups="vcls-invoicing.finance_ia_group"
+        />
+
+        <menuitem
+                id="menu_ia_invoices"
+                name="Invoices"
+                parent="menu_ia_root"
+                sequence="1"
+                action="vcls-invoicing.action_ia_invoices"
+        />
+
+
+        <menuitem
+                id="menu_ia_orders"
+                name="Orders"
+                parent="menu_ia_root"
+                sequence="2"
+                action="vcls-invoicing.ia_action_sale_orders"
+        />
+
+        <menuitem
+                id="menu_ia_clients"
+                name="Clients"
+                parent="menu_ia_root"
+                sequence="2"
+                action="vcls-invoicing.action_ia_clients"
+        />
+    </data>
+</odoo>

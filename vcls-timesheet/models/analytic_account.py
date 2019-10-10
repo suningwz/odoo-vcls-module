@@ -157,6 +157,11 @@ class AnalyticLine(models.Model):
             vals['at_risk'] = self._get_at_risk_values(vals.get('project_id'),
                                                        vals.get('employee_id'))
 
+        if vals.get('time_category_id') == self.env.ref('vcls-timesheet.travel_time_category').id:
+            task = self.env['project.task'].browse(vals['task_id'])
+            if task.sale_line_id:
+                unit_amount_rounded = vals['unit_amount'] * task.sale_line_id.order_id.travel_invoicing_ratio
+                vals.update({'unit_amount_rounded':unit_amount_rounded})
         return super(AnalyticLine, self).create(vals)
 
     @api.multi
@@ -209,6 +214,15 @@ class AnalyticLine(models.Model):
                         so_update = True
                         orders |= line.so_line.order_id
 
+            if (vals.get('time_category_id') == self.env.ref('vcls-timesheet.travel_time_category').id or
+                (vals.get('unit_amount') and line.time_category_id.id == self.env.ref('vcls-timesheet.travel_time_category').id)) and\
+                    line.task_id.sale_line_id:
+                unit_amount = vals.get('unit_amount') or line.unit_amount
+                vals.update({
+                    'unit_amount_rounded': unit_amount * line.task_id.sale_line_id.order_id.travel_invoicing_ratio
+                            })
+        if vals.get('timesheet_invoice_id'):
+            vals['stage_id'] = 'invoiced'
         ok = super(AnalyticLine, self).write(vals)
 
         if ok and so_update:

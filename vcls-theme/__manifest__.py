@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.5',
+    'version': '0.6',
 
     # any module necessary for this one to work correctly
     'depends': ['base', 
@@ -36,6 +36,7 @@
         'views/rm_menus.xml',
         'views/lc_menus.xml',
         'views/pc_menus.xml',
+        'views/ia_menus.xml',
         'views/backend.xml',
 
         'data/translation.sql',

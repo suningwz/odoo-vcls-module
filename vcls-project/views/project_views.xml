@@ -45,6 +45,7 @@
                         </group>
                         <group>
                             <group>
+                                <field name="partner_id" string="Client"/>
                                 <field name="scope_of_work"/>
                             </group>
                             <group>
@@ -94,7 +95,7 @@
                                 <field name="project_type"/>
                                 <field name="allow_timesheets"/>
                                 <field name="allow_forecast"/>
-                                <field name="partner_id" string="Customer"/>
+                                
                                 <label for="rating_status" groups="project.group_project_rating"/>
                                 <div groups="project.group_project_rating">
                                     <field name="rating_status" widget="radio"/>

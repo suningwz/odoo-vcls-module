@@ -78,7 +78,7 @@
                         </div>
                         <group>
                             <group>
-                                <field name="partner_id" widget="res_partner_many2one" string="Client" options="{'no_quick_create': True, 'no_create_edit' : True}" domain="[('customer', '=', True),('company_type', '=','company')]" context="{'search_default_customer': 1,                                         'default_name': partner_name, 'default_street': street,                                         'default_street2': street2, 'default_city': city,                                         'default_state_id': state_id, 'default_zip': zip,                                         'default_country_id': country_id, 'default_function': function,                                         'default_phone': phone, 'default_mobile': mobile,                                         'default_email': email_from,                                         'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website,                                         'show_vat': True,                                     }"/>
+                                <field name="partner_id" widget="res_partner_many2one" string="Client" attrs="{'required': [('type', '=', 'opportunity')]}" options="{'no_quick_create': True, 'no_create_edit' : True}" domain="[('customer', '=', True),('company_type', '=','company')]" context="{'search_default_customer': 1,'default_name': partner_name, 'default_street': street,'default_street2': street2, 'default_city': city,                                         'default_state_id': state_id, 'default_zip': zip,                                         'default_country_id': country_id, 'default_function': function,                                         'default_phone': phone, 'default_mobile': mobile,                                         'default_email': email_from,                                         'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website,                                         'show_vat': True,                                     }"/>
                                 <field name="is_blacklisted" invisible="1"/>
                                 <field name="partner_is_blacklisted" invisible="1"/>
                                 <label for="email_from" class="oe_inline"/>
@@ -128,7 +128,6 @@
                                         <field name="country_id" placeholder="Country" class="o_address_country" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
                                     </div>
                                     <field name="website" widget="url" placeholder="e.g. www.odoo.com"/>
-                                    <field name = "linkedIn_url" widget="url" placeholder="e.g. linkedin.com/company/voisin-consulting-life-sciences"/>
                                 </group>
 
                                 <group class="mt48">
@@ -196,6 +195,10 @@
 
             <field name="team_id" position="after">
                 <field name="internal_ref" readonly="0" style="color:#08206E;"/>
+            </field>
+
+            <field name="website" position="after">
+                <field name = "linkedIn_url" widget="url" placeholder="e.g. linkedin.com/company/voisin-consulting-life-sciences"/>
             </field>
 
             <xpath expr="//header" position="inside">
@@ -356,7 +359,6 @@
                                 <field name="country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}" required="True"/>
                             </div>
                             <field name="website" widget="url" placeholder="e.g. voisinconsulting.com"/>
-                            <field name = "linkedIn_url" widget="url" placeholder="e.g. linkedin.com/company/voisin-consulting-life-sciences"/>
                         </group>
                         <group>
                             <label for="contact_name"/>
@@ -526,7 +528,13 @@
                 </xpath>    
                 <xpath expr="//page[@name='lead_history']" position="attributes">        
                     <attribute name="invisible">1</attribute>
-                </xpath>  
+                </xpath> 
+
+                <xpath expr="//field[@name='website']" position="after">
+                    <field name = "linkedIn_url" widget="url" placeholder="e.g. linkedin.com/company/voisin-consulting-life-sciences"/>
+                </xpath>
+                
+
             </field>
         </record>
 

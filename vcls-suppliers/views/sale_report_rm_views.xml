@@ -1,0 +1,145 @@
+<odoo>
+    <data>
+        <record id="view_sale_report_rm_research" model="ir.ui.view">
+            <field name="name">Ongoing Sales Search</field>
+            <field name="model">sale.report.rm</field>
+            <field name="arch" type="xml">
+                <search string="Ongoing sales">
+                    <field name="name" filter_domain="[('name','ilike',self)]" string="Ongoing sale"/>
+                    <field name="product_name" string="Product Name"/>
+                    <field name="opportunity_id" string="Opportunity"/>
+                    <field name="order_id" string="Quotation"/>
+                    <field name="program_id" string="Program"/>
+                    <field name="stage_id"/>
+                    <field name="probability"/>
+                    <field name="partner_id"/>
+                    <field name="lead_consultant" string="Lead Consultant"/>
+                    <field name="lead_backup" string="Lead Consultant Backup"/>
+                    <field name="consultant_ids" string="Consultants"/>
+                    <field name="app_country_group_id" string="Application Geographic Area"/>
+                    <field name="user_id" string="Salesperson"/>
+                    <field name="technical_adv_id" string="PIC"/>
+                    <field name="priority" string="Priority"/>
+                    <field name="leader_id" string="Program Leader"/>
+                    <field string="Program stage" name="program_stage_id"/>
+
+                    <field name="state" string="State"/>
+                    <separator/>
+                    <filter string="Late quotations" name="late_quotations"
+                            domain="[('order_id.expected_end_date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+
+                    <group expand="1" string="Group By">
+                        <filter name="groupby_quotation_state" context="{'group_by' : 'state'}" string="Quotation States"/>
+                        <filter name="groupby_opportunity_id" context="{'group_by' : 'opportunity_id'}" string="Opportunities"/>
+                        <filter name="groupby_program_stage_id" context="{'group_by' : 'stage_id'}" string="Opportunity stages"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="cfdt_sale_report_rm_graph">
+            <field name="name">Ongoing Sales Graph</field>
+            <field name="model">sale.report.rm</field>
+            <field name="arch" type="xml">
+                <graph string="Ongoing Sales">
+                    <field name="opportunity_id" type="row"/>
+                    <field name="program_id" type="row"/>
+                    <field name="order_id" type="row"/>
+                    <field name="program_stage_id" type="row"/>
+                    <field name="expected_start_date" type="row"/>
+                    <field name="order_expected_start_date" type="row"/>
+                    <field name="order_expected_end_date" type="row"/>
+                    <field name="state" type="row"/>
+                    <field name="probability" type="measure"/>
+                    <field name="amount_customer_currency" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_sale_report_rm_tree">
+            <field name="name">Ongoing Sales Tree</field>
+            <field name="model">sale.report.rm</field>
+            <field name="arch" type="xml">
+                <tree create="false" decoration-info="state == 'draft'"
+                      decoration-muted="state == 'cancel'"  decoration-success= "state == 'sent'"
+                      decoration-warning="state =='done'" default_order="order_expected_start_date desc">
+                    <field name="opportunity_id"/>
+                    <field name="stage_id"/>
+                    <field name="program_id"/>
+                    <field name="program_stage_id"/>
+                    <field name="order_id"/>
+                    <field name="state"/>
+                    <field name="priority"/>
+                    <field name="probability"/>
+                    <field name="product_name"/>
+                    <field name="order_expected_start_date"/>
+                    <field name="order_expected_end_date"/>
+                    <field name="leader_id"/>
+                    <field name="lead_consultant"/>
+                    <field name="lead_backup"/>
+                    <field name="deliverables"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_sale_report_rm_form">
+            <field name="name">Ongoing Sales Form</field>
+            <field name="model">sale.report.rm</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group colspan="4" name="first_block">
+                            <group string="Opportunity Section" cols="2">
+                                <field name="opportunity_id"/>
+                                <field name="amount_customer_currency"/>
+                                <field name="priority"/>
+                                <field name="stage_id"/>
+                                <field name="probability"/>
+                                <field name="partner_id"/>
+                                <field name="app_country_group_id"/>
+                                <field name="user_id"/>
+                                <field name="technical_adv_id"/>
+                            </group>
+                            <group string="Quotation Section" cols="2">
+                                <field name="order_id"/>
+                                <field name="order_expected_start_date"/>
+                                <field name="order_expected_end_date"/>
+                                <field name="scope_of_work"/>
+                                <field name="deliverables"/>
+                                <field name="state"/>
+                            </group>
+
+                        </group>
+                        <group name="second_block" colspan="4">
+                            <group string="Core-Team Section" cols="2">
+                                <field name="lead_consultant"/>
+                                <field name="lead_backup"/>
+                                <field name="consultant_ids" widget="many2many_tags"/>
+                                <field name="ta_ids" widget="many2many_tags"/>
+                            </group>
+                            <group string="Program Section" cols="2">
+                                <field name="program_id"/>
+                                <field name="product_name"/>
+                                <field name="program_stage_id"/>
+                                <field name="leader_id"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_show_sale_report_rm" model="ir.actions.act_window">
+            <field name="name">Ongoing Sales action</field>
+            <field name="res_model">sale.report.rm</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="search_view_id" ref='view_sale_report_rm_research'/>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-suppliers.view_sale_report_rm_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-suppliers.view_sale_report_rm_form')}),
+                (0, 0, {'view_mode': 'graph', 'view_id': ref('vcls-suppliers.cfdt_sale_report_rm_graph')}),
+            ]"/>
+        </record>
+    </data>
+</odoo>

@@ -46,7 +46,7 @@
         'views/purchase_views.xml',
         'views/project_portal_templates.xml',
         'views/skill_views.xml',
-
+        'views/sale_report_rm_views.xml',
 
         ### MENUS
         'views/supplier_menu.xml', 

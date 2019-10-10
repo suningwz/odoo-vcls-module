@@ -20,6 +20,9 @@
                 <xpath expr="//field[@name='team_id']" position="after">
                     <field name='po_id'/>
                 </xpath>
+                <xpath expr="//button[@name='preview_invoice']" position="after">
+                    <button string="Print Activity report" type="object" class="btn-primary" name="action_print_activity_report"/>
+                </xpath>
             </field>
         </record>
 
@@ -39,11 +42,41 @@
             </field>
         </record>
 
+        <record id='ia_invoices_view_tree' model='ir.ui.view'>
+            <field name="name">ia.invoices.view.tree</field>
+            <field name="model">account.invoice</field>
+            <field name="priority">10</field>
+            <field name="arch" type="xml">
+                <tree string="Invoices">
+                    <field name="name" string="Reference"/>
+                    <field name="company_id"/>
+                    <field name="partner_id"/>
+                    <field name="amount_total"/>
+                    <field name="parent_quotation_timesheet_limite_date"/>
+                    <field name="invoice_sending_date" string="Sending Date"/>
+                    <field name="vcls_due_date"/>
+                    <field name="fiscal_position_id"/>
+                    <field name="state"/>
+                    <field name="origin_sale_orders"/>
+                </tree>
+            </field>
+        </record>
+
         <record id="action_po" model="ir.actions.act_window">
             <field name="name">Client Purchase Order</field>
             <field name="res_model">invoicing.po</field>
             <field name="view_mode">tree</field>
             <field name="view_id" ref="po_view_tree"/>
+        </record>
+
+        <record id="action_ia_invoices" model="ir.actions.act_window">
+            <field name="name">Invoices</field>
+            <field name="res_model">account.invoice</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref='vcls-invoicing.ia_invoices_view_tree'/>
+            <field name="domain">[('partner_id.invoice_admin_id','=', uid)]</field>
+            <field name="context">{'search_default_myinvoices':1,'group_by':['state']}</field>
         </record>
 
         <menuitem id="menu_finance_po" name="Client Purchase Order" parent="account_accountant.menu_accounting" sequence="3" action="action_po"/>

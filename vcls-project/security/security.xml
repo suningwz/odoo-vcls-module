@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Portal users have read access to a project if they are assigned at
+            least one of its projects, and if this project is flagged as portal
+        -->
+        <record id="project_project_rule_portal" model="ir.rule">
+            <field name="name">Project: portal users: portal and assigned to a task</field>
+            <field name="model_id" ref="project.model_project_project"/>
+            <field name="domain_force">[
+                '&amp;',
+                    ('privacy_visibility', '=', 'portal'),
+                    '|',
+                        ('tasks.user_id', 'in', [user.id]),
+                        ('tasks.child_ids.user_id', 'in', [user.id]),
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        </record>
+
+    <record id="project_task_rule_portal" model="ir.rule">
+        <field name="name">Project/Task: portal users: (portal and user in task)</field>
+        <field name="model_id" ref="project.model_project_task"/>
+        <field name="domain_force">[
+            ('project_id.privacy_visibility', '=', 'portal'),
+            ('user_id', '=', user.id),
+        ]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+
+    </data>
+</odoo>

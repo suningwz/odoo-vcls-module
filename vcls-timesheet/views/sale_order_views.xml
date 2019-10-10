@@ -27,6 +27,9 @@
                         groups="hr_timesheet.group_hr_timesheet_user">
                     </button>
                 </xpath>
+                <xpath expr="//field[@name='fiscal_position_id']" position='after'>
+                    <field name="travel_invoicing_ratio"/>
+                </xpath>
             </field>
         </record>
     </data>

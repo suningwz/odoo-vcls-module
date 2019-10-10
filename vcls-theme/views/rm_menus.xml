@@ -126,6 +126,14 @@
             action="vcls-suppliers.action_show_external_consultant"
             sequence="9"
         />
+
+        <menuitem
+            id="menu_rm_ongoing_sales"
+            name="Ongoing Sales"
+            parent="menu_rm_root"
+            action="vcls-suppliers.action_show_sale_report_rm"
+            sequence="7"
+        />
         
     </data>
 </odoo>

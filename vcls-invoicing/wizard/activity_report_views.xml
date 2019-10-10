@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="activity_report_form_view" model="ir.ui.view">
+        <field name="name">Activity report</field>
+        <field name="model">activity.report.groupment</field>
+        <field name="arch" type="xml">
+            <form string="Invoice Sales Order">
+                <p class="oe_grey">
+                    Activity report will be grouped based on the Group by field value.
+                </p>
+                <group>
+                    <field name="invoice_id" invisible="True"/>
+                    <field name="groupment_by" widget="groupmentbyselection"/>
+                    <field name="activity_report_template" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="action_get_report" string="Print Activity report" type="object"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

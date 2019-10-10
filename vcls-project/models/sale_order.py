@@ -52,7 +52,7 @@ class SaleOrder(models.Model):
             'res_model': 'project.task',
             'domain': [('project_id', 'in', (parent_project | child_projects).ids)],
             'context': {
-                'search_default_project_id': parent_project.id,
+                'search_default_project_id': self.project_id.id,
             },
         }
 

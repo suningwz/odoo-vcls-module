@@ -5,3 +5,6 @@ from . import skill
 from . import res_partner
 from . import employee
 from . import purchase
+from . import purchase_line
+from . import analytic
+from . import sale_report_rm
