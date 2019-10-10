@@ -68,14 +68,15 @@ class CalculatePriceWizard(models.TransientModel):
                 uom_hour
             )
             suggested_price += amount
-            line = line_model.create({
-                'name': current_rate.name,
-                'price': amount,
-                'currency_id': current_rate.currency_id.id,
-                'time': forecast.resource_hours,
-                'wizard_id': self.id
-            })
-            res['wizard_line_ids'].append(line.id)
+            if amount > 0 :
+                line = line_model.create({
+                    'name': current_rate.name,
+                    'price': amount,
+                    'currency_id': current_rate.currency_id.id,
+                    'time': forecast.resource_hours,
+                    'wizard_id': self.id
+                })
+                res['wizard_line_ids'].append(line.id)
         res['new_price'] = suggested_price
         return res
 
