@@ -21,7 +21,7 @@ class CalculatePriceWizard(models.TransientModel):
 
     old_price = fields.Monetary(
         'Current Price',
-        related='so_line_id.price_unit',
+        related='so_line_id.price_subtotal',
         readonly=True,
     )
 
