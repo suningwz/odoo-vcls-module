@@ -85,10 +85,26 @@ class SaleOrder(models.Model):
         states={'draft': [('readonly', False)]},
         index=True, default=lambda self: 'New'
     )
+    family_order_count = fields.Integer(
+        'project.project', compute='_get_family_order_count'
+    )
+    family_quotation_count = fields.Integer(
+        'project.project', compute='_get_family_order_count'
+    )
 
     ###############
     # ORM METHODS #
     ###############
+
+    @api.multi
+    def _get_family_order_count(self):
+        for project in self:
+            parent_order, child_order = self._get_family_sales_orders()
+            all_family_orders = (parent_order | child_order)
+            family_orders = all_family_orders.filtered(lambda o: o.state not in ('draft', 'cancel'))
+            family_quotation = all_family_orders.filtered(lambda o: o.state == 'draft')
+            project.family_order_count = len(family_orders)
+            project.family_quotation_count = len(family_quotation)
 
     @api.onchange('parent_sale_order_id')
     def _onchange_parent_sale_order_id(self):
