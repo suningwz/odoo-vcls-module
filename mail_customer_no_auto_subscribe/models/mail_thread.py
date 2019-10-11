@@ -13,11 +13,11 @@ class MailThread(models.AbstractModel):
                 (not model_definition.allow_customer_follow or
                  not model_definition.allow_supplier_follow):
             domain = []
-            if model_definition.allow_customer_follow:
+            if not model_definition.allow_customer_follow:
                 domain = expression.OR([
                     domain, [('customer', '=', True)]
                 ])
-            if model_definition.allow_supplier_follow:
+            if not model_definition.allow_supplier_follow:
                 domain = expression.OR([
                     domain, [('supplier', '=', True)]
                 ])
