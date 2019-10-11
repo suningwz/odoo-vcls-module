@@ -17,6 +17,7 @@ class CoreTeam(models.Model):
             vals['consultant_ids'] = [(4, vals['consultant_ids'])]
         return super(CoreTeam, self).write(vals)
 
+
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
@@ -36,18 +37,16 @@ class SaleOrderLine(models.Model):
 
     @api.model
     def create(self, vals):
-        if self.env.user.context_data_integration:
+        if self.env.user.context_data_integration and vals.get('ts_invoicing_mode') \
+                and not vals.get('display_type'):
             invoicing_mode = vals.get('ts_invoicing_mode')
             order = self.env['sale.order'].browse(vals.get('order_id'))
             if not order.ts_invoicing_mode:
                 order.ts_invoicing_mode = invoicing_mode
-            elif order.ts_invoicing_mode == invoicing_mode:
-                pass
-            else:
+            elif order.ts_invoicing_mode != invoicing_mode:
                 if order.child_ids:
                     vals['order_id'] = order.child_ids[0].id
                 else:
-                    new_order = order.copy({'ts_invoicing_mode': invoicing_mode,
-                                            'parent_id': order.id, 'order_line': []})
+                    new_order = order.copy({'ts_invoicing_mode': invoicing_mode, 'parent_id': order.id, 'order_line': []})
                     vals['order_id'] = new_order.id
         return super(SaleOrderLine, self).create(vals)
