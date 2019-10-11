@@ -1,6 +1,23 @@
 <odoo>
     <data>
 
+
+        <record id="action_view_forecast_from_task" model="ir.actions.act_window">
+            <field name="name">Forecast</field>
+            <field name="res_model">project.forecast</field>
+            <field name="view_mode">gantt,tree,form</field>
+            <field name="view_ids"
+                eval="[(5,0,0),
+                    (0, 0, {'view_mode': 'gantt', 'view_id': ref('project_forecast_view_gantt')}),
+                    (0, 0, {'view_mode': 'form', 'view_id': ref('project_forecast_view_form')}),
+                    (0, 0, {'view_mode': 'tree', 'view_id': ref('project_forecast.project_forecast_view_tree')})
+                ]"/>
+            <field name="context">{
+                'group_by': ['project_id', 'deliverable_id', 'task_id'],
+                'search_default_task_id': active_id,
+            }</field>
+        </record>
+
         <!-- Override of the initial view to add custom fields -->
         <record id="view_task_form2_inherit" model="ir.ui.view">
             <field name="name">view_task_form2_inherit</field>
@@ -8,10 +25,10 @@
             <field name="inherit_id" ref="project.view_task_form2"/>
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='toggle_active']" position="before">
-                    <button type="object"
+                    <button type="action"
                             class="oe_stat_button"
                             icon="fa-calendar"
-                            name="action_view_forecast"
+                            name="%(action_view_forecast_from_task)d"
                             string="Forecast">
                     </button>
                 </xpath>
