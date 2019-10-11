@@ -19,6 +19,10 @@ class SaleOrder(models.Model):
         parent_project_id, child_ids = self._get_family_projects()
         action = self.env.ref('vcls-project.project_forecast_action').read()[0]
         action['domain'] = [('project_id', 'in', (parent_project_id | child_ids).ids)]
+        action['context'] = {
+            'active_id': self.id,
+            'group_by': ['project_id', 'deliverable_id', 'task_id'],
+        }
         return action
 
     @api.multi

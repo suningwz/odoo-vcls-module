@@ -59,14 +59,18 @@ class ProjectForecast(models.Model):
     @api.multi
     def write(self, values):
         for forecast in self:
-            values['hourly_rate'] = forecast._get_hourly_rate(values)
+            employee_id = forecast.employee_id.id
+            project_id = forecast.project_id.id
+            values['hourly_rate'] = forecast._get_hourly_rate(employee_id, project_id)
             result = super(ProjectForecast, forecast).write(values)
         self.sudo()._force_forecast_hours()
         return result
 
     @api.model
     def create(self, values):
-        h_r = self._get_hourly_rate(values)
+        employee_id = values.get('employee_id')
+        project_id = values.get('project_id')
+        h_r = self._get_hourly_rate(employee_id, project_id)
         if h_r:
             values['hourly_rate'] = h_r
         forecast = super(ProjectForecast, self).create(values)
@@ -80,11 +84,8 @@ class ProjectForecast(models.Model):
             search_domain = ['|', ('project_id', 'child_of', [self.env.context['default_project_id']])] + search_domain
         return tasks.sudo().search(search_domain, order=order)
     
-    @api.multi
-    def _get_hourly_rate(self, vals):
-        self.ensure_one()
-        employee_id = vals.get('employee_id', self.employee_id.id)
-        project_id = vals.get('project_id', self.project_id.id)
+    @api.model
+    def _get_hourly_rate(self, employee_id, project_id):
         if project_id and employee_id:
             rate_map = self.env['project.sale.line.employee.map'].search([
                 ('employee_id', '=', employee_id),
@@ -94,3 +95,21 @@ class ProjectForecast(models.Model):
             if rate_map:
                 return rate_map.price_unit
         return 0.0
+
+    # Tis server action is meant to return a window action with proper model and active id
+    # This is a solution to allow getting the right computed domain when page is being refreshed,
+    @api.model
+    def _action_server_forecast(self, server_action_id, active_model=False):
+        active_id = self._context.get('active_id') or self._context.get('params', {}).get('active_id')
+        if active_id and active_model:
+            action = self.env[active_model].browse(active_id).action_view_forecast()
+            # fake id to force coming back to the server action that triggers this method,
+            # when user refreshes the page
+            action['id'] = server_action_id
+            return action
+        return self.env.ref('vcls-project.project_forecast_action').read()[0]
+
+    @api.model
+    def _action_server_forecast_from_order(self):
+        server_action_id = self.env.ref('vcls-project.action_server_project_forecast_from_order').id
+        return self._action_server_forecast(server_action_id, 'sale.order')
