@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 import lxml
 from itertools import groupby
 from datetime import date
+from odoo.exceptions import UserError
 
 
 import logging
@@ -99,6 +100,8 @@ class Invoice(models.Model):
 
     def action_print_activity_report(self):
         ctx = self._context.copy()
+        if not self.timesheet_ids:
+            raise UserError(_('There is no timesheet associated with the invoice: %s') % self.name)
         ctx.update(default_invoice_id=self.id, invoice_id=self.id)
         activity_form_id = self.env.ref('vcls-invoicing.activity_report_form_view').id
         return {
