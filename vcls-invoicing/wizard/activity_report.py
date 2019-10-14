@@ -4,7 +4,8 @@ from odoo.exceptions import ValidationError
 
 class ActivityReportGroupment(models.TransientModel):
     _name = 'activity.report.groupment'
-    
+    _description = 'activity.report.groupment'
+
     def get_activity_report_template(self):
         if self._context.get('invoice_id'):
             invoice_id = self.env['account.invoice'].browse(self._context['invoice_id'])
