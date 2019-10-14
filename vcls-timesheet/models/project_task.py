@@ -17,6 +17,11 @@ class ProjectTask(models.Model):
         string='Default Seniority'
     )
     date_start = fields.Datetime(default=False)
+    last_updated_timesheet_date = fields.Datetime(
+        compute='get_last_updated_timesheet_date',
+        compute_sudo=True,
+        store=True
+    )
 
     @api.onchange('sale_line_id')
     def _onchange_lead_id(self):
@@ -36,9 +41,6 @@ class ProjectTask(models.Model):
         seniority_level_id = connected_employee_id.seniority_level_id
         for line in self:
             line.connected_employee_seniority_level_id = seniority_level_id
-
-    last_updated_timesheet_date = fields.Datetime(compute='get_last_updated_timesheet_date', compute_sudo=True,
-                                                  store=True)
 
     @api.model
     def create(self, vals):
