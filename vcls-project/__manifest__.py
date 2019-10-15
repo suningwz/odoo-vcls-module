@@ -32,6 +32,7 @@
         'project_timeline_task_dependency',
         'sale_timesheet',
         'account',
+        'hr_timesheet',
         ],
 
     # always loaded
