@@ -60,6 +60,9 @@
                 <field name="unit_amount" position="replace">
                     <field name="unit_amount" string="Hours Spent" required="1"/>
                 </field>
+                <field name="name" position="after">
+                    <field name="lc_comment" string="Internal Comment" required="0"/>
+                </field>
                 <xpath expr="//field[@name='employee_id']" position="after">
                     <field name="time_category_id" context="{'task_filter':True,'task_id':task_id}" option="{'no_create_edit': True}"/>
                 </xpath>
