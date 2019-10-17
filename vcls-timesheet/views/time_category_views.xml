@@ -60,7 +60,7 @@
                 <field name="unit_amount" position="replace">
                     <field name="unit_amount" string="Hours Spent" required="1"/>
                 </field>
-                <field name="name" position="after">
+                <field name="unit_amount" position="after">
                     <field name="lc_comment" string="Internal Comment" required="0"/>
                 </field>
                 <xpath expr="//field[@name='employee_id']" position="after">
