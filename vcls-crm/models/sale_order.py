@@ -20,15 +20,19 @@ class SaleOrder(models.Model):
     
     company_id = fields.Many2one(default=lambda self: self.env.ref('vcls-hr.company_VCFR'))
 
-    business_mode = fields.Selection([
-        #('t_and_m', 'T&M'), 
-        #('fixed_price', 'Fixed Price'), 
+    business_mode = fields.Selection([ 
         ('all', 'All'),
         ('services', 'Services'),
         ('rates', 'Rates'),
         ('subscriptions', 'Subscriptions'),
         ], default='all',
         string="Product Type")
+    
+    invoicing_mode = fields.Selection([
+        ('tm', 'Time & Material'), 
+        ('fixed_price', 'Fixed Price & Monthly Fees'), 
+        ], default='tm',
+        string="Invoicing Mode")
 
     deliverable_id = fields.Many2one(
         'product.deliverable',
