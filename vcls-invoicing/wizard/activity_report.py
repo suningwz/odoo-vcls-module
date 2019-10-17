@@ -1,10 +1,11 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import ValidationError
 
 
 class ActivityReportGroupment(models.TransientModel):
     _name = 'activity.report.groupment'
-    
+    _description = 'activity.report.groupment'
+
     def get_activity_report_template(self):
         if self._context.get('invoice_id'):
             invoice_id = self.env['account.invoice'].browse(self._context['invoice_id'])
@@ -24,7 +25,7 @@ class ActivityReportGroupment(models.TransientModel):
     def get_grouping(self):
         self.ensure_one()
         if not self.invoice_id.timesheet_ids:
-            raise UserError('No timesheet associated with the invoice: %s' % self.invoice_id.name)
+            return []
         domain = [('id', 'in', self.invoice_id.timesheet_ids.ids)]
         analytic_acc = self.env['account.analytic.line']
         result = []

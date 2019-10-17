@@ -68,10 +68,9 @@ class AnalyticLine(models.Model):
 
     so_line_unit_price = fields.Monetary(
         'Sales Oder Line Unit Price',
-        readonly = True,
-        #related='so_line.price_unit',
+        readonly=True,
         store=True,
-        default = 0.0,
+        default=0.0,
     )
 
     so_line_currency_id = fields.Many2one(
@@ -81,8 +80,10 @@ class AnalyticLine(models.Model):
         string='Sales Order Currency',
     )
     adj_reason_required = fields.Boolean()
-    main_project_id = fields.Many2one('project.project', string='Main Project',
-                                      domain=[('parent_id', '=', False)])
+    main_project_id = fields.Many2one(
+        'project.project', string='Main Project',
+        domain=[('parent_id', '=', False)],
+    )
 
     @api.model
     def show_grid_cell(self, domain=[], column_value='', row_values={}):
@@ -259,7 +260,6 @@ class AnalyticLine(models.Model):
     @api.multi
     def finalize_pc_review(self):
         self._pc_change_state('invoiceable')
-        #self._finalize_pc_review()
 
     @api.multi
     def _pc_change_state(self,new_stage='invoiceable'):
@@ -311,44 +311,14 @@ class AnalyticLine(models.Model):
     @api.multi
     def _finalize_pc_review(self):
         self._pc_change_state('invoiceable')
-        """context = self.env.context
-        timesheet_ids = context.get('active_ids',[])
-        timesheets = self.env['account.analytic.line'].browse(timesheet_ids)
-        if len(timesheets) == 0:
-            raise ValidationError(_("Please select at least one record!"))
-
-        timesheets_in = timesheets.filtered(lambda r: (r.stage_id in ['pc_review','carry_forward']) and (r.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or r.env.user.has_group('vcls-hr.vcls_group_controlling')))
-        timesheets_out = (timesheets - timesheets_in) if timesheets_in else timesheets
-
-        adj_validation_timesheets = timesheets_in.filtered(lambda r: r.required_lc_comment == True)
-        invoiceable_timesheets = (timesheets_in - adj_validation_timesheets) if adj_validation_timesheets else timesheets_in
-
-        adj_validation_timesheets.write({'stage_id': 'adjustment_validation'})
-        invoiceable_timesheets.write({'stage_id': 'invoiceable'})
-
-        if len(timesheets_out) > 0:
-            message = "You don't have the permission for the following timesheet(s) :\n"
-            for timesheet in timesheets_out:
-                message += " - " + timesheet.name + "\n"
-            raise ValidationError(_(message))"""
 
     @api.multi
     def set_outofscope(self):
         self._pc_change_state('outofscope')
-        """if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'):
-            self.env['account.analytic.line'].browse(self.env.context.get('active_ids', [])).write(
-                {'stage_id': 'outofscope'})
-        else:
-            raise ValidationError(_("You don't have the permission to set timesheets to Out of Scope stage."))"""
 
     @api.multi
     def set_carry_forward(self):
         self._pc_change_state('carry_forward')
-        """if self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'):
-            self.env['account.analytic.line'].browse(self._context.get('active_ids', False)).write(
-                {'stage_id': 'carry_forward'})
-        else:
-            raise ValidationError(_("You don't have the permission to set timesheets to Carry Forward stage."))"""
 
     @api.depends('user_id')
     def _compute_employee_id(self):
@@ -386,6 +356,10 @@ class AnalyticLine(models.Model):
     def onchange_project_id(self):
         if self._context.get('desc_order_display'):
             self.project_id = self.task_id.project_id
+        if not self.main_project_id and self.task_id:
+            main_project_id = self.task_id.project_id
+            self.main_project_id = main_project_id.parent_id or main_project_id
+
 
     @api.multi
     def button_details_lc(self):

@@ -5,7 +5,26 @@ from odoo import models, fields, tools, api, _
 class SaleOrder(models.Model):
 
     _inherit = 'sale.order'
-    
+    parent_project_id = fields.Many2one(
+        'project.project', compute='_get_parent_project_id'
+    )
+    family_task_count = fields.Integer(
+        'project.project', compute='_get_family_task_count'
+    )
+
+    @api.multi
+    def _get_parent_project_id(self):
+        for project in self:
+            project.parent_project_id = project.parent_id.project_id if self.parent_id else self.project_id
+
+    @api.multi
+    def _get_family_task_count(self):
+        for project in self:
+            parent_project, child_projects = self._get_family_projects()
+            family_projects = (parent_project | child_projects)
+            project.family_task_count = len(family_projects.mapped('tasks'))
+
+
     @api.multi
     def quotation_program_print(self):
         """ Print all quotation related to the program

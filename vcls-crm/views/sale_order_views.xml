@@ -10,16 +10,20 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='action_view_timesheet']" position="after">
+                    <field name="family_order_count" invisible="1"/>
+                    <field name="family_quotation_count" invisible="1"/>
                     <button type="object"
                         name="action_view_family_quotations"
                         class="oe_stat_button"
                         icon="fa-pencil-square-o"
+                        attrs="{'invisible': [('family_quotation_count', '=', 0)]}"
                         string="Quotations">
                     </button>
                     <button type="object"
                         name="action_view_family_sales_orders"
                         class="oe_stat_button"
                         icon="fa-pencil-square-o"
+                        attrs="{'invisible': [('family_order_count', '=', 0)]}"
                         string="Sales Orders">
                     </button>
                 </xpath>

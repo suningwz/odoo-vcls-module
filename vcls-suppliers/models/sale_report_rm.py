@@ -58,13 +58,36 @@ class SaleReportRM(models.Model):
     ], string='Status', readonly=True)
     
     # Core_team_id
+    core_team_id = fields.Many2one(
+        'core.team',
+        string='Core team'
+    )
     lead_consultant = fields.Many2one(
         'hr.employee',
         string='Lead Consultant', readonly=True
     )
     lead_backup = fields.Many2one('hr.employee', string='Lead Consultant Backup', readonly=True)
-    consultant_ids = fields.Many2many(comodel_name='hr.employee', string='Consultants', readonly=True)
-    ta_ids = fields.Many2many(comodel_name='hr.employee', string='Ta', readonly=True)
+    consultant_ids = fields.Many2many(
+        comodel_name='hr.employee',
+        string='Consultants',
+        readonly=True,
+        compute='_get_core_team_data',
+        search=lambda self, operator, value: [('core_team_id.consultant_ids', operator, value)],
+        store=False,
+    )
+    ta_ids = fields.Many2many(
+        comodel_name='hr.employee',
+        string='Ta', readonly=True,
+        compute='_get_core_team_data',
+        search=lambda self, operator, value: [('core_team_id.ta_ids', operator, value)],
+        store=False,
+    )
+
+    @api.one
+    @api.depends('core_team_id')
+    def _get_core_team_data(self):
+        self.consultant_ids = self.core_team_id.consultant_ids.ids
+        self.ta_ids = self.core_team_id.ta_ids.ids
 
     def _select(self):
         select_str = """
@@ -90,6 +113,7 @@ class SaleReportRM(models.Model):
         o.state as state,
         o.name as name,
         team.lead_consultant as lead_consultant,
+        team.id as core_team_id,
         team.lead_backup as lead_backup,
         (SELECT string_agg(deli.name, ', ') from sale_order as o join product_deliverable as deli
         on deli.id = o.deliverable_id) as deliverables
@@ -127,8 +151,7 @@ class SaleReportRM(models.Model):
         o.scope_of_work,
         o.state,
         o.name,
-        team.lead_consultant,
-        team.lead_backup
+        team.id
         """
         return group_by_str
 

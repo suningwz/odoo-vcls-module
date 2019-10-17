@@ -6,17 +6,22 @@
             <field name="inherit_id" ref="vcls-crm.view_order_form" />
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='action_view_timesheet']" position="after">
+                    <field name="parent_project_id" invisible="1"/>
+                    <field name="family_task_count" invisible="1"/>
                     <button type="object"
                         name="action_view_family_parent_project"
                         class="oe_stat_button"
                         icon="fa-pencil-square"
+                        attrs="{'invisible': [('parent_project_id', '=', False)]}"
                         string="Project">
                     </button>
+                    <button class="oe_stat_button" name="core_team" type="object" icon="fa-stack-exchange" string="Core Team" />
                     <button type="object"
                         name="action_view_family_parent_tasks"
                         class="oe_stat_button"
                         icon="fa-tasks"
                         string="Tasks"
+                        attrs="{'invisible': [('family_task_count', '=', 0)]}"
                         groups="project.group_project_user">
                     </button>
                 </xpath>
@@ -26,9 +31,6 @@
                 <button name='action_view_project_ids' position="attributes">
                     <attribute name="invisible">0</attribute>
                 </button>
-                <xpath expr="//div[@name='button_box']" position="inside">
-                    <button class="oe_stat_button" name="core_team" type="object" icon="fa-stack-exchange" string="Core Team" />
-                </xpath>
                 <xpath expr="//header" position="inside">
                     <button name="quotation_program_print" string="Print all program's quotation" type="object" states="draft" class="btn-primary"/>
                 </xpath>

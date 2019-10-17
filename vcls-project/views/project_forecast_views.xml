@@ -48,9 +48,9 @@
                  edit="true"
                  date_start="start_date"
                  date_stop="end_date"
-                 fold_last_level="true"
+                 fold_last_level=""
                  round_dnd_dates="true"
-                 consolidation="time"
+                 consolidation="resource_hours"
                  consolidation_max='{"project_id": 100}'
                  consolidation_exclude="exclude">
             </gantt>
@@ -69,6 +69,7 @@
                         <group>
                             <field name="employee_id" string="Assign Too" readonly="1"/>
                             <field name="project_id" readonly="1"/>
+                            <field name="deliverable_id" readonly="1"/>
                             <field name="task_id" readonly="1"/>
                         </group>
                         <group invisible="context.get('view_grid_add_line')">
@@ -79,7 +80,8 @@
                             <div attrs="{'invisible': [('forecast_uom', '=', 'hour')]}">
                                 <field name="resource_time" class="oe_inline"/> day(s)
                             </div>
-                            <field name="time" string="% Time" invisible="context.get('view_grid_add_line')"/>
+                            <field name="time" string="% Time" invisible="1"/>
+                            <field name="comment"/>
                         </group>
                         <group groups="base.group_no_one">
                             <field name="start_date" readonly="1"/>
@@ -112,6 +114,69 @@
             <field name="sequence" eval="1"/>
             <field name="view_id" ref="project_forecast_view_form"/>
             <field name="act_window_id" ref="project_forecast_action"/>
+        </record>
+
+        <record model="ir.actions.server" id="action_server_project_forecast_from_order">
+            <field name="name">Forecast</field>
+            <field name="model_id" ref="project_forecast.model_project_forecast"/>
+            <field name="type">ir.actions.server</field>
+            <field name="state">code</field>
+            <field name="code">
+                action = env['project.forecast']._action_server_forecast_from_order()
+            </field>
+        </record>
+
+        <record id="action_forecast_from_project" model="ir.actions.act_window">
+            <field name="name">Forecast</field>
+            <field name="res_model">project.forecast</field>
+            <field name="view_mode">gantt,tree,form</field>
+            <field name="view_ids"
+                eval="[(5,0,0),
+                      (0, 0, {'view_mode': 'gantt', 'view_id': ref('project_forecast_view_gantt')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('project_forecast_view_form')}),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('project_forecast.project_forecast_view_tree')})
+                ]"/>
+            <field name="context">{
+                'group_by': ['project_id', 'deliverable_id', 'task_id'],
+                'search_default_project_id': active_id,
+            }</field>
+        </record>
+
+        <record id="project_view_form_inherit_project_forecast" model="ir.ui.view">
+            <field name="name">project.view.form.inherit.project.forecast</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project_forecast.project_view_form_inherit_project_forecast"/>
+            <field name="arch" type="xml">
+                <button name="action_view_project_forecast" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </button>
+                <button name="action_view_project_forecast" position="after">
+                    <button class="oe_stat_button" type="action" attrs="{'invisible':[('allow_forecast', '=', False)]}"
+                        name="%(vcls-project.action_forecast_from_project)d" icon="fa-tasks">
+                        <span>Forecast</span>
+                    </button>
+                </button>
+            </field>
+        </record>
+
+        <record id="project_view_kanban_inherit_project_forecast" model="ir.ui.view">
+            <field name="name">project.kanban.inherit.project.forecast</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project_forecast.project_view_kanban_inherit_project_forecast"/>
+            <field name="priority">32</field>
+            <field name="arch" type="xml">
+                <xpath expr="//a[@name='action_view_project_forecast']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//a[@name='action_view_project_forecast']" position="after">
+                    <a t-if="record.allow_forecast.raw_value" class="o_project_kanban_box"
+                       name="%(vcls-project.action_forecast_from_project)d" type="action">
+                        <div>
+                            <span class="o_label">Forecast</span>
+                        </div>
+                    </a>
+                </xpath>
+            </field>
         </record>
 
     </data>

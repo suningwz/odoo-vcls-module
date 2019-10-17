@@ -17,6 +17,11 @@ class ProjectTask(models.Model):
         string='Default Seniority'
     )
     date_start = fields.Datetime(default=False)
+    last_updated_timesheet_date = fields.Datetime(
+        compute='get_last_updated_timesheet_date',
+        compute_sudo=True,
+        store=True
+    )
 
     @api.onchange('sale_line_id')
     def _onchange_lead_id(self):
@@ -36,9 +41,6 @@ class ProjectTask(models.Model):
         seniority_level_id = connected_employee_id.seniority_level_id
         for line in self:
             line.connected_employee_seniority_level_id = seniority_level_id
-
-    last_updated_timesheet_date = fields.Datetime(compute='get_last_updated_timesheet_date', compute_sudo=True,
-                                                  store=True)
 
     @api.model
     def create(self, vals):
@@ -98,6 +100,7 @@ class ProjectTask(models.Model):
             'group_by': ['project_id', 'deliverable_id', 'task_id'],
             'default_task_id': self.id,
             'default_project_id': self.project_id.id,
+            'default_search_task_id': self.id,
         }
         return action
 
@@ -146,12 +149,14 @@ class Project(models.Model):
         return super(Project, self)._search(args, offset=offset, limit=limit, order=order,
                                             count=count, access_rights_uid=access_rights_uid)
 
-    def action_view_project_forecast(self):
+    @api.multi
+    def _action_view_project_forecast(self):
         self.ensure_one()
         action = self.env.ref('vcls-project.project_forecast_action').read()[0]
         action['domain'] = [('project_id', '=', self.id)]
         action['context'] = {
             'group_by': ['project_id', 'deliverable_id', 'task_id'],
             'default_project_id': self.id,
+            'active_id': self.id,
         }
         return action

@@ -32,6 +32,7 @@
         'project_timeline_task_dependency',
         'sale_timesheet',
         'account',
+        'hr_timesheet',
         ],
 
     # always loaded
@@ -48,7 +49,7 @@
         'views/task_type_views.xml',
         'views/dev_project_views.xml',
         'views/dev_task_views.xml',
-        'views/task_views.xml',
+        
         'views/employee_views.xml',
         'views/product_views.xml',
         'views/sale_order_views.xml',
@@ -59,9 +60,13 @@
 
         ### MENUS ###
         'views/dev_project_menu.xml',
+
         'views/project_views.xml',
         'views/program_views_menu.xml',
+        
+        
         'views/project_forecast_views.xml',
+        'views/task_views.xml',
     ],
 
     # only loaded in demonstration mode
