@@ -32,6 +32,8 @@ class ProjectForecast(models.Model):
         related='task_id.sale_line_id.product_id.deliverable_id'
     )
 
+    comment = fields.Html()
+
     @api.depends('task_id.date_start', 'task_id.date_end')
     def _get_start_end_date(self):
         for forecast in self:
