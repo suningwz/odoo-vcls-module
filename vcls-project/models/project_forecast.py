@@ -60,11 +60,14 @@ class ProjectForecast(models.Model):
 
     @api.multi
     def write(self, values):
+        result = super(ProjectForecast, self).write(values)
         for forecast in self:
             employee_id = forecast.employee_id.id
             project_id = forecast.project_id.id
-            values['hourly_rate'] = forecast._get_hourly_rate(employee_id, project_id)
-            result = super(ProjectForecast, forecast).write(values)
+            hourly_rate = forecast._get_hourly_rate(employee_id, project_id)
+            super(ProjectForecast, forecast).write({
+                'hourly_rate': hourly_rate,
+            })
         self.sudo()._force_forecast_hours()
         return result
 
