@@ -34,6 +34,7 @@ class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     old_id = fields.Char("Old Id", copy=False, readonly=True)
+    milestone_date = fields.Date("Milestone date")
 
     @api.model
     def create(self, vals):
