@@ -63,7 +63,6 @@ class Project(models.Model):
     is_project_manager = fields.Boolean(compute="_get_is_project_manager")
     scope_of_work = fields.Html(string='Scope of work')
     orders_count = fields.Integer(compute='compute_orders_count')
-    invoices_count = fields.Integer(compute='compute_invoices_count')
     tasks_count = fields.Integer()
     timesheets_count = fields.Integer()
     lead_consultant = fields.Many2one('hr.employee', related='core_team_id.lead_consultant', string='Lead Consultant')
@@ -74,7 +73,30 @@ class Project(models.Model):
     ta_ids = fields.Many2many('hr.employee', relation='rel_project_tas', related='core_team_id.ta_ids',
                               string='Ta')
 
-    #extended = fields.Boolean('To be extended later')
+    invoices_count = fields.Integer(compute='_get_out_invoice_ids')
+    out_invoice_ids = fields.Many2many(
+        string='Out invoices',
+        compute='_get_out_invoice_ids',
+        comodel_name="account.invoice",
+        relation="project_out_invoice_rel",
+        column1="project_id",
+        column2="invoice_id",
+        compute_sudo=True, store=True,
+        copy=False, readonly=True
+    )
+
+    @api.one
+    @api.depends(
+        'sale_line_id.order_id.order_line.invoice_lines',
+        'tasks.sale_order_id',
+    )
+    def _get_out_invoice_ids(self):
+        # use of sudo here because of the non possibility of lc to read some invoices
+        project_sudo = self.sudo()
+        out_invoice_ids = project_sudo.mapped('sale_line_id.order_id.invoice_ids') \
+            | project_sudo.mapped('tasks.sale_order_id.invoice_ids')
+        self.out_invoice_ids = out_invoice_ids
+        self.invoices_count = len(out_invoice_ids)
 
     @api.multi
     @api.depends(
@@ -116,15 +138,14 @@ class Project(models.Model):
     def sale_orders_tree_view(self):
         action = self.env.ref('sale.action_quotations').read()[0]
         action['domain'] = [('project_id', 'child_of', self.id)]
+        action['context'] = {}
         return action
 
     @api.multi
     def invoices_tree_view(self):
+        self.ensure_one()
         action = self.env.ref('account.action_invoice_tree1').read()[0]
-        projects = self.env['project.project'].search([('id', 'child_of', self.id)])
-        sale_orders = projects.mapped('sale_line_id.order_id') | projects.mapped('tasks.sale_order_id')
-        invoices = sale_orders.mapped('invoice_ids').filtered(lambda inv: inv.type == 'out_invoice')
-        action['domain'] = [('id', 'in', invoices.ids)]
+        action['domain'] = [('id', 'in', self.out_invoice_ids.ids)]
         return action
 
     @api.multi
@@ -156,11 +177,6 @@ class Project(models.Model):
     ###############
     @api.model
     def create(self, vals):
-        """if 'project_type' in vals: 
-            if vals['project_type'] == 'client':
-                
-            else:
-                vals['privacy_visibility'] = 'followers'"""
 
         #default visibility
         vals['privacy_visibility'] = 'employees'
@@ -249,14 +265,6 @@ class Project(models.Model):
     def compute_orders_count(self):
         for project in self:
             project.orders_count = self.env['sale.order'].search_count([('project_id', 'child_of', project.id)])
-
-    @api.multi
-    def compute_invoices_count(self):
-        self.ensure_one()
-        projects = self.env['project.project'].search([('id', 'child_of', self.id)])
-        sale_orders = projects.mapped('sale_line_id.order_id') | projects.mapped('tasks.sale_order_id')
-        invoices = sale_orders.mapped('invoice_ids').filtered(lambda inv: inv.type == 'out_invoice')
-        self.invoices_count = len(invoices)
 
     @api.multi
     def toggle_active(self):

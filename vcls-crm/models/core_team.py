@@ -67,15 +67,14 @@ class SaleOrder(models.Model):
         string = "Core Team"
     )
 
-
     def core_team(self):
         view_id = self.env.ref('vcls-crm.view_core_team_form').id
 
         for rec in self:
-            if not rec.core_team_id: #if core team not defined by parent, then we create a default one
-                rec.core_team_id = rec.env['core.team'].create({'name':"Team {}".format(rec.internal_ref)})
-                #rec.write({'core_team_id':team})
-                #_logger.info("{} | {}".format(team.name, rec.core_team_id.name))
+            # if core team not defined by parent, then we create a default one
+            if not rec.core_team_id:
+                # use sudo as Lead consultant cannot write on sales orders
+                rec.sudo().core_team_id = self.env['core.team'].create({'name': "Team {}".format(rec.internal_ref)})
 
             return {
                 'name': 'Core Team',
