@@ -11,7 +11,7 @@
             <!-- random number -->
         </record>
 
-        <!-- NEED REFINMENTS -->
+        <!-- NEED REFINEMENTS -->
         <record id="group_bd_assistant" model="res.groups">
             <field name="name">BD Assistant</field>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
@@ -29,7 +29,7 @@
             <field name="implied_ids" eval="[(4, ref('vcls-crm.group_account_manager'))]"/>
             <field name="category_id" ref="vcls-crm.module_category_bus_dev"/>
         </record>
-        <!-- NEED REFINMENTS -->
+        <!-- NEED REFINEMENTS -->
 
     </data>
 </odoo>

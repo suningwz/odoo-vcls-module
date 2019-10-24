@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, tools, _
-from odoo.addons.base.models.ir_ui_menu import IrUiMenu
-import operator
 
 
 class IrUiMenu(models.Model):

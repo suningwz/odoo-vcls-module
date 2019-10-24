@@ -7,14 +7,14 @@
     <!-- lc group inherits this rule, and we don't want that  -->
     <record model="ir.rule" id="project.project_public_members_rule">
         <field name="perm_read" eval="1"/>
-        <field name="perm_create" eval="0"/>
         <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="0"/>
     </record>
     <record model="ir.rule" id="project.task_visibility_rule">
         <field name="perm_read" eval="1"/>
-        <field name="perm_create" eval="0"/>
         <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
         <field name="perm_unlink" eval="0"/>
     </record>
 
@@ -69,5 +69,6 @@
       ]</field>
       <field name="groups" eval="[(4,ref('vcls_lc'))]"/>
     </record>
+
 
 </odoo>

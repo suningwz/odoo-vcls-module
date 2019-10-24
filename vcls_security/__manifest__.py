@@ -22,6 +22,7 @@
         'security/vcls_groups.xml',
         'security/ir.model.access.csv',
         'security/lc_security.xml',
+        'security/account_manager_security.xml',
     ],
     'demo': [
     ],
