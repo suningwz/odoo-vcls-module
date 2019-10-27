@@ -8,7 +8,7 @@ class IrModelAccess(models.Model):
     _inherit = 'ir.model.access'
 
     @api.model
-    def _disable_cwd_access(self, model, mode='read', group='', raise_exception=True):
+    def _disable_cwd_access(self, model, mode='read', group=None, allowed_group=None, raise_exception=True):
         """
         Disable create/write/unlink access for a specific model and group
         :param model: name of the model
@@ -17,7 +17,7 @@ class IrModelAccess(models.Model):
         :param raise_exception: raise exception or not
         :return: Boolean
         """
-        if not group:
+        if not group or (allowed_group and self.env.user.has_group(allowed_group)):
             return True
         read_only_models = ('product.template', 'product.product', 'account.invoice', 'account.invoice.line')
         if model in read_only_models and \

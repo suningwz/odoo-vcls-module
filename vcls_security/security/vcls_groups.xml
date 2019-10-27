@@ -21,5 +21,10 @@
             ]"/>
     </record>
 
+    <record id="group_bd_admin" model="res.groups">
+        <field name="name">BD Admin</field>
+        <field name="implied_ids" eval="[(4, ref('vcls_account_manager'))]"/>
+    </record>
+
 </data>
 </odoo>

@@ -177,7 +177,7 @@
             name="Configuration"
             parent="menu_bd_root"
             sequence="18"
-            groups="vcls-hr.vcls_group_superuser_lvl1"
+            groups="vcls-hr.vcls_group_superuser_lvl1,vcls_security.group_bd_admin"
         />
 
         <!-- Teams -->
