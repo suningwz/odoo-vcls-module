@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_project_project_lc,project.project on lc,project.model_project_project,vcls_lc,1,1,1,0
+access_sale_order_line_lc,sale.order.line.lc,sale.model_sale_order_line,vcls_security.vcls_lc,1,0,0,0
+access_sale_order_lc,sale.order.lc,sale.model_sale_order,vcls_security.vcls_lc,1,0,0,0
+access_product_product_attribute_custom_value_lc,product.attribute.custom value lc,sale.model_product_attribute_custom_value,vcls_lc,1,0,0,0
+access_purchase_order_lc,purchase.order.lc,purchase.model_purchase_order,vcls_lc,1,0,0,0
+access_purchase_order_line_lc,purchase.order.line.lc,purchase.model_purchase_order_line,vcls_lc,1,0,0,0
+access_project_forecast_lc,project.forecast,project_forecast.model_project_forecast,vcls_lc,1,1,1,0
+
+access_project_project_account_manager,project.project on account_manager,project.model_project_project,vcls_security.vcls_account_manager,1,1,0,0

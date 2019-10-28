@@ -85,7 +85,7 @@
             web_icon="vcls-crm,static/description/icon.png"
             sequence="7"
             active="True"
-            groups="vcls-hr.vcls_group_superuser_lvl1"
+            groups="vcls-hr.vcls_group_superuser_lvl1,vcls_security.vcls_account_manager"
         />
         
         <!-- Main Objects -->
@@ -95,6 +95,7 @@
             parent="menu_bd_root"
             action="crm.crm_lead_opportunities_tree_view"
             sequence="3"
+            groups="vcls-hr.vcls_group_superuser_lvl1,vcls_security.vcls_account_manager"
         />
 
         <menuitem
@@ -176,6 +177,7 @@
             name="Configuration"
             parent="menu_bd_root"
             sequence="18"
+            groups="vcls-hr.vcls_group_superuser_lvl1,vcls_security.group_bd_admin"
         />
 
         <!-- Teams -->

@@ -91,7 +91,7 @@
             web_icon="fa fa-star,#f1c40f,#838383"
             sequence="8"
             active="True"
-            groups="vcls-hr.vcls_group_superuser_lvl1,vcls-timesheet.vcls_lc"
+            groups="vcls-hr.vcls_group_superuser_lvl1,vcls_security.vcls_lc"
         />
 
         <menuitem
@@ -124,14 +124,6 @@
             sequence="2"
             action="action_lc_ts_all"
         />
-
-        <!--<menuitem
-            id="menu_lc_forecast"
-            name="Project Forecasts"
-            parent="menu_lc_root"
-            action=""
-            sequence="3"
-        />-->
 
         <menuitem
             id="menu_lc_follow_up"

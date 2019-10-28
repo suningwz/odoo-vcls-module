@@ -318,10 +318,6 @@ class Leads(models.Model):
     # COMPUTE METHODS #
     ###################
 
-    """ def _compute_is_support_user(self):
-        self.is_support_user = self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl1') """
-
-
     @api.depends('country_id')
     def _compute_country_group(self):
         for lead in self:

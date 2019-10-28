@@ -46,6 +46,7 @@
                 'vcls-risk',
                 'sale_timesheet',
                 'sale_purchase',
+                'vcls_security',
                 ],
 
     # always loaded

@@ -20,18 +20,21 @@
                             <button class="oe_stat_button" name="sale_orders_tree_view" type="object" icon="fa-barcode">
                                 <field string="Quotation(s)" name="orders_count" widget="statinfo"/>
                             </button>
-                            <button class="oe_stat_button" name="invoices_tree_view" type="object" icon="fa-money">
+                            <button class="oe_stat_button" name="invoices_tree_view"
+                                    type="object" icon="fa-money">
                                 <field string="Invoices" name="invoices_count" widget="statinfo"/>
                             </button>
                             <button class="oe_stat_button" name="tasks_tree_view" type="object" icon="fa-tasks">
                                 <field string="Tasks" name="task_count" widget="statinfo"/>
                             </button>
-                            <button class="oe_stat_button" string="Forecasts" name="forecasts_tree_view" type="object"
-                                    icon="fa-wpforms"/>
-                            <button class="oe_stat_button" string="Timesheets" name="timesheets_tree_view" type="object" icon="fa-calendar"/>
+                            <button class="oe_stat_button" string="Forecasts" name="%(action_forecast_from_project)d"
+                                    type="action" icon="fa-calendar"/>
+                            <button class="oe_stat_button" string="Timesheets" name="timesheets_tree_view"
+                                    type="object" icon="fa-clock-o"/>
                             <button class="oe_stat_button" string="Report Analysis" name="report_analysis_tree_view"
                                     type="object" icon="fa-pencil-square-o"/>
-                            <button name="toggle_active" type="object" confirm="(Un)archiving a project automatically (un)archives its tasks. Do you want to proceed?" class="oe_stat_button" icon="fa-archive">
+                            <button name="toggle_active" type="object" confirm="(Un)archiving a project automatically (un)archives its tasks. Do you want to proceed?"
+                                    class="oe_stat_button" icon="fa-archive">
                                 <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
                             </button>
                         </div>

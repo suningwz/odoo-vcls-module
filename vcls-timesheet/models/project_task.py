@@ -122,12 +122,6 @@ class Project(models.Model):
             self.last_updated_timesheet_date = timesheets.sorted(key=lambda wd: wd.write_date, reverse=True)[
                 0].write_date
 
-    @api.model #to be called from CRON job
-    def update_project_manager(self):
-        group = self.env.ref('project.group_project_manager')
-        (self.env['res.users'].search([]) - self.search([]).mapped('user_id')).write({'groups_id': [(3, group.id)]})
-        self.search([]).mapped('user_id').write({'groups_id': [(4, group.id)]})
-
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('related_core_team_projects'):
