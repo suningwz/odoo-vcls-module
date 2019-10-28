@@ -27,6 +27,10 @@ class ExpenseSheet(models.Model):
         required = True
     )
 
+    company_id = fields.Many2one(
+        related = 'employee_id.company_id'
+    )
+
     ######################
     # OVERWRITTEN FIELDS #
     ######################
@@ -65,7 +69,7 @@ class ExpenseSheet(models.Model):
     def open_pop_up_add_expense(self):
         for rec in self:
             action = self.env.ref('vcls-expenses.action_pop_up_add_expense').read()[0]
-            action['context'] = {'default_emplouee_id': rec.employee_id.id,
+            action['context'] = {'default_employee_id': rec.employee_id.id,
                                  'default_analytic_account_id': rec.analytic_account_id.id,
                                  'default_sheet_id': rec.id}
             return action
