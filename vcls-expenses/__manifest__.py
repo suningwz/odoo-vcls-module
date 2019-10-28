@@ -29,6 +29,7 @@
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
+        'security/expense_rules.xml',
         'views/expense_sheet_views.xml',
         'views/expense_views.xml',
         'views/project_portal_templates.xml',
