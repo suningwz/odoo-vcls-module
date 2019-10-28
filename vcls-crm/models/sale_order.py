@@ -90,10 +90,10 @@ class SaleOrder(models.Model):
         index=True, default=lambda self: 'New'
     )
     family_order_count = fields.Integer(
-        'project.project', compute='_get_family_order_count'
+        'Family Order Count', compute='_get_family_order_count'
     )
     family_quotation_count = fields.Integer(
-        'project.project', compute='_get_family_order_count'
+        'Family Quotation Count', compute='_get_family_order_count'
     )
 
     ###############

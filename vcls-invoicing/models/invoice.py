@@ -26,9 +26,9 @@ class Invoice(models.Model):
         string='Account Manager',
         )
     invoice_sending_date = fields.Datetime()
-    parent_quotation_timesheet_limite_date = fields.Date(string='Timesheet Limit Date',
+    parent_quotation_timesheet_limite_date = fields.Date(string='Parent Timesheet Limit Date',
                                                          compute='compute_parent_quotation_timesheet_limite_date')
-    vcls_due_date = fields.Date(string='Due Date', compute='_compute_vcls_due_date')
+    vcls_due_date = fields.Date(string='Custom Due Date', compute='_compute_vcls_due_date')
     origin_sale_orders = fields.Char(compute='compute_origin_sale_orders',string='Origin')
     
     def get_communication_amount(self):

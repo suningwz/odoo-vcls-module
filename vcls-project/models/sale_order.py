@@ -9,7 +9,7 @@ class SaleOrder(models.Model):
         'project.project', compute='_get_parent_project_id'
     )
     family_task_count = fields.Integer(
-        'project.project', compute='_get_family_task_count'
+        'Family Task Count', compute='_get_family_task_count'
     )
 
     @api.multi
