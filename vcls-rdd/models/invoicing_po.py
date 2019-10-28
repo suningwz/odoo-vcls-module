@@ -9,3 +9,4 @@ class InvoicingPo(models.Model):
     _inherit = 'invoicing.po'
 
     order_date = fields.Date(string="Order Date")
+    old_id = fields.Char("Old Id", copy=False, readonly=True)
