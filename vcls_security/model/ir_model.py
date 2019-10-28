@@ -19,9 +19,7 @@ class IrModelAccess(models.Model):
         """
         if not group or (allowed_group and self.env.user.has_group(allowed_group)):
             return True
-        read_only_models = ('product.template', 'product.product', 'account.invoice', 'account.invoice.line')
-        if model in read_only_models and \
-            mode in ('write', 'create', 'unlink') and \
+        if mode in ('write', 'create', 'unlink') and \
                 self.env.user.has_group(group):
             if raise_exception:
                 raise AccessError(_("Sorry, you are not allowed to modify this document."))

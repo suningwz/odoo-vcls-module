@@ -7,11 +7,12 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@name='button_box']" prosition="inside">
                 <button class="oe_stat_button"
-                            icon="fa-credit-card"
-                            id="action_agre"
-                            name="action_agre"
-                            type="object"
-                            attrs="{'invisible': [('customer','=', False),('supplier','=',False)]}">
+                        groups="agreement_legal.group_agreement_readonly"
+                        icon="fa-credit-card"
+                        id="action_agreements"
+                        name="action_agreements"
+                        type="object"
+                        attrs="{'invisible': [('customer','=', False),('supplier','=',False)]}">
                     <field name="agre_count" widget="statinfo" string="Agreements"/>
                 </button>
             </xpath>

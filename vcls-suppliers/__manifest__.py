@@ -27,7 +27,8 @@
         'vcls-project',
         'vcls-crm',
         'sale_purchase',
-        ],
+        'vcls_security',
+    ],
 
     # always loaded
     'data': [

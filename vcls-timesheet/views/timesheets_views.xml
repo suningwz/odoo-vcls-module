@@ -167,15 +167,6 @@
             ]"/>
         </record>
 
-        <!--
-        <record id="action_vcls_timesheet_tree_lc" model="ir.actions.act_window.view">
-            <field name="view_mode">tree</field>
-            <field name="sequence" eval="4" />
-            <field name="view_id" ref="vcls_timesheet_lc_view_tree" />
-            <field name="act_window_id" ref="action_vcls_timesheet_tree" />
-        </record>
-        -->
-
         <record id="action_vcls_timesheet_form_lc" model="ir.actions.act_window.view">
             <field name="view_mode">form</field>
             <field name="sequence" eval="5" />
@@ -183,10 +174,6 @@
             <field name="act_window_id" ref="action_vcls_timesheet_tree" />
         </record>
 
-
-        <!-- <record id="action_timesheet_lc_review" model="ir.actions.act_window"> <field name="name">LC Review</field> <field name="res_model">account.analytic.line</field> <field name="view_mode">tree,form</field> <field name="domain">[('stage_id', 
-            '=', 'lc_review')]</field> </record> 
-            -->
 
         <record id="view_timesheet_pc_review_search" model="ir.ui.view">
             <field name="name">timesheet.pc.review.search</field>
@@ -219,23 +206,6 @@
             ]"/>
         </record>
         
-        <!--
-        <record id="action_vcls_timesheet_tree_pc" model="ir.actions.act_window.view">
-            <field name="view_mode">tree</field>
-            <field name="sequence" eval="4" />
-            <field name="view_id" ref="vcls_timesheet_pc_view_tree" />
-            <field name="act_window_id" ref="action_timesheet_pc_review" />
-        </record>
-
-        <record id="action_vcls_timesheet_form_pc" model="ir.actions.act_window.view">
-            <field name="view_mode">form</field>
-            <field name="sequence" eval="5" />
-            <field name="view_id" ref="vcls_timesheet_pc_view_form" />
-            <field name="act_window_id" ref="action_timesheet_pc_review" />
-        </record>
-        -->
-
-
         <record id="action_timesheet_adjustment" model="ir.actions.act_window">
             <field name="name">Adjustment Validation</field>
             <field name="type">ir.actions.act_window</field>
@@ -296,29 +266,35 @@
 
         <menuitem id="hr_timesheet.timesheet_menu_activity_mine" name="My Timesheets" sequence="1" parent="hr_timesheet.timesheet_menu_root" action="hr_timesheet.act_hr_timesheet_line" />
 
-        <menuitem id="hr_timesheet.timesheet_menu_activity_all" name="All Timesheets" parent="hr_timesheet.menu_hr_time_tracking" action="hr_timesheet.timesheet_action_all" groups="hr_timesheet.group_timesheet_manager,vcls-hr.vcls_group_controlling" />
+        <menuitem id="hr_timesheet.timesheet_menu_activity_all"
+                  name="All Timesheets" parent="hr_timesheet.menu_hr_time_tracking"
+                  action="hr_timesheet.timesheet_action_all"
+                  groups="hr_timesheet.group_timesheet_manager,vcls-hr.vcls_group_controlling" />
 
         <menuitem name="To Validate" id="timesheet_grid.menu_timesheet_grid_validate" parent="hr_timesheet.timesheet_menu_root" groups="hr_timesheet.group_timesheet_manager" sequence="10" active="False" />
 
-        <menuitem id="menu_lc_review" name="LC" sequence="2" parent="hr_timesheet.timesheet_menu_root" />
-
-        <menuitem id="timesheet_menu_lc_review" name="LC Review" sequence="1" parent="menu_lc_review" action="action_vcls_timesheet_tree" />
-
-        <menuitem id="timesheet_menu_lc_all" name="Timesheets" sequence="2" parent="menu_lc_review" action="action_lc_all_timesheet_tree" />
-
-        <menuitem id="menu_pc_review" name="PC" sequence="3" parent="hr_timesheet.timesheet_menu_root" />
-
-        <menuitem id="timesheet_menu_pc_review" name="PC Review" sequence="1" parent="menu_pc_review" action="action_timesheet_pc_review" />
-
-        <menuitem id="timesheet_menu_pc_all" name="Timesheets" sequence="2" parent="menu_pc_review" action="action_pc_all_timesheet_tree" />
-
-        <menuitem id="menu_lm_timesheet" name="Line Manager" sequence="4" parent="hr_timesheet.timesheet_menu_root" />
+        <menuitem id="menu_lm_timesheet"
+                  name="Line Manager" sequence="4"
+                  parent="hr_timesheet.timesheet_menu_root"
+                  groups="vcls-hr.vcls_group_lm"
+        />
 
         <menuitem id="menu_lm_timesheet_tree" name="Tree" sequence="1" parent="menu_lm_timesheet" action="action_lm_all_timesheet_tree" />
 
-        <!-- record id="menu_lm_timesheet" model="ir.ui.menu"> <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_lm'))]"/> </record -->
+        <menuitem id="hr_timesheet.timesheet_menu_adjustment"
+                  name="Adjustment Approval" sequence="5"
+                  parent="hr_timesheet.timesheet_menu_root"
+                  action="action_timesheet_adjustment"
+                  groups="base.group_system"
+        />
 
-        <menuitem id="hr_timesheet.timesheet_menu_adjustment" name="Adjustment Approval" sequence="5" parent="hr_timesheet.timesheet_menu_root" action="action_timesheet_adjustment" />
+        <record id="hr_timesheet.hr_timesheet_config_settings_menu_action" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+
+        <record id="project_timesheet_synchro.menu_timesheet_app" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+        </record>
 
         <record id="timesheet_view_tree_user_colored" model="ir.ui.view">
             <field name="name">account.analytic.line.view.tree.with.user.colored</field>
@@ -338,11 +314,6 @@
                 </xpath>
             </field>
         </record>
-
-        <!-- <record id="timesheet_view_tree_colored" model="ir.ui.view"> <field name="name">account.analytic.line.tree.colored</field> <field name="model">account.analytic.line</field> <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/> 
-            <field name="arch" type="xml"> <xpath expr="//field[@name='date']" position="before"> <field name="stage_id" invisible='1'/> </xpath> <xpath expr="//tree" position="attributes"> <attribute name="decoration-success">stage_id=='draft'</attribute> <attribute 
-            name="decoration-primary">stage_id=='lc_review'</attribute> <attribute name="decoration-info">stage_id=='pc_review'</attribute> <attribute name="decoration-danger">stage_id=='carry_forward'</attribute> <attribute name="decoration-warning">stage_id=='invoiceable'</attribute> 
-            </xpath> </field> </record> -->
 
         <record id="timesheet_view_search" model="ir.ui.view">
             <field name="name">account.analytic.line.search</field>

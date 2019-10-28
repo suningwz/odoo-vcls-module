@@ -62,30 +62,6 @@
             sequence="9"
         />
 
-        <!-- Forecasts -->
-        <menuitem
-            id="menu_rm_forecast_main"
-            name="Forecast"
-            parent="menu_rm_root"
-            sequence="9"
-        />
-
-        <menuitem
-            id="menu_rm_forecast_employee"
-            name="By Employee"
-            parent="menu_rm_forecast_main"
-            action="project_forecast.project_forecast_action_server_by_user"
-            sequence="3"
-        />
-
-        <menuitem
-            id="menu_rm_forecast_project"
-            name="By Project"
-            parent="menu_rm_forecast_main"
-            action="project_forecast.project_forecast_action_server_by_project"
-            sequence="6"
-        />
-
         <!-- Expertise -->
         <menuitem
             id="menu_rm_expertise_main"

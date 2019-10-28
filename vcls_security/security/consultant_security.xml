@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="ir.rule" id="task_consultant_rule">
+        <field name="name">Task: consultant is user</field>
+        <field name="model_id" ref="project.model_project_task"/>
+        <field name="domain_force">[
+            ('user_id', '=', user.id)
+        ]</field>
+        <field name="perm_read" eval="0"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+        <field name="groups" eval="[(4, ref('vcls_security.group_vcls_consultant'))]"/>
+    </record>
+
+    <record model="ir.rule" id="lead_consultant_rule">
+        <field name="name">Lead: only read leads</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="domain_force">[
+            '|',
+            ('type','=','lead'),
+            ('type','=',False)
+        ]</field>
+        <field name="groups" eval="[(4, ref('vcls_security.group_vcls_consultant'))]"/>
+    </record>
+
+</odoo>

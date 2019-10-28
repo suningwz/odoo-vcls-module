@@ -33,6 +33,7 @@
         'vcls-project',
         'timesheet_grid',
         'web_grid_extend',
+        'project_timesheet_synchro',
         ],
 
     # always loaded
