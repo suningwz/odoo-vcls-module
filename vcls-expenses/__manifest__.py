@@ -24,6 +24,8 @@
         'hr_expense',
         'sale_expense',
         'project',
+        'vcls_security',
+        
     ],
 
     # always loaded
