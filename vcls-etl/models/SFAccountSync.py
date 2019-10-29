@@ -17,6 +17,7 @@ class SFAccountSync(models.Model):
     _inherit = 'etl.sync.salesforce'
 
     def getSFTranslator(self, sfInstance):
+
         return TranslatorSFAccount.TranslatorSFAccount(sfInstance.getConnection())
 
     def getSQLForKeys(self):
@@ -30,7 +31,7 @@ class SFAccountSync(models.Model):
         sql += 'Phone, Fax, Area_of_expertise__c, Sharepoint_Folder__c, '
         sql += 'Supplier_Description__c, Key_Information__c, Project_Assistant__c, '
         sql += 'Supplier_Selection_Form_completed__c, Website, '
-        sql += 'Create_Sharepoint_Folder__c, OwnerId, Is_supplier__c, Main_VCLS_Contact__c, '
+        sql += 'Create_Sharepoint_Folder__c, OwnerId, Is_supplier__c, VCLS_Main_Contact__c, '
         sql += 'Supplier__c, Type, Project_Controller__c, VCLS_Alt_Name__c,  '
         sql += 'Supplier_Project__c, Activity__c, Product_Type__c, Industry, KimbleOne__InvoicingCurrencyIsoCode__c, Invoice_Administrator__c '
         sql += 'FROM Account '
