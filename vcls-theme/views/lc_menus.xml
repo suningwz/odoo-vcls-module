@@ -12,7 +12,7 @@
 
                 <xpath expr="//field[@name='user_id']" position="after">
                     <separator/>
-                    <filter string="My Projects" name="lead_projects" domain="[('user_id','=', uid)]"/>
+                    <filter string="My Projects" name="mine" domain="[('user_id','=', uid)]"/>
                 </xpath>
 
             </field>
@@ -42,7 +42,10 @@
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>
             <field name="domain">[('project_type','=', 'client'), ('parent_id','=', False)]</field>
-            <field name="context">{"search_default_lead_projects":1}</field>
+            <field name="context">{
+                "search_default_mine":1,
+                "only_show_mine_for_lc_group":1,
+            }</field>
         </record>
 
         <record id="action_vcls_timesheet_tree" model="ir.actions.act_window">

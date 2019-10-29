@@ -137,6 +137,7 @@
                             <field name="is_project_manager" invisible="1"/>
                             <button name="%(project_summary_action_new)d"
                                 string="Create SUMMARY" class="oe_highlight" type="action"
+                                groups="sales_team.group_sale_manager,vcls_security.vcls_lc"
                                 context="{
                                     'default_project_id': active_id,
                                     'default_completion_ratio': completion_ratio,
@@ -303,6 +304,7 @@
             <field name="res_model">project.project</field>
             <field name="view_type">form</field>
             <field name="view_mode">kanban,form</field>
+            <field name="context">{"search_default_mine":1}</field>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>

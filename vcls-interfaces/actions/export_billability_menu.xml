@@ -19,10 +19,8 @@
             parent="hr.menu_hr_root"
             sequence="30"
             action="action_export_billability"
+            groups="vcls-hr.vcls_group_controlling"
         />
-        <record id="menu_payroll_billability" model="ir.ui.menu">
-            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_controlling'))]"/>
-        </record>
-        
+
     </data>
 </odoo>

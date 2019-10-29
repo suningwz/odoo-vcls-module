@@ -8,6 +8,10 @@ class SaleOrderLine(models.Model):
 
     _inherit = 'sale.order.line'
 
+    # We compute as sudo consultant does not have access to invoices which is required when
+    # he logs time from a task
+    qty_invoiced = fields.Float(compute_sudo=True)
+
     vcls_type = fields.Selection(
         related='product_id.vcls_type',
         string="Vcls type",

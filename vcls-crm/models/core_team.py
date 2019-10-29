@@ -64,24 +64,23 @@ class SaleOrder(models.Model):
 
     core_team_id = fields.Many2one(
         'core.team',
-        string = "Core Team"
+        string="Core Team"
     )
 
     def core_team(self):
+        self.ensure_one()
         view_id = self.env.ref('vcls-crm.view_core_team_form').id
+        # if core team not defined by parent, then we create a default one
+        if not self.core_team_id:
+            # use sudo as Lead consultant cannot write on sales orders
+            self.sudo().core_team_id = self.env['core.team'].create({'name': "Team {}".format(self.internal_ref)})
 
-        for rec in self:
-            # if core team not defined by parent, then we create a default one
-            if not rec.core_team_id:
-                # use sudo as Lead consultant cannot write on sales orders
-                rec.sudo().core_team_id = self.env['core.team'].create({'name': "Team {}".format(rec.internal_ref)})
-
-            return {
-                'name': 'Core Team',
-                'view_type': 'form',
-                'view_mode': 'form',
-                'res_id': rec.core_team_id.id,
-                'res_model': 'core.team',
-                'view_id': view_id,
-                'type': 'ir.actions.act_window',
-            }
+        return {
+            'name': 'Core Team',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': self.core_team_id.id,
+            'res_model': 'core.team',
+            'view_id': view_id,
+            'type': 'ir.actions.act_window',
+        }

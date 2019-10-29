@@ -1,23 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- lc group have create/write access, so we make sur this rule is not used for it,
-     Set all permission to 0 for create/write/unlink in order to restrict this rule only for
-     groups having the read only access -->
-    <!-- lc group inherits this rule, and we don't want that  -->
-    <record model="ir.rule" id="project.project_public_members_rule">
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
-    </record>
-    <record model="ir.rule" id="project.task_visibility_rule">
-        <field name="perm_read" eval="1"/>
-        <field name="perm_write" eval="0"/>
-        <field name="perm_create" eval="0"/>
-        <field name="perm_unlink" eval="0"/>
-    </record>
-
     <record model="ir.rule" id="project_lc_rule">
         <field name="name">Project: lc is user</field>
         <field name="model_id" ref="project.model_project_project"/>

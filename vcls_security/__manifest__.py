@@ -16,6 +16,7 @@
         'purchase',
         'hr_timesheet',
         'project_forecast',
+        'crm',
     ],
     'data': [
         'security/pre_hooks.sql',
@@ -23,6 +24,8 @@
         'security/ir.model.access.csv',
         'security/lc_security.xml',
         'security/account_manager_security.xml',
+        'security/consultant_security.xml',
+        'views/menus.xml',
     ],
     'demo': [
     ],
