@@ -32,6 +32,7 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         
         if SF_Opportunity['Description']:
             result['description'] +='Description : ' + str(SF_Opportunity['Description']) + '\n'
+            result['scope_of_work'] = str(SF_Opportunity['Description'])
         
         if SF_Opportunity['Client_Product_Description__c']:
             result['description'] +='Client Product Description : ' +  str(SF_Opportunity['Client_Product_Description__c'])
