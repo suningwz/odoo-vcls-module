@@ -57,8 +57,8 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         if SF_Account['Invoice_Administrator__c']:
            result['invoice_admin_id'] = mapOdoo.convertRef(SF_Account['Invoice_Administrator__c'],odoo,'res.users',False)
         
-        if SF_Account['Main_VCLS_Contact__c']:
-            result['expert_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['Main_VCLS_Contact__c'],odoo, SF)
+        if SF_Account['VCLS_Main_Contact__c']:
+            result['expert_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['VCLS_Main_Contact__c'],odoo, SF)
         
         if SF_Account['Project_Assistant__c']:
             result['assistant_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['Project_Assistant__c'],odoo, SF)
@@ -131,7 +131,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         if Odoo_Contact.currency_id:
             result['CurrencyIsoCode'] = Odoo_Contact.currency_id.name
         if Odoo_Contact.expert_id:
-            result['Main_VCLS_Contact__c'] = TranslatorSFGeneral.TranslatorSFGeneral.revertOdooIdToSfId(Odoo_Contact.expert_id, odoo)
+            result['VCLS_Main_Contact__c'] = TranslatorSFGeneral.TranslatorSFGeneral.revertOdooIdToSfId(Odoo_Contact.expert_id, odoo)
         if Odoo_Contact.assistant_id:
             result['Project_Assistant__c'] = TranslatorSFGeneral.TranslatorSFGeneral.revertOdooIdToSfId(Odoo_Contact.assistant_id, odoo)
         if Odoo_Contact.controller_id:

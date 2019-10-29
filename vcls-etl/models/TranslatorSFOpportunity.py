@@ -1,4 +1,6 @@
 from . import TranslatorSFGeneral
+import logging
+_logger = logging.getLogger(__name__)
 
 class KeyNotFoundError(Exception):
     pass
@@ -76,6 +78,8 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         result.update(odoo.env['crm.lead']._onchange_partner_id_values(int(result['partner_id']) if result['partner_id'] else False))
         
         result['message_ids'] = [(0, 0, TranslatorSFOpportunity.generateLog(SF_Opportunity))]
+
+        #_logger.info("TRANSLATOR OPPORTUNITY {}".format(result))
 
         return result
 
