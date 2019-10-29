@@ -31,6 +31,10 @@
                     <attribute name="readonly">0</attribute>
                 </field>
 
+                <xpath expr="//header" position="attributes">    
+                    <attribute name="groups">vcls-crm.group_account_manager</attribute>
+                </xpath>
+
                 <xpath expr="//button[@name='action_confirm']" position="after">    
                     <button name="upsell" id="action_upsell"
                         string="Upsell" class="btn-primary" type="object"
@@ -42,7 +46,9 @@
                 </xpath>
                 
                 <xpath expr="//group" position="replace">
-
+                    <group>
+                        <field name="scope_of_work"/>
+                    </group>
                     <group>
                         <group string="Client">
                             <field name="partner_id" string="Client" widget="res_partner_many2one" domain="[('customer','=',True)]" context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}"/>
@@ -50,42 +56,36 @@
                             <field name="partner_shipping_id" string="Deliverable Address" invisible="0" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'delivery'}" options="{&quot;always_reload&quot;: True}"/>
                             <field name="validity_date" attrs="{'invisible': [('state', 'in', ['sale', 'done'])]}"/>
                             <field name="confirmation_date" attrs="{'invisible': [('state', 'in', ['draft', 'sent', 'cancel'])]}"/>
-                            <!--<field name="opportunity_id" string="Related Opportunity" required="1" domain="[('partner_id','=',partner_id)]" options="{'no_create': True}"/>-->
+                            <field name="program_id"/>
+                            <field name="expected_start_date" required="1"/>
+                            <field name="expected_end_date" required="1"/>
                         </group>
 
-                        <group string="Invoicing">
+                        <group string="Internal">
+                            <field name="user_id" options="{'no_create': True}"/>
                             <field name="company_id" options="{'no_create': True}" required="True"/>
-                            <field name="pricelist_id" groups="product.group_sale_pricelist"/>
+                            <field name="pricelist_id" groups="vcls-crm.group_account_manager"/>
                             <field name="currency_id" invisible="1"/>
-                            <field name="payment_term_id" options="{'no_create': True}"/>
                             <field name="parent_id" options="{'no_create': True}" readonly="1"/>
                             <field name="parent_sale_order_id" invisible="1"/>
-                            <field name="project_id" options="{'no_create': True}" string="Linked Project"/>
+                            <field name="project_id" options="{'no_create': True}" string="Linked Project" invisible="1"/>
                         </group>
                     </group>
 
                     <group>
-                        <group string="Segmentation">
-                            <field name="product_category_id" required='True'/>
-                            <field name="business_mode" widget="radio"/>
-                            <field name="deliverable_id" domain="[('product_category_id','=',product_category_id)]"/>
+                        <group string="Quotation Settings">
+                            <field name="invoicing_mode" widget="radio"/>
                             <field name="sale_order_template_id"  domain="[('product_category_id','=',product_category_id)]"/>
                         </group>
-
-                        <group string="Operations">
-                            <field name="expected_start_date"/>
-                            <field name="expected_end_date" required="1"/>
-                            <field name="scope_of_work"/>
+                        <group string="Product Catalog Filtering">
+                            <field name="product_category_id"/>
+                            <field name="business_mode" widget="radio"/>
+                            <field name="deliverable_id" domain="[('product_category_id','=',product_category_id)]"/>
                         </group>
                     </group>
                     
                 </xpath>
-                <!--
-                <xpath expr="//field[@name='order_line']//tree/field[@name='product_id']" position="replace">
-                    <field name="product_id" options="{'no_create_edit':True}" attrs="{'readonly': [('product_updatable', '=', False)],'required': [('display_type', '=', False)],}" force_save="1"
-                    context="{'search_default_group_category':1,'search_default_group_info':1,'tree_view_ref':'vcls-crm.product_tree_view','partner_id': parent.partner_id,'quantity': product_uom_qty,'pricelist': parent.pricelist_id,'uom':product_uom,'company_id': parent.company_id,'default_lst_price': price_unit,'default_description_sale': name,'vcls_search': True,'business_mode':parent.business_mode,'business_line':parent.product_category_id,'deliverable_id':parent.deliverable_id }"/>
-                </xpath>-->
-
+                
                 <xpath expr="//field[@name='order_line']//tree/field[@name='product_id']" position="replace">
                     <field name="product_id" options="{'no_create_edit':True}" attrs="{'readonly': [('product_updatable', '=', False)],'required': [('display_type', '=', False)],}" force_save="1"
                     context="{'search_default_group_category':1,'search_default_group_info':1,'tree_view_ref':'vcls-crm.product_tree_view','partner_id': parent.partner_id,'quantity': product_uom_qty,'pricelist': parent.pricelist_id,'uom':product_uom,'company_id': parent.company_id,'default_lst_price': price_unit,'default_description_sale': name,'business_mode':parent.business_mode,'business_line':parent.product_category_id,'deliverable_id':parent.deliverable_id }"/>
@@ -93,6 +93,19 @@
 
                 <xpath expr="//page/field[@name='sale_order_option_ids']/.." position="attributes">
                     <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page/field[@name='other_information']/.." position="attributes">
+                    <attribute name="groups">vcls-crm.group_account_manager</attribute>
+                </xpath>
+
+                <xpath expr="//page/field[@name='sale_order_option_ids']/.." position="after">
+                    <page string="Invoicing Information" name="invoicing_information">
+                        <group>
+                            <group>
+                                <field name="payment_term_id" options="{'no_create': True}"/>
+                            </group>
+                        </group>
+                    </page>
                 </xpath>
 
             </field>

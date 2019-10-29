@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_confirm']" position="before">    
                 <button name="action_sync" id="action_sync"
-                    string="Synchronize Project" class="btn-primary" type="object"
+                    string="Synchronize Project" class="btn-primary" type="object" groups="vcls-crm.group_account_manager"
                     attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
             </xpath>
             
@@ -16,6 +16,7 @@
                 <button type="action"
                     name="%(sale_quote_project_forecast.action_calculate_price_wizard)d"
                     icon="fa-calculator" attrs="{'invisible':[('service_policy', '==', 'delivered_timesheet')]}"
+                    groups="vcls-crm.group_account_manager"
                 />
             </xpath>
         </field>
