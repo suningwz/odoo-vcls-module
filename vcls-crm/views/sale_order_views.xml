@@ -94,7 +94,7 @@
                 <xpath expr="//page/field[@name='sale_order_option_ids']/.." position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-                <xpath expr="//page/field[@name='other_information']/.." position="attributes">
+                <xpath expr="//page[@name='other_information']/.." position="attributes">
                     <attribute name="groups">vcls-crm.group_account_manager</attribute>
                 </xpath>
 
