@@ -429,7 +429,10 @@ class Leads(models.Model):
             #if the name already contains the ref
             offset = name.upper().find(reference.upper())
             if offset == -1 and reference:
-                return "{} | {}".format(reference,name)
+                if len(name)>0:
+                    return "{} | {}".format(reference,name)
+                else:
+                    return reference
             else:
                 return name
 

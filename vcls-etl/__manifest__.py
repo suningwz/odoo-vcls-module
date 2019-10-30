@@ -22,6 +22,7 @@
                 'vcls-contact',
                 'vcls-hr',
                 'vcls-suppliers',
+                'vcls-rdd',
                 ],
 
     # always loaded

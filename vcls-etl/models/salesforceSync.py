@@ -68,6 +68,9 @@ class salesforceSync(models.Model):
         SF = self.env[self._name].search([], limit = 1)
         if not SF:
             SF = self.env[self._name].create({})
+        
+        #Update the context to execute vcls-rdd override
+        self.env.user.context_data_integration = True
 
         #boolean for batch
         SF.updateKeyTable(sfInstance, isFullUpdate)
@@ -91,6 +94,9 @@ class salesforceSync(models.Model):
 
         print('ETL IS FINISHED')
         _logger.info('ETL IS FINISHED')
+
+        #Update the context back
+        self.env.user.context_data_integration = False
         
         SF.setNextRun()
             
