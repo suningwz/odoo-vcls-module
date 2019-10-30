@@ -529,7 +529,7 @@ class Leads(models.Model):
         if partner_id:
             partner = self.env["res.partner"].browse(partner_id)
             result.update({
-                "industry_id": partner.industry_id,
+                "industry_id": partner.industry_id.id,
                 "client_activity_ids": [(6, 0, partner.client_activity_ids.ids)],
                 "client_product_ids": [(6, 0, partner.client_product_ids.ids)]
             })
