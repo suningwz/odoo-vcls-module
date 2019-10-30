@@ -17,6 +17,10 @@ class SaleOrderLine(models.Model):
         string="Vcls type",
     )
 
+    ts_invoicing_mode = fields.Selection([('tm', 'T&M'),
+                                          ('fp', 'fixed_price')],
+                                         'Invoicing mode')
+
     # Override the default ordered quantity to be 0 when we order rates items
     product_uom_qty = fields.Float(
         default = 0,

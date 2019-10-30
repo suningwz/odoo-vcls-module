@@ -96,6 +96,10 @@ class SaleOrder(models.Model):
         'Family Quotation Count', compute='_get_family_order_count'
     )
 
+    ts_invoicing_mode = fields.Selection([('tm', 'T&M'),
+                                          ('fp', 'fixed_price')],
+                                         'Invoicing mode')
+
     ###############
     # ORM METHODS #
     ###############
