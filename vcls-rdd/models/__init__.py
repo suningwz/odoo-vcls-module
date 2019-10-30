@@ -5,3 +5,4 @@ from . import agreement
 from . import project
 from . import invoicing_po
 from . import lead
+from . import account_analytic_line
