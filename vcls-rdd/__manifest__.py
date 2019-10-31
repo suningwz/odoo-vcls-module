@@ -19,7 +19,8 @@
 
     # any module necessary for this one to work correctly
     'depends': ['vcls-crm',
-                'smile_data_integration'
+                'smile_data_integration',
+                'office365_framework',
             ],
 
     # always loaded
