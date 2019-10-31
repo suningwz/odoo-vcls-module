@@ -48,6 +48,8 @@ class SaleOrderLine(models.Model):
                 if order.child_ids:
                     vals['order_id'] = order.child_ids[0].id
                 else:
-                    new_order = order.copy({'ts_invoicing_mode': invoicing_mode, 'parent_id': order.id, 'order_line': []})
+                    new_order = order.copy({'ts_invoicing_mode': invoicing_mode,
+                                            'parent_id': order.id,
+                                            'order_line': []})
                     vals['order_id'] = new_order.id
         return super(SaleOrderLine, self).create(vals)
