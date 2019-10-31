@@ -208,6 +208,20 @@
             </field>
         </record>
 
+        <record id="vcls_specific_project_form_lc_group" model="ir.ui.view">
+            <field name="name">project.form</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="vcls-project.vcls_specific_project_form"/>
+            <field name="groups_id" eval="[(4, ref('vcls_security.vcls_lc'))]"/>
+            <field name="arch" type="xml">
+                <button name="core_team" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="attrs">{}</attribute>
+                </button>
+            </field>
+        </record>
+
+
         <record id="view_project_formm_inherit" model="ir.ui.view">
             <field name="name">project.form</field>
             <field name="model">project.project</field>

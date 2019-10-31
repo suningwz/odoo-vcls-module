@@ -6,6 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 import logging
 _logger = logging.getLogger(__name__)
 
+
 class CoreTeam(models.Model):
 
     _name = 'core.team'
@@ -35,9 +36,13 @@ class CoreTeam(models.Model):
     
     comment = fields.Char()
     user_ids = fields.Many2many('res.users', store=True, compute='compute_core_team_related_users_list')
+    project_ids = fields.One2many(
+        'project.project',
+        'core_team_id'
+    )
 
     @api.multi
-    def write(self,vals):
+    def write(self, vals):
         if vals.get('lead_consultant',False):
             lc_user = self.env['hr.employee'].browse(vals.get('lead_consultant')).user_id
 
