@@ -97,7 +97,7 @@ class SaleOrder(models.Model):
     )
 
     ts_invoicing_mode = fields.Selection([('tm', 'T&M'),
-                                          ('fp', 'fixed_price')],
+                                          ('fp', 'Fixed price')],
                                          'Invoicing mode')
 
     ###############
