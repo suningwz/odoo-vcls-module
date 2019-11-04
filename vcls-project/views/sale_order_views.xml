@@ -39,6 +39,7 @@
                     <field name="core_team_id" />
                 </field>
                 <field name="parent_id" position="after">
+                    <field name="amount_untaxed" />
                     <field name="forecasted_amount" />
                 </field>
                 <xpath expr="//tree//field[@name='discount']" position="after">

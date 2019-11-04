@@ -90,7 +90,7 @@ class SaleOrder(models.Model):
         This methods sums the total of forecast potential revenues.
         Triggered by the forecast write/create methods
         """
-        total = sum(self.order_line.mapped('forecasted_amount'))
-        _logger.info("FORECASTED AMOUNT {}".format(total))
-        return total
+        for so in self:
+            so.forecasted_amount = sum(so.order_line.mapped('forecasted_amount'))
+            #_logger.info("FORECASTED AMOUNT {}".format(so.forecasted_amount))
 

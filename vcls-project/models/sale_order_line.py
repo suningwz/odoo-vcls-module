@@ -42,7 +42,7 @@ class SaleOrderLine(models.Model):
         """
         for sol in self:
             forecasts = self.env['project.forecast'].search([('order_line_id','=',sol.id)])
-            _logger.info("Hours {} Rates {}".format(forecasts.mapped('resource_hours'),forecasts.mapped('hourly_rate')))
+            #_logger.info("Hours {} Rates {}".format(forecasts.mapped('resource_hours'),forecasts.mapped('hourly_rate')))
             total = 0.0
             for item in forecasts:
                 total += item.resource_hours*item.hourly_rate
