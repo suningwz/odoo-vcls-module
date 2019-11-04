@@ -9,7 +9,7 @@ class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     forecasted_amount = fields.Monetary(
-        compute = "_compute_forecasted_amount",
+        readonly = True,
         store = True,
         default = 0.0,
     )
@@ -40,6 +40,10 @@ class SaleOrderLine(models.Model):
         This methods sums the total of forecast potential revenues.
         Triggered by the forecast write/create methods
         """
-        forecasts = self.env['project.forecast'].search([('order_line_id','in',self.mapped('id'))])
-        _logger.info("Hours {} Rates {} TOTAL {}".format(forecasts.mapped('resource_hours'),forecasts.mapped('hourly_rate'),forecasts.mapped('resource_hours')*forecasts.mapped('hourly_rate')))
-        return 0.0
+        for sol in self:
+            forecasts = self.env['project.forecast'].search([('order_line_id','=',sol.id)])
+            _logger.info("Hours {} Rates {}".format(forecasts.mapped('resource_hours'),forecasts.mapped('hourly_rate')))
+            total = 0.0
+            for item in forecasts:
+                total += item.resource_hours*item.hourly_rate
+            sol.forecasted_amount = total

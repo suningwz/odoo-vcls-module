@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, tools, api, _
 
+import logging
+_logger = logging.getLogger(__name__)
 
 class SaleOrder(models.Model):
 
@@ -81,11 +83,14 @@ class SaleOrder(models.Model):
             },
         }
     
+    @api.multi
+    @api.depends('order_line','order_line.forecasted_amount')
     def _compute_forecasted_amount(self):
         """
         This methods sums the total of forecast potential revenues.
         Triggered by the forecast write/create methods
         """
-        #forecasts = self.env['project.forecast'].search('order_line_id')
-        return 0.0
+        total = sum(self.order_line.mapped('forecasted_amount'))
+        _logger.info("FORECASTED AMOUNT {}".format(total))
+        return total
 
