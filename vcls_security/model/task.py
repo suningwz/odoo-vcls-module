@@ -11,13 +11,12 @@ class Task(models.Model):
     def check_access_rights(self, operation, raise_exception=True):
         if operation in ('create', 'unlink') and \
                 self.env.user.has_group('vcls_security.group_vcls_consultant'):
-            # vcls_consultantuser has only read and write access to task
+            # vcls_consultant user has only read and write access to task
             if raise_exception:
                 raise AccessError(_("Sorry, you are not allowed to modify this document."))
             else:
                 return False
         return super(Task, self).check_access_rights(operation, raise_exception)
-
 
     @api.multi
     def check_access_rule(self, operation):

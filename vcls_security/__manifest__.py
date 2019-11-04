@@ -17,6 +17,7 @@
         'hr_timesheet',
         'project_forecast',
         'crm',
+        'web_access_rule_buttons',
     ],
     'data': [
         'security/pre_hooks.sql',
