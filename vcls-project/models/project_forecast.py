@@ -57,6 +57,11 @@ class ProjectForecast(models.Model):
             total_resource_hours = sum(self.search([('task_id', '=', forecast.task_id.id)]).mapped('resource_hours'))
             if total_resource_hours > 0:
                 forecast.task_id.planned_hours = total_resource_hours
+    
+    @api.multi
+    def _project_forecasted_amount(self):
+        test = self.mapped('order_line_id.order_id')
+        _logger.info("SO IDS {}".format(test))
 
     @api.multi
     def write(self, values):
@@ -69,6 +74,7 @@ class ProjectForecast(models.Model):
                 'hourly_rate': hourly_rate,
             })
         self.sudo()._force_forecast_hours()
+        self.sudo()._project_forecasted_amount()
         return result
 
     @api.model
@@ -80,6 +86,7 @@ class ProjectForecast(models.Model):
             #values['hourly_rate'] = h_r
         forecast = super(ProjectForecast, self).create(values)
         forecast.sudo()._force_forecast_hours()
+        forecast.sudo()._project_forecasted_amount()
         return forecast
 
     @api.model

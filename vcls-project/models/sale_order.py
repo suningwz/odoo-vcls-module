@@ -12,6 +12,11 @@ class SaleOrder(models.Model):
         'Family Task Count', compute='_get_family_task_count'
     )
 
+    forecasted_amount = fields.Monetary(
+        compute = "_compute_forecasted_amount",
+        store = True,
+    )
+
     @api.multi
     def _get_parent_project_id(self):
         for project in self:
@@ -74,4 +79,11 @@ class SaleOrder(models.Model):
                 'search_default_project_id': self.project_id.id,
             },
         }
+    
+    def _compute_forecasted_amount(self):
+        """
+        This methods sums the total of forecast potential revenues.
+        Triggered by the forecast write/create methods
+        """
+        return 0.0
 
