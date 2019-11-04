@@ -36,9 +36,9 @@
                 </xpath>
                 <field name="opportunity_id" position="after">
                     <field name="program_id" options="{'no_create': True}" domain="[('client_id','=',partner_id)]" />
-                    <field name="core_team_id" />
+                    <!--<field name="core_team_id" />-->
                 </field>
-                <field name="parent_id" position="after">
+                <field name="internal_ref" position="after">
                     <field name="amount_untaxed" />
                     <field name="forecasted_amount" />
                 </field>
