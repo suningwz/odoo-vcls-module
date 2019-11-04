@@ -142,17 +142,15 @@ class AnalyticLine(models.Model):
 
     @api.model
     def create(self, vals):
-        # _logger.info("ANALYTIC CREATION {}".format(vals))
-
         if vals.get('employee_id', False) and vals.get('project_id', False):
-
             # rounding to 15 mins
             if vals['unit_amount'] % 0.25 != 0:
                 old = vals.get('unit_amount', 0)
                 vals['unit_amount'] = math.ceil(old * 4) / 4
-                _logger.info("Timesheet Rounding from {} to {}".format(old,
-                                                                       vals.get(
-                                                                           'unit_amount')))
+                _logger.info(
+                    "Timesheet Rounding from {} to {}"
+                    .format(old, 'unit_amount')
+                )
 
             # check if this is a timesheet at risk
             vals['at_risk'] = self._get_at_risk_values(vals.get('project_id'),
@@ -162,7 +160,7 @@ class AnalyticLine(models.Model):
             task = self.env['project.task'].browse(vals['task_id'])
             if task.sale_line_id:
                 unit_amount_rounded = vals['unit_amount'] * task.sale_line_id.order_id.travel_invoicing_ratio
-                vals.update({'unit_amount_rounded':unit_amount_rounded})
+                vals.update({'unit_amount_rounded': unit_amount_rounded})
         return super(AnalyticLine, self).create(vals)
 
     @api.multi
@@ -328,14 +326,12 @@ class AnalyticLine(models.Model):
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
                 record.employee_id = employee
 
-
     @api.onchange('unit_amount_rounded', 'unit_amount')
     def get_required_lc_comment(self):
-        for record in self:
-            if float_compare(record.unit_amount_rounded, record.unit_amount, precision_digits=2) == 0:
-                record.required_lc_comment = False
-            else:
-                record.required_lc_comment = True    
+        if float_compare(self.unit_amount_rounded, self.unit_amount, precision_digits=2) == 0:
+            self.required_lc_comment = False
+        else:
+            self.required_lc_comment = True
 
     @api.onchange('unit_amount_rounded')
     def onchange_adj_reason_readonly(self):
@@ -360,7 +356,6 @@ class AnalyticLine(models.Model):
             main_project_id = self.task_id.project_id
             self.main_project_id = main_project_id.parent_id or main_project_id
 
-
     @api.multi
     def button_details_lc(self):
         view = {
@@ -372,9 +367,10 @@ class AnalyticLine(models.Model):
             'type': 'ir.actions.act_window',
             'target': 'new',
             'context': {
-            'form_view_initial_mode': 'edit',
-            'force_detailed_view': True,
-            'set_fields_readonly': self.stage_id != 'lc_review'},
+                'form_view_initial_mode': 'edit',
+                'force_detailed_view': True,
+                'set_fields_readonly': self.stage_id != 'lc_review'
+            },
             'res_id': self.id,
         }
         return view
@@ -390,8 +386,9 @@ class AnalyticLine(models.Model):
             'type': 'ir.actions.act_window',
             'target': 'new',
             'context': {
-            'form_view_initial_mode': 'edit',
-            'force_detailed_view': True, },
+                'form_view_initial_mode': 'edit',
+                'force_detailed_view': True,
+            },
             'res_id': self.id,
         }
         return view

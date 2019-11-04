@@ -32,7 +32,7 @@
             <field name="perm_unlink" eval="0"/>
             <field name="domain_force">[
                 ('project_id', '!=', False),
-                ('stage_id', '=', 'lc_review'),
+                ('stage_id', 'in', ('draft', 'lc_review')),
                 '|',
                     ('project_id.user_id','=',user.id),
                     ('user_id', '=', user.id),
