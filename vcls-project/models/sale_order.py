@@ -15,6 +15,7 @@ class SaleOrder(models.Model):
     forecasted_amount = fields.Monetary(
         compute = "_compute_forecasted_amount",
         store = True,
+        default = 0.0,
     )
 
     @api.multi
