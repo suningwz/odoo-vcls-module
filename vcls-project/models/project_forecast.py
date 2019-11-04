@@ -60,8 +60,7 @@ class ProjectForecast(models.Model):
     
     @api.multi
     def _project_forecasted_amount(self):
-        test = self.mapped('order_line_id.order_id')
-        _logger.info("SO IDS {}".format(test))
+        self.mapped('order_line_id')._compute_forecasted_amount()
 
     @api.multi
     def write(self, values):

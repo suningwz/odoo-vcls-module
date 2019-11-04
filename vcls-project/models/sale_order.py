@@ -85,5 +85,6 @@ class SaleOrder(models.Model):
         This methods sums the total of forecast potential revenues.
         Triggered by the forecast write/create methods
         """
+        #forecasts = self.env['project.forecast'].search('order_line_id')
         return 0.0
 
