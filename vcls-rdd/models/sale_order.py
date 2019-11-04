@@ -29,6 +29,35 @@ class SaleOrder(models.Model):
             return super(SaleOrder, self).get_alpha_index(index)
         return 'SF'
 
+    @api.multi
+    def create_invoice_from_analytic_line(self):
+        for order in self:
+            parent_project, child_projects = order._get_family_projects()
+            family_projects = (parent_project | child_projects)
+            line_ids = self.env['account.analytic.line'].search([('stage_id', '=', 'invoiced'), ('old_id', '!=', False),
+                                                                 ('project_id', 'in', family_projects.ids)])
+            if line_ids:
+                invoice_vals = {'partner_id': order.partner_id.id,
+                                'origin': self.name,
+                                'type': 'out_invoice',
+                                'account_id': self.partner_invoice_id.property_account_receivable_id.id,
+                                'state': 'paid'}
+                ail_vals = []
+                for line in line_ids:
+                    task = line.task_id
+                    vals = (0, 0, {
+                        'product_id': task.sale_line_id.product_id.id,
+                        'price_unit': line.unit_amount,
+                        'account_analytic_id': task.sale_line_id.order_id.analytic_account_id.id,
+                        'quantity': line.so_line_unit_price,
+                        'account_id': task.sale_line_id.order_id.partner_id.property_account_receivable_id.id,
+                        'name': task.sale_line_id.product_id.name,
+                        'sale_line_ids': [(6, 0, [task.sale_line_id.id])]})
+                    ail_vals.append(vals)
+                invoice_vals['invoice_line_ids'] = ail_vals
+                self.env['account.invoice'].sudo().create(invoice_vals)
+        return True
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
