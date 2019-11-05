@@ -19,7 +19,7 @@
             parent="hr.menu_hr_root"
             sequence="30"
             action="action_export_billability"
-            groups="vcls-hr.vcls_group_controlling"
+            groups="vcls_security.group_project_controller"
         />
 
     </data>

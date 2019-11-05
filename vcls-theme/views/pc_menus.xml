@@ -35,7 +35,7 @@
                 web_icon="fa fa-crosshairs,#f1c40f,#838383"
                 sequence="8"
                 active="True"
-                groups="vcls-hr.vcls_group_superuser_lvl1,vcls-hr.vcls_group_controlling"
+                groups="vcls-hr.vcls_group_superuser_lvl1,vcls_security.group_project_controller"
         />
 
         <menuitem

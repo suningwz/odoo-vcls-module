@@ -271,7 +271,7 @@ class AnalyticLine(models.Model):
         if len(timesheets) == 0:
             raise ValidationError(_("Please select at least one record!"))
 
-        user_authorized = (self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'))
+        user_authorized = (self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls_security.group_project_controller'))
         if not user_authorized:
             raise ValidationError(_("You need to be part of the 'Project Controller' group to perform this operation. Thank you."))
 

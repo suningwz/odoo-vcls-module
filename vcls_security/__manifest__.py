@@ -26,6 +26,7 @@
         'security/lc_security.xml',
         'security/account_manager_security.xml',
         'security/consultant_security.xml',
+        'security/project_controller_security.xml',
         'views/menus.xml',
     ],
     'demo': [

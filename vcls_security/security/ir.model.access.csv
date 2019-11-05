@@ -16,3 +16,4 @@ access_project_task_consultant,project.task on consultant,project.model_project_
 access_opportunity_consultant,access_opportunity_consultant,crm.model_crm_lead,vcls_security.group_vcls_consultant,1,0,0,0
 access_product_product_attribute_custom_value_consultant,product.attribute.custom value consultant,sale.model_product_attribute_custom_value,vcls_security.group_vcls_consultant,1,0,0,0
 
+access_project_forecast_project_controller,project.forecast.project.controller,project_forecast.model_project_forecast,vcls_security.group_project_controller,1,1,0,0
