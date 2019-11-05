@@ -49,6 +49,7 @@
         'security/lead_rules.xml',
         'security/security_groups.xml',
         'security/lead_consultant_rules.xml',
+        'security/account_manager_rules.xml',
 
         # VIEWS #
         'views/dropdown_views.xml',
