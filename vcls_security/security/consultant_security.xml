@@ -15,12 +15,12 @@
     </record>
 
     <record model="ir.rule" id="lead_consultant_rule">
-        <field name="name">Lead: only read leads</field>
+        <field name="name">Lead: only read opportunities</field>
         <field name="model_id" ref="crm.model_crm_lead"/>
         <field name="domain_force">[
             '|',
-            ('type','=','lead'),
-            ('type','=',False)
+            ('type', '=', 'opportunity'),
+            ('type', '=', False)
         ]</field>
         <field name="groups" eval="[(4, ref('vcls_security.group_vcls_consultant'))]"/>
     </record>
