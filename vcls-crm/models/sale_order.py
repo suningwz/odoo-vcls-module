@@ -117,8 +117,12 @@ class SaleOrder(models.Model):
 
     @api.model
     def create(self, vals):
-        #if related to an opportunity
-        if 'opportunity_id' in vals:
+        #if we force the creation of a quotation with an exiting internal ref (e.g. during migration)
+        if 'internal_ref' in vals:
+            vals['name']=self._get_name_without_ref(vals['internal_ref'],vals['name'])
+
+        #if related to an opportunity, we build the internal ref accordingly
+        elif 'opportunity_id' in vals:
             opp_id = vals.get('opportunity_id')
             opp = self.env['crm.lead'].browse(opp_id)
 
@@ -153,8 +157,9 @@ class SaleOrder(models.Model):
                 if lead_quotation_type in ('budget_extension', 'scope_extension'):
                     additional_name = 'Budget extension' if lead_quotation_type == 'budget_extension' \
                         else 'Scope extension'
-                    quotation_original_name = "{} | {}".format(quotation_original_name, additional_name)
-            vals['name'] = "{} | {}".format(vals['internal_ref'], quotation_original_name)
+                    vals['name'] = "{} | {}".format(quotation_original_name, additional_name)
+                    
+            vals['name'] = "{} | {}".format(vals['internal_ref'], vals['name'])
 
             # default expected_start_date and expected_end_date
             expected_start_date = opp.expected_start_date
@@ -220,10 +225,17 @@ class SaleOrder(models.Model):
         all_orders = parent_order_id | child_orders
         action['domain'] = [('state', 'not in', ('draft', 'cancel')), ('id', 'in', all_orders.ids)]
         return action
+    
+    
 
     ################
     # TOOL METHODS #
     ################
+
+    def _get_name_without_ref(self,ref,raw_name):
+        parts = raw_name.lower().split(ref.lower()) #we use the ref to split
+        parts.reverse() #we reverse to get the last part for any length
+        return parts[0].strip()
     
     @api.multi
     def upsell(self):
