@@ -21,6 +21,7 @@
     'depends': [
         'base',
         'web',
+        'utm',
         'vcls-crm',
         'vcls-suppliers',
         'vcls-timesheet',

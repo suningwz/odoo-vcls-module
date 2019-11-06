@@ -115,6 +115,14 @@
         />
 
         <menuitem
+            id="menu_bd_invoices"
+            name="Invoices"
+            parent="menu_bd_root"
+            action="vcls-invoicing.action_am_invoices"
+            sequence="10"
+        />
+
+        <menuitem
             id="menu_bd_product_main"
             name="Product Catalog"
             parent="menu_bd_root"
@@ -299,6 +307,14 @@
             parent="menu_bd_conf_sales"
             action="vcls-crm.action_lead_stage"
             sequence="6"
+        />
+
+        <menuitem
+            id="menu_bd_conf_lead_source"
+            name="Lead Sources"
+            parent="menu_bd_conf_sales"
+            action="utm.utm_source_action"
+            sequence="7"
         />
 
         <menuitem
