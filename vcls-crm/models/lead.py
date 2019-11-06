@@ -71,7 +71,8 @@ class Leads(models.Model):
         'res.users', 
         string='Account Manager', 
         track_visibility='onchange', 
-        domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
+        domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)],
+        default='default_am',
         )
 
     #################
@@ -275,14 +276,18 @@ class Leads(models.Model):
         compute = '_compute_gdpr'
     )
 
+    contact_us_message = fields.Char()
+
     @api.model
     def create(self, vals):
-        #############
-        if vals.get('contact_name', False) and vals.get('contact_lastname', False) and vals.get('contact_middlename', False):
-                vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
-        elif vals.get('contact_name', False) and vals.get('contact_lastname', False):
-                vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
-        #############
+       
+        #_logger.info("LEAD CREATION {}".format(vals))
+        if vals.get('type','lead') == 'lead':
+            if vals.get('contact_name', False) and vals.get('contact_lastname', False) and vals.get('contact_middlename', False):
+                    vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
+            elif vals.get('contact_name', False) and vals.get('contact_lastname', False):
+                    vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
+        
         lead = super(Leads, self).create(vals)
         # VCLS MODS
         if lead.type == 'lead':
@@ -372,10 +377,10 @@ class Leads(models.Model):
             return record.create_date
 
     
-    """@api.onchange('partner_id','country_id')
+    @api.onchange('partner_id')
     def _change_am(self):
         for lead in self:
-            lead.user_id = lead.guess_am()"""
+            lead.user_id = lead.guess_am()
     
     """@api.depends('partner_id','type')
     def _compute_internal_ref(self):
@@ -418,9 +423,6 @@ class Leads(models.Model):
     def guess_am(self):
         if self.partner_id.user_id:
             return self.partner_id.user_id
-        elif self.country_group_id.default_am:
-            return self.country_group_id.default_am
-        #elif self.team_id.
         else:
             return False
     
@@ -525,7 +527,9 @@ class Leads(models.Model):
         return data
 
     def _onchange_partner_id_values(self, partner_id):
+        _logger.info("Partner Id Values {}".format(partner_id))
         result = super(Leads, self)._onchange_partner_id_values(partner_id)
+        _logger.info("Partner Id Values RAW {}".format(result))
         if partner_id:
             partner = self.env["res.partner"].browse(partner_id)
             result.update({
@@ -537,6 +541,7 @@ class Leads(models.Model):
                 result.update({
                     "contact_middlename": partner.lastname2,
                 })
+        _logger.info("Partner Id Values END {}".format(result))
         return result
     
     @api.onchange('contact_name','contact_lastname','contact_middlename')
