@@ -4,7 +4,11 @@ from odoo import models, fields, api, _
 import lxml
 from itertools import groupby
 from datetime import date
-from odoo.exceptions import UserError
+
+from odoo.tools import email_re, email_split, email_escape_char, float_is_zero, float_compare, \
+    pycompat, date_utils
+
+from odoo.exceptions import AccessError, UserError, RedirectWarning, ValidationError, Warning
 
 
 import logging
@@ -23,13 +27,18 @@ class Invoice(models.Model):
 
     user_id = fields.Many2one(
         'res.users',
-        string='Account Manager',
+        string='Invoicing Administrator',
         )
     invoice_sending_date = fields.Datetime()
     parent_quotation_timesheet_limite_date = fields.Date(string='Parent Timesheet Limit Date',
                                                          compute='compute_parent_quotation_timesheet_limite_date')
     vcls_due_date = fields.Date(string='Custom Due Date', compute='_compute_vcls_due_date')
     origin_sale_orders = fields.Char(compute='compute_origin_sale_orders',string='Origin')
+
+    state = fields.Selection(
+        selection_add=[('new','New')],
+        default='new',
+        )     
     
     def get_communication_amount(self):
         total_amount = 0
@@ -48,6 +57,21 @@ class Invoice(models.Model):
             else:
                 total_amount += line.price_subtotal
         return total_amount
+    
+    @api.multi
+    def action_invoice_draft(self):
+        # lots of duplicate calls to action_invoice_open, so we remove those already draft
+        to_draft_invoices = self.filtered(lambda inv: inv.state != 'draft')
+        if to_draft_invoices.filtered(lambda inv: not inv.partner_id):
+            raise UserError(_("The field Vendor is required, please complete it to validate the Vendor Bill."))
+        if to_draft_invoices.filtered(lambda inv: inv.state != 'draft'):
+            raise UserError(_("Invoice must be in draft state in order to validate it."))
+        if to_draft_invoices.filtered(lambda inv: float_compare(inv.amount_total, 0.0, precision_rounding=inv.currency_id.rounding) == -1):
+            raise UserError(_("You cannot validate an invoice with a negative total amount. You should create a credit note instead."))
+        if to_draft_invoices.filtered(lambda inv: not inv.account_id):
+            raise UserError(_('No account was found to create the invoice, be sure you have installed a chart of account.'))
+
+        return to_draft_invoices.write({'state': 'draft'})
             
     
     @api.model
