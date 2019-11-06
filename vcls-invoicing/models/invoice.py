@@ -70,7 +70,7 @@ class Invoice(models.Model):
         if to_approve_invoices.filtered(lambda inv: not inv.account_id):
             raise UserError(_('No account was found to create the invoice, be sure you have installed a chart of account.'))
 
-        return to_approve_invoices.write({'ready_for_approval': True})
+        to_approve_invoices.write({'ready_for_approval': True})
             
     
     @api.model
