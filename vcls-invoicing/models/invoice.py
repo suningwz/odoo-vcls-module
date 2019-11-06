@@ -29,6 +29,7 @@ class Invoice(models.Model):
         'res.users',
         string='Invoicing Administrator',
         )
+
     invoice_sending_date = fields.Datetime()
     parent_quotation_timesheet_limite_date = fields.Date(string='Parent Timesheet Limit Date',
                                                          compute='compute_parent_quotation_timesheet_limite_date')
@@ -60,17 +61,15 @@ class Invoice(models.Model):
     @api.multi
     def action_ready_for_approval(self):
         
-        to_approve_invoices = self.filtered(lambda inv: inv.state != 'draft')
-        if to_approve_invoices.filtered(lambda inv: not inv.partner_id):
+        if self.filtered(lambda inv: not inv.partner_id):
             raise UserError(_("The field Vendor is required, please complete it to validate the Vendor Bill."))
-        if to_approve_invoices.filtered(lambda inv: inv.state != 'draft'):
-            raise UserError(_("Invoice must be in draft state in order to validate it."))
-        if to_approve_invoices.filtered(lambda inv: float_compare(inv.amount_total, 0.0, precision_rounding=inv.currency_id.rounding) == -1):
+        if self.filtered(lambda inv: float_compare(inv.amount_total, 0.0, precision_rounding=inv.currency_id.rounding) == -1):
             raise UserError(_("You cannot validate an invoice with a negative total amount. You should create a credit note instead."))
-        if to_approve_invoices.filtered(lambda inv: not inv.account_id):
+        if self.filtered(lambda inv: not inv.account_id):
             raise UserError(_('No account was found to create the invoice, be sure you have installed a chart of account.'))
 
-        to_approve_invoices.write({'ready_for_approval': True})
+        for invoice in self:
+            invoice.write({'ready_for_approval': True})
             
     
     @api.model
