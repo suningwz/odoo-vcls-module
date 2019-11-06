@@ -18,15 +18,17 @@
     'version': '1.4',
 
     # any module necessary for this one to work correctly
-    'depends': ['base',
-                'vcls-crm',
-                'vcls-contact',
-                'vcls-risk',
-                'vcls-hr',
-                'account',
-                'sale_timesheet_limit_date',
-                'sale_timesheet_rounded',
-                ],
+    'depends': [
+        'base',
+        'vcls-crm',
+        'vcls-contact',
+        'vcls-risk',
+        'vcls-hr',
+        'account',
+        'sale_timesheet_limit_date',
+        'sale_timesheet_rounded',
+        'vcls_security',
+    ],
 
     # always loaded
     'data': [

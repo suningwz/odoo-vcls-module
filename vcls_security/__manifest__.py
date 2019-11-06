@@ -27,6 +27,7 @@
         'security/account_manager_security.xml',
         'security/consultant_security.xml',
         'security/project_controller_security.xml',
+        'security/cross_company_invoicing.xml',
         'views/menus.xml',
     ],
     'demo': [

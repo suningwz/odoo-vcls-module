@@ -4,8 +4,5 @@
         <record id="finance_risk_group" model="res.groups">
             <field name="name">Finance Risk Group</field>
         </record>
-        <record id="finance_ia_group" model="res.groups">
-            <field name="name">Invoice administrator Group</field>
-        </record>
     </data>
 </odoo>

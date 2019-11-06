@@ -7,7 +7,7 @@
                 web_icon="fa fa-file-text-o,#f1c40f,#838383"
                 sequence="8"
                 active="True"
-                groups="vcls-invoicing.finance_ia_group"
+                groups="vcls_security.group_finance_invoice_administrator"
         />
 
         <menuitem

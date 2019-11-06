@@ -80,7 +80,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref='vcls-invoicing.ia_invoices_view_tree'/>
-            <field name="domain">[('partner_id.invoice_admin_id','=', uid)]</field>
+            <field name="domain">[]</field>
             <field name="context">{'search_default_myinvoices':1,'group_by':['state']}</field>
         </record>
 
