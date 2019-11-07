@@ -73,16 +73,20 @@
                         </group>
                     </group>
 
-                    <group>
-                        <group string="Quotation Settings">
-                            <field name="invoicing_mode" widget="radio"/>
-                            <field name="sale_order_template_id"  domain="[('product_category_id','=',product_category_id)]"/>
+                    <group string="Product Catalog (Edit to retrieve products from various catalog)">
+                        <group string="Main Filters">
+                            <field name="catalog_mode" invisible="0"/>
+                            <field name="product_category_id" string="1. Select Catalog" required="1"/>
+                            <field name="sale_order_template_id"  domain="[('product_category_id','=',product_category_id)]" string="2. Select Template" attrs="{'required': [('catalog_mode', '=', 'template')],}"/>
+                            <field name="catalog_details" string="Show Detailed Catalog"/>
                         </group>
-                        <group string="Product Catalog Filtering">
-                            <field name="product_category_id"/>
-                            <field name="business_mode" widget="radio"/>
-                            <field name="deliverable_id" domain="[('product_category_id','=',product_category_id)]"/>
+                        <group string="Fine Filters (for specific line search)" attrs="{'invisible': [('catalog_details', '=', False)]}">
+                            <field name="business_mode" widget="radio" string="3. Modify to focus on specific types"/>
+                            <field name="deliverable_id" domain="[('product_category_id','=',product_category_id)]" attrs="{'required': [('catalog_details', '=', True),('catalog_mode', '=', 'template')]}"/>
                         </group>
+                    </group>
+                    <group string="Quotation Settings">
+                            <field name="invoicing_mode" widget="radio"/>     
                     </group>
                     
                 </xpath>

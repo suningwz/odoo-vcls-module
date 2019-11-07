@@ -43,7 +43,7 @@ class ProductTemplate(models.Model):
     )
     vcls_type = fields.Selection([
         ('rate', 'Rate'),
-        ('vcls_service', 'Vcls service'),
+        ('vcls_service', 'VCLS service'),
         ('subscription', 'Subscription'),
         ('invoice', 'Invoice'),
         ('project_supplier', 'Project supplier'),
@@ -119,37 +119,3 @@ class Product(models.Model):
         else:
             product_ids = super(Product, self)._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
             return product_ids
-
-
-
-        """
-        business_mode = self._context.get('business_mode')
-        business_line = self._context.get('business_line')
-        deliverable_id = self._context.get('deliverable_id')
-        _logger.info("SEARCH context: {} {} {}".format(business_mode,business_line,deliverable_id))
-        product_ids = super(Product, self)._search(args, offset, limit, order, count=count, access_rights_uid=access_rights_uid)
-        products = self.browse(product_ids)
-        _logger.info("SEARCH  args {} ".format(args))
-        _logger.info("SEARCH found super: limit {} - found {} ".format(limit,len(products)))
-
-        if business_line:
-            bl_childs = self.env['product.category'].search([('id','child_of',business_line)])
-            _logger.info("SEARCH BL cat: {} ".format(bl_childs.mapped('name')))
-            products = products.filtered(lambda p: p.categ_id in bl_childs)
-
-        if business_line:
-            business_line_child_ids = self.env['product.category'].browse(business_line).child_id.ids
-            if business_line_child_ids:
-                products = products.filtered(lambda p: p.categ_id.ids in business_line_child_ids)
-        if deliverable_id:
-            products = products.filtered(lambda p: deliverable_id in p.deliverable_id.ids)
-        if business_mode:
-            #If Fixed Price, Show only products with invoicing policy based on milestones and a re-invoicing policy configured as sales price
-            if business_mode == 'fixed_price':
-                products = products.filtered(lambda p: p.invoice_policy == 'delivered_manual' and p.expense_policy == 'sales_price')
-            #If T&M, Show Services (i.e. milestones and re-invoicing = NO) and rates products (with a seniority level not null)
-            elif business_mode == 't_and_m':
-                products = products.filtered(lambda p: (p.invoice_policy == 'delivered_manual' and p.expense_policy == 'no') or (p.expense_policy == 'no' and p.seniority_level_id))
-        
-        return products.ids
-        """

@@ -17,6 +17,15 @@ class SaleOrder(models.Model):
         string='Business Line',
         domain="[('is_business_line','=',True)]"
     )
+
+    catalog_mode = fields.Selection([
+        ('generic','Generic'),
+        ('template','Template'),
+        ], compute = '_compute_catalog_mode')
+    
+    catalog_details = fields.Boolean(
+        default = False,
+    )
     
     company_id = fields.Many2one(default=lambda self: self.env.ref('vcls-hr.company_VCFR'))
 
@@ -183,6 +192,16 @@ class SaleOrder(models.Model):
     ###################
     # COMPUTE METHODS #
     ###################
+    @api.depends('product_category_id')
+    def _compute_catalog_mode(self):
+        for so in self:
+            generic_catalog = self.env['product.category'].search([('name','=','General Services')])
+            so.catalog_mode = 'template'
+            if generic_catalog:
+                if so.product_category_id == generic_catalog[0]:
+                    so.catalog_mode = 'generic'
+                    so.catalog_details = 'True'
+                    
 
     @api.depends('project_ids')
     def _compute_project_id(self):
