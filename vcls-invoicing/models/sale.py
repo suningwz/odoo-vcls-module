@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from lxml import etree
 from odoo.exceptions import UserError, ValidationError
 
+
 class SaleOrder(models.Model):
 
     _inherit = 'sale.order'
@@ -27,60 +28,70 @@ class SaleOrder(models.Model):
     po_id = fields.Many2one('invoicing.po', string ='Purchase Order')
 
     invoicing_frequency = fields.Selection([
-        ('month','Month'),
-        ('trimester','Trimester'),
-        ('milestone','Milestone')],
+        ('month', 'Month'),
+        ('trimester', 'Trimester'),
+        ('milestone', 'Milestone')],
         default =lambda self: self.partner_id.invoicing_frequency,
     )
     
-    timesheet_limit_date = fields.Date(compute='compute_timesheet_limite_date', inverse='inverse_timesheet_limite_date', store=True,)
+    timesheet_limit_date = fields.Date(
+        compute='_compute_timesheet_limit_date',
+        inverse='_inverse_timesheet_limit_date',
+        store=True
+    )
     invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
     activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.analytic.line'),
                                                                             ('report_name', '=', 'activity_report')])
-    communication_rate = fields.Selection([('0.0', '0%'),
-                                           ('0.005', '0.5%'),
-                                           ('0.01', '1%'),
-                                           ('0.015', '1.5%'),
-                                           ('0.02', '2%'),
-                                           ('0.025', '2.5%'),
-                                           ('0.03', '3%'),
-                                           ], 'Communication Rate', default='0.0')
+    communication_rate = fields.Selection([
+        ('0.0', '0%'),
+        ('0.005', '0.5%'),
+        ('0.01', '1%'),
+        ('0.015', '1.5%'),
+        ('0.02', '2%'),
+        ('0.025', '2.5%'),
+        ('0.03', '3%'),
+    ], 'Communication Rate', default='0.0')
     financial_config_readonly = fields.Boolean(compute='compute_financial_config_readonly')
 
-    activity_report_template = fields.Many2one('ir.actions.report',
-                                               default=lambda self: self.get_activity_report_template())
+    activity_report_template = fields.Many2one(
+        'ir.actions.report',
+        default=lambda self: self.get_activity_report_template()
+    )
 
     @api.depends('partner_id.risk_ids')
     def _compute_risk_ids(self):
-        resourceSo ="sale.order,{}".format(self.id)
-        risk_ids = self.env['risk'].search([('resource','=',resourceSo)])
+        resourceSo = "sale.order,{}".format(self.id)
+        risk_ids = self.env['risk'].search([('resource', '=', resourceSo)])
         if self.partner_id:
-            resourcePrtn ="res.partner,{}".format(self.partner_id.id)
-            risk_ids |= self.env['risk'].search([('resource','=',resourcePrtn)])
+            resourcePrtn = "res.partner,{}".format(self.partner_id.id)
+            risk_ids |= self.env['risk'].search([('resource', '=', resourcePrtn)])
         if risk_ids:
             self.risk_ids |= risk_ids
 
     @api.one
     @api.depends('partner_id.invoice_ids', 'partner_id.invoice_ids.state',
                  'invoicing_frequency')
-    def compute_timesheet_limite_date(self):
+    def _compute_timesheet_limit_date(self):
         customer_last_invoice = sorted(
-            self.partner_id.invoice_ids.filtered(lambda inv: inv.invoice_sending_date and inv.state != 'cancel')
-            , key=lambda inv: inv.invoice_sending_date, reverse=True)
-        if customer_last_invoice and customer_last_invoice[0].timesheet_limit_date and\
+            self.invoice_ids.filtered(
+                lambda inv: inv.invoice_sending_date and inv.state != 'cancel'
+            ), key=lambda inv: inv.invoice_sending_date, reverse=True
+        )
+        customer_last_invoice = customer_last_invoice and customer_last_invoice[0] or None
+        if customer_last_invoice.timesheet_limit_date and \
                 self.invoicing_frequency and self.invoicing_frequency != 'milestone':
             if self.invoicing_frequency == 'month':
-                new_date = (customer_last_invoice[0].timesheet_limit_date + relativedelta(day=1,
-                                                                                          months=2)) - relativedelta(
-                    day=1)
+                new_date = customer_last_invoice.timesheet_limit_date +\
+                           relativedelta(day=1, months=2) -\
+                           relativedelta(day=1)
             if self.invoicing_frequency == 'trimester':
-                new_date = (customer_last_invoice[0].timesheet_limit_date + relativedelta(day=1,
-                                                                                          months=4)) - relativedelta(
-                    day=1)
+                new_date = customer_last_invoice.timesheet_limit_date +\
+                           relativedelta(day=1, months=4) -\
+                           relativedelta(day=1)
             self.timesheet_limit_date = new_date
 
-    def inverse_timesheet_limite_date(self):
-        return
+    def _inverse_timesheet_limit_date(self):
+        pass
 
     @api.one
     @api.depends('project_id.user_id','partner_id.invoice_admin_id', 'parent_id')
@@ -105,20 +116,19 @@ class SaleOrder(models.Model):
         } 
 
     def check_risk(self):
-        try:
-            risk_company = self.env.ref('vcls-invoicing.non_standard_company')
-            risk_rate = self.env.ref('vcls-invoicing.non_standard_rates')
-        except:
-            risk_company = False
-            risk_rate = False
+        risk_company = self.env.ref('vcls-invoicing.non_standard_company', raise_if_not_found=False) or False
+        risk_rate = self.env.ref('vcls-invoicing.non_standard_rates', raise_if_not_found=False) or False
 
         for so in self:
 
-            resource ="sale.order,{}".format(so.id)
+            resource = "sale.order,{}".format(so.id)
 
             if so.company_id:
                 if so.company_id != self.env.ref('vcls-hr.company_VCFR'):
-                    existing = self.env['risk'].search([('resource', '=', resource),('risk_type_id','=',risk_company.id)])
+                    existing = self.env['risk'].search([
+                        ('resource', '=', resource),
+                        ('risk_type_id', '=', risk_company.id)
+                    ])
                     if not existing:
                         so.risk_ids |= self.env['risk']._raise_risk(risk_company, resource)
             
@@ -136,37 +146,7 @@ class SaleOrder(models.Model):
     def _compute_risk_score(self):
         for so in self:
             so.risk_score = sum(so.risk_ids.mapped('score'))
-                    
-            
 
-        """order_lines = self.order_line
-        
-        for line in order_lines:
-            so_line_price = line.price_unit
-            product_prices = line.product_id.item_ids
-
-            try:
-                if line.product_id.seniority_level_id:
-                    for product_price in product_prices:
-                        if product_price.pricelist_id == line.pricelist_id and product_price.fixed_price != so_line_price:
-                            risk_type = self.env.ref('vcls-invoicing.non_standard_rates')
-                            resource ='sale.order,' + str(self.id)
-                            risk = self.env['risk'].search([('resource', '=', resource)])
-                            if not risk:
-                                risk = self.env['risk']._raise_risk(risk_type, resource).id
-                                self.risk_ids = risk
-
-                if self.company_id.id != self.env.ref('vcls-hr.company_VCFR').id:
-                    risk_type = self.env.ref('vcls-invoicing.non_standard_company')
-                    resource ='sale.order,' + str(self.id)
-                    risk = self.env['risk'].search([('resource', '=', resource)])
-                    if not risk:
-                        risk = self.env['risk']._raise_risk(risk_type, resource).id
-                        self.risk_ids = risk
-
-            except Exception:
-                pass"""
-    
     @api.multi
     def write(self, vals):
         for rec in self:
