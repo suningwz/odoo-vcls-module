@@ -78,7 +78,7 @@ class SaleOrder(models.Model):
             ), key=lambda inv: inv.invoice_sending_date, reverse=True
         )
         customer_last_invoice = customer_last_invoice and customer_last_invoice[0] or None
-        if customer_last_invoice.timesheet_limit_date and \
+        if customer_last_invoice and customer_last_invoice.timesheet_limit_date and \
                 self.invoicing_frequency and self.invoicing_frequency != 'milestone':
             if self.invoicing_frequency == 'month':
                 new_date = customer_last_invoice.timesheet_limit_date +\
