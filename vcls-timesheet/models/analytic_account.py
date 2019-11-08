@@ -99,11 +99,15 @@ class AnalyticLine(models.Model):
                     ('task_id', '=', task_id),
                 ], limit=1, order='date desc')
                 if direct_previous_line:
+                    task_id = direct_previous_line.task_id
+                    main_project_id = task_id.project_id
+                    main_project_id = main_project_id or main_project_id.parent_id
                     values = {
                         'unit_amount': 0,
                         'date': date,
                         'project_id': direct_previous_line.project_id.id,
-                        'task_id': direct_previous_line.task_id.id,
+                        'task_id': task_id.id,
+                        'main_project_id': main_project_id.id,
                         'name': direct_previous_line.name,
                         'time_category_id': direct_previous_line.time_category_id.id,
                     }
@@ -349,7 +353,7 @@ class AnalyticLine(models.Model):
             }}
 
     @api.onchange('task_id')
-    def onchange_project_id(self):
+    def onchange_task_id(self):
         if self._context.get('desc_order_display'):
             self.project_id = self.task_id.project_id
         if not self.main_project_id and self.task_id:
