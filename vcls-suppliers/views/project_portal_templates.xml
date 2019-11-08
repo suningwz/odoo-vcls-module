@@ -110,7 +110,9 @@
                                     <td><t t-esc="timesheet.name"/></td>
                                     <td><t t-esc="timesheet.sudo().user_id.name"/></td>
                                     <td class="text-right"><span t-esc="timesheet.unit_amount" t-options='{"widget": "duration", "unit": "hour", "round": "minute"}'/></td>
-                                </tr>
+                                    <td/>
+                                    <td/>
+                                 </tr>
                             </t>
                         </t>
                     </tbody>
