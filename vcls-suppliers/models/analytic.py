@@ -33,7 +33,7 @@ class AnalyticLine(models.Model):
         if not purchase_line:
             # create a PO with a line
             purchase_order = purchase_obj.create({
-                'partner_id': self.env.user.partner_id.id,
+                'partner_id': user_id.partner_id.id,
             })
             values = purchase_line_obj.default_get(
                 list(purchase_line_obj.fields_get()))
