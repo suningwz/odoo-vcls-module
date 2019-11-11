@@ -24,6 +24,7 @@
                     <field name="invoice_template" attrs="{'readonly': [('financial_config_readonly', '!=', True)]}" force_save="1"/>  
                     <field name="activity_report_template" attrs="{'readonly': [('financial_config_readonly', '!=', True)]}" force_save="1"/>
                     -->
+                    <field name="invoiceable_amount"/>
                     <field name="invoice_template" force_save="1" options="{'no_create_edit': True}"/>  
                     <field name="activity_report_template" force_save="1" options="{'no_create_edit': True}"/>
                     <field name="po_id" domain="[('partner_id','=',partner_id)]"/>

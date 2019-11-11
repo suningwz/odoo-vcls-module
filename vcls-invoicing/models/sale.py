@@ -23,6 +23,7 @@ class SaleOrder(models.Model):
     risk_score = fields.Integer(
         string='Risk Score',
         compute = '_compute_risk_score',
+        store = True,
     )
 
     po_id = fields.Many2one('invoicing.po', string ='Purchase Order')
@@ -61,6 +62,16 @@ class SaleOrder(models.Model):
         'ir.actions.report',
         default=lambda self: self.get_activity_report_template()
     )
+
+    invoiceable_amount = fields.Monetary(
+        compute="_compute_invoiceable_amount",
+        store=True,
+    )
+
+    @api.depends('order_line','order_line.untaxed_amount_to_invoice')
+    def _compute_invoiceable_amount(self):
+        for so in self:
+            so.invoiceable_amount = sum(so.order_line.mapped('untaxed_amount_to_invoice'))
 
     @api.depends('partner_id.risk_ids')
     def _compute_risk_ids(self):
