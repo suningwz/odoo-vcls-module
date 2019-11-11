@@ -125,8 +125,18 @@ class Project(models.Model):
     @api.multi
     def action_raise_new_invoice(self):
         """This function will trigger the Creation of invoice regrouping all the sale orders."""
-        # TODO: This action will be later Described
-        return True
+        orders_ids = []
+        for project in self:
+            if not project.sale_order_id and project.sale_order_id.invoice_status != 'to invoice':
+                raise UserError(_("The selected Sales Order should contain something to invoice."))
+            else:
+                orders_ids |= project.sale_order_id.ids
+
+        action = self.env.ref('sale.action_view_sale_advance_payment_inv').read()[0]
+        action['context'] = {
+            'active_ids': orders_ids
+        }
+        return action
 
     @api.multi
     def action_raise_new_risk(self):
