@@ -106,8 +106,12 @@
                 <xpath expr="//page/field[@name='sale_order_option_ids']/.." position="after">
                     <page string="Invoicing Information" name="invoicing_information">
                         <group>
-                            <group>
+                            <group name="inv_left">
+                                <field name="fiscal_position_id" options="{'no_create': True}"/>
                                 <field name="payment_term_id" options="{'no_create': True}"/>
+                            </group>
+                            <group name="inv_right">
+                                
                             </group>
                         </group>
                     </page>
