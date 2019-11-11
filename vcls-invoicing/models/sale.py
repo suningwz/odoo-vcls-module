@@ -51,7 +51,10 @@ class SaleOrder(models.Model):
         ('0.025', '2.5%'),
         ('0.03', '3%'),
     ], 'Communication Rate', default='0.0')
-    financial_config_readonly = fields.Boolean(compute='compute_financial_config_readonly')
+    financial_config_readonly = fields.Boolean(
+        compute='compute_financial_config_readonly',
+        store=False,
+        )
 
     activity_report_template = fields.Many2one(
         'ir.actions.report',
@@ -97,7 +100,8 @@ class SaleOrder(models.Model):
     @api.depends('project_id.user_id','partner_id.invoice_admin_id', 'parent_id')
     def compute_financial_config_readonly(self):
         self.financial_config_readonly =((self.project_id.user_id == self.env.user) or\
-                                        (self.partner_id.invoice_admin_id == self.env.user)) and not self.parent_id
+                                        (self.partner_id.invoice_admin_id == self.env.user) or\
+                                        (self.env.user.has_group('vcls_security.group_project_controller'))) and not self.parent_id
 
     def action_risk(self):
         view_ids = [self.env.ref('vcls-risk.view_risk_tree').id,

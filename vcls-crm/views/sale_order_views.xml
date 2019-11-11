@@ -104,6 +104,7 @@
                     <page string="Invoicing Information" name="invoicing_information">
                         <group>
                             <group name="inv_left">
+                                <field string="Please edit the parent quotation:" readonly="1" name="parent_id" attrs="{'invisible': [('parent_id', '=', False)]}"/>
                                 <field name="invoicing_mode" widget="radio"/>
                                 <field name="fiscal_position_id" options="{'no_create': True}"/>
                                 <field name="payment_term_id" options="{'no_create': True}"/>
