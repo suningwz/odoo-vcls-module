@@ -47,7 +47,7 @@ class Risk(models.Model):
 
     last_notification = fields.Datetime(readonly = True)
 
-    score = fields.Integer(string = "Score", compute="_compute_score", store=True)
+    score = fields.Integer(string = "Score", compute="_compute_score")
 
     """acknowledged = fields.Boolean(
         default = False,
