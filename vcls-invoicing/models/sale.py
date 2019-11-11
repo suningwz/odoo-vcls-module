@@ -159,7 +159,7 @@ class SaleOrder(models.Model):
                             so.risk_ids |= self.env['risk']._raise_risk(risk_rate, resource)
                         break
     
-    @api.depends('so.risk_ids','so.risk_ids.score')
+    @api.depends('risk_ids','risk_ids.score')
     def _compute_risk_score(self):
         for so in self:
             so.risk_score = sum(so.risk_ids.mapped('score'))
