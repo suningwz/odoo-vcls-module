@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError,UserError
 
 import logging
 
@@ -125,16 +125,16 @@ class Project(models.Model):
     @api.multi
     def action_raise_new_invoice(self):
         """This function will trigger the Creation of invoice regrouping all the sale orders."""
-        orders_ids = []
+        orders = self.env['sale.order']
         for project in self:
             if not project.sale_order_id and project.sale_order_id.invoice_status != 'to invoice':
                 raise UserError(_("The selected Sales Order should contain something to invoice."))
             else:
-                orders_ids |= project.sale_order_id.ids
+                orders |= project.sale_order_id
 
         action = self.env.ref('sale.action_view_sale_advance_payment_inv').read()[0]
         action['context'] = {
-            'active_ids': orders_ids
+            'active_ids': orders.ids
         }
         return action
 
