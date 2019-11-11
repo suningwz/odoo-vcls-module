@@ -119,6 +119,22 @@ class Invoice(models.Model):
                     for timesheet in self.timesheet_ids:
                         timesheet.stage_id = 'invoiceable'
         return ret
+    
+    @api.multi
+    def invoice_print(self):
+        """ Print the invoice and mark it as sent, so that we can see more
+            easily the next step of the workflow
+        """
+
+        self.filtered(lambda inv: not inv.sent).write({'sent': True})
+        return self.env.ref('project_invoice').report_action(self)
+
+        """
+        if self.user_has_groups('account.group_account_invoice'):
+            return self.env.ref('account.account_invoices').report_action(self)
+        else:
+            return self.env.ref('account.account_invoices_without_payment').report_action(self)
+        """
 
     def action_print_activity_report(self):
         ctx = self._context.copy()
@@ -175,6 +191,7 @@ class Invoice(models.Model):
         return lxml.html.document_fromstring(html_format).text_content()
 
     def parent_quotation_informations(self):
+
         if not self.origin:
             return []
         names = self.origin.split(', ')
