@@ -120,22 +120,7 @@ class Invoice(models.Model):
                         timesheet.stage_id = 'invoiceable'
         return ret
     
-    @api.multi
-    def invoice_print(self):
-        """ Print the invoice and mark it as sent, so that we can see more
-            easily the next step of the workflow
-        """
-
-        self.filtered(lambda inv: not inv.sent).write({'sent': True})
-        return self.env.ref('project_invoice').report_action(self)
-
-        """
-        if self.user_has_groups('account.group_account_invoice'):
-            return self.env.ref('account.account_invoices').report_action(self)
-        else:
-            return self.env.ref('account.account_invoices_without_payment').report_action(self)
-        """
-
+    
     def action_print_activity_report(self):
         ctx = self._context.copy()
         if not self.timesheet_ids:
@@ -190,6 +175,7 @@ class Invoice(models.Model):
         self.ensure_one()
         return lxml.html.document_fromstring(html_format).text_content()
 
+    """
     def parent_quotation_informations(self):
 
         if not self.origin:
@@ -202,17 +188,42 @@ class Invoice(models.Model):
         parent_order = quotation.parent_id or quotation
         while parent_order.parent_id:
             parent_order = parent_order.parent_id
+        
         if self.timesheet_limit_date:
             customer_precedent_invoices = parent_order.partner_id.invoice_ids.filtered(
                 lambda i: i.id != self.id and i.timesheet_limit_date < self.timesheet_limit_date).sorted(
                 key=lambda v: v['timesheet_limit_date'], reverse=True)
             customer_precedent_invoice = customer_precedent_invoices and\
                 customer_precedent_invoice[0].timesheet_limit_date.strftime("%d/%m/%Y")
+        
         return [
             ('name', parent_order.name),
             ('scope_work', self.html_to_string(parent_order.scope_of_work) or ''),
             ('po_id', parent_order.po_id.name or ''),
             ('From', customer_precedent_invoice or ''),
+            ('To', self.timesheet_limit_date and self.timesheet_limit_date.strftime("%d/%m/%Y") or '')
+        ]
+    """
+    def parent_quotation_informations(self):
+
+        if not self.origin:
+            return []
+        names = self.origin.split(', ')
+        customer_precedent_invoice = ""
+        quotation = self.env['sale.order'].search([('name', 'in', names)], limit=1)
+        if not quotation:
+            return []
+        parent_order = quotation.parent_id or quotation
+        while parent_order.parent_id:
+            parent_order = parent_order.parent_id
+        
+        
+        
+        return [
+            ('name', parent_order.name),
+            ('scope_work', self.html_to_string(parent_order.scope_of_work) or ''),
+            ('po_id', parent_order.po_id.name or ''),
+            ('From', self.timesheet_limit_date and self.timesheet_limit_date.strftime("%d/%m/%Y") or ''),
             ('To', self.timesheet_limit_date and self.timesheet_limit_date.strftime("%d/%m/%Y") or '')
         ]
 
