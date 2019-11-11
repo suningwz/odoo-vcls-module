@@ -332,7 +332,7 @@
         <report
                 id="project_invoice"
                 model="account.invoice"
-                string="Related Invoice"
+                string="VCLS default"
                 report_type="qweb-pdf"
                 name="vcls-invoicing.report_related_invoice"
                 file="vcls-invoicing.report_related_invoice"
