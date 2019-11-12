@@ -39,6 +39,7 @@ class SaleOrder(models.Model):
             if line_ids:
                 invoice_vals = {'partner_id': order.partner_id.id,
                                 'origin': self.name,
+                                'po_id': order.po_id.id,
                                 'type': 'out_invoice',
                                 'account_id': self.partner_invoice_id.property_account_receivable_id.id,
                                 'state': 'paid'}
@@ -55,7 +56,8 @@ class SaleOrder(models.Model):
                         'sale_line_ids': [(6, 0, [task.sale_line_id.id])]})
                     ail_vals.append(vals)
                 invoice_vals['invoice_line_ids'] = ail_vals
-                self.env['account.invoice'].sudo().create(invoice_vals)
+                invoice_id = self.env['account.invoice'].sudo().create(invoice_vals)
+                order.invoice_ids = [invoice_id.id]
         return True
 
 
