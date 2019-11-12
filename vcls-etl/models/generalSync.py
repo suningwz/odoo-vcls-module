@@ -26,6 +26,7 @@ class ETLMap(models.Model):
     externalObjName = fields.Char(readonly = True)
     lastModifiedExternal = fields.Datetime(readonly = True)
     lastModifiedOdoo = fields.Datetime(readonly = True)
+    migration_running = fields.Boolean()
     
     state = fields.Selection([
         ('upToDate', 'Up To Date'),
