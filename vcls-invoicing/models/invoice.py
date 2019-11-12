@@ -40,6 +40,9 @@ class Invoice(models.Model):
 
     ready_for_approval = fields.Boolean(default=False)
 
+    invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
+    activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'activity.report.groupment')])
+
     def get_communication_amount(self):
         total_amount = 0
         lines = self.invoice_line_ids

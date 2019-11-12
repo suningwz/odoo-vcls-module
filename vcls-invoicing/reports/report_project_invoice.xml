@@ -52,6 +52,7 @@
                 </div>
             </div>
         </template>
+        
         <template id="report_invoice_document">
             <t t-call="vcls-invoicing.external_layout_standard">
                 <t t-set="o" t-value="o.with_context(lang=lang)"/>

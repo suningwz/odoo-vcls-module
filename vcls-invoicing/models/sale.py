@@ -40,6 +40,7 @@ class SaleOrder(models.Model):
         inverse='_inverse_timesheet_limit_date',
         store=True
     )
+    
     invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
     activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'activity.report.groupment')])
     #activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.analytic.line'),
@@ -53,6 +54,7 @@ class SaleOrder(models.Model):
         ('0.025', '2.5%'),
         ('0.03', '3%'),
     ], 'Communication Rate', default='0.0')
+
     financial_config_readonly = fields.Boolean(
         compute='compute_financial_config_readonly',
         store=False,
