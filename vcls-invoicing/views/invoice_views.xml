@@ -94,7 +94,7 @@
             <field name="context">{'search_default_draft':1,'group_by':['commercial_partner_id']}</field>
         </record>
 
-        <menuitem id="menu_finance_po" name="Client Purchase Order" parent="account_accountant.menu_accounting" sequence="3" action="action_po"/>
+        
 
         
 

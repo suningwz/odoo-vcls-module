@@ -105,5 +105,12 @@
                 action="vcls-timesheet.project_followup_report_action_revenue"
                 sequence="2"
         />
+
+        <menuitem 
+                id="menu_finance_po" 
+                name="Client Purchase Order" 
+                parent="menu_pc_root"
+                sequence="5"
+                action="vcls-invoicing.action_po"/>
     </data>
 </odoo>
