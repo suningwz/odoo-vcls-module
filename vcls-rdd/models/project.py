@@ -23,3 +23,9 @@ class ProjectTimeCategory(models.Model):
 
     old_id = fields.Char("Old Id", copy=False, readonly=True)
 
+
+class ProjectForecast(models.Model):
+    _inherit = 'project.forecast'
+
+    old_id = fields.Char("Old Id", copy=False, readonly=True)
+
