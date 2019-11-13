@@ -126,11 +126,11 @@ class SaleOrder(models.Model):
 
     @api.model
     def create(self, vals):
-        #if we force the creation of a quotation with an exiting internal ref (e.g. during migration)
-        if 'internal_ref' in vals:
-            vals['name']=self._get_name_without_ref(vals['internal_ref'],vals['name'])
+        # if we force the creation of a quotation with an exiting internal ref (e.g. during migration)
+        if vals.get('internal_ref'):
+            vals['name'] = self._get_name_without_ref(vals['internal_ref'], vals['name'])
 
-        #if related to an opportunity, we build the internal ref accordingly
+        # if related to an opportunity, we build the internal ref accordingly
         elif 'opportunity_id' in vals:
             opp_id = vals.get('opportunity_id')
             opp = self.env['crm.lead'].browse(opp_id)

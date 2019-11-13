@@ -77,7 +77,16 @@ class Invoice(models.Model):
             
     @api.model
     def create(self, vals):
-        ret = super(Invoice, self).create(vals)       
+        ret = super(Invoice, self).create(vals)
+        # Get the default activity_report_template if not set
+        if not ret.activity_report_template:
+            invoice_line_ids = self.invoice_line_ids.filtered(lambda l: not l.display_type)
+            if invoice_line_ids:
+                sale_line_ids = invoice_line_ids[0].sale_line_ids
+                if sale_line_ids:
+                    activity_report_template_id = sale_line_ids[0].activity_report_template.id
+                    ret.activity_report_template = activity_report_template_id
+
         partner = ret.partner_id
         if ret.partner_id.invoice_admin_id:
             ret.user_id = ret.partner_id.invoice_admin_id
