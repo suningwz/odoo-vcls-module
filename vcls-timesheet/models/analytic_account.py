@@ -336,10 +336,11 @@ class AnalyticLine(models.Model):
 
     @api.onchange('unit_amount_rounded', 'unit_amount')
     def get_required_lc_comment(self):
-        if float_compare(self.unit_amount_rounded, self.unit_amount, precision_digits=2) == 0:
-            self.required_lc_comment = False
-        else:
-            self.required_lc_comment = True
+        for rec in self:
+            if float_compare(rec.unit_amount_rounded, rec.unit_amount, precision_digits=2) == 0:
+                rec.required_lc_comment = False
+            else:
+                rec.required_lc_comment = True
 
     @api.onchange('unit_amount_rounded')
     def onchange_adj_reason_readonly(self):
