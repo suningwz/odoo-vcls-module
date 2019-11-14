@@ -32,7 +32,10 @@
                 </field>
 
                 <xpath expr="//header" position="attributes">    
-                    <attribute name="groups">vcls_security.vcls_account_manager</attribute>
+                    <attribute name="groups">
+                        vcls_security.vcls_account_manager,
+                        vcls_security.group_finance_invoice_administrator
+                    </attribute>
                 </xpath>
 
                 <xpath expr="//button[@name='action_confirm']" position="after">    
@@ -63,7 +66,7 @@
                         <group string="Internal">
                             <field name="user_id" options="{'no_create': True}"/>
                             <field name="company_id" options="{'no_create': True}" required="True"/>
-                            <field name="pricelist_id" groups="vcls_security.vcls_account_manager"/>
+                            <field name="pricelist_id" groups="vcls_security.group_finance_invoice_administrator,vcls_security.vcls_account_manager"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="parent_id" options="{'no_create': True}" readonly="1"/>
                             <field name="opportunity_id" options="{'no_create': True}" required="1" attrs="{'readonly': [('id', '&gt;', 0)]}" domain="[('partner_id','=',partner_id)]"/>
@@ -97,7 +100,7 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//page[@name='other_information']" position="attributes">
-                    <attribute name="groups">vcls_security.vcls_account_manager</attribute>
+                    <attribute name="groups">vcls_security.group_finance_invoice_administrator,vcls_security.vcls_account_manager</attribute>
                 </xpath>
 
                 <xpath expr="//page/field[@name='sale_order_option_ids']/.." position="after">
