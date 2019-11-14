@@ -18,7 +18,10 @@ class Project(models.Model):
 
     @api.multi
     def check_access_rule(self, operation):
-        if operation == 'write' and self.env.user.has_group('vcls_security.vcls_account_manager'):
+        if operation == 'write' and \
+                not self.env.user.has_group('project.group_project_manager') and\
+                not self.env.user.has_group('vcls_security.group_bd_admin') and\
+                self.env.user.has_group('vcls_security.vcls_account_manager'):
             user = self.env.user
             for project in self:
                 # vcls_account_manager user has write access only on

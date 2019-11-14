@@ -78,7 +78,7 @@ class SaleOrder(models.Model):
         # if core team not defined by parent, then we create a default one
         if not self.core_team_id:
             # use sudo as Lead consultant cannot write on sales orders
-            self.sudo().core_team_id = self.env['core.team'].create({'name': "Team {}".format(self.internal_ref)})
+            self.sudo().core_team_id = self.env['core.team'].sudo().create({'name': "Team {}".format(self.internal_ref)})
 
         return {
             'name': 'Core Team',
