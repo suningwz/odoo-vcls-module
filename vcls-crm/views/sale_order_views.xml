@@ -208,7 +208,9 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="groups_id" eval="[(4, ref('vcls_security.group_vcls_consultant'))]"/>
             <field name="arch" type="xml">
-                <field name="invoice_count" position="replace"/>
+                <field name="invoice_count" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
                 <field name="analytic_account_id" position="attributes">
                     <attribute name="attrs">{}</attribute>
                     <attribute name="invisible">1</attribute>
