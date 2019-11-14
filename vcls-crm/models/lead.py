@@ -281,11 +281,11 @@ class Leads(models.Model):
     @api.model
     def create(self, vals):
        
-        #_logger.info("LEAD CREATION {}".format(vals))
-        if vals.get('type','lead') == 'lead':
-            if vals.get('contact_name', False) and vals.get('contact_lastname', False) and vals.get('contact_middlename', False):
+        if vals.get('type', '') == 'lead':
+            if vals.get('contact_name', False) and vals.get('contact_lastname', False):
+                if vals.get('contact_middlename', False):
                     vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
-            elif vals.get('contact_name', False) and vals.get('contact_lastname', False):
+                else:
                     vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
         
         lead = super(Leads, self).create(vals)
