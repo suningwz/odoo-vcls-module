@@ -544,18 +544,17 @@ class Leads(models.Model):
         _logger.info("Partner Id Values END {}".format(result))
         return result
     
-    @api.onchange('contact_name','contact_lastname','contact_middlename')
+    @api.onchange('contact_name', 'contact_lastname', 'contact_middlename')
     def _compute_partner_name(self):
         for lead in self:
-            if lead.contact_name and lead.contact_lastname and lead.contact_middlename:
-                res = lead.contact_name + " " + lead.contact_middlename + " " + lead.contact_lastname
-                lead.name = res
-            elif lead.contact_name and lead.contact_lastname:
-                res = lead.contact_name + " " + lead.contact_lastname
-                lead.name = res
-    
-    
-    
+            if lead.type == 'lead':
+                continue
+            if lead.contact_name and lead.contact_lastname:
+                if lead.contact_middlename:
+                    lead.name = lead.contact_name + " " + lead.contact_middlename + " " + lead.contact_lastname
+                else:
+                    lead.name = lead.contact_name + " " + lead.contact_lastname
+
     def all_campaigns_pop_up(self):
         model_id = self.env['ir.model'].search([('model','=','crm.lead')], limit = 1)
         return {
