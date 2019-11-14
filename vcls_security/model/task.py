@@ -10,7 +10,9 @@ class Task(models.Model):
     @api.model
     def check_access_rights(self, operation, raise_exception=True):
         if operation in ('create', 'unlink') and \
-                (self.env.user.has_group('vcls_security.group_vcls_consultant')):
+            not self.env.user.has_group('project.group_project_manager') and \
+            not self.env.user.has_group('vcls_security.group_bd_admin') and \
+                self.env.user.has_group('vcls_security.group_vcls_consultant'):
             # vcls_consultant and vcls_account_manager users have only read and write access to tasks
             if raise_exception:
                 raise AccessError(_("Sorry, you are not allowed to modify this document."))
@@ -22,7 +24,9 @@ class Task(models.Model):
     def check_access_rule(self, operation):
         if operation == 'write':
             user = self.env.user
-            if self.env.user.has_group('vcls_security.group_vcls_consultant'):
+            if not self.env.user.has_group('project.group_project_manager') and \
+                not self.env.user.has_group('vcls_security.group_bd_admin') and \
+                    self.env.user.has_group('vcls_security.group_vcls_consultant'):
                 for task in self:
                     # vcls_consultant user has write access only on his own tasks
                     if task.user_id != user:
