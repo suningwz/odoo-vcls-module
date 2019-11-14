@@ -190,7 +190,7 @@ class Project(models.Model):
     def create(self, vals):
 
         #default visibility
-        vals['privacy_visibility'] = 'employees'
+        vals['privacy_visibility'] = 'portal'
         
         #we automatically assign the project manager to be the one defined in the core team
         if vals.get('sale_order_id',False):
@@ -207,7 +207,7 @@ class Project(models.Model):
         project.type_ids = ids if ids else project.type_ids
 
         if project.project_type != 'client':
-            project.privacy_visibility = 'followers'
+            project.privacy_visibility = 'employees'
         
         return project
     
