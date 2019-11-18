@@ -82,6 +82,10 @@
             <field name="view_id" ref='vcls-invoicing.ia_invoices_view_tree'/>
             <field name="domain">[]</field>
             <field name="context">{'search_default_myinvoices':1,'group_by':['state']}</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('ia_invoices_view_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('account.invoice_form')}),
+            ]"/>
         </record>
 
         <record id="action_am_invoices" model="ir.actions.act_window">
