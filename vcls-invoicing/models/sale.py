@@ -73,7 +73,11 @@ class SaleOrder(models.Model):
     @api.depends('order_line','order_line.untaxed_amount_to_invoice')
     def _compute_invoiceable_amount(self):
         for so in self:
-            so.invoiceable_amount = sum(so.order_line.mapped('untaxed_amount_to_invoice'))
+            #if the so has child, then we add child invoiceable amount to the total
+            so.invoiceable_amount = sum(so.order_line.mapped('untaxed_amount_to_invoice')) + sum(so.child_ids.mapped('invoiceable_amount'))
+            #if there's a parent, then we trigger the recompute
+            if so.parent_id:
+                so.parent_id._compute_invoiceable_amount()
 
     @api.depends('partner_id.risk_ids')
     def _compute_risk_ids(self):
