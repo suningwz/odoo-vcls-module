@@ -84,8 +84,8 @@ class ProjectForecast(models.Model):
         forecast.sudo()._project_forecasted_amount()
 
         if forecast.task_id.date_start and forecast.task_id.date_end:
-            forecast.start_date = forecast.task_id.date_start
-            forecast.end_date = forecast.task_id.date_end
+            forecast.start_date = forecast.task_id.date_start.date()
+            forecast.end_date = forecast.task_id.date_end.date()
 
         return forecast
 
