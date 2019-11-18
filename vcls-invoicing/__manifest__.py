@@ -44,7 +44,8 @@
         # reports
         'reports/report_project_invoice.xml',
         'reports/activity_reports.xml',
-        
+        'reports/activities_report.xml',
+
         # Wizards #
         'wizard/activity_report_views.xml',
         
