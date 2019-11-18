@@ -39,7 +39,8 @@ class Leads(models.Model):
     @api.onchange('partner_id', 'partner_name')
     def onchange_info(self):
         hide_altname = False
-        if self.partner_id or not self.partner_name:
+        #if self.partner_id or not self.partner_name:
+        if not self.partner_name:
             hide_altname = True
         self.hide_altname = hide_altname
 
