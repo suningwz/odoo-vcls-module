@@ -51,11 +51,13 @@ class ContactExt(models.Model):
 
     sharepoint_folder = fields.Char(
         string = 'Sharepoint Folder',
-        #compute = '_compute_sharepoint_folder',
+        compute = '_compute_sharepoint_folder',
         readonly = True,
     )
 
-    legacy_analytical_account_id = fields.Integer()
+    legacy_analytical_account_id = fields.Integer(
+        default = False,
+    )
     
     """custom_sp_link = fields.Char(
         string = 'Custom Sharepoint Folder',
