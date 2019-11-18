@@ -77,7 +77,7 @@ class SaleOrder(models.Model):
     )
 
     lc_id = fields.Many2one(
-        'res.users',
+        'hr.employee',
         string = 'LC',
         related = 'core_team_id.lead_consultant',
     )
