@@ -70,6 +70,18 @@ class SaleOrder(models.Model):
         store=True,
     )
 
+    pc_id = fields.Many2one(
+        'res.users',
+        string = 'PC',
+        related = 'partner_id.controller_id'
+    )
+
+    lc_id = fields.Many2one(
+        'res.users',
+        string = 'LC',
+        related = 'core_team_id.lead_consultant',
+    )
+
     @api.depends('order_line','order_line.untaxed_amount_to_invoice')
     def _compute_invoiceable_amount(self):
         for so in self:
