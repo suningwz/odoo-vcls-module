@@ -43,6 +43,14 @@ class Leads(models.Model):
         if not self.partner_name:
             hide_altname = True
         self.hide_altname = hide_altname
+    
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        if self.partner_id.is_company:
+            self.altname = self.partner_id.altname
+        else:
+            self.altname = self.partner_id.parent_id.altname
+            
 
     ###################
     # DEFAULT METHODS #
