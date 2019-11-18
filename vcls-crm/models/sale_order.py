@@ -2,6 +2,8 @@
 
 from odoo import models, fields, tools, api
 from dateutil.relativedelta import relativedelta
+
+from odoo.exceptions import UserError, ValidationError, Warning
 import math
 
 import logging
@@ -134,6 +136,16 @@ class SaleOrder(models.Model):
         elif 'opportunity_id' in vals:
             opp_id = vals.get('opportunity_id')
             opp = self.env['crm.lead'].browse(opp_id)
+
+            #we check if the partner is an individual, if yes, we change it to the parent company
+            if not opp.partner_id.is_company:
+                if opp.partner_id.parent_id:
+                    vals['partner_id'] = opp.partner_id.parent_id.id
+                    vals['partner_invoice_id'] = opp.partner_id.id
+                    vals['partner_shipping_id'] = opp.partner_id.id
+                else:
+                    raise ValidationError("You can't create a quotation with an individual ({}) without a configured company.".format(opp.partner_id.name))
+
 
             # parent_id is readonly, so it cant go on vals upon creation
             # we use parent_sale_order_id as an intermediate value for that
