@@ -74,6 +74,8 @@
                 <xpath expr="//tree" position="replace">
                     <tree string="Quotation" class="o_sale_order" decoration-bf="message_needaction==True" decoration-muted="state=='cancel'" default_order="invoiceable_amount desc">
                         <field name="currency_id" invisible="1"/>
+                        <field name="message_needaction" invisible="1"/>
+                        <field name="state" invisible="1"/>
                         <field name="name" string="Quotation Number"/>
                         <field name="partner_id"/>
                         <field name="user_id"/>
