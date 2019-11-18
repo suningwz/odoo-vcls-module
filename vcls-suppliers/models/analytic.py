@@ -60,7 +60,7 @@ class AnalyticLine(models.Model):
             purchase_line.product_qty *= self.currency_id.compute(self.amount, purchase_line.currency_id)
 
         # Notify the lead consultant and members of group "Resource Manager"
-        users_to_notify = task.project_id.user_id | self.env.ref('vcls-suppliers.vcls_group_rm').users
+        users_to_notify = task.project_id.user_id #| self.env.ref('vcls-suppliers.vcls_group_rm').users
         for user in users_to_notify:
             self.env['mail.activity'].sudo().create({
                 'res_id': purchase_line.order_id.id,
