@@ -41,6 +41,7 @@
         'views/pc_menus.xml',
         'views/ia_menus.xml',
         'views/backend.xml',
+        'views/todo_menu.xml',
 
         'data/translation.sql',
     ],
