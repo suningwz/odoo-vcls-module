@@ -263,7 +263,7 @@ class SaleOrder(models.Model):
     # TOOL METHODS #
     ################
 
-    def _get_name_without_ref(self,ref,raw_name):
+    def _get_name_without_ref(self,ref="ALTNAME-XXX",raw_name=""):
         parts = raw_name.lower().split(ref.lower()) #we use the ref to split
         parts.reverse() #we reverse to get the last part for any length
         return parts[0].strip()
