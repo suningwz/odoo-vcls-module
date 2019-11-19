@@ -43,12 +43,6 @@
                     parent="hr_timesheet.hr_timesheet_menu_configuration"
                     action="vcls-timesheet.act_time_categories"/>
 
-        <!-- <menuitem id="hr_timesheet.timesheet_menu_activity_mine"
-                    name="Time Categories "
-                    sequence="100"
-                    parent="hr_timesheet.timesheet_menu_root"
-                    action="vcls-project.act_time_categories"/> -->
-
         <record id="account_analytic_line_grid_view_form" model="ir.ui.view">
             <field name="name">account.analytic.line.grid.view.form</field>
             <field name="model">account.analytic.line</field>

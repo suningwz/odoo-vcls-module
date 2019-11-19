@@ -26,6 +26,7 @@ CALENDAR_CALENDAR_VIEW_DOMAIN = 'calendars/%s/calendarview'
 
 class AzureADCalendar(models.Model):
     _name = 'azure.ad.calendar'
+    _description = 'Azure Calendar'
 
     azure_ad_user_id = fields.Many2one(string='Azure AD User', comodel_name='azure.ad.user', ondelete='cascade')
 

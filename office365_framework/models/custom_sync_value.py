@@ -12,6 +12,7 @@ from odoo.tools.safe_eval import test_python_expr, safe_eval
 class CustomSyncValue(models.Model):
     _name = 'custom.sync.value'
     _order = 'model_id,sequence,id'
+    _description = 'Custom Sync Value'
 
     model_id = fields.Many2one(string='Document Model', comodel_name='ir.model', ondelete='cascade')
     name = fields.Char(string="Short Description")

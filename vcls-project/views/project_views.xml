@@ -20,18 +20,26 @@
                             <button class="oe_stat_button" name="sale_orders_tree_view" type="object" icon="fa-barcode">
                                 <field string="Quotation(s)" name="orders_count" widget="statinfo"/>
                             </button>
-                            <button class="oe_stat_button" name="invoices_tree_view" type="object" icon="fa-money">
+                            <button class="oe_stat_button" name="invoices_tree_view"
+                                    type="object" icon="fa-money">
                                 <field string="Invoices" name="invoices_count" widget="statinfo"/>
                             </button>
                             <button class="oe_stat_button" name="tasks_tree_view" type="object" icon="fa-tasks">
                                 <field string="Tasks" name="task_count" widget="statinfo"/>
                             </button>
-                            <button class="oe_stat_button" string="Forecasts" name="forecasts_tree_view" type="object"
-                                    icon="fa-wpforms"/>
-                            <button class="oe_stat_button" string="Timesheets" name="timesheets_tree_view" type="object" icon="fa-calendar"/>
+                            <button class="oe_stat_button" string="Forecasts" name="%(action_forecast_from_project)d"
+                                    type="action" icon="fa-calendar"/>
+                            <button class="oe_stat_button" string="Timesheets" name="timesheets_tree_view"
+                                    type="object" icon="fa-clock-o"/>
                             <button class="oe_stat_button" string="Report Analysis" name="report_analysis_tree_view"
                                     type="object" icon="fa-pencil-square-o"/>
-                            <button name="toggle_active" type="object" confirm="(Un)archiving a project automatically (un)archives its tasks. Do you want to proceed?" class="oe_stat_button" icon="fa-archive">
+                            <button class="oe_stat_button"
+                                    name="core_team" type="object"
+                                    icon="fa-stack-exchange" string="Core Team"
+                                    attrs="{'invisible': [('sale_order_id', '=', False)]}"
+                            />
+                            <button name="toggle_active" type="object" confirm="(Un)archiving a project automatically (un)archives its tasks. Do you want to proceed?"
+                                    class="oe_stat_button" icon="fa-archive">
                                 <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
                             </button>
                         </div>
@@ -133,6 +141,7 @@
                             <field name="is_project_manager" invisible="1"/>
                             <button name="%(project_summary_action_new)d"
                                 string="Create SUMMARY" class="oe_highlight" type="action"
+                                groups="sales_team.group_sale_manager,vcls_security.vcls_lc"
                                 context="{
                                     'default_project_id': active_id,
                                     'default_completion_ratio': completion_ratio,
@@ -198,6 +207,20 @@
                 </form>
             </field>
         </record>
+
+        <record id="vcls_specific_project_form_lc_group" model="ir.ui.view">
+            <field name="name">project.form</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="vcls-project.vcls_specific_project_form"/>
+            <field name="groups_id" eval="[(4, ref('vcls_security.vcls_lc'))]"/>
+            <field name="arch" type="xml">
+                <button name="core_team" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="attrs">{}</attribute>
+                </button>
+            </field>
+        </record>
+
 
         <record id="view_project_formm_inherit" model="ir.ui.view">
             <field name="name">project.form</field>
@@ -299,6 +322,7 @@
             <field name="res_model">project.project</field>
             <field name="view_type">form</field>
             <field name="view_mode">kanban,form</field>
+            <field name="context">{"search_default_mine":1}</field>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>

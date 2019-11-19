@@ -5,7 +5,16 @@ access_dev_project_manager,dev.project.manager,vcls-project.model_project_projec
 
 access_program_user,access_program_user,vcls-project.model_project_program,base.group_user,1,0,0,0
 access_program_manager,access_program_manager,vcls-project.model_project_program,project.group_project_manager,1,1,1,1
+access_program_program_account_manager,access_program_program_account_manager,vcls-project.model_project_program,vcls_security.vcls_account_manager,1,1,1,1
+
+access_project_forecast_account_manager,project.forecast.account.manager,model_project_forecast,vcls_security.vcls_account_manager,1,1,1,1
 
 access_project_summary_manager,project.summary,model_project_summary,sales_team.group_sale_manager,1,1,1,1
 access_project_summary_user,project.summary,model_project_summary,project.group_project_user,1,0,0,0
+access_project_summary_lc,project.summary,model_project_summary,vcls_security.vcls_lc,1,1,1,1
+access_project_summary_account_manager,project.summary,model_project_summary,vcls_security.vcls_account_manager,1,0,0,0
+access_project_summary_invoice_administrator,access_project_summary_invoice_administrator,model_project_summary,vcls_security.group_finance_invoice_administrator,1,0,0,0
 
+access_account_invoice_lc,account.invoice.lc,account.model_account_invoice,vcls_security.vcls_lc,1,0,0,0
+access_account_invoice_line_lc,account.invoice.line.lc,account.model_account_invoice_line,vcls_security.vcls_lc,1,0,0,0
+access_account_invoice_tax_lc,account.invoice.tax.lc,account.model_account_invoice_tax,vcls_security.vcls_lc,1,0,0,0

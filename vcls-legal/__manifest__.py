@@ -18,17 +18,21 @@
     'version': '0.3.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['agreement_legal',
-                'agreement_sale',
-                'agreement_legal_sale',
-                'vcls-crm',
-                'vcls-invoicing',
-                'vcls-contact',
-                ],
+    'depends': [
+        'agreement_legal',
+        'agreement_sale',
+        'agreement_legal_sale',
+        'vcls-crm',
+        'vcls-invoicing',
+        'vcls-contact',
+        'vcls_security',
+    ],
 
     # always loaded
     'data': [
         ### VIEWS ###
+        'security/security.xml',
+        'security/ir.model.access.csv',
         'views/lead_views.xml',
         'views/contact_views.xml',
         'views/agreement.xml',

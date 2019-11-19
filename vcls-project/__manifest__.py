@@ -33,15 +33,17 @@
         'sale_timesheet',
         'account',
         'hr_timesheet',
-        ],
+        'vcls_security',
+    ],
 
     # always loaded
     'data': [
 
         ### SECURITY ###
         'security/vcls_groups.xml',
-        'security/security.xml',
         'security/ir.model.access.csv',
+        'security/security.xml',
+        'security/lc_security.xml',
         # DATA
         'data/end_of_project_cron.xml',
         ### VIEWS ###
@@ -56,16 +58,10 @@
         'views/lead_views.xml',
         'views/res_partner_views.xml',
         'views/template.xml',
-        
-
-        ### MENUS ###
+        'views/project_forecast_views.xml',
         'views/dev_project_menu.xml',
-
         'views/project_views.xml',
         'views/program_views_menu.xml',
-        
-        
-        'views/project_forecast_views.xml',
         'views/task_views.xml',
     ],
 

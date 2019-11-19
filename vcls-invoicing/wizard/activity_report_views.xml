@@ -9,9 +9,9 @@
                     Activity report will be grouped based on the Group by field value.
                 </p>
                 <group>
-                    <field name="invoice_id" invisible="True"/>
-                    <field name="groupment_by" widget="groupmentbyselection"/>
+                    <field name="invoice_id" invisible="1"/>
                     <field name="activity_report_template" invisible="1"/>
+                    <field name="report_type" required="1"/>
                 </group>
                 <footer>
                     <button name="action_get_report" string="Print Activity report" type="object"/>

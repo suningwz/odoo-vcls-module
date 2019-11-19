@@ -33,12 +33,13 @@
         'vcls-project',
         'timesheet_grid',
         'web_grid_extend',
-        ],
+        'project_timesheet_synchro',
+        'vcls_security',
+    ],
 
     # always loaded
     'data': [
         ### SECURITY ###
-        'security/vcls_groups.xml',
         'security/record_rule.xml',
         'security/ir.model.access.csv',
         #'data/parameters.xml',

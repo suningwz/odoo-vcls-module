@@ -13,36 +13,30 @@
             <field name="perm_write" eval="0"/>
             <field name="perm_create" eval="0"/>
             <field name="perm_unlink" eval="0"/>
-            <field name="domain_force">
-                [
-                    '&amp;',
-                        ('project_id', '!=', False),
-                        '|',
-                            ('project_id.user_id','=',user.id),
-                            ('user_id', '=', user.id),
-                ]
-            </field>
+            <field name="domain_force">[
+                '&amp;',
+                    ('project_id', '!=', False),
+                    '|',
+                        ('project_id.user_id','=',user.id),
+                        ('user_id', '=', user.id),
+            ]</field>
             <field name="groups" eval="[(4, ref('hr_timesheet.group_hr_timesheet_user'))]"/>
         </record>
 
         <record id="timesheet_user_write_rule" model="ir.rule">
-            <field name="name">Edit Owns and Owned Projects if non-validated</field>
+            <field name="name">Edit Owns and Owned Projects if in lc_review stage</field>
             <field name="model_id" ref="model_account_analytic_line"/>
             <field name="perm_read" eval="0"/>
             <field name="perm_write" eval="1"/>
             <field name="perm_create" eval="0"/>
             <field name="perm_unlink" eval="0"/>
-            <field name="domain_force">
-                [
-                    '&amp;',
-                        '&amp;',
-                            ('project_id', '!=', False),
-                            ('validated', '=', False),
-                        '|',
-                            ('project_id.user_id','=',user.id),
-                            ('user_id', '=', user.id),
-                ]
-            </field>
+            <field name="domain_force">[
+                ('project_id', '!=', False),
+                ('stage_id', 'in', ('draft', 'lc_review')),
+                '|',
+                    ('project_id.user_id','=',user.id),
+                    ('user_id', '=', user.id),
+            ]</field>
             <field name="groups" eval="[(4, ref('hr_timesheet.group_hr_timesheet_user'))]"/>
         </record>
 
@@ -53,64 +47,14 @@
             <field name="perm_write" eval="0"/>
             <field name="perm_create" eval="1"/>
             <field name="perm_unlink" eval="1"/>
-            <field name="domain_force">
-                [
-                    '&amp;',
-                        '&amp;',
-                            ('project_id', '!=', False),
-                            ('validated', '=', False),
-
-                        ('user_id', '=', user.id),
-                ]
-            </field>
+            <field name="domain_force">[
+                ('project_id', '!=', False),
+                ('validated', '=', False),
+                ('user_id', '=', user.id),
+            ]</field>
             <field name="groups" eval="[(4, ref('hr_timesheet.group_hr_timesheet_user'))]"/>
         </record>
 
-        <!--
-        <record id="LC_timesheet_read_rule" model="ir.rule">
-            <field name="name">LC can see all project TS</field>
-            <field name="model_id" ref="model_account_analytic_line"/>
-            <field name="perm_read" eval="1"/>
-            <field name="perm_write" eval="0"/>
-            <field name="perm_create" eval="0"/>
-            <field name="perm_unlink" eval="0"/>
-            <field name="domain_force">[('project_id.user_id','=',user.id),('project_id', '!=', False)]</field>
-            <field name="groups" eval="[(4, ref('hr_timesheet.group_hr_timesheet_user'))]"/>
-        </record>
-
-        <record id="LC_timesheet_write_rule" model="ir.rule">
-            <field name="name">LC can edit unvalidated project TS</field>
-            <field name="model_id" ref="model_account_analytic_line"/>
-            <field name="perm_read" eval="1"/>
-            <field name="perm_write" eval="1"/>
-            <field name="perm_create" eval="0"/>
-            <field name="perm_unlink" eval="0"/>
-            <field name="domain_force">[('project_id.user_id','=',user.id),('validated', '=', False),('project_id', '!=', False)]</field>
-            <field name="groups" eval="[(4, ref('hr_timesheet.group_hr_timesheet_user'))]"/>
-        </record>
-
-        <record id="timesheet_read_rule" model="ir.rule">
-            <field name="name">Everyone can read it's TS</field>
-            <field name="model_id" ref="model_account_analytic_line"/>
-            <field name="perm_read" eval="1"/>
-            <field name="perm_write" eval="0"/>
-            <field name="perm_create" eval="0"/>
-            <field name="perm_unlink" eval="0"/>
-            <field name="domain_force">[('user_id', '=', user.id),('project_id', '!=', False)]</field>
-            <field name="groups" eval="[(4, ref('hr_timesheet.group_hr_timesheet_user'))]"/>
-        </record>
-
-        <record id="timesheet_write_rule" model="ir.rule">
-            <field name="name">Everyone can edit non-validated TS</field>
-            <field name="model_id" ref="model_account_analytic_line"/>
-            <field name="perm_read" eval="1"/>
-            <field name="perm_write" eval="1"/>
-            <field name="perm_create" eval="1"/>
-            <field name="perm_unlink" eval="1"/>
-            <field name="domain_force">[('user_id', '=', user.id),('project_id', '!=', False),('validated', '=', False)]</field>
-            <field name="groups" eval="[(4, ref('hr_timesheet.group_hr_timesheet_user'))]"/>
-        </record>
-        -->
 
     </data>
 </odoo>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- deactivation of multicompany rules -->
+        <function model="ir.model.data" name="_remove_no_update" eval="[False,'hr_expense.hr_expense_report_comp_rule']"/>
+        <record id="hr_expense.hr_expense_report_comp_rule" model="ir.rule">
+            <field name="active" eval="False"/>
+        </record>
+
+        <function model="ir.model.data" name="_remove_no_update" eval="[False,'hr_expense.hr_expense_comp_rule']"/>
+        <record id="hr_expense.hr_expense_comp_rule" model="ir.rule">
+            <field name="active" eval="False"/>
+        </record>
+        
+    </data>
+</odoo>

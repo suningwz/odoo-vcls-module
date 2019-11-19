@@ -11,6 +11,7 @@ _logger = logging.getLogger(__name__)
 
 class AzureAdUserRecordLink(models.Model):
     _name = 'azure.ad.user.record.link'
+    _description = 'Azure User Record Link'
 
     user_id = fields.Many2one(comodel_name='azure.ad.user', string='Azure AD User', required=True, ondelete='cascade')
     data_domain = fields.Char(string="Azure AD Access Domain")

@@ -54,5 +54,4 @@
         </field>
     </record>
 
-     <delete model="ir.ui.menu" id="hr_expense.menu_hr_expense_my_expenses_to_submit"/>
 </odoo>

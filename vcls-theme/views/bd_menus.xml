@@ -85,7 +85,7 @@
             web_icon="vcls-crm,static/description/icon.png"
             sequence="7"
             active="True"
-            groups="vcls-hr.vcls_group_superuser_lvl1"
+            groups="vcls-hr.vcls_group_superuser_lvl1,vcls_security.vcls_account_manager"
         />
         
         <!-- Main Objects -->
@@ -95,6 +95,7 @@
             parent="menu_bd_root"
             action="crm.crm_lead_opportunities_tree_view"
             sequence="3"
+            groups="vcls-hr.vcls_group_superuser_lvl1,vcls_security.vcls_account_manager"
         />
 
         <menuitem
@@ -111,6 +112,14 @@
             parent="menu_bd_root"
             action="sale.action_quotations"
             sequence="9"
+        />
+
+        <menuitem
+            id="menu_bd_invoices"
+            name="Invoices"
+            parent="menu_bd_root"
+            action="vcls-invoicing.action_am_invoices"
+            sequence="10"
         />
 
         <menuitem
@@ -176,6 +185,7 @@
             name="Configuration"
             parent="menu_bd_root"
             sequence="18"
+            groups="vcls-hr.vcls_group_superuser_lvl1,vcls_security.group_bd_admin"
         />
 
         <!-- Teams -->
@@ -297,6 +307,14 @@
             parent="menu_bd_conf_sales"
             action="vcls-crm.action_lead_stage"
             sequence="6"
+        />
+
+        <menuitem
+            id="menu_bd_conf_lead_source"
+            name="Lead Sources"
+            parent="menu_bd_conf_sales"
+            action="utm.utm_source_action"
+            sequence="7"
         />
 
         <menuitem

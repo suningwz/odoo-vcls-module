@@ -12,5 +12,12 @@ class Project(models.Model):
 
     core_team_id = fields.Many2one(
         'core.team',
-        related="sale_order_id.core_team_id"
+        related="sale_order_id.core_team_id",
+        store=True
     )
+
+    @api.multi
+    def core_team(self):
+        self.ensure_one()
+        if self.sale_order_id:
+            return self.sale_order_id.core_team()

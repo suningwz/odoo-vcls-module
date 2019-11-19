@@ -1,4 +1,6 @@
 from . import TranslatorSFGeneral
+import logging
+_logger = logging.getLogger(__name__)
 
 class KeyNotFoundError(Exception):
     pass
@@ -50,6 +52,8 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
         if SF_Leads['Seniority__c']:
             result['partner_seniority_id'] = mapOdoo.convertRef(SF_Leads['Seniority__c'], odoo,'res.country',False)
         result['message_ids'] = [(0, 0, TranslatorSFLeads.generateLog(SF_Leads))]
+
+        #_logger.info("TRANSLATOR LEAD {}".format(result))
 
         return result
     

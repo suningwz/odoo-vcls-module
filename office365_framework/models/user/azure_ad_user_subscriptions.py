@@ -7,6 +7,7 @@ SUBSCRIPTION_CREATE_DOMAIN = 'subscriptions'
 
 class AzureAdUserSubscription(models.Model):
     _name = 'azure.ad.user.subscription'
+    _description = 'Azure User Subscription'
 
     user_id = fields.Many2one(string='Azure AD User', comodel_name='azure.ad.user', ondelete='cascade')
     subscription_id = fields.Char(string='Outlook Push Notification ID')

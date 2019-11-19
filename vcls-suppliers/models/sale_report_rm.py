@@ -115,8 +115,16 @@ class SaleReportRM(models.Model):
         team.lead_consultant as lead_consultant,
         team.id as core_team_id,
         team.lead_backup as lead_backup,
-        (SELECT string_agg(deli.name, ', ') from sale_order as o join product_deliverable as deli
-        on deli.id = o.deliverable_id) as deliverables
+        (SELECT string_agg(DISTINCT(deli.name), ', ') 
+            from sale_order_line sol 
+            left join product_product product
+            on sol.product_id = product.id
+            left join product_template product_tpl
+            on product_tpl.id = product.product_tmpl_id
+            left join product_deliverable deli
+            on product_tpl.deliverable_id = deli.id
+            where o.id = sol.order_id
+        ) as deliverables
          """
         return select_str
     

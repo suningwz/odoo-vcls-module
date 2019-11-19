@@ -11,6 +11,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='action_view_timesheet']" position="after">
                     <field name="family_order_count" invisible="1"/>
+                    <field name="invoice_count" invisible="1"/>
                     <field name="family_quotation_count" invisible="1"/>
                     <button type="object"
                         name="action_view_family_quotations"
@@ -31,6 +32,13 @@
                     <attribute name="readonly">0</attribute>
                 </field>
 
+                <xpath expr="//header" position="attributes">    
+                    <attribute name="groups">
+                        vcls_security.vcls_account_manager,
+                        vcls_security.group_finance_invoice_administrator
+                    </attribute>
+                </xpath>
+
                 <xpath expr="//button[@name='action_confirm']" position="after">    
                     <button name="upsell" id="action_upsell"
                         string="Upsell" class="btn-primary" type="object"
@@ -42,50 +50,49 @@
                 </xpath>
                 
                 <xpath expr="//group" position="replace">
-
+                    <group>
+                        <field name="scope_of_work"/>
+                    </group>
                     <group>
                         <group string="Client">
-                            <field name="partner_id" string="Client" widget="res_partner_many2one" domain="[('customer','=',True)]" context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}"/>
+                            <field name="partner_id" string="Client" widget="res_partner_many2one" domain="[('customer','=',True),('is_company','=',True)]" context="{'search_default_customer':1, 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}"/>
                             <field name="partner_invoice_id" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'invoice'}" options="{&quot;always_reload&quot;: True}"/>
                             <field name="partner_shipping_id" string="Deliverable Address" invisible="0" domain="['|',('parent_id','=',partner_id),('id','=',partner_id)]" groups="sale.group_delivery_invoice_address" context="{'default_type':'delivery'}" options="{&quot;always_reload&quot;: True}"/>
                             <field name="validity_date" attrs="{'invisible': [('state', 'in', ['sale', 'done'])]}"/>
                             <field name="confirmation_date" attrs="{'invisible': [('state', 'in', ['draft', 'sent', 'cancel'])]}"/>
-                            <!--<field name="opportunity_id" string="Related Opportunity" required="1" domain="[('partner_id','=',partner_id)]" options="{'no_create': True}"/>-->
+                            <field name="expected_start_date" required="1"/>
+                            <field name="expected_end_date" required="1"/>
                         </group>
 
-                        <group string="Invoicing">
+                        <group string="Internal">
+                            <field name="user_id" options="{'no_create': True}"/>
                             <field name="company_id" options="{'no_create': True}" required="True"/>
-                            <field name="pricelist_id" groups="product.group_sale_pricelist"/>
+                            <field name="pricelist_id" groups="vcls_security.group_finance_invoice_administrator,vcls_security.vcls_account_manager"/>
                             <field name="currency_id" invisible="1"/>
-                            <field name="payment_term_id" options="{'no_create': True}"/>
                             <field name="parent_id" options="{'no_create': True}" readonly="1"/>
+                            <!--<field name="opportunity_id" options="{'no_create': True}" required="1" attrs="{'readonly': [('id', '&gt;', 0)]}" domain="[('partner_id','=',partner_id)]"/>-->
+                            <field name="opportunity_id" readonly="1"/>
+                            <field name="internal_ref" options="{'no_create': True}" attrs="{'readonly': [('id', '&gt;', 0)]}"/>
                             <field name="parent_sale_order_id" invisible="1"/>
-                            <field name="project_id" options="{'no_create': True}" string="Linked Project"/>
+                            <field name="project_id" options="{'no_create': True}" string="Linked Project" invisible="1"/>
                         </group>
                     </group>
 
-                    <group>
-                        <group string="Segmentation">
-                            <field name="product_category_id" required='True'/>
-                            <field name="business_mode" widget="radio"/>
-                            <field name="deliverable_id" domain="[('product_category_id','=',product_category_id)]"/>
-                            <field name="sale_order_template_id"  domain="[('product_category_id','=',product_category_id)]"/>
+                    <group string="Product Catalog (Edit to retrieve products from various catalog)">
+                        <group string="Main Filters">
+                            <field name="catalog_mode" invisible="0"/>
+                            <field name="product_category_id" string="1. Select Catalog" required="1"/>
+                            <field name="sale_order_template_id"  domain="[('product_category_id','=',product_category_id)]" string="2. Select Template" attrs="{'required': [('catalog_mode', '=', 'template')],}"/>
+                            <field name="catalog_details" string="Show Detailed Catalog"/>
                         </group>
-
-                        <group string="Operations">
-                            <field name="expected_start_date"/>
-                            <field name="expected_end_date" required="1"/>
-                            <field name="scope_of_work"/>
+                        <group string="Fine Filters (for specific line search)" attrs="{'invisible': [('catalog_details', '=', False)]}">
+                            <field name="business_mode" widget="radio" string="3. Modify to focus on specific types"/>
+                            <field name="deliverable_id" domain="[('product_category_id','=',product_category_id)]" attrs="{'required': [('catalog_details', '=', True),('catalog_mode', '=', 'template')]}"/>
                         </group>
                     </group>
                     
                 </xpath>
-                <!--
-                <xpath expr="//field[@name='order_line']//tree/field[@name='product_id']" position="replace">
-                    <field name="product_id" options="{'no_create_edit':True}" attrs="{'readonly': [('product_updatable', '=', False)],'required': [('display_type', '=', False)],}" force_save="1"
-                    context="{'search_default_group_category':1,'search_default_group_info':1,'tree_view_ref':'vcls-crm.product_tree_view','partner_id': parent.partner_id,'quantity': product_uom_qty,'pricelist': parent.pricelist_id,'uom':product_uom,'company_id': parent.company_id,'default_lst_price': price_unit,'default_description_sale': name,'vcls_search': True,'business_mode':parent.business_mode,'business_line':parent.product_category_id,'deliverable_id':parent.deliverable_id }"/>
-                </xpath>-->
-
+                
                 <xpath expr="//field[@name='order_line']//tree/field[@name='product_id']" position="replace">
                     <field name="product_id" options="{'no_create_edit':True}" attrs="{'readonly': [('product_updatable', '=', False)],'required': [('display_type', '=', False)],}" force_save="1"
                     context="{'search_default_group_category':1,'search_default_group_info':1,'tree_view_ref':'vcls-crm.product_tree_view','partner_id': parent.partner_id,'quantity': product_uom_qty,'pricelist': parent.pricelist_id,'uom':product_uom,'company_id': parent.company_id,'default_lst_price': price_unit,'default_description_sale': name,'business_mode':parent.business_mode,'business_line':parent.product_category_id,'deliverable_id':parent.deliverable_id }"/>
@@ -93,6 +100,25 @@
 
                 <xpath expr="//page/field[@name='sale_order_option_ids']/.." position="attributes">
                     <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//page[@name='other_information']" position="attributes">
+                    <attribute name="groups">vcls_security.group_finance_invoice_administrator,vcls_security.vcls_account_manager</attribute>
+                </xpath>
+
+                <xpath expr="//page/field[@name='sale_order_option_ids']/.." position="after">
+                    <page string="Invoicing Information" name="invoicing_information">
+                        <group>
+                            <group name="inv_left">
+                                <field string="Please edit the parent quotation:" readonly="1" name="parent_id" attrs="{'invisible': [('parent_id', '=', False)]}"/>
+                                <field name="invoicing_mode" widget="radio"/>
+                                <field name="fiscal_position_id" options="{'no_create': True}"/>
+                                <field name="payment_term_id" options="{'no_create': True}"/>
+                            </group>
+                            <group name="inv_right">
+                                
+                            </group>
+                        </group>
+                    </page>
                 </xpath>
 
             </field>
@@ -178,6 +204,25 @@
 
 
 
+            </field>
+        </record>
+
+        <record id="view_order_form_consultant" model="ir.ui.view">
+            <field name="name">sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="groups_id" eval="[(4, ref('vcls_security.group_vcls_consultant'))]"/>
+            <field name="arch" type="xml">
+                <field name="invoice_count" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="analytic_account_id" position="attributes">
+                    <attribute name="attrs">{}</attribute>
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <xpath expr="//button[@name='action_view_invoice']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
             </field>
         </record>
 

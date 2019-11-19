@@ -52,6 +52,7 @@
                 </div>
             </div>
         </template>
+        
         <template id="report_invoice_document">
             <t t-call="vcls-invoicing.external_layout_standard">
                 <t t-set="o" t-value="o.with_context(lang=lang)"/>
@@ -332,7 +333,7 @@
         <report
                 id="project_invoice"
                 model="account.invoice"
-                string="Related Invoice"
+                string="VCLS default"
                 report_type="qweb-pdf"
                 name="vcls-invoicing.report_related_invoice"
                 file="vcls-invoicing.report_related_invoice"

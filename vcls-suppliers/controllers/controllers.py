@@ -10,6 +10,7 @@ from odoo.http import request
 from odoo.osv.expression import OR
 from datetime import datetime
 
+
 class CustomerPortal(CustomerPortal):
     
     def _prepare_portal_layout_values(self):
@@ -34,7 +35,7 @@ class CustomerPortal(CustomerPortal):
         uid = request.env.context.get('uid')
         project_ids = request.env['project.task'].search([('user_id','=',uid)]).mapped('project_id')
 
-        domain = [('id','in',project_ids.ids)]
+        domain = [('id', 'in', project_ids.ids)]
 
         searchbar_sortings = {
             'date': {'label': _('Newest'), 'order': 'create_date desc'},
@@ -267,12 +268,14 @@ class CustomerPortal(CustomerPortal):
 
         if post and task_sudo.user_id == request.env.user:
             # START PROCESSING DATA
-            error = CustomerPortal.check_timesheet(post)
+            error = self.check_timesheet(post)
             if len(error) == 0:
-                vals = post
-                vals['date'] = datetime.strptime(vals['date'], '%Y-%m-%d')
-                vals['stage_id'] = 'draft'
-                request.env['account.analytic.line'].sudo().search([('id','=',timesheet_id)]).write(vals)
+                values = post.copy()
+                values['date'] = datetime.strptime(values['date'], '%Y-%m-%d')
+                values['stage_id'] = 'draft'
+                timesheet = request.env['account.analytic.line'].sudo().search([('id', '=', timesheet_id)])
+                if timesheet and not timesheet.validated:
+                    timesheet.write(values)
             task_url = '/my/task/{}'.format(task_id)
             return request.redirect(task_url)
         else:

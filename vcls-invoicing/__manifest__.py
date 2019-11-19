@@ -18,15 +18,17 @@
     'version': '1.4',
 
     # any module necessary for this one to work correctly
-    'depends': ['base',
-                'vcls-crm',
-                'vcls-contact',
-                'vcls-risk',
-                'vcls-hr',
-                'account',
-                'sale_timesheet_limit_date',
-                'sale_timesheet_rounded',
-                ],
+    'depends': [
+        'base',
+        'vcls-crm',
+        'vcls-contact',
+        'vcls-risk',
+        'vcls-hr',
+        'account',
+        'sale_timesheet_limit_date',
+        'sale_timesheet_rounded',
+        'vcls_security',
+    ],
 
     # always loaded
     'data': [
@@ -42,7 +44,8 @@
         # reports
         'reports/report_project_invoice.xml',
         'reports/activity_reports.xml',
-        
+        'reports/activities_report.xml',
+
         # Wizards #
         'wizard/activity_report_views.xml',
         

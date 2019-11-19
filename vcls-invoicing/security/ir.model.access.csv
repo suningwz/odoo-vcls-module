@@ -1,3 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_invoicing_po_user,access_invoicing_po_user,vcls-invoicing.model_invoicing_po,base.group_user,1,0,0,0
-access_invoicing_po_controlling,access_invoicing_po_controlling,vcls-invoicing.model_invoicing_po,vcls-hr.vcls_group_controlling,1,1,1,1
+access_invoicing_po_controlling,access_invoicing_po_controlling,vcls-invoicing.model_invoicing_po,vcls_security.group_project_controller,1,1,1,1
