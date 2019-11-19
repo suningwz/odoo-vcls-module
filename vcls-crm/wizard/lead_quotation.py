@@ -24,6 +24,7 @@ class LeadQuotation(models.TransientModel):
     def confirm(self):
         self.ensure_one()
         action = self.env.ref('sale_crm.sale_action_quotations_new').read()[0]
+        _logger.info("OPP to QUOTE before: {}".format(action))
         context = self._context
         active_model = context.get('active_model', '')
         active_id = context.get('active_id')
@@ -42,12 +43,14 @@ class LeadQuotation(models.TransientModel):
             'default_program_id': lead.program_id.id,
             'default_scope_of_work': lead.scope_of_work,
             'default_product_category_id': lead.product_category_id.id,
+            'default_expected_start_date': lead.expected_start_date,
             'lead_quotation_type': self.quotation_type,
         }
-        _logger.info("OPP to QUOTE: {}".format(additional_context))
-        
+        #_logger.info("OPP to QUOTE: {}".format(additional_context))
+
         action['context'] = additional_context
         if self.quotation_type == 'new':
+            _logger.info("OPP to QUOTE after: {}".format(action))
             return action
         if self.quotation_type in ('budget_extension', 'scope_extension') and self.existing_quotation_id:
             # copy the quotation content
