@@ -1,0 +1,30 @@
+<odoo>
+    <data>
+        <!-- MENU ITEMS -->
+        <menuitem
+                id="menu_todo_root"
+                name="ToDo"
+                web_icon="fa fa-check-square-o,#f1c40f,#838383"
+                sequence="10"
+                active="True"
+        />
+
+        <menuitem
+                id="menu_todo_my"
+                name="My ToDo"
+                parent="menu_ia_root"
+                sequence="1"
+               
+        />
+
+        <menuitem
+                id="menu_todo_team"
+                name="My Team ToDo"
+                parent="menu_ia_root"
+                sequence="3"
+                
+        />
+
+        
+    </data>
+</odoo>
