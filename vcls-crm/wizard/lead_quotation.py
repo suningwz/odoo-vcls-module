@@ -43,7 +43,7 @@ class LeadQuotation(models.TransientModel):
             'default_program_id': lead.program_id.id,
             'default_scope_of_work': lead.scope_of_work,
             'default_product_category_id': lead.product_category_id.id,
-            'default_expected_start_date': lead.expected_start_date,
+            #'default_expected_start_date': lead.expected_start_date,
             'lead_quotation_type': self.quotation_type,
         }
         #_logger.info("OPP to QUOTE: {}".format(additional_context))
