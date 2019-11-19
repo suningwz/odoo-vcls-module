@@ -96,6 +96,8 @@
             <xpath expr="//filter[@name='my_sale_orders_filter']" position="after">
                 <separator/>
                 <filter string="My IA orders" name="ia_orders" domain="[('partner_id.invoice_admin_id','=', uid)]"/>
+                <separator/>
+                <filter string="To Be Invoiced" name="to_be_invoiced" domain="[('invoiceable_amount','&gt;', 0)]"/>
             </xpath>
 
         </field>
@@ -115,7 +117,7 @@
                 (0, 0, {'view_mode': 'graph', 'view_id': ref('sale.view_sale_order_graph')}),
             ]"/>
         <field name="domain">[('state','in',['done','sale']),('parent_id','=',False)]</field>
-        <field name="context">{'search_default_ia_orders':1}</field>
+        <field name="context">{'search_default_ia_orders':1,'search_default_to_be_invoiced':1}</field>
     </record>
 
 </odoo>
