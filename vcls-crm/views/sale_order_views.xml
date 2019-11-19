@@ -70,7 +70,8 @@
                             <field name="pricelist_id" groups="vcls_security.group_finance_invoice_administrator,vcls_security.vcls_account_manager"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="parent_id" options="{'no_create': True}" readonly="1"/>
-                            <field name="opportunity_id" options="{'no_create': True}" required="1" attrs="{'readonly': [('id', '&gt;', 0)]}" domain="[('partner_id','=',partner_id)]"/>
+                            <!--<field name="opportunity_id" options="{'no_create': True}" required="1" attrs="{'readonly': [('id', '&gt;', 0)]}" domain="[('partner_id','=',partner_id)]"/>-->
+                            <field name="opportunity_id" readonly="1"/>
                             <field name="internal_ref" options="{'no_create': True}" attrs="{'readonly': [('id', '&gt;', 0)]}"/>
                             <field name="parent_sale_order_id" invisible="1"/>
                             <field name="project_id" options="{'no_create': True}" string="Linked Project" invisible="1"/>
