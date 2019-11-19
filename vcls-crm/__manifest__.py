@@ -13,7 +13,7 @@
 
     'category': 'Uncategorized',
 
-    'version': '1.15.6',
+    'version': '1.16',
 
     # any module necessary for this one to work correctly
     'depends': [
