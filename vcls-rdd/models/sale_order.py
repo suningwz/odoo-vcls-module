@@ -62,6 +62,22 @@ class SaleOrder(models.Model):
                     order.invoice_ids = [invoice_id.id]
         return True
 
+    @api.multi
+    def delete_empty_sections(self):
+        for order in self:
+            datas = {self.env['sale.order.line']: self.env['sale.order.line']}
+            last_parent = self.env['sale.order.line']
+            for line in order.order_line:
+                if line.display_type != 'line_section':
+                    datas[last_parent] += line
+                else:
+                    datas.update({line: self.env['sale.order.line']})
+                    last_parent = line
+            for key,vals in datas.items():
+                if not vals and key:
+                    self._cr.execute("DELETE FROM sale_order_line where id in %s", (tuple(key.ids),))
+        return True
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
@@ -86,3 +102,4 @@ class SaleOrderLine(models.Model):
                                             'order_line': []})
                     vals['order_id'] = new_order.id
         return super(SaleOrderLine, self).create(vals)
+
