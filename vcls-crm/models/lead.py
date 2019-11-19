@@ -451,26 +451,6 @@ class Leads(models.Model):
             _logger.info("Unable to extract ref from opp name {}".format(name))
             return name
 
-    """def name_to_internal_ref(self,write_ref = False):
-        for lead in self:
-            if lead.type == 'opportunity':
-                #we verify if the format is matching expectations
-                try:
-                    #if the name already contains the ref
-                    offset = lead.name.upper().find(lead.partner_id.altname.upper())
-                    if offset != -1:
-                        index = int(lead.name[offset+len(lead.partner_id.altname)+1:offset+len(lead.partner_id.altname)+4])
-                        lead.name = "{}-{:03}{}".format(lead.partner_id.altname.upper(),index,lead.name[offset+len(lead.partner_id.altname)+4:])
-                        if write_ref:
-                            lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname.upper(),index)
-                            _logger.info("Updated Lead Ref: {}".format(lead.internal_ref))
-
-                    elif lead.internal_ref:
-                        lead.name = "{} | {}".format(lead.internal_ref,lead.name)
-
-                except:
-                    _logger.info("Unable to extract ref from opp name {}".format(lead.name))"""
-
 
     @api.multi
     def _create_lead_partner_data(self, name, is_company, parent_id=False):
@@ -608,7 +588,7 @@ class Leads(models.Model):
 
     @api.onchange('stage_id')
     def _check_won_lost(self):
-        if self.stage_id == self.env.ref('crm.stage_lead4'):
+        if self.stage_id.probability == 100:
             if len(self.won_reasons) == 0:
                 raise ValidationError(_("Please use the \"MARK WON\" button or select at least 1 reason."))
     
