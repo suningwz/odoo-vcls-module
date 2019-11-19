@@ -1,10 +1,21 @@
 <odoo>
     <data>
+
+        <!-- ACTIONS -->
+        <record id="todo_my_activities" model="ir.actions.act_window">
+                <field name="name">My ToDo</field>
+                <field name="res_model">mail.activity</field>
+                <field name="view_type">form</field>
+                <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity</field>
+            
+        </record>
+
+        
         <!-- MENU ITEMS -->
         <menuitem
                 id="menu_todo_root"
                 name="ToDo"
-                web_icon="fa fa-check-square-o,#f1c40f,#838383"
+                web_icon="fa fa-check-square-o,#6CB646,#2459A4"
                 sequence="10"
                 active="True"
         />
@@ -12,15 +23,15 @@
         <menuitem
                 id="menu_todo_my"
                 name="My ToDo"
-                parent="menu_ia_root"
+                parent="menu_todo_root"
                 sequence="1"
-               
+                action="todo_my_activities"
         />
 
         <menuitem
                 id="menu_todo_team"
                 name="My Team ToDo"
-                parent="menu_ia_root"
+                parent="menu_todo_root"
                 sequence="3"
                 
         />
