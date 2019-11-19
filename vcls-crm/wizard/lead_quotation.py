@@ -2,6 +2,9 @@
 
 from odoo import api, fields, models
 
+import logging
+_logger = logging.getLogger(__name__)
+
 
 class LeadQuotation(models.TransientModel):
     _name = 'lead.quotation.wizard'
@@ -41,6 +44,8 @@ class LeadQuotation(models.TransientModel):
             'default_product_category_id': lead.product_category_id.id,
             'lead_quotation_type': self.quotation_type,
         }
+        _logger.info("OPP to QUOTE: {}".format(additional_context))
+        
         action['context'] = additional_context
         if self.quotation_type == 'new':
             return action
