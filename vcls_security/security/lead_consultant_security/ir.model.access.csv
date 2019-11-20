@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_project_project_lc,project.project on lc,project.model_project_project,vcls_security.vcls_lc,1,1,1,0
+access_project_task_type_project_lead_consultant,project.task.type.project.lead.consultant,project.model_project_task_type,vcls_security.vcls_lc,1,0,0,0
+access_project_task_lead_consultant,project.task lead_consultant,project.model_project_task,vcls_security.vcls_lc,1,1,0,0
+access_partner_task lead_consultant,base.res.partner lead_consultant,base.model_res_partner,vcls_security.vcls_lc,1,0,0,0
+access_project_forecast_lead_consultant,project.forecast lead_consultant,project_forecast.model_project_forecast,vcls_security.vcls_lc,1,1,1,1
+
+
+
+access_sale_order_line_lc,sale.order.line.lc,sale.model_sale_order_line,vcls_security.vcls_lc,1,0,0,0
+access_sale_order_lc,sale.order.lc,sale.model_sale_order,vcls_security.vcls_lc,1,0,0,0
+access_product_product_attribute_custom_value_lc,product.attribute.custom value lc,sale.model_product_attribute_custom_value,vcls_security.vcls_lc,1,0,0,0
+access_purchase_order_lc,purchase.order.lc,purchase.model_purchase_order,vcls_security.vcls_lc,1,0,0,0
+access_purchase_order_line_lc,purchase.order.line.lc,purchase.model_purchase_order_line,vcls_security.vcls_lc,1,0,0,0
+access_project_forecast_lc,project.forecast,project_forecast.model_project_forecast,vcls_security.vcls_lc,1,1,1,0
+access_opportunity_lc,access_opportunity_default,crm.model_crm_lead,vcls_security.vcls_lc,1,0,0,0

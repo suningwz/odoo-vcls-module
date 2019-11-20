@@ -11,6 +11,7 @@ access_project_forecast_account_manager,project.forecast.account.manager,model_p
 
 access_project_summary_manager,project.summary,model_project_summary,sales_team.group_sale_manager,1,1,1,1
 access_project_summary_user,project.summary,model_project_summary,project.group_project_user,1,0,0,0
+access_project_summary_consultant,project.summary consultant,model_project_summary,vcls_security.group_vcls_consultant,1,0,0,0
 access_project_summary_lc,project.summary,model_project_summary,vcls_security.vcls_lc,1,1,1,1
 access_project_summary_account_manager,project.summary,model_project_summary,vcls_security.vcls_account_manager,1,0,0,0
 access_project_summary_invoice_administrator,access_project_summary_invoice_administrator,model_project_summary,vcls_security.group_finance_invoice_administrator,1,0,0,0

@@ -11,7 +11,7 @@
         <field name="category_id" ref="module_category_vcls"/>
         <field name="implied_ids"
             eval="[
-                (4, ref('project.group_project_user')),
+                (5,0,0),
                 (4, ref('hr_timesheet.group_hr_timesheet_user')),
             ]"/>
     </record>
@@ -35,7 +35,7 @@
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
         <field name="implied_ids"
             eval="[
-                (4, ref('project.group_project_user')),
+                (5,0,0),
                 (4, ref('hr_timesheet.group_hr_timesheet_user')),
             ]"/>
     </record>
@@ -73,6 +73,8 @@
         ]"/>
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
+
+
 
 </data>
 </odoo>
