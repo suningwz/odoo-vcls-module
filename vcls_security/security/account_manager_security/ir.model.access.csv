@@ -16,7 +16,7 @@ access_product_product_purchase_manager,product.product purchase_manager,product
 access_account_tax_purchase_user_manager,account.tax,account.model_account_tax,vcls_security.vcls_account_manager,1,0,0,0
 access_purchase_order_line_manager,purchase.order.line,purchase.model_purchase_order_line,vcls_security.vcls_account_manager,1,1,1,1
 access_product_template_purchase_manager,product.template purchase_manager,product.model_product_template,vcls_security.vcls_account_manager,1,0,0,0
-access_product_template_purchase_manager,product.template purchase_manager,product.model_product_template,vcls_security.group_bd_admin,1,1,1,1
+access_product_template_purchase_admin,product.template purchase_admin,product.model_product_template,vcls_security.group_bd_admin,1,1,1,1
 access_report_purchase_order,purchase.stock.report,purchase.model_purchase_report,vcls_security.vcls_account_manager,1,0,0,0
 
 access_crm_team_manager,crm.team.manager,crm.model_crm_team,vcls_security.vcls_account_manager,1,1,1,1
