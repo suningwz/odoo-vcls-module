@@ -26,7 +26,7 @@ class TimesheetForecastReport(models.Model):
         readonly=True
     )
 
-    date = fields.Boolean()  # Override existing field
+    date = fields.Float()
     employee_seniority_level_id = fields.Many2one(
         'hr.employee.seniority.level',
         String='Seniority Level', readonly=True
@@ -55,6 +55,7 @@ class TimesheetForecastReport(models.Model):
                         F.task_id AS task_id,
                         F.project_id AS project_id,
                         F.resource_hours AS number_hours,
+                        null AS date,
                         'forecast' AS type,
                         'forecast' AS stage_id,
                         F.resource_hours*F.hourly_rate AS revenue,
@@ -92,6 +93,7 @@ class TimesheetForecastReport(models.Model):
                         E.id AS employee_id,
                         A.task_id AS task_id,
                         A.project_id AS project_id,
+                        null AS date,
                         -A.unit_amount AS number_hours,
                         'timesheet' AS type,
                         A.stage_id AS stage_id,
