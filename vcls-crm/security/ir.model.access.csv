@@ -29,6 +29,7 @@ access_crm_resource_lead_default,access_crm_resource_lead_default,vcls-crm.model
 access_crm_lead_stage,access_crm_resource_lead_stage,vcls-crm.model_crm_lead_stage,base.group_user,1,1,1,1
 
 access_core_team_default,access_core_team_default,vcls-crm.model_core_team,base.group_user,1,0,0,0
+access_core_team_sale_manager,access_core_team_sale_manager,vcls-crm.model_core_team,sales_team.group_sale_manager,1,1,1,1
 access_core_team_lc,access_core_team_default,vcls-crm.model_core_team,vcls_security.vcls_lc,1,1,1,0
 access_core_team_account_managers,access_core_team_default,vcls-crm.model_core_team,vcls_security.vcls_account_manager,1,1,1,0
-access_core_team_bd,access_core_team_bd,vcls-crm.model_core_team,sales_team.group_sale_salesman,1,0,0,0
+access_core_team_bd_admin,access_core_team_bd,vcls-crm.model_core_team,vcls_security.group_bd_admin,1,1,1,0
