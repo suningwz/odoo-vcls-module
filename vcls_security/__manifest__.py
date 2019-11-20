@@ -13,6 +13,7 @@
         'base',
         'project',
         'sale',
+        'sales_team',
         'purchase',
         'hr_timesheet',
         'project_forecast',
