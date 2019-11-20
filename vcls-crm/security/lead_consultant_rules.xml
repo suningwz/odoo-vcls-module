@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>        
+
+        <record model="ir.rule" id="core_team_lc_rule">
+          <field name="name">Core team: lc rules</field>
+          <field name="model_id" ref="vcls-crm.model_core_team"/>
+          <field name="domain_force">[
+              ('project_ids.user_id', 'in', [user.id]),
+          ]</field>
+          <field name="groups" eval="[(4,ref('vcls_security.vcls_lc'))]"/>
+        </record>
+
+    </data>
+</odoo>

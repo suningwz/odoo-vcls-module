@@ -39,9 +39,18 @@ class Leads(models.Model):
     @api.onchange('partner_id', 'partner_name')
     def onchange_info(self):
         hide_altname = False
-        if self.partner_id or not self.partner_name:
+        #if self.partner_id or not self.partner_name:
+        if not self.partner_name:
             hide_altname = True
         self.hide_altname = hide_altname
+    
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        if self.partner_id.is_company:
+            self.altname = self.partner_id.altname
+        else:
+            self.altname = self.partner_id.parent_id.altname
+            
 
     ###################
     # DEFAULT METHODS #
@@ -71,7 +80,8 @@ class Leads(models.Model):
         'res.users', 
         string='Account Manager', 
         track_visibility='onchange', 
-        domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
+        domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)],
+        default='default_am',
         )
 
     #################
@@ -275,14 +285,18 @@ class Leads(models.Model):
         compute = '_compute_gdpr'
     )
 
+    contact_us_message = fields.Char()
+
     @api.model
     def create(self, vals):
-        #############
-        if vals.get('contact_name', False) and vals.get('contact_lastname', False) and vals.get('contact_middlename', False):
-                vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
-        elif vals.get('contact_name', False) and vals.get('contact_lastname', False):
-                vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
-        #############
+       
+        if vals.get('type', '') == 'lead':
+            if vals.get('contact_name', False) and vals.get('contact_lastname', False):
+                if vals.get('contact_middlename', False):
+                    vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
+                else:
+                    vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
+        
         lead = super(Leads, self).create(vals)
         # VCLS MODS
         if lead.type == 'lead':
@@ -317,10 +331,6 @@ class Leads(models.Model):
     ###################
     # COMPUTE METHODS #
     ###################
-
-    """ def _compute_is_support_user(self):
-        self.is_support_user = self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl1') """
-
 
     @api.depends('country_id')
     def _compute_country_group(self):
@@ -376,10 +386,10 @@ class Leads(models.Model):
             return record.create_date
 
     
-    """@api.onchange('partner_id','country_id')
+    @api.onchange('partner_id')
     def _change_am(self):
         for lead in self:
-            lead.user_id = lead.guess_am()"""
+            lead.user_id = lead.guess_am()
     
     """@api.depends('partner_id','type')
     def _compute_internal_ref(self):
@@ -422,9 +432,6 @@ class Leads(models.Model):
     def guess_am(self):
         if self.partner_id.user_id:
             return self.partner_id.user_id
-        elif self.country_group_id.default_am:
-            return self.country_group_id.default_am
-        #elif self.team_id.
         else:
             return False
     
@@ -433,33 +440,16 @@ class Leads(models.Model):
             #if the name already contains the ref
             offset = name.upper().find(reference.upper())
             if offset == -1 and reference:
-                return "{} | {}".format(reference,name)
+                if len(name)>0:
+                    return "{} | {}".format(reference,name)
+                else:
+                    return reference
             else:
                 return name
 
         except:
             _logger.info("Unable to extract ref from opp name {}".format(name))
             return name
-
-    """def name_to_internal_ref(self,write_ref = False):
-        for lead in self:
-            if lead.type == 'opportunity':
-                #we verify if the format is matching expectations
-                try:
-                    #if the name already contains the ref
-                    offset = lead.name.upper().find(lead.partner_id.altname.upper())
-                    if offset != -1:
-                        index = int(lead.name[offset+len(lead.partner_id.altname)+1:offset+len(lead.partner_id.altname)+4])
-                        lead.name = "{}-{:03}{}".format(lead.partner_id.altname.upper(),index,lead.name[offset+len(lead.partner_id.altname)+4:])
-                        if write_ref:
-                            lead.internal_ref = "{}-{:03}".format(lead.partner_id.altname.upper(),index)
-                            _logger.info("Updated Lead Ref: {}".format(lead.internal_ref))
-
-                    elif lead.internal_ref:
-                        lead.name = "{} | {}".format(lead.internal_ref,lead.name)
-
-                except:
-                    _logger.info("Unable to extract ref from opp name {}".format(lead.name))"""
 
 
     @api.multi
@@ -526,11 +516,13 @@ class Leads(models.Model):
         return data
 
     def _onchange_partner_id_values(self, partner_id):
+        _logger.info("Partner Id Values {}".format(partner_id))
         result = super(Leads, self)._onchange_partner_id_values(partner_id)
+        _logger.info("Partner Id Values RAW {}".format(result))
         if partner_id:
             partner = self.env["res.partner"].browse(partner_id)
             result.update({
-                "industry_id": partner.industry_id,
+                "industry_id": partner.industry_id.id,
                 "client_activity_ids": [(6, 0, partner.client_activity_ids.ids)],
                 "client_product_ids": [(6, 0, partner.client_product_ids.ids)]
             })
@@ -538,20 +530,20 @@ class Leads(models.Model):
                 result.update({
                     "contact_middlename": partner.lastname2,
                 })
+        _logger.info("Partner Id Values END {}".format(result))
         return result
     
-    @api.onchange('contact_name','contact_lastname','contact_middlename')
+    @api.onchange('contact_name', 'contact_lastname', 'contact_middlename')
     def _compute_partner_name(self):
         for lead in self:
-            if lead.contact_name and lead.contact_lastname and lead.contact_middlename:
-                res = lead.contact_name + " " + lead.contact_middlename + " " + lead.contact_lastname
-                lead.name = res
-            elif lead.contact_name and lead.contact_lastname:
-                res = lead.contact_name + " " + lead.contact_lastname
-                lead.name = res
-    
-    
-    
+            if lead.type == 'lead':
+                continue
+            if lead.contact_name and lead.contact_lastname:
+                if lead.contact_middlename:
+                    lead.name = lead.contact_name + " " + lead.contact_middlename + " " + lead.contact_lastname
+                else:
+                    lead.name = lead.contact_name + " " + lead.contact_lastname
+
     def all_campaigns_pop_up(self):
         model_id = self.env['ir.model'].search([('model','=','crm.lead')], limit = 1)
         return {
@@ -596,7 +588,7 @@ class Leads(models.Model):
 
     @api.onchange('stage_id')
     def _check_won_lost(self):
-        if self.stage_id == self.env.ref('crm.stage_lead4'):
+        if self.stage_id.probability == 100:
             if len(self.won_reasons) == 0:
                 raise ValidationError(_("Please use the \"MARK WON\" button or select at least 1 reason."))
     

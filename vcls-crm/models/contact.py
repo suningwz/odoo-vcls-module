@@ -39,7 +39,7 @@ class ContactExt(models.Model):
     )
 
     core_process_index = fields.Integer(
-        default = 1,
+        default = 0,
         )
 
     @api.multi

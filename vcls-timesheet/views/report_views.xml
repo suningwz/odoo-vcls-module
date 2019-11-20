@@ -70,17 +70,7 @@
             <field name="search_view_id" ref="vcls-timesheet.project_timesheet_forecast_report_view_search_popup"/>
         </record>
 
-        <menuitem id="menu_report_followup_revenue"
-            name="Project Follow-up (Revenue)"
-            parent="project.menu_main_pm"
-            action="vcls-timesheet.project_followup_report_action_revenue"
-            sequence='6' />
-        
-        <!-- menuitem id="menu_report_followup_hours"
-            name="Project Follow-up (Hours)"
-            parent="project.menu_main_pm"
-            action="vcls-timesheet.project_followup_report_action_hours"
-            sequence='7' / -->
-    
+
+
     </data>
 </odoo>

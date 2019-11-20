@@ -16,7 +16,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.2',
+    'version': '0.3',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -24,11 +24,14 @@
         'hr_expense',
         'sale_expense',
         'project',
+        'vcls_security',
+        
     ],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
+        'security/expense_rules.xml',
         'views/expense_sheet_views.xml',
         'views/expense_views.xml',
         'views/project_portal_templates.xml',

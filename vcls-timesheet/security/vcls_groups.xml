@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <data>
-        <record id="vcls_lc" model="res.groups">
-            <field name="name">VCLS Lead Consultant</field>
-        </record>
-    </data>
-</odoo>

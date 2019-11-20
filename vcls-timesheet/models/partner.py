@@ -9,7 +9,7 @@ class ContactExt(models.Model):
 
     controller_id = fields.Many2one(
         domain=lambda self: [("groups_id", "=",
-                              self.env.ref('vcls-hr.vcls_group_controlling').id)]
+                              self.env.ref('vcls_security.group_project_controller').id)]
     )
 
     travel_invoicing_ratio = fields.Float(string="Travel Invoicing Ratio")

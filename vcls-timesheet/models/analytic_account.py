@@ -99,11 +99,15 @@ class AnalyticLine(models.Model):
                     ('task_id', '=', task_id),
                 ], limit=1, order='date desc')
                 if direct_previous_line:
+                    task_id = direct_previous_line.task_id
+                    main_project_id = task_id.project_id
+                    main_project_id = main_project_id or main_project_id.parent_id
                     values = {
                         'unit_amount': 0,
                         'date': date,
                         'project_id': direct_previous_line.project_id.id,
-                        'task_id': direct_previous_line.task_id.id,
+                        'task_id': task_id.id,
+                        'main_project_id': main_project_id.id,
                         'name': direct_previous_line.name,
                         'time_category_id': direct_previous_line.time_category_id.id,
                     }
@@ -142,17 +146,15 @@ class AnalyticLine(models.Model):
 
     @api.model
     def create(self, vals):
-        # _logger.info("ANALYTIC CREATION {}".format(vals))
-
         if vals.get('employee_id', False) and vals.get('project_id', False):
-
             # rounding to 15 mins
             if vals['unit_amount'] % 0.25 != 0:
                 old = vals.get('unit_amount', 0)
                 vals['unit_amount'] = math.ceil(old * 4) / 4
-                _logger.info("Timesheet Rounding from {} to {}".format(old,
-                                                                       vals.get(
-                                                                           'unit_amount')))
+                _logger.info(
+                    "Timesheet Rounding from {} to {}"
+                    .format(old, 'unit_amount')
+                )
 
             # check if this is a timesheet at risk
             vals['at_risk'] = self._get_at_risk_values(vals.get('project_id'),
@@ -162,7 +164,12 @@ class AnalyticLine(models.Model):
             task = self.env['project.task'].browse(vals['task_id'])
             if task.sale_line_id:
                 unit_amount_rounded = vals['unit_amount'] * task.sale_line_id.order_id.travel_invoicing_ratio
-                vals.update({'unit_amount_rounded':unit_amount_rounded})
+                vals.update({'unit_amount_rounded': unit_amount_rounded})
+                
+        if not vals.get('main_project_id') and vals.get('project_id'):
+            project_id = self.env['project.project'].browse(vals['project_id'])
+            main_project_id = project_id.parent_id or project_id
+            vals['main_project_id'] = main_project_id.id
         return super(AnalyticLine, self).create(vals)
 
     @api.multi
@@ -273,7 +280,7 @@ class AnalyticLine(models.Model):
         if len(timesheets) == 0:
             raise ValidationError(_("Please select at least one record!"))
 
-        user_authorized = (self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls-hr.vcls_group_controlling'))
+        user_authorized = (self.env.user.has_group('vcls-hr.vcls_group_superuser_lvl2') or self.env.user.has_group('vcls_security.group_project_controller'))
         if not user_authorized:
             raise ValidationError(_("You need to be part of the 'Project Controller' group to perform this operation. Thank you."))
 
@@ -328,14 +335,13 @@ class AnalyticLine(models.Model):
                 employee = self.env['hr.employee'].search([('resource_id','=',resource.id)])
                 record.employee_id = employee
 
-
     @api.onchange('unit_amount_rounded', 'unit_amount')
     def get_required_lc_comment(self):
-        for record in self:
-            if float_compare(record.unit_amount_rounded, record.unit_amount, precision_digits=2) == 0:
-                record.required_lc_comment = False
+        for rec in self:
+            if float_compare(rec.unit_amount_rounded, rec.unit_amount, precision_digits=2) == 0:
+                rec.required_lc_comment = False
             else:
-                record.required_lc_comment = True    
+                rec.required_lc_comment = True
 
     @api.onchange('unit_amount_rounded')
     def onchange_adj_reason_readonly(self):
@@ -353,13 +359,12 @@ class AnalyticLine(models.Model):
             }}
 
     @api.onchange('task_id')
-    def onchange_project_id(self):
+    def onchange_task_id(self):
         if self._context.get('desc_order_display'):
             self.project_id = self.task_id.project_id
         if not self.main_project_id and self.task_id:
             main_project_id = self.task_id.project_id
             self.main_project_id = main_project_id.parent_id or main_project_id
-
 
     @api.multi
     def button_details_lc(self):
@@ -372,9 +377,10 @@ class AnalyticLine(models.Model):
             'type': 'ir.actions.act_window',
             'target': 'new',
             'context': {
-            'form_view_initial_mode': 'edit',
-            'force_detailed_view': True,
-            'set_fields_readonly': self.stage_id != 'lc_review'},
+                'form_view_initial_mode': 'edit',
+                'force_detailed_view': True,
+                'set_fields_readonly': self.stage_id != 'lc_review'
+            },
             'res_id': self.id,
         }
         return view
@@ -390,8 +396,9 @@ class AnalyticLine(models.Model):
             'type': 'ir.actions.act_window',
             'target': 'new',
             'context': {
-            'form_view_initial_mode': 'edit',
-            'force_detailed_view': True, },
+                'form_view_initial_mode': 'edit',
+                'force_detailed_view': True,
+            },
             'res_id': self.id,
         }
         return view

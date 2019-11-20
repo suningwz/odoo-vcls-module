@@ -57,15 +57,23 @@ class ProjectForecast(models.Model):
             total_resource_hours = sum(self.search([('task_id', '=', forecast.task_id.id)]).mapped('resource_hours'))
             if total_resource_hours > 0:
                 forecast.task_id.planned_hours = total_resource_hours
+    
+    @api.multi
+    def _project_forecasted_amount(self):
+        self.mapped('order_line_id')._compute_forecasted_amount()
 
     @api.multi
     def write(self, values):
+        result = super(ProjectForecast, self).write(values)
         for forecast in self:
             employee_id = forecast.employee_id.id
             project_id = forecast.project_id.id
-            values['hourly_rate'] = forecast._get_hourly_rate(employee_id, project_id)
-            result = super(ProjectForecast, forecast).write(values)
+            hourly_rate = forecast._get_hourly_rate(employee_id, project_id)
+            super(ProjectForecast, forecast).write({
+                'hourly_rate': hourly_rate,
+            })
         self.sudo()._force_forecast_hours()
+        self.sudo()._project_forecasted_amount()
         return result
 
     @api.model
@@ -76,7 +84,14 @@ class ProjectForecast(models.Model):
         #if h_r:
             #values['hourly_rate'] = h_r
         forecast = super(ProjectForecast, self).create(values)
+        
         forecast.sudo()._force_forecast_hours()
+        forecast.sudo()._project_forecasted_amount()
+
+        if forecast.task_id.date_start and forecast.task_id.date_end:
+            forecast.start_date = forecast.task_id.date_start.date()
+            forecast.end_date = forecast.task_id.date_end.date()
+
         return forecast
 
     @api.model

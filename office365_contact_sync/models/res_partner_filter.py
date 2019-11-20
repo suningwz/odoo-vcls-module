@@ -5,6 +5,7 @@ from odoo.tools.safe_eval import safe_eval
 
 class ResPartnerFilter(models.Model):
     _name = 'res.partner.filter'
+    _description = 'Partner Filter'
 
     name = fields.Char(string="Filter Name", required=True)
 

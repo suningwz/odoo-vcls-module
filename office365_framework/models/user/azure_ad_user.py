@@ -25,6 +25,7 @@ _logger = logging.getLogger(__name__)
 
 class AzureAdUser(models.Model):
     _name = 'azure.ad.user'
+    _description = 'Azure User'
 
     oauth_client_id = fields.Char(string="Application Id")
     oauth_client_secret = fields.Char(string="Password")

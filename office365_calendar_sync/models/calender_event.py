@@ -12,6 +12,7 @@ from .objects.azure_ad_event import AzureADEvent
 class CalendarEvent(models.Model):
     _name = 'calendar.event'
     _inherit = ['calendar.event', 'azure.ad.change.queuer']
+    _description = 'Calendar Event'
 
     # Outlook owner is char field instead of direct reference to azure users, because it is not necessarily created by a user in Odoo
     outlook_ical_uid = fields.Char(string='Outlook unique iCalUID')

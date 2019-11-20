@@ -19,9 +19,10 @@ class PatchFieldView(models.AbstractModel):
             @api.model
             def do_fields_get(self, allfields=None, attributes=None):
                 res = do_fields_get.origin(self, allfields, attributes)
+                lang = self._context.get('lang', '')
+                lang = isinstance(lang, str) and lang[:2] or 'en'
                 for field_name, result in res.items():
-                    if 'salesperson' in result.get('string', '').lower() \
-                            and self._context.get('lang', '')[:2] == 'en':
+                    if 'salesperson' in result.get('string', '').lower() and lang == 'en':
                         string = result['string']
                         result['string'] = string.replace('Salesperson', 'Account Manager') \
                             .replace('salesperson', 'account manager')

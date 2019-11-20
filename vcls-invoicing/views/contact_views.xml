@@ -5,13 +5,44 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="vcls-contact.view_form_contact_all" />
         <field name="arch" type="xml">
+            <xpath expr="//page[@name='financials']" position="inside">
+                <group>
+                    <group>
+                        <field name="communication_rate"/>
+                        <field name="invoicing_frequency"/>
+                    </group>
+
+                    <group>
+                        <field name="outsourcing_permission"/>
+                        <field name="invoice_template"/>
+                        <field name="activity_report_template"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_contact_form_risk" model="ir.ui.view">
+        <field name="name">res.partner.form.risk</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="vcls-contact.view_form_contact_all" />
+        <field name="groups_id" eval="[(4, ref('vcls-risk.risk_user'))]"/>
+        <field name="arch" type="xml">
             <xpath expr="//button[@name='add_new_adress']" position="after">
                 <field name="risk_ids" invisible="1"/>
                 <button class="btn-outline-primary float-right" name="action_risk" id="action_risk"
                     string="Risk Analysis" type="object"
                     attrs="{'invisible': [('risk_ids', '=', [])]}"/>
             </xpath>
+        </field>
+    </record>
 
+    <record id="view_contact_form_po" model="ir.ui.view">
+        <field name="name">res.partner.form.po</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="vcls-contact.view_form_contact_all" />
+        <field name="groups_id" eval="[(4, ref('purchase.group_purchase_user'))]"/>
+        <field name="arch" type="xml">
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button class="oe_stat_button" name="action_po" id="action_po"
                     string="Purchase Order" type="object"
@@ -19,24 +50,9 @@
                     attrs="{'invisible': [('customer', '=', False)]}">
                 </button>
             </xpath>
-
-            <xpath expr="//page[@name='financials']" position="inside">
-                    <group>
-                        <group>
-                            <field name="communication_rate"/>
-                            <field name="invoicing_frequency"/>
-                        </group>
-
-                        <group>
-                            <field name="outsourcing_permission"/>
-                            <field name="invoice_template"/>
-                            <field name="activity_report_template"/>
-                        </group>
-                    </group> 
-                </xpath>
-
         </field>
     </record>
+
 
     <record id="view_ia_client_filter" model="ir.ui.view">
         <field name="name">view_ia_client_filter</field>

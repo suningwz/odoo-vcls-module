@@ -19,6 +19,14 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='team_id']" position="after">
                     <field name='po_id'/>
+                    <field name='ready_for_approval' invisible="1"/>
+                </xpath>
+                <!--attrs="{'invisible': ['|',('ready_for_approval', '=', False),('state','!=','draft')]}"-->
+                <xpath expr="//button[@name='action_invoice_open']" position="before">
+                    <button string="Ready for Approval" type="object" class="btn-primary" name="action_ready_for_approval" attrs="{'invisible': [('ready_for_approval', '=', True)]}"/>
+                </xpath>
+                <xpath expr="//button[@name='preview_invoice']" position="after">
+                    <button string="Print Activity report" type="object" class="btn-primary" name="action_print_activity_report"/>
                 </xpath>
                 <xpath expr="//button[@name='preview_invoice']" position="after">
                     <button string="Print Activity report" type="object" class="btn-primary" name="action_print_activity_report"/>
@@ -75,12 +83,23 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref='vcls-invoicing.ia_invoices_view_tree'/>
-            <field name="domain">[('partner_id.invoice_admin_id','=', uid)]</field>
+            <field name="domain">[]</field>
             <field name="context">{'search_default_myinvoices':1,'group_by':['state']}</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('ia_invoices_view_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('account.invoice_form')}),
+            ]"/>
         </record>
 
-        <menuitem id="menu_finance_po" name="Client Purchase Order" parent="account_accountant.menu_accounting" sequence="3" action="action_po"/>
-
+        <record id="action_am_invoices" model="ir.actions.act_window">
+            <field name="name">Invoices</field>
+            <field name="res_model">account.invoice</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref='vcls-invoicing.ia_invoices_view_tree'/>
+            <field name="domain">[('partner_id.user_id','=', uid)]</field>
+            <field name="context">{'search_default_draft':1,'group_by':['commercial_partner_id']}</field>
+        </record>
         
 
     </data>

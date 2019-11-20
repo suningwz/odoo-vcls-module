@@ -1,8 +1,0 @@
-id,name,allocation_type,sequence,validity_start,validity_stop,validation_type,company_id:id,impacts_lunch_tickets,unpaid,max_carry_over,request_unit,is_managed_by_hr,comment
-LVT.CH.EXCEPTIONAL.01,Exceptional Leave,No allocation,400,,,Employee Manager,company_VCCH,FALSE,FALSE,0,Day,,
-LVT.FR.EXCEPTIONAL.01,Exceptional Leave,No allocation,400,,,Employee Manager,company_VCFR,FALSE,FALSE,0,Day,,
-LVT.US.EXCEPTIONAL.01,Exceptional Leave,No allocation,400,,,Employee Manager,company_VCINC,FALSE,FALSE,0,Day,,
-LVT.WW.EXCEPTIONAL.01,Exceptional Leave,No allocation,400,,,Employee Manager,base.main_company,FALSE,FALSE,0,Day,,
-LVT.IND.EXCEPTIONAL.01,Exceptional Leave,No allocation,400,,,Employee Manager,company_VCPVT,FALSE,FALSE,0,Day,,
-LVT.RRG.EXCEPTIONAL.01,Exceptional Leave,No allocation,400,,,Employee Manager,company_RRG,FALSE,FALSE,0,Day,,
-LVT.CWLS.EXCEPTIONAL.01,Exceptional Leave,No allocation,400,,,Employee Manager,company_CWLS,FALSE,FALSE,0,Day,,

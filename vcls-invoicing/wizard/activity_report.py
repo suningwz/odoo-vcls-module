@@ -17,9 +17,15 @@ class ActivityReportGroupment(models.TransientModel):
     groupment_by = fields.Selection([('project', 'Project'), ('task', 'Task'),
                                     ('deliverable', 'Deliverable'), ('time_category', 'Time category'),
                                     ('product_name', 'Products name'), ('external_comment', "Name")],
-                                    string='Group by', required=True)
+                                    string='Group by', required=False)
+                                    
     activity_report_template = fields.Many2one('ir.actions.report',
                                                default=lambda self: self.get_activity_report_template(), readonly=True)
+
+    report_type = fields.Selection([
+        ('simple', 'Simple'),
+        ('detailed', 'Detailed'),
+    ], default='simple')
 
     @api.multi
     def get_grouping(self):
@@ -86,7 +92,15 @@ class ActivityReportGroupment(models.TransientModel):
         return result
 
     def action_get_report(self):
-        return self.env.ref('vcls-invoicing.invoice_activity_report').report_action(self, config=False)
+        if self.report_type == 'simple':
+            return self.env.ref('vcls-invoicing.invoice_activities_report').report_action(self.invoice_id, config=False)
+
+    # def _get_timesheet_by_project(self, invoice):
+    #     timesheet_obj = self.env['analytic.account.analytic']
+    #     timesheets_by_project = {}
+    #     for timesheet in invoice.timesheet_ids:
+    #         timesheets_by_project.setdefault(timesheet.project_id, timesheet_obj).concat(timesheet)
+    #     return timesheets_by_project
 
     @api.onchange('groupment_by')
     def onchange_groupment_by(self):

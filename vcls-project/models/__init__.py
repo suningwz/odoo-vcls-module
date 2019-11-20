@@ -11,3 +11,5 @@ from . import project_forecast
 from . import sale_order
 from . import res_partner
 from . import project_summary
+from . import account_invoice
+from . import res_users

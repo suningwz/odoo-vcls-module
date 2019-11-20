@@ -59,14 +59,18 @@ class salesforceSync(models.Model):
     def run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
         # run the ETL
         sfInstance = self.getSFInstance()
-        _logger.info(" SF Instance {}".format(sfInstance))
+        #_logger.info(" SF Instance {}".format(sfInstance))
         translator = self.getSFTranslator(sfInstance)
+        _logger.info(" TRANSLATOR {}".format(translator))
         #cronId = self.getCronId(isFullUpdate)
 
         #initialised the SfSync Object
         SF = self.env[self._name].search([], limit = 1)
         if not SF:
             SF = self.env[self._name].create({})
+        
+        #Update the context to execute vcls-rdd override
+        self.env.user.context_data_integration = True
 
         #boolean for batch
         SF.updateKeyTable(sfInstance, isFullUpdate)
@@ -90,6 +94,9 @@ class salesforceSync(models.Model):
 
         print('ETL IS FINISHED')
         _logger.info('ETL IS FINISHED')
+
+        #Update the context back
+        self.env.user.context_data_integration = False
         
         SF.setNextRun()
             

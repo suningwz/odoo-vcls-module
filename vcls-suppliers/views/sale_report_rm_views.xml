@@ -18,7 +18,7 @@
                     <field name="consultant_ids" string="Consultants"/>
                     <field name="app_country_group_id" string="Application Geographic Area"/>
                     <field name="user_id" string="Salesperson"/>
-                    <field name="technical_adv_id" string="PIC"/>
+                    <field name="technical_adv_id" string="PIC/TA"/>
                     <field name="priority" string="Priority"/>
                     <field name="leader_id" string="Program Leader"/>
                     <field string="Program stage" name="program_stage_id"/>

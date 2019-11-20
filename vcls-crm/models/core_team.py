@@ -6,6 +6,7 @@ from odoo.exceptions import UserError, ValidationError
 import logging
 _logger = logging.getLogger(__name__)
 
+
 class CoreTeam(models.Model):
 
     _name = 'core.team'
@@ -35,9 +36,13 @@ class CoreTeam(models.Model):
     
     comment = fields.Char()
     user_ids = fields.Many2many('res.users', store=True, compute='compute_core_team_related_users_list')
+    project_ids = fields.One2many(
+        'project.project',
+        'core_team_id'
+    )
 
     @api.multi
-    def write(self,vals):
+    def write(self, vals):
         if vals.get('lead_consultant',False):
             lc_user = self.env['hr.employee'].browse(vals.get('lead_consultant')).user_id
 
@@ -64,25 +69,23 @@ class SaleOrder(models.Model):
 
     core_team_id = fields.Many2one(
         'core.team',
-        string = "Core Team"
+        string="Core Team"
     )
 
-
     def core_team(self):
+        self.ensure_one()
         view_id = self.env.ref('vcls-crm.view_core_team_form').id
+        # if core team not defined by parent, then we create a default one
+        if not self.core_team_id:
+            # use sudo as Lead consultant cannot write on sales orders
+            self.sudo().core_team_id = self.env['core.team'].sudo().create({'name': "Team {}".format(self.internal_ref)})
 
-        for rec in self:
-            if not rec.core_team_id: #if core team not defined by parent, then we create a default one
-                rec.core_team_id = rec.env['core.team'].create({'name':"Team {}".format(rec.internal_ref)})
-                #rec.write({'core_team_id':team})
-                #_logger.info("{} | {}".format(team.name, rec.core_team_id.name))
-
-            return {
-                'name': 'Core Team',
-                'view_type': 'form',
-                'view_mode': 'form',
-                'res_id': rec.core_team_id.id,
-                'res_model': 'core.team',
-                'view_id': view_id,
-                'type': 'ir.actions.act_window',
-            }
+        return {
+            'name': 'Core Team',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_id': self.core_team_id.id,
+            'res_model': 'core.team',
+            'view_id': view_id,
+            'type': 'ir.actions.act_window',
+        }

@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.7.3',
+    'version': '0.7.4',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -33,7 +33,8 @@
         'sale_timesheet',
         'account',
         'hr_timesheet',
-        ],
+        'vcls_security',
+    ],
 
     # always loaded
     'data': [
@@ -42,6 +43,7 @@
         'security/vcls_groups.xml',
         'security/security.xml',
         'security/ir.model.access.csv',
+        'security/lc_security.xml',
         # DATA
         'data/end_of_project_cron.xml',
         ### VIEWS ###
@@ -56,16 +58,11 @@
         'views/lead_views.xml',
         'views/res_partner_views.xml',
         'views/template.xml',
-        
-
-        ### MENUS ###
+        'views/project_forecast_views.xml',
         'views/dev_project_menu.xml',
 
         'views/project_views.xml',
         'views/program_views_menu.xml',
-        
-        
-        'views/project_forecast_views.xml',
         'views/task_views.xml',
     ],
 

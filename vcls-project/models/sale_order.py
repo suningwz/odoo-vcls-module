@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, tools, api, _
 
+import logging
+_logger = logging.getLogger(__name__)
 
 class SaleOrder(models.Model):
 
@@ -9,7 +11,13 @@ class SaleOrder(models.Model):
         'project.project', compute='_get_parent_project_id'
     )
     family_task_count = fields.Integer(
-        'project.project', compute='_get_family_task_count'
+        'Family Task Count', compute='_get_family_task_count'
+    )
+
+    forecasted_amount = fields.Monetary(
+        compute = "_compute_forecasted_amount",
+        store = True,
+        default = 0.0,
     )
 
     @api.multi
@@ -74,4 +82,15 @@ class SaleOrder(models.Model):
                 'search_default_project_id': self.project_id.id,
             },
         }
+    
+    @api.multi
+    @api.depends('order_line','order_line.forecasted_amount')
+    def _compute_forecasted_amount(self):
+        """
+        This methods sums the total of forecast potential revenues.
+        Triggered by the forecast write/create methods
+        """
+        for so in self:
+            so.forecasted_amount = sum(so.order_line.mapped('forecasted_amount'))
+            #_logger.info("FORECASTED AMOUNT {}".format(so.forecasted_amount))
 

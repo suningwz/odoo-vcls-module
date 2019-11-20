@@ -688,7 +688,7 @@ class Employee(models.Model):
                 continue
             
             #controlling
-            if user.has_group('vcls-hr.vcls_group_controlling'):
+            if user.has_group('vcls_security.group_project_controller'):
                 rec.access_level = 'hl'
                 continue
             

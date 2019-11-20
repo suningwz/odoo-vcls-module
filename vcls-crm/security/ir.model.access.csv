@@ -1,6 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 
-access_opportunity_default,access_opportunity_default,crm.model_crm_lead,base.group_user,1,0,1,0
 access_opportunity_sales,access_opportunity_sales,crm.model_crm_lead,sales_team.group_sale_salesman,1,1,1,1
 
 access_partner_relation_default,access_partner_relation_default,vcls-crm.model_res_partner_relation,base.group_user,1,1,0,0
@@ -16,13 +15,13 @@ access_crm_won_reason_manager,crm.won.reason.manager,model_crm_won_reason,sales_
 access_crm_won_reason_salesman,crm.won.reason.salesman,model_crm_won_reason,sales_team.group_sale_salesman,1,0,0,0
 access_crm_won_reason_user,crm.won.reason.user,model_crm_won_reason,base.group_user,1,0,0,0
 
-access_therapeutic_area_default,access_therapeutic_area_default,vcls-crm.model_therapeutic_area,,1,0,0,0
+access_therapeutic_area_default,access_therapeutic_area_default,vcls-crm.model_therapeutic_area,base.group_user,1,0,0,0
 access_therapeutic_area_edit,access_therapeutic_area_edit,vcls-crm.model_therapeutic_area,base.group_partner_manager,1,1,1,1
 
-access_targeted_indication_default,access_targeted_indication_default,vcls-crm.model_targeted_indication,,1,0,0,0
+access_targeted_indication_default,access_targeted_indication_default,vcls-crm.model_targeted_indication,base.group_user,1,0,0,0
 access_targeted_indication_edit,access_targeted_indication_edit,vcls-crm.model_targeted_indication,base.group_partner_manager,1,1,1,1
 
-access_stage_development_default,access_stage_development_default,vcls-crm.model_stage_development,,1,0,0,0
+access_stage_development_default,access_stage_development_default,vcls-crm.model_stage_development,base.group_user,1,0,0,0
 access_stage_development_edit,access_stage_development_edit,vcls-crm.model_stage_development,base.group_partner_manager,1,1,1,1
 
 access_crm_resource_lead_default,access_crm_resource_lead_default,vcls-crm.model_crm_resource_lead,base.group_user,1,1,1,1
@@ -30,4 +29,6 @@ access_crm_resource_lead_default,access_crm_resource_lead_default,vcls-crm.model
 access_crm_lead_stage,access_crm_resource_lead_stage,vcls-crm.model_crm_lead_stage,base.group_user,1,1,1,1
 
 access_core_team_default,access_core_team_default,vcls-crm.model_core_team,base.group_user,1,0,0,0
-access_core_team_bd,access_core_team_bd,vcls-crm.model_core_team,sales_team.group_sale_salesman,1,1,1,1
+access_core_team_lc,access_core_team_default,vcls-crm.model_core_team,vcls_security.vcls_lc,1,1,1,0
+access_core_team_account_managers,access_core_team_default,vcls-crm.model_core_team,vcls_security.vcls_account_manager,1,1,1,0
+access_core_team_bd,access_core_team_bd,vcls-crm.model_core_team,sales_team.group_sale_salesman,1,0,0,0

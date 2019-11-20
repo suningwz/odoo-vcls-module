@@ -10,6 +10,7 @@ _logger = logging.getLogger(__name__)
 
 class AzureADChangeQueuer(models.AbstractModel):
     _name = 'azure.ad.change.queuer'
+    _description = 'Azure Change Queuer'
 
     change_last_write = fields.Datetime(string="Change Queue Last Write")
     change_original_values = fields.Char(string="JSON Object which holds the previously synced values")

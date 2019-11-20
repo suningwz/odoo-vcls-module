@@ -18,15 +18,18 @@
     'version': '0.6',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 
-                'web',
-                'vcls-crm',
-                'vcls-suppliers',
-                'vcls-timesheet',
-                'vcls-project',
-                'vcls-invoicing',
-                'vcls-legal',
-            ],
+    'depends': [
+        'base',
+        'web',
+        'utm',
+        'vcls-crm',
+        'vcls-suppliers',
+        'vcls-timesheet',
+        'vcls-project',
+        'vcls-invoicing',
+        'vcls-legal',
+        'vcls_security',
+    ],
 
     # always loaded
     'data': [
@@ -38,6 +41,7 @@
         'views/pc_menus.xml',
         'views/ia_menus.xml',
         'views/backend.xml',
+        'views/todo_menu.xml',
 
         'data/translation.sql',
     ],

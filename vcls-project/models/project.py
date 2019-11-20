@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError,UserError
 
 import logging
+
 _logger = logging.getLogger(__name__)
 
 
@@ -63,7 +64,6 @@ class Project(models.Model):
     is_project_manager = fields.Boolean(compute="_get_is_project_manager")
     scope_of_work = fields.Html(string='Scope of work')
     orders_count = fields.Integer(compute='compute_orders_count')
-    invoices_count = fields.Integer(compute='compute_invoices_count')
     tasks_count = fields.Integer()
     timesheets_count = fields.Integer()
     lead_consultant = fields.Many2one('hr.employee', related='core_team_id.lead_consultant', string='Lead Consultant')
@@ -74,7 +74,31 @@ class Project(models.Model):
     ta_ids = fields.Many2many('hr.employee', relation='rel_project_tas', related='core_team_id.ta_ids',
                               string='Ta')
 
-    #extended = fields.Boolean('To be extended later')
+    invoices_count = fields.Integer(compute='_get_out_invoice_ids')
+    out_invoice_ids = fields.Many2many(
+        string='Out invoices',
+        compute='_get_out_invoice_ids',
+        comodel_name="account.invoice",
+        relation="project_out_invoice_rel",
+        column1="project_id",
+        column2="invoice_id",
+        #compute_sudo=True, 
+        store=True,
+        copy=False, readonly=True
+    )
+
+    @api.one
+    @api.depends(
+        'sale_line_id.order_id.order_line.invoice_lines',
+        'tasks.sale_order_id',
+    )
+    def _get_out_invoice_ids(self):
+        # use of sudo here because of the non possibility of lc to read some invoices
+        project_sudo = self.sudo()
+        out_invoice_ids = project_sudo.mapped('sale_line_id.order_id.invoice_ids') \
+            | project_sudo.mapped('tasks.sale_order_id.invoice_ids')
+        self.out_invoice_ids = out_invoice_ids
+        self.invoices_count = len(out_invoice_ids)
 
     @api.multi
     @api.depends(
@@ -102,8 +126,18 @@ class Project(models.Model):
     @api.multi
     def action_raise_new_invoice(self):
         """This function will trigger the Creation of invoice regrouping all the sale orders."""
-        # TODO: This action will be later Described
-        return True
+        orders = self.env['sale.order']
+        for project in self:
+            if not project.sale_order_id and project.sale_order_id.invoice_status != 'to invoice':
+                raise UserError(_("The selected Sales Order should contain something to invoice."))
+            else:
+                orders |= project.sale_order_id
+
+        action = self.env.ref('sale.action_view_sale_advance_payment_inv').read()[0]
+        action['context'] = {
+            'active_ids': orders.ids
+        }
+        return action
 
     @api.multi
     def action_raise_new_risk(self):
@@ -116,15 +150,14 @@ class Project(models.Model):
     def sale_orders_tree_view(self):
         action = self.env.ref('sale.action_quotations').read()[0]
         action['domain'] = [('project_id', 'child_of', self.id)]
+        action['context'] = {}
         return action
 
     @api.multi
     def invoices_tree_view(self):
+        self.ensure_one()
         action = self.env.ref('account.action_invoice_tree1').read()[0]
-        projects = self.env['project.project'].search([('id', 'child_of', self.id)])
-        sale_orders = projects.mapped('sale_line_id.order_id') | projects.mapped('tasks.sale_order_id')
-        invoices = sale_orders.mapped('invoice_ids').filtered(lambda inv: inv.type == 'out_invoice')
-        action['domain'] = [('id', 'in', invoices.ids)]
+        action['domain'] = [('id', 'in', self.out_invoice_ids.ids)]
         return action
 
     @api.multi
@@ -156,14 +189,9 @@ class Project(models.Model):
     ###############
     @api.model
     def create(self, vals):
-        """if 'project_type' in vals: 
-            if vals['project_type'] == 'client':
-                
-            else:
-                vals['privacy_visibility'] = 'followers'"""
 
         #default visibility
-        vals['privacy_visibility'] = 'employees'
+        vals['privacy_visibility'] = 'portal'
         
         #we automatically assign the project manager to be the one defined in the core team
         if vals.get('sale_order_id',False):
@@ -180,7 +208,7 @@ class Project(models.Model):
         project.type_ids = ids if ids else project.type_ids
 
         if project.project_type != 'client':
-            project.privacy_visibility = 'followers'
+            project.privacy_visibility = 'employees'
         
         return project
     

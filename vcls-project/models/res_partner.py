@@ -12,4 +12,5 @@ class ResPartner(models.Model):
         action = self.env.ref('vcls-project.action_program').read()[0]
         action['view_mode'] = 'form'
         action['context'] = {'default_client_id': self.id,}
+        action['domain'] = [('client_id','=',self.id)]
         return action

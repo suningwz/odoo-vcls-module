@@ -17,6 +17,10 @@ class CountryGroup(models.Model):
 class ContactExt(models.Model):
 
     _inherit = 'res.partner'
+    """_sql_constraints = [
+        ('unique_legacy_analytical_account_id','unique(legacy_analytical_account_id)','Legacy Analytical Account ID (old sharepoint ID) must be unique. Please revise!'),
+        #('unique_altname','unique(altname)','THe COmpany ALTNAME must be unique. Please revise!'),
+    ]"""
     
     ### CUSTOM FIELDS FOR EVERY KIND OF CONTACTS ###
 
@@ -50,6 +54,10 @@ class ContactExt(models.Model):
         compute = '_compute_sharepoint_folder',
         readonly = True,
     )
+
+    """legacy_analytical_account_id = fields.Integer(
+        default = False,
+    )"""
     
     """custom_sp_link = fields.Char(
         string = 'Custom Sharepoint Folder',

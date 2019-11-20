@@ -4,7 +4,11 @@ from odoo import models, fields, api, _
 import lxml
 from itertools import groupby
 from datetime import date
-from odoo.exceptions import UserError
+
+from odoo.tools import email_re, email_split, email_escape_char, float_is_zero, float_compare, \
+    pycompat, date_utils
+
+from odoo.exceptions import AccessError, UserError, RedirectWarning, ValidationError, Warning
 
 
 import logging
@@ -23,14 +27,22 @@ class Invoice(models.Model):
 
     user_id = fields.Many2one(
         'res.users',
-        string='Account Manager',
+        string='Invoicing Administrator',
         )
+
     invoice_sending_date = fields.Datetime()
-    parent_quotation_timesheet_limite_date = fields.Date(string='Timesheet Limit Date',
-                                                         compute='compute_parent_quotation_timesheet_limite_date')
-    vcls_due_date = fields.Date(string='Due Date', compute='_compute_vcls_due_date')
+    parent_quotation_timesheet_limite_date = fields.Date(
+        string='Parent Timesheet Limit Date',
+        compute='compute_parent_quotation_timesheet_limite_date'
+    )
+    vcls_due_date = fields.Date(string='Custom Due Date', compute='_compute_vcls_due_date')
     origin_sale_orders = fields.Char(compute='compute_origin_sale_orders',string='Origin')
-    
+
+    ready_for_approval = fields.Boolean(default=False)
+
+    invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
+    activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'activity.report.groupment')])
+
     def get_communication_amount(self):
         total_amount = 0
         lines = self.invoice_line_ids
@@ -44,15 +56,37 @@ class Invoice(models.Model):
                         total_amount += line.price_subtotal
                         _logger.info("Communication Elligible {}".format(product.name))
                 else:
-                    line.unlink() #we suppress the communication rate line if already existingin order to replace and recompute it
+                    # We suppress the communication rate line if already existingin order to replace and recompute it
+                    line.unlink()
             else:
                 total_amount += line.price_subtotal
         return total_amount
-            
     
+    @api.multi
+    def action_ready_for_approval(self):
+        
+        if self.filtered(lambda inv: not inv.partner_id):
+            raise UserError(_("The field Vendor is required, please complete it to validate the Vendor Bill."))
+        if self.filtered(lambda inv: float_compare(inv.amount_total, 0.0, precision_rounding=inv.currency_id.rounding) == -1):
+            raise UserError(_("You cannot validate an invoice with a negative total amount. You should create a credit note instead."))
+        if self.filtered(lambda inv: not inv.account_id):
+            raise UserError(_('No account was found to create the invoice, be sure you have installed a chart of account.'))
+
+        for invoice in self:
+            invoice.write({'ready_for_approval': True})
+            
     @api.model
     def create(self, vals):
-        ret = super(Invoice, self).create(vals)       
+        ret = super(Invoice, self).create(vals)
+        # Get the default activity_report_template if not set
+        if not ret.activity_report_template:
+            invoice_line_ids = self.invoice_line_ids.filtered(lambda l: not l.display_type)
+            if invoice_line_ids:
+                sale_line_ids = invoice_line_ids[0].sale_line_ids
+                if sale_line_ids:
+                    activity_report_template_id = sale_line_ids[0].activity_report_template.id
+                    ret.activity_report_template = activity_report_template_id
+
         partner = ret.partner_id
         if ret.partner_id.invoice_admin_id:
             ret.user_id = ret.partner_id.invoice_admin_id
@@ -97,7 +131,7 @@ class Invoice(models.Model):
                     for timesheet in self.timesheet_ids:
                         timesheet.stage_id = 'invoiceable'
         return ret
-
+        
     def action_print_activity_report(self):
         ctx = self._context.copy()
         if not self.timesheet_ids:
@@ -152,7 +186,9 @@ class Invoice(models.Model):
         self.ensure_one()
         return lxml.html.document_fromstring(html_format).text_content()
 
+    """
     def parent_quotation_informations(self):
+
         if not self.origin:
             return []
         names = self.origin.split(', ')
@@ -163,17 +199,42 @@ class Invoice(models.Model):
         parent_order = quotation.parent_id or quotation
         while parent_order.parent_id:
             parent_order = parent_order.parent_id
+        
         if self.timesheet_limit_date:
             customer_precedent_invoices = parent_order.partner_id.invoice_ids.filtered(
                 lambda i: i.id != self.id and i.timesheet_limit_date < self.timesheet_limit_date).sorted(
                 key=lambda v: v['timesheet_limit_date'], reverse=True)
             customer_precedent_invoice = customer_precedent_invoices and\
                 customer_precedent_invoice[0].timesheet_limit_date.strftime("%d/%m/%Y")
+        
         return [
             ('name', parent_order.name),
             ('scope_work', self.html_to_string(parent_order.scope_of_work) or ''),
             ('po_id', parent_order.po_id.name or ''),
             ('From', customer_precedent_invoice or ''),
+            ('To', self.timesheet_limit_date and self.timesheet_limit_date.strftime("%d/%m/%Y") or '')
+        ]
+    """
+    def parent_quotation_informations(self):
+
+        if not self.origin:
+            return []
+        names = self.origin.split(', ')
+        customer_precedent_invoice = ""
+        quotation = self.env['sale.order'].search([('name', 'in', names)], limit=1)
+        if not quotation:
+            return []
+        parent_order = quotation.parent_id or quotation
+        while parent_order.parent_id:
+            parent_order = parent_order.parent_id
+        
+        
+        
+        return [
+            ('name', parent_order.name),
+            ('scope_work', self.html_to_string(parent_order.scope_of_work) or ''),
+            ('po_id', parent_order.po_id.name or ''),
+            ('From', self.timesheet_limit_date and self.timesheet_limit_date.strftime("%d/%m/%Y") or ''),
             ('To', self.timesheet_limit_date and self.timesheet_limit_date.strftime("%d/%m/%Y") or '')
         ]
 

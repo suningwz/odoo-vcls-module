@@ -49,7 +49,7 @@ class SaleOrder(models.Model):
                     ('employee_id', '=', employee.id)
                 ])
                 if not existing:
-                    self.env['project.sale.line.employee.map'].create({
+                    self.env['project.sale.line.employee.map'].sudo().create({
                         'project_id': project.id,
                         'sale_line_id': order_line.id,
                         'employee_id': employee.id,

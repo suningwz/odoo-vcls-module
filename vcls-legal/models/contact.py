@@ -9,8 +9,7 @@ class Contact(models.Model):
     def _compute_agre_count(self):
         self.agre_count = len(self.agreement_ids)
 
-
-    def action_agre(self):
+    def action_agreements(self):
         agre_ids = self.env['agreement'].search([('partner_id','=',self.id)]).ids
 
         return {
