@@ -16,16 +16,16 @@ class Project(models.Model):
             args = expression.AND([args, [('user_id', '=', self._uid)]])
         return super(Project, self)._search(args, offset, limit, order, count, access_rights_uid)
 
-    @api.multi
-    def check_access_rule(self, operation):
-        if operation == 'write' and \
-                not self.env.user.has_group('project.group_project_manager') and\
-                not self.env.user.has_group('vcls_security.group_bd_admin') and\
-                self.env.user.has_group('vcls_security.vcls_account_manager'):
-            user = self.env.user
-            for project in self:
-                # vcls_account_manager user has write access only on
-                # projects where he is account manager of the related partner
-                if project.partner_id.user_id != user:
-                    raise AccessError(_("Sorry, you are not allowed to modify this document."))
-        return super(Project, self).check_access_rule(operation)
+    # @api.multi
+    # def check_access_rule(self, operation):
+    #     if not self.env.user.has_group('vcls_security.group_bd_admin'):
+    #         if operation == 'write':
+    #             if not self.env.user.has_group('project.group_project_manager') and\
+    #                     self.env.user.has_group('vcls_security.vcls_account_manager'):
+    #                 user = self.env.user
+    #                 for project in self:
+    #                     # vcls_account_manager user has write access only on
+    #                     # projects where he is account manager of the related partner
+    #                     if project.partner_id.user_id != user:
+    #                         raise AccessError(_("Sorry, you are not allowed to modify this document."))
+    #     return super(Project, self).check_access_rule(operation)

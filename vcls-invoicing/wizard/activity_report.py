@@ -94,13 +94,6 @@ class ActivityReportGroupment(models.TransientModel):
         if self.report_type == 'simple':
             return self.env.ref('vcls-invoicing.invoice_activities_report').report_action(self.invoice_id, config=False)
 
-    # def _get_timesheet_by_project(self, invoice):
-    #     timesheet_obj = self.env['analytic.account.analytic']
-    #     timesheets_by_project = {}
-    #     for timesheet in invoice.timesheet_ids:
-    #         timesheets_by_project.setdefault(timesheet.project_id, timesheet_obj).concat(timesheet)
-    #     return timesheets_by_project
-
     @api.onchange('groupment_by')
     def onchange_groupment_by(self):
         if not self.activity_report_template and self.groupment_by == 'external_comment':

@@ -4,6 +4,8 @@
         <record id="hr_timesheet.timesheet_menu_root" model="ir.ui.menu">
             <field name="groups_id" eval="[(4, ref('vcls_security.group_vcls_consultant'))]"/>
         </record>
-
+        <record id="project.menu_main_pm" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4, ref('vcls_security.group_vcls_consultant'))]"/>
+        </record>
     </data>
 </odoo>
