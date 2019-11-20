@@ -48,6 +48,7 @@
                 (5,0,0),
                 (4, ref('base.group_user')),
                 (4, ref('agreement_legal.group_agreement_readonly')),
+                (4, ref('sales_team.group_sale_salesman_all_leads')),
             ]"/>
     </record>
 
