@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_project_project_consultant,project.project on consultant,project.model_project_project,vcls_security.group_vcls_consultant,1,0,0,0
+access_project_task_type_project_consultant,project.task.type.project.lead.consultant,project.model_project_task_type,vcls_security.group_vcls_consultant,1,0,0,0
+access_project_task_consultant,project.task consultant,project.model_project_task,vcls_security.group_vcls_consultant,1,1,0,0
+access_partner_task consultant,base.res.partner consultant,base.model_res_partner,vcls_security.group_vcls_consultant,1,0,0,0
+access_project_forecast_consultant,project.forecast consultant,project_forecast.model_project_forecast,vcls_security.group_vcls_consultant,1,0,0,0
+
+
+access_sale_order_line_consultant,sale.order.line.consultant,sale.model_sale_order_line,vcls_security.group_vcls_consultant,1,0,0,0
+access_project_task_consultant,project.task on consultant,project.model_project_task,vcls_security.group_vcls_consultant,1,1,0,0
+access_opportunity_consultant,access_opportunity_consultant,crm.model_crm_lead,vcls_security.group_vcls_consultant,1,0,0,0
+access_product_product_attribute_custom_value_consultant,product.attribute.custom value consultant,sale.model_product_attribute_custom_value,vcls_security.group_vcls_consultant,1,0,0,0

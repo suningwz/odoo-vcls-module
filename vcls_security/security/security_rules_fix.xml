@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+    Make this rule applied only for reading for base_users to avoid
+    that superior groups could gain write/create/delete access
+    if they have other rules
+     -->
+    <record model="ir.rule" id="project.project_public_members_rule">
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+    <!--
+    Make this rule applied only for reading for base_users to avoid
+    that superior groups could gain write/create/delete access
+    if they have other rules
+     -->
+    <record model="ir.rule" id="project.task_visibility_rule">
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="0"/>
+        <field name="perm_create" eval="0"/>
+        <field name="perm_unlink" eval="0"/>
+    </record>
+
+
+    <!--
+    Previous access were applied also for project_user group,
+    But this group have more c/r/w/d access on tasks.
+    So we shall now give this group back its rule inherited for the w/c/d access
+    -->
+    <record model="ir.rule" id="task_visibility_rule_project_user">
+        <field name="name">Project/Task: project user: follow required for follower-only projects</field>
+        <field name="model_id" ref="model_project_task"/>
+        <field name="domain_force">[
+        '|',
+            ('project_id.privacy_visibility', '!=', 'followers'),
+            '|',
+                ('project_id.message_partner_ids', 'in', [user.partner_id.id]),
+                '|',
+                    ('message_partner_ids', 'in', [user.partner_id.id]),
+                    # to subscribe check access to the record, follower is not enough at creation
+                    ('user_id', '=', user.id)
+        ]</field>
+        <field name="groups" eval="[(4,ref('project.group_project_user'))]"/>
+    </record>
+
+
+</odoo>
