@@ -82,7 +82,8 @@ class Project(models.Model):
         relation="project_out_invoice_rel",
         column1="project_id",
         column2="invoice_id",
-        compute_sudo=True, store=True,
+        #compute_sudo=True, 
+        store=True,
         copy=False, readonly=True
     )
 
