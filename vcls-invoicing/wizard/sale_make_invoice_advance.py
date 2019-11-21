@@ -29,6 +29,10 @@ class SaleAdvancePaymentInv(models.TransientModel):
                 pos |=  order.po_id | order.parent_id.po_id | order.parent_sale_order_id.po_id | order.child_ids.mapped('po_id')
 
         _logger.info(" Found orders {} and POs {}".format(related_orders.mapped('name'),pos.mapped('name')))
+        
+        #we filter out orders without anything to invoice
+        related_orders = related_orders.filtered(lambda so: sum(so.order_line.mapped('untaxed_amount_to_invoice'))>0)
+        _logger.info(" Found orders {} and POs {}".format(related_orders.mapped('name'),pos.mapped('name')))
 
         """if self.group_invoice_method == 'project':
             projects = self.env['sale.order'].browse(self._context.get('active_ids', [])).mapped('project_ids')
