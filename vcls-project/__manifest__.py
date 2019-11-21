@@ -41,8 +41,8 @@
 
         ### SECURITY ###
         'security/vcls_groups.xml',
-        'security/ir.model.access.csv',
         'security/security.xml',
+        'security/ir.model.access.csv',
         'security/lc_security.xml',
         # DATA
         'data/end_of_project_cron.xml',
@@ -60,6 +60,7 @@
         'views/template.xml',
         'views/project_forecast_views.xml',
         'views/dev_project_menu.xml',
+
         'views/project_views.xml',
         'views/program_views_menu.xml',
         'views/task_views.xml',

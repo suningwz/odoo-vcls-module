@@ -279,6 +279,14 @@ class Project(models.Model):
             project.orders_count = self.env['sale.order'].search_count([('project_id', 'child_of', project.id)])
 
     @api.multi
+    def compute_invoices_count(self):
+        self.ensure_one()
+        projects = self.env['project.project'].search([('id', 'child_of', self.id)])
+        sale_orders = projects.mapped('sale_line_id.order_id') | projects.mapped('tasks.sale_order_id')
+        invoices = sale_orders.mapped('invoice_ids').filtered(lambda inv: inv.type == 'out_invoice')
+        self.invoices_count = len(invoices)
+
+    @api.multi
     def toggle_active(self):
         if any(project.activity_ids for project in self):
             raise ValidationError(_("Its not possible to archive a project while there is still undone activities "))

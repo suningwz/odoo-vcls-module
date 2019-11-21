@@ -18,6 +18,7 @@ class ActivityReportGroupment(models.TransientModel):
                                     ('deliverable', 'Deliverable'), ('time_category', 'Time category'),
                                     ('product_name', 'Products name'), ('external_comment', "Name")],
                                     string='Group by', required=False)
+                                    
     activity_report_template = fields.Many2one('ir.actions.report',
                                                default=lambda self: self.get_activity_report_template(), readonly=True)
 

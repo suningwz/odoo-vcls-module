@@ -165,6 +165,7 @@ class AnalyticLine(models.Model):
             if task.sale_line_id:
                 unit_amount_rounded = vals['unit_amount'] * task.sale_line_id.order_id.travel_invoicing_ratio
                 vals.update({'unit_amount_rounded': unit_amount_rounded})
+                
         if not vals.get('main_project_id') and vals.get('project_id'):
             project_id = self.env['project.project'].browse(vals['project_id'])
             main_project_id = project_id.parent_id or project_id

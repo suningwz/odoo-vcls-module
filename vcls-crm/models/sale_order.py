@@ -103,6 +103,7 @@ class SaleOrder(models.Model):
     family_order_count = fields.Integer(
         'Family Order Count', compute='_get_family_order_count'
     )
+    
     family_quotation_count = fields.Integer(
         'Family Quotation Count', compute='_get_family_order_count'
     )

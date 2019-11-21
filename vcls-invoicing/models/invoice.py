@@ -131,8 +131,7 @@ class Invoice(models.Model):
                     for timesheet in self.timesheet_ids:
                         timesheet.stage_id = 'invoiceable'
         return ret
-    
-    
+        
     def action_print_activity_report(self):
         ctx = self._context.copy()
         if not self.timesheet_ids:

@@ -78,6 +78,11 @@ class ProjectForecast(models.Model):
 
     @api.model
     def create(self, values):
+        #employee_id = values.get('employee_id')
+        #project_id = values.get('project_id')
+        #h_r = self._get_hourly_rate(employee_id, project_id)
+        #if h_r:
+            #values['hourly_rate'] = h_r
         forecast = super(ProjectForecast, self).create(values)
         
         forecast.sudo()._force_forecast_hours()

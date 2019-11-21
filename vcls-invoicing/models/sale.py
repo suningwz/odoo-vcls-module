@@ -38,11 +38,14 @@ class SaleOrder(models.Model):
     timesheet_limit_date = fields.Date(
         compute='_compute_timesheet_limit_date',
         inverse='_inverse_timesheet_limit_date',
-        store=True
+        store=True,
     )
     
     invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
-    activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'activity.report.groupment')])
+    activity_report_template = fields.Many2one(
+        'ir.actions.report',
+        domain=[('model', '=', 'activity.report.groupment')],
+        default=lambda self: self.get_activity_report_template())
     #activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.analytic.line'),
     #                                                                        ('report_name', '=', 'activity_report')])
     communication_rate = fields.Selection([
@@ -59,11 +62,6 @@ class SaleOrder(models.Model):
         compute='compute_financial_config_readonly',
         store=False,
         )
-
-    activity_report_template = fields.Many2one(
-        'ir.actions.report',
-        default=lambda self: self.get_activity_report_template()
-    )
 
     invoiceable_amount = fields.Monetary(
         compute="_compute_invoiceable_amount",
@@ -132,6 +130,12 @@ class SaleOrder(models.Model):
         self.financial_config_readonly =((self.project_id.user_id == self.env.user) or\
                                         (self.partner_id.invoice_admin_id == self.env.user) or\
                                         (self.env.user.has_group('vcls_security.group_project_controller'))) and not self.parent_id
+
+    @api.one
+    @api.depends('project_id.user_id','partner_id.invoice_admin_id', 'parent_id')
+    def compute_financial_config_readonly(self):
+        self.financial_config_readonly =((self.project_id.user_id == self.env.user) or\
+                                        (self.partner_id.invoice_admin_id == self.env.user)) and not self.parent_id
 
     def action_risk(self):
         view_ids = [self.env.ref('vcls-risk.view_risk_tree').id,
