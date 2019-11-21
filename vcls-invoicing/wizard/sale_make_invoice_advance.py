@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from itertools import groupby
+from odoo.exceptions import UserError, ValidationError
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -26,13 +27,18 @@ class SaleAdvancePaymentInv(models.TransientModel):
         if self.group_invoice_method == 'project':
             for order in active_orders:
                 related_orders |= order.parent_id | order.parent_sale_order_id | order.child_ids
-                pos |=  order.po_id | order.parent_id.po_id | order.parent_sale_order_id.po_id | order.child_ids.mapped('po_id')
 
-        _logger.info(" Found orders {} and POs {}".format(related_orders.mapped('name'),pos.mapped('name')))
-        
         #we filter out orders without anything to invoice
         related_orders = related_orders.filtered(lambda so: sum(so.order_line.mapped('untaxed_amount_to_invoice'))>0)
-        _logger.info(" Found orders {} and POs {}".format(related_orders.mapped('name'),pos.mapped('name')))
+        pos = related_orders.mapped('po_id')
+        #we can't raise an invoice concerning multiple PO's
+        if pos and len(pos)>1:
+            raise UserError("You can't raise an invoice related to multiple sales orders ({}) linked to different Client Purchase Orders ({}).".format(related_orders.mapped('name'),pos.mapped('name')))
+        #_logger.info(" Found orders {} and POs {}".format(related_orders.mapped('name'),pos.mapped('name')))
+
+        context['active_ids'] = related_orders.mapped('id')
+
+        return super(SaleAdvancePaymentInv, self.with_context(context)).create_invoices()
 
         """if self.group_invoice_method == 'project':
             projects = self.env['sale.order'].browse(self._context.get('active_ids', [])).mapped('project_ids')
@@ -52,9 +58,10 @@ class SaleAdvancePaymentInv(models.TransientModel):
         elif self.group_invoice_method == 'agreement':
             agreements = self.env['sale.order'].browse(self._context.get('active_ids', [])).mapped('agreement_id')
             sale_orders = self.env['sale.order'].search([('agreement_id', 'in', agreements.ids)])
-            context['active_ids'] = sale_orders.ids"""
+            context['active_ids'] = sale_orders.ids
 
         return super(SaleAdvancePaymentInv, self.with_context(context)).create_invoices()
+        """
 
     @api.model
     def _get_children(self, project, children=[]):
