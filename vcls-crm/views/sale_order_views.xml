@@ -82,7 +82,7 @@
                         <group string="Main Filters">
                             <field name="catalog_mode" invisible="0"/>
                             <field name="product_category_id" string="1. Select Catalog" required="1"/>
-                            <field name="sale_order_template_id"  domain="[('product_category_id','=',product_category_id)]" string="2. Select Template" attrs="{'required': [('catalog_mode', '=', 'template')],}"/>
+                            <field name="sale_order_template_id"  domain="[('product_category_id','=',product_category_id)]" string="2. Select Template" attrs="{'required': [('catalog_mode', '=', 'template'),('state','not in',['sale','done','cancel'])],}"/>
                             <field name="catalog_details" string="Show Detailed Catalog"/>
                         </group>
                         <group string="Fine Filters (for specific line search)" attrs="{'invisible': [('catalog_details', '=', False)]}">
