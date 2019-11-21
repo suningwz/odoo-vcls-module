@@ -26,7 +26,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
         if self.group_invoice_method == 'project':
             for order in active_orders:
                 related_orders |= order.parent_id | order.parent_sale_order_id | order.child_ids
-                pos |=  order.po_id | order.parent_id.po_id | order.parent_sale_order_id.po_id | order.child_ids.po_ids
+                pos |=  order.po_id | order.parent_id.po_id | order.parent_sale_order_id.po_id | order.child_ids.mapped('po_id')
 
         _logger.info(" Found orders {} and POs {}".format(related_orders.mapped('name'),pos.mapped('name')))
 
