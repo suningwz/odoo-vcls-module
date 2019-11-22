@@ -74,7 +74,7 @@ class SaleOrder(models.Model):
                     datas.update({line: self.env['sale.order.line']})
                     last_parent = line
             for key,vals in datas.items():
-                if not vals and key:
+                if not vals and key.name == 'Hourly Rates':
                     self._cr.execute("DELETE FROM sale_order_line where id in %s", (tuple(key.ids),))
         return True
 
@@ -84,6 +84,8 @@ class SaleOrderLine(models.Model):
 
     old_id = fields.Char("Old Id", copy=False, readonly=True)
     milestone_date = fields.Date("Milestone date")
+    mig_qty_invoiced = fields.Float(readonly=True)
+    mig_qty_delivered = fields.Float(readonly=True)
 
     @api.model
     def create(self, vals):
@@ -102,4 +104,38 @@ class SaleOrderLine(models.Model):
                                             'order_line': []})
                     vals['order_id'] = new_order.id
         return super(SaleOrderLine, self).create(vals)
+
+    @api.depends('invoice_lines.invoice_id.state', 'invoice_lines.quantity')
+    def _get_invoice_qty(self):
+        """
+        Update qty_invoiced field with migrating value if mig_qty_invoiced is set
+        """
+        for line in self:
+            qty_invoiced = line.mig_qty_invoiced
+            if not qty_invoiced:
+                for invoice_line in line.invoice_lines:
+                    if invoice_line.invoice_id.state != 'cancel':
+                        if invoice_line.invoice_id.type == 'out_invoice':
+                            qty_invoiced += invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
+                        elif invoice_line.invoice_id.type == 'out_refund':
+                            qty_invoiced -= invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
+            line.qty_invoiced = qty_invoiced
+
+    @api.multi
+    @api.depends('qty_delivered_method', 'qty_delivered_manual', 'analytic_line_ids.so_line', 'analytic_line_ids.unit_amount', 'analytic_line_ids.product_uom_id')
+    def _compute_qty_delivered(self):
+        """
+        Update qty delivered with migrating value if mig_qty_delivered is set
+        """
+        lines_by_analytic = self.filtered(lambda sol: sol.qty_delivered_method == 'analytic')
+        mapping = lines_by_analytic._get_delivered_quantity_by_analytic([('amount', '<=', 0.0)])
+        for so_line in lines_by_analytic:
+            so_line.qty_delivered = mapping.get(so_line.id, 0.0)
+        # compute for manual lines
+        for line in self:
+            qty_delivered = line.mig_qty_delivered
+            if not qty_delivered and line.qty_delivered_method == 'manual':
+                qty_delivered = line.qty_delivered_manual or 0.0
+            line.qty_delivered = qty_delivered
+
 
