@@ -268,7 +268,7 @@ class CustomerPortal(CustomerPortal):
 
         if post and task_sudo.user_id == request.env.user:
             # START PROCESSING DATA
-            error = self.check_timesheet(post)
+            error = CustomerPortal.check_timesheet(post)
             if len(error) == 0:
                 values = post.copy()
                 values['date'] = datetime.strptime(values['date'], '%Y-%m-%d')

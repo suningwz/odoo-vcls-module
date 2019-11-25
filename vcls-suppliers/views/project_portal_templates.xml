@@ -51,8 +51,8 @@
                                 <tr data-toggle="modal" t-attf-data-target="#editTimesheetModal#{ timesheet.id }" style="cursor: pointer;">
                                     <td><t t-esc="timesheet.date"/></td>
                                     <td><t t-esc="timesheet.name"/></td>
-                                    <td><t t-esc="timesheet.sudo().user_id.name"/></td>
-                                    <td><t t-esc="timesheet.sudo().internal_comment"/></td>
+                                    <td><t t-esc="timesheet.sudo().project_id.user_id.name"/></td>
+                                    <td><t t-esc="timesheet.sudo().lc_comment"/></td>
                                     <td><t t-esc="timesheet.sudo().time_category_id.name"/></td>
                                     <td class="text-right"><span t-esc="timesheet.unit_amount" t-options='{"widget": "duration", "unit": "hour", "round": "minute"}'/></td>
                                 </tr>
@@ -108,8 +108,8 @@
                                  <tr class="table-info">
                                     <td><t t-esc="timesheet.date"/></td>
                                     <td><t t-esc="timesheet.name"/></td>
-                                    <td><t t-esc="timesheet.sudo().user_id.name"/></td>
-                                    <td><t t-esc="timesheet.sudo().internal_comment"/></td>
+                                    <td><t t-esc="timesheet.sudo().project_id.user_id.name"/></td>
+                                    <td><t t-esc="timesheet.sudo().lc_comment"/></td>
                                     <td><t t-esc="timesheet.sudo().time_category_id.name"/></td>
                                     <td class="text-right"><span t-esc="timesheet.unit_amount" t-options='{"widget": "duration", "unit": "hour", "round": "minute"}'/></td>
                                  </tr>
@@ -175,6 +175,7 @@
                 </t>
             </xpath>
     </template>
+    
     <!-- https://github.com/OCA/web/tree/12.0/web_widget_x2many_2d_matrix -->
 
     <!-- template id="portal_project_tasks" name="Project Tasks">
