@@ -17,7 +17,7 @@
             </xpath>
 
             <xpath expr="//span[@t-field='task.stage_id.name']" position="replace">
-                <span t-esc="task.stage_id.name" class=" badge badge-pill badge-info" title="Current stage of this task"/>
+                <span t-esc="task.sudo().stage_id.name" class=" badge badge-pill badge-info" title="Current stage of this task"/>
             </xpath>
             <xpath expr="//div[@t-if='task.date_deadline']" position="after">
                 <div class="col-12 col-md-6">
@@ -175,7 +175,7 @@
                 </t>
             </xpath>
     </template>
-    
+
     <!-- https://github.com/OCA/web/tree/12.0/web_widget_x2many_2d_matrix -->
 
     <!-- template id="portal_project_tasks" name="Project Tasks">
