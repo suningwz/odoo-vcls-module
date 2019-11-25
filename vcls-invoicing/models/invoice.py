@@ -12,6 +12,7 @@ from odoo.exceptions import AccessError, UserError, RedirectWarning, ValidationE
 
 
 import logging
+import collections
 _logger = logging.getLogger(__name__)
 
 
@@ -42,6 +43,19 @@ class Invoice(models.Model):
 
     invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
     activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'activity.report.groupment')])
+
+    @api.multi
+    def _get_invoice_report_data(self):
+        data = collections.OrderedDict()
+        for timesheet_id in self.timesheet_ids:
+            rate_sale_line_id = timesheet_id.so_line
+            task_id = timesheet_id.task_id
+            rates_dict = data.setdefault(task_id, collections.OrderedDict())
+            values = rates_dict.setdefault(rate_sale_line_id, [0., 0.])
+            values[0] += timesheet_id.unit_amount_rounded
+            # price
+            values[1] += rate_sale_line_id.price_unit
+        return data
 
     def get_communication_amount(self):
         total_amount = 0
@@ -186,35 +200,6 @@ class Invoice(models.Model):
         self.ensure_one()
         return lxml.html.document_fromstring(html_format).text_content()
 
-    """
-    def parent_quotation_informations(self):
-
-        if not self.origin:
-            return []
-        names = self.origin.split(', ')
-        customer_precedent_invoice = ""
-        quotation = self.env['sale.order'].search([('name', 'in', names)], limit=1)
-        if not quotation:
-            return []
-        parent_order = quotation.parent_id or quotation
-        while parent_order.parent_id:
-            parent_order = parent_order.parent_id
-        
-        if self.timesheet_limit_date:
-            customer_precedent_invoices = parent_order.partner_id.invoice_ids.filtered(
-                lambda i: i.id != self.id and i.timesheet_limit_date < self.timesheet_limit_date).sorted(
-                key=lambda v: v['timesheet_limit_date'], reverse=True)
-            customer_precedent_invoice = customer_precedent_invoices and\
-                customer_precedent_invoice[0].timesheet_limit_date.strftime("%d/%m/%Y")
-        
-        return [
-            ('name', parent_order.name),
-            ('scope_work', self.html_to_string(parent_order.scope_of_work) or ''),
-            ('po_id', parent_order.po_id.name or ''),
-            ('From', customer_precedent_invoice or ''),
-            ('To', self.timesheet_limit_date and self.timesheet_limit_date.strftime("%d/%m/%Y") or '')
-        ]
-    """
     def parent_quotation_informations(self):
 
         if not self.origin:
