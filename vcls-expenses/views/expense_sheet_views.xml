@@ -39,7 +39,7 @@
 
             <xpath expr="//field[@name='employee_id']" position="before">
                 <field name = 'type' />
-                <field name = 'project_id' required = "1" />
+                <field name = 'project_id' required = "1" no_create = "1" context="{'search_type':type}"/>
                 <!--<field name = 'project_id' attrs="{'invisible': [('type', '!=', 'project')], 'required': [('type', '=', 'project')]}" />-->
             </xpath>
 
