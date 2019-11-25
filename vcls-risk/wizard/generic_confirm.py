@@ -10,7 +10,7 @@ class GenericConfirm(models.TransientModel):
     _name = 'generic.confirm.wizard'
     _description = 'Generic Confirm Wizard'
 
-    message = fields.Char()
+    name = fields.Char()
 
     @api.multi
     def confirm(self):

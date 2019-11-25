@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <form string="User Warning Confirm">
                     <group>
-                        <field name="message"/>
+                        <field name="name"/>
                     </group>
                     <footer>
                         <button string="Confirm"
