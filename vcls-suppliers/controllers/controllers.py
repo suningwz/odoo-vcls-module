@@ -251,6 +251,7 @@ class CustomerPortal(CustomerPortal):
                         'task_id': task_sudo.id,
                         'unit_amount': post['unit_amount'],
                         'name': post['name'],
+                        'time_category_id':post['time_category_id'],
                     }
                     analytic_line = request.env['account.analytic.line'].sudo().create(values)
                     analytic_line._link_portal_analytic_line_purchase(request.env.user)
@@ -272,7 +273,7 @@ class CustomerPortal(CustomerPortal):
             if len(error) == 0:
                 values = post.copy()
                 values['date'] = datetime.strptime(values['date'], '%Y-%m-%d')
-                values['stage_id'] = 'draft'
+                #values['stage_id'] = 'draft'
                 timesheet = request.env['account.analytic.line'].sudo().search([('id', '=', timesheet_id)])
                 if timesheet and not timesheet.validated:
                     timesheet.write(values)

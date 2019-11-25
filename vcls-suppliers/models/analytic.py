@@ -25,16 +25,23 @@ class AnalyticLine(models.Model):
         purchase_line_obj = self.env['purchase.order.line']
         purchase_obj = self.env['purchase.order']
         purchase_line = purchase_line_obj.search([
-            ('is_rebilled', '=', False),
+            #('is_rebilled', '=', False),
             ('sale_line_id', '=', sale_line_id.id),
             ('partner_id', '=', user_id.partner_id.id),
-            ('state', 'not in', ('purchase', 'done', 'cancel')),
+            ('state', 'not in', ('cancel')),
         ], limit=1)
+
+        # Find the related external employee to get his price
+        employee = self.env['hr.employee'].search(['user_id','=',user_id.id])
+        if employee:
+            logger.info("External Coding for {}".format(employee.name))
+
         if not purchase_line:
             # create a PO with a line
             purchase_order = purchase_obj.create({
                 'partner_id': user_id.partner_id.id,
             })
+            
             values = purchase_line_obj.default_get(
                 list(purchase_line_obj.fields_get()))
             values.update({
@@ -42,6 +49,7 @@ class AnalyticLine(models.Model):
                 'product_id': sale_line_id.product_id.id,
                 'order_id': purchase_order.id,
                 'account_analytic_id': task.project_id.analytic_account_id.id,
+                'price_unit':user_id
             })
             purchase_line_cache = purchase_line_obj.new(values)
             purchase_line_cache.onchange_product_id()
