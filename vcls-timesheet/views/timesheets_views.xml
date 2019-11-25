@@ -159,7 +159,7 @@
             <field name="name">vcls-timesheet.ia.view.tree</field>
             <field name="model">account.analytic.line</field>
             <field name="arch" type="xml">
-                <tree string="After Invoicing Session" editable="bottom">
+                <tree string="After Invoicing Session" editable="bottom" create="0" edit="0" >
                     <field name="date" readonly="1" />
                     <field name="project_id" readonly="1" />
                     <field name="task_id" readonly="1"/>
@@ -179,7 +179,6 @@
             <field name="name">After Invoicing Session</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.analytic.line</field>
-            <field name="context">{'search_default_groupby_project':1, 'search_default_groupby_task':1, 'search_default_groupby_employee':1}</field>
             <field name="view_mode">tree</field>
             <field name="domain">[('validated','=',True),('stage_id', '=', 'invoiceable')]</field>
             <field name="view_ids" eval="[(5, 0, 0),
