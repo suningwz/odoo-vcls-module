@@ -33,5 +33,13 @@
                 sequence="6"
                 action="vcls-invoicing.action_ia_clients"
         />
+
+        <menuitem
+                id="menu_ia_session"
+                name="Invoicing Sessions"
+                parent="menu_ia_root"
+                sequence="9"
+                
+        />
     </data>
 </odoo>

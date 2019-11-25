@@ -66,6 +66,12 @@ class AnalyticLine(models.Model):
     
     required_lc_comment = fields.Boolean(compute='get_required_lc_comment')
 
+    rate_id = fields.Many2one(
+        comodel_name='product.product',
+        default = False,
+        readonly = True,
+    )
+
     so_line_unit_price = fields.Monetary(
         'Sales Oder Line Unit Price',
         readonly=True,
@@ -219,6 +225,7 @@ class AnalyticLine(models.Model):
 
                     if task.sale_line_id != so_line:  # if we map to a rate based product
                         vals['so_line_unit_price'] = so_line.price_unit
+                        vals['rate_id'] = so_line.product_id.id
                         so_update = True
                         orders |= line.so_line.order_id
 
