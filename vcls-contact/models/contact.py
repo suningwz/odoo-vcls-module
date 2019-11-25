@@ -55,9 +55,9 @@ class ContactExt(models.Model):
         readonly = True,
     )
 
-    legacy_analytical_account_id = fields.Char(
-        default = "/",
-    )
+    """legacy_analytical_account_id = fields.Integer(
+        default = False,
+    )"""
     
     """custom_sp_link = fields.Char(
         string = 'Custom Sharepoint Folder',
