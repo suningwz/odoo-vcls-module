@@ -298,6 +298,7 @@ class ContactExt(models.Model):
 
     @api.model
     def create(self, vals):
+        
         new_contact = super(ContactExt, self).create(vals)
         if new_contact.type != 'contact':
             type_contact = new_contact.type
