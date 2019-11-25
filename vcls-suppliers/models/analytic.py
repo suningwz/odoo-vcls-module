@@ -32,7 +32,7 @@ class AnalyticLine(models.Model):
         ], limit=1)
 
         # Find the related external employee to get his price
-        employee = self.env['hr.employee'].search(['user_id','=',user_id])
+        employee = self.env['hr.employee'].search([('user_id','=',user_id.id)])
         if employee:
             logger.info("External Coding for {}".format(employee.name))
 
