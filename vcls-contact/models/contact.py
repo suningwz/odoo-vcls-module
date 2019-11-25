@@ -298,7 +298,12 @@ class ContactExt(models.Model):
 
     @api.model
     def create(self, vals):
-        
+        if vals.get('email',False):
+            #we search for existing partners with the same email
+            existing = self.env['res.partner'].search([('email','=ilike',vals.get('email'))])
+            if existing:
+                raise UserError("Duplicates {}".format(existing.mapped('name')))
+            
         new_contact = super(ContactExt, self).create(vals)
         if new_contact.type != 'contact':
             type_contact = new_contact.type
