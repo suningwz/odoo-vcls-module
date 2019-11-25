@@ -51,6 +51,10 @@
                 <attribute name="readonly">1</attribute>
             </field>
 
+            <button name="approve_expense_sheets" position="attributes">
+                <attribute name="string">FINANCE QC OK</attribute>
+            </button>
+
             <xpath expr="//field[@name='payment_mode']" position="after">
                 <field name = 'analytic_account_id' invisible="1" />
             </xpath>
