@@ -28,7 +28,7 @@ class AnalyticLine(models.Model):
             #('is_rebilled', '=', False),
             ('sale_line_id', '=', sale_line_id.id),
             ('partner_id', '=', user_id.partner_id.id),
-            ('state', 'not in', ('cancel')),
+            ('state', 'not in', ['cancel']),
         ], limit=1)
 
         # Find the related external employee to get his price
