@@ -87,8 +87,8 @@ class SaleOrderLine(models.Model):
     mig_qty_invoiced = fields.Float(readonly=True)
     mig_qty_delivered = fields.Float(readonly=True)
 
-    @api.model
-    def create(self, vals):
+    @api.multi
+    def _get_ts_invoicing_mode(self, vals):
         if self.env.user.context_data_integration and vals.get('ts_invoicing_mode') \
                 and not vals.get('display_type'):
             invoicing_mode = vals.get('ts_invoicing_mode')
@@ -103,7 +103,17 @@ class SaleOrderLine(models.Model):
                                             'parent_id': order.id,
                                             'order_line': []})
                     vals['order_id'] = new_order.id
+        return vals
+
+    @api.model
+    def create(self, vals):
+        vals = self._get_ts_invoicing_mode(vals)
         return super(SaleOrderLine, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        vals = self._get_ts_invoicing_mode(vals)
+        return super(SaleOrderLine, self).write(vals)
 
     @api.depends('invoice_lines.invoice_id.state', 'invoice_lines.quantity')
     def _get_invoice_qty(self):
