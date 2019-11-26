@@ -42,7 +42,8 @@
         'views/contact_views.xml',
         'wizard/sale_make_invoice_advance_views.xml',
         # reports
-        'reports/report_project_invoice.xml',
+        'reports/report_project_invoice_detailed.xml',
+        'reports/report_project_invoice_aggregated.xml',
         'reports/activity_reports.xml',
         'reports/activities_report.xml',
 

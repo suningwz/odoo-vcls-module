@@ -19,8 +19,27 @@ class SaleOrderLine(models.Model):
 
     # Override the default ordered quantity to be 0 when we order rates items
     product_uom_qty = fields.Float(
-        default = 0,
-        )
+        default=0,
+    )
+
+    section_line_id = fields.Many2one(
+        'sale.order.line',
+        string='Line section',
+        compute='_get_section_line_id',
+        store=False
+    )
+
+    @api.multi
+    def _get_section_line_id(self):
+        for line in self:
+            order_line_ids = line.order_id.order_line
+            current_section_line_id = False
+            for order_line_id in order_line_ids:
+                if order_line_id.display_type == 'line_section':
+                    current_section_line_id = order_line_id
+                elif line == order_line_id:
+                    line.section_line_id = current_section_line_id
+                    break
 
     def _timesheet_create_project(self):
         project = super(SaleOrderLine, self)._timesheet_create_project()
