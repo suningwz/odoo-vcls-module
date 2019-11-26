@@ -253,7 +253,7 @@ class CustomerPortal(CustomerPortal):
                         'project_id': project.id,
                         'task_id': task_sudo.id,
                         'employee_id': employee.id,
-                        'unit_amount': post['unit_amount'],
+                        'unit_amount': float(post['unit_amount']),
                         'name': post['name'],
                         'time_category_id':post['time_category_id'],
                     }
