@@ -243,8 +243,8 @@ class CustomerPortal(CustomerPortal):
             if not error:
                 project = task_sudo.project_id
                 if not project:
-                    error += [_('PLease ask the website administrator to link this task to a project')]
-                employee = self.env['hr.employee'].search([('user_id','=',request.env.user.id)])
+                    error += [_('Please ask the website administrator to link this task to a project')]
+                employee = request.env['hr.employee'].sudo().search([('user_id','=',request.env.user.id)])
                 if not employee:
                     error += [_("No external employee found for {}").format(request.env.user.name)]
                 else:
