@@ -71,6 +71,16 @@
       </field>
     </record>
 
+    <record id="action_attachment_expense" model="ir.actions.act_window">
+            <field name="name">Attachments</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ir.attachment</field>
+            <field name="view_type">form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-expenses.view_hr_expense_attachment')}),
+            ]"/>
+        </record>
+
     <!-- ACTIONS 
     <record id="action_pop_up_add_attachment" model="ir.actions.act_window">
       <field name="name">Add an attachment</field>
