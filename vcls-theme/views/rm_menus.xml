@@ -62,6 +62,38 @@
             sequence="9"
         />
 
+        <menuitem
+            id="menu_rm_ongoing_sales"
+            name="Ongoing Sales"
+            parent="menu_rm_root"
+            action="vcls-suppliers.action_show_sale_report_rm"
+            sequence="7"
+        />
+
+        <menuitem
+            id="menu_rm_forecast"
+            name="Forecast"
+            parent="menu_rm_root"
+            sequence="8"
+        />
+
+        <menuitem
+            id="menu_rm_forecast_employee"
+            name="By Employee"
+            parent="menu_rm_forecast"
+            action="project_forecast.project_forecast_action_by_user"
+            sequence="3"
+        />
+
+        <menuitem
+            id="menu_rm_forecast_project"
+            name="By Project"
+            parent="menu_rm_forecast"
+            action="project_forecast.project_forecast_action_by_project"
+            sequence="6"
+        />
+
+
         <!-- Expertise -->
         <menuitem
             id="menu_rm_expertise_main"
@@ -103,13 +135,7 @@
             sequence="9"
         />
 
-        <menuitem
-            id="menu_rm_ongoing_sales"
-            name="Ongoing Sales"
-            parent="menu_rm_root"
-            action="vcls-suppliers.action_show_sale_report_rm"
-            sequence="7"
-        />
+        
         
     </data>
 </odoo>
