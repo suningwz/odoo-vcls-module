@@ -100,8 +100,10 @@
             <field name="priority">2000</field>
             <field name="arch" type="xml">
                 <tree string="Employees" decoration-bf="message_needaction==True">
+                    <field name="currency_id" invisible="1"/>
                     <field name="name"/>
                     <field name="work_email"/>
+                    <field name="timesheet_cost"/>
                     <field name="work_phone"/>
                     <field name="message_needaction" invisible="1"/>
                 </tree>

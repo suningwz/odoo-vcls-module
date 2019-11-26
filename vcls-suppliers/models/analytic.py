@@ -32,8 +32,6 @@ class AnalyticLine(models.Model):
             ('state', 'not in', ['cancel']),
         ], limit=1)
 
-        
-
         if not purchase_line:
             # create a PO with a line
             purchase_order = purchase_obj.create({
@@ -44,15 +42,22 @@ class AnalyticLine(models.Model):
             employee = self.env['hr.employee'].search([('user_id','=',user_id.id)])
             if not employee:
                 raise UserError("No external employee found for {}".format(user_id.name))
+
+            # Find the default product for suppliers
+            default_product = self.env['product.product'].search([('name','=','Suppliers Hours')],limit=1)
+            if not default_product:
+                raise UserError("No default product found for supplier RFQ.")
             
             values = purchase_line_obj.default_get(
                 list(purchase_line_obj.fields_get()))
             values.update({
                 'sale_line_id': sale_line_id.id,
-                'product_id': sale_line_id.product_id.id,
+                'product_id': default_product.id,
+                'name': sale_line_id.name,
                 'order_id': purchase_order.id,
                 'account_analytic_id': task.project_id.analytic_account_id.id,
                 'price_unit':employee.timesheet_cost,
+                'product_qty':self.unit_amount,
             })
             purchase_line_cache = purchase_line_obj.new(values)
             purchase_line_cache.onchange_product_id()
@@ -62,24 +67,31 @@ class AnalyticLine(models.Model):
             })
             purchase_line = purchase_line_obj.create(purchase_line_values)
 
-        purchase_line.is_rebilled = False
-        # if the unit is not hours, then qty is time sheet line unit_amount * amount
-        uom_is_hours = bool(self.product_uom_id == self.env.ref('uom.product_uom_hour', raise_if_not_found=False))
-        if uom_is_hours:
-            purchase_line.product_qty = self.unit_amount
-        else:
-            purchase_line.product_qty *= self.currency_id.compute(self.amount, purchase_line.currency_id)
+            # Notify the lead consultant and members of group "Resource Manager"
+            users_to_notify = task.project_id.user_id #| self.env.ref('vcls-suppliers.vcls_group_rm').users
+            for user in users_to_notify:
+                self.env['mail.activity'].sudo().create({
+                    'res_id': purchase_line.order_id.id,
+                    'res_model_id': self.env.ref(
+                        'purchase.model_purchase_order').id,
+                    'activity_type_id': 4,
+                    'user_id': user.id,
+                    'summary': _('Please check the purchase order {} for {}.').format(
+                        purchase_line.order_id.name, purchase_line.order_id.partner_id.name),
+                })
+            
+            
 
-        # Notify the lead consultant and members of group "Resource Manager"
-        users_to_notify = task.project_id.user_id #| self.env.ref('vcls-suppliers.vcls_group_rm').users
-        #logger.info(_('USERS TO NOTIFY {}').format(users_to_notify.mapped('name')))
-        for user in users_to_notify:
-            self.env['mail.activity'].sudo().create({
-                'res_id': purchase_line.order_id.id,
-                'res_model_id': self.env.ref(
-                    'purchase.model_purchase_order').id,
-                'activity_type_id': 4,
-                'user_id': user.id,
-                'summary': _('Please check the purchase order {} for {}.').format(
-                    purchase_line.order_id.name, purchase_line.order_id.partner_id.name),
-            })
+        # We are setting this to avoid rebill if this effort is invoiced through timesheeting
+        purchase_line.is_rebilled = False
+
+        # if the unit is not hours, then qty is time sheet line unit_amount * amount
+        #uom_is_hours = bool(self.product_uom_id == self.env.ref('uom.product_uom_hour', raise_if_not_found=False))
+        if bool(purchase_line.product_uom.id == self.env.ref('uom.product_uom_hour', raise_if_not_found=False)):
+            purchase_line.qty_received += self.unit_amount
+        else:
+            purchase_line.qty_received += self.currency_id.compute(self.amount, purchase_line.currency_id)/purchase_line.price_unit
+
+        
+
+        
