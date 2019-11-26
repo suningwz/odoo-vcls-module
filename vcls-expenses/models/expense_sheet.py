@@ -84,6 +84,6 @@ class HrExpense(models.Model):
         res = self.env['ir.actions.act_window'].for_xml_id('base', 'action_attachment')
         res['domain'] = [('res_model', '=', 'hr.expense'), ('res_id', 'in', self.ids)]
         res['context'] = {'default_res_model': 'hr.expense', 'default_res_id': self.id}
-        res['view_id'] = self.env['ir.ui.view'].ref('view_hr_expense_attachment')
+        res['view_id'] = self.env.ref('view_hr_expense_attachment')
         res['target'] = 'new'
         return res
