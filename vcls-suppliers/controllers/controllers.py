@@ -244,11 +244,15 @@ class CustomerPortal(CustomerPortal):
                 project = task_sudo.project_id
                 if not project:
                     error += [_('PLease ask the website administrator to link this task to a project')]
+                employee = self.env['hr.employee'].search([('user_id','=',request.env.user.id)])
+                if not employee:
+                    error += [_("No external employee found for {}").format(request.env.user.name)]
                 else:
                     values = {
                         'date': datetime.strptime(post['date'], '%Y-%m-%d'),
                         'project_id': project.id,
                         'task_id': task_sudo.id,
+                        'employee_id': employee.id,
                         'unit_amount': post['unit_amount'],
                         'name': post['name'],
                         'time_category_id':post['time_category_id'],
