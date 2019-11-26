@@ -72,6 +72,7 @@ class AnalyticLine(models.Model):
 
         # Notify the lead consultant and members of group "Resource Manager"
         users_to_notify = task.project_id.user_id #| self.env.ref('vcls-suppliers.vcls_group_rm').users
+        logger.info(_('USERS TO NOTIFY {}').format(users_to_notify.mapped('name')))
         for user in users_to_notify:
             self.env['mail.activity'].sudo().create({
                 'res_id': purchase_line.order_id.id,
