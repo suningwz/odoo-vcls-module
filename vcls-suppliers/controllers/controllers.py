@@ -241,13 +241,20 @@ class CustomerPortal(CustomerPortal):
             # START PROCESSING DATA
             error = CustomerPortal.check_timesheet(post)
             if not error:
+
                 project = task_sudo.project_id
                 if not project:
                     error += [_('Please ask the website administrator to link this task to a project')]
+
                 employee = request.env['hr.employee'].sudo().search([('user_id','=',request.env.user.id)])
                 if not employee:
                     error += [_("No external employee found for {}").format(request.env.user.name)]
-                else:
+                
+                #Over budget error
+                if task_sudo.total_hours_spent + float(post['unit_amount']) > task_sudo.planned_hours:
+                    error += [_('Overbudget error, only {} hours remaing in this task. Please contact your lead consultant.').format(task_sudo.planned_hours-task_sudo.total_hours_spent)]
+
+                if not error:
                     values = {
                         'date': datetime.strptime(post['date'], '%Y-%m-%d'),
                         'project_id': project.id,

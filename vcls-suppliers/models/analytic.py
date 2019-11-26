@@ -85,12 +85,13 @@ class AnalyticLine(models.Model):
         # We are setting this to avoid rebill if this effort is invoiced through timesheeting
         purchase_line.is_rebilled = False
 
-        # if the unit is not hours, then qty is time sheet line unit_amount * amount
+        #This has to be done at the lc approval level
+        """# if the unit is not hours, then qty is time sheet line unit_amount * amount
         #uom_is_hours = bool(self.product_uom_id == self.env.ref('uom.product_uom_hour', raise_if_not_found=False))
         if bool(purchase_line.product_uom.id == self.env.ref('uom.product_uom_hour', raise_if_not_found=False)):
             purchase_line.qty_received += self.unit_amount
         else:
-            purchase_line.qty_received += -1*self.currency_id.compute(self.amount, purchase_line.currency_id)/purchase_line.price_unit
+            purchase_line.qty_received += -1*self.currency_id.compute(self.amount, purchase_line.currency_id)/purchase_line.price_unit"""
 
         
 
