@@ -18,7 +18,7 @@ class MailActivity(models.Model):
     def _get_lm_ids(self):
         """ Populate a list of authorized user for domain filtering """
         for rec in self:
-            empl = self.env['hr.employee'].search([('user_id','=',self._uid)])
+            empl = self.env['hr.employee'].search([('user_id','=',rec.user_id)])
             if empl:
                 rec.lm_ids = empl.lm_ids
 
