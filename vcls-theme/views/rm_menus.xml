@@ -134,7 +134,6 @@
             action="vcls-suppliers.action_show_external_consultant"
             sequence="9"
         />
-
         
         
     </data>

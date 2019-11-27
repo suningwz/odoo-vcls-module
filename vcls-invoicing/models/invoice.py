@@ -9,10 +9,10 @@ from odoo.tools import email_re, email_split, email_escape_char, float_is_zero, 
     pycompat, date_utils
 
 from odoo.exceptions import AccessError, UserError, RedirectWarning, ValidationError, Warning
+from collections import OrderedDict
 
 
 import logging
-import collections
 _logger = logging.getLogger(__name__)
 
 
@@ -45,16 +45,72 @@ class Invoice(models.Model):
     activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'activity.report.groupment')])
 
     @api.multi
+    def _get_aggregated_invoice_report_data(self):
+        """
+        :param self:
+        :return: ordered dictionary with the following structure
+        {
+            section_line_id: {
+                rate_line_record : {
+                    'qty': qty,
+                    'price': price,
+                    'currency_id': currency,
+                }
+            }
+        }
+        """
+        self.ensure_one()
+        data = OrderedDict()
+        total_not_taxed = 0.
+        for timesheet_id in self.timesheet_ids:
+            rate_sale_line_id = timesheet_id.so_line
+            service_sale_line_id = timesheet_id.task_id.sale_line_id
+            service_section_line_id = service_sale_line_id.section_line_id
+            rates_dict = data.setdefault(service_section_line_id, OrderedDict())
+            values = rates_dict.setdefault(
+                rate_sale_line_id, {
+                    'qty': 0.,
+                    'price': rate_sale_line_id.price_unit,
+                    'currency_id': rate_sale_line_id.currency_id,
+                })
+            qty = timesheet_id.unit_amount_rounded
+            values['qty'] += qty
+            total_not_taxed += qty * values['price']
+        assert abs(total_not_taxed - self.amount_untaxed) < 0.001, _('Something went wrong')
+        return data
+
+    @api.multi
     def _get_invoice_report_data(self):
-        data = collections.OrderedDict()
+        """
+        :param self:
+        :return: ordered dictionary with the following structure
+        {
+            task1_record: {
+                rate_line_record : {
+                    'qty': qty,
+                    'price': price,
+                    'currency_id': currency,
+                }
+            }
+        }
+        """
+        self.ensure_one()
+        data = OrderedDict()
+        total_not_taxed = 0.
         for timesheet_id in self.timesheet_ids:
             rate_sale_line_id = timesheet_id.so_line
             task_id = timesheet_id.task_id
-            rates_dict = data.setdefault(task_id, collections.OrderedDict())
-            values = rates_dict.setdefault(rate_sale_line_id, [0., 0.])
-            values[0] += timesheet_id.unit_amount_rounded
-            # price
-            values[1] += rate_sale_line_id.price_unit
+            rates_dict = data.setdefault(task_id, OrderedDict())
+            values = rates_dict.setdefault(
+                rate_sale_line_id, {
+                    'qty': 0.,
+                    'price': rate_sale_line_id.price_unit,
+                    'currency_id': rate_sale_line_id.currency_id,
+                })
+            qty = timesheet_id.unit_amount_rounded
+            values['qty'] += qty
+            total_not_taxed += qty * values['price']
+        assert abs(total_not_taxed - self.amount_untaxed) < 0.001, _('Something went wrong')
         return data
 
     def get_communication_amount(self):

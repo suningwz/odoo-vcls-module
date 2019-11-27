@@ -18,6 +18,7 @@ class ResoucesLeads(models.Model):
         'hr.project_role', string='Seniority')
     number = fields.Float('Number')
 
+
 class LeadStage(models.Model):
     _name = 'crm.lead.stage'
     _description = 'stage for lead'
@@ -36,14 +37,24 @@ class Leads(models.Model):
     altname = fields.Char('Altname')
     hide_altname = fields.Boolean()
 
+    @api.onchange('email_from')
+    def _onchange_email_from(self):
+        lead_id = self.id if not isinstance(self.id, models.NewId) else 0
+        if self.search([('type', '=', 'lead'), ('id', '!=', lead_id), ('email_from', '=', self.email_from)], limit=1):
+            return {
+                'warning': {
+                    'title': _('Warning'),
+                    'message': _('A lead with this email already exists.'),
+                }
+            }
+
     @api.onchange('partner_id', 'partner_name')
     def onchange_info(self):
         hide_altname = False
-        #if self.partner_id or not self.partner_name:
         if not self.partner_name:
             hide_altname = True
         self.hide_altname = hide_altname
-    
+
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         if self.partner_id.is_company:
