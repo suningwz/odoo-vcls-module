@@ -15,5 +15,5 @@ class MailActivity(models.Model):
         return {
             'type': 'ir.actions.act_url',
             'url': link,
-            'target': 'self',
+            'target': 'current',
         }

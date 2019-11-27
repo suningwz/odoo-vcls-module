@@ -47,8 +47,8 @@
                 <field name="view_mode">tree,form,calendar,graph</field>
                 <field name="domain">[('user_id', '=', uid)]</field>
                 <field name="context">{
-                        'search_default_group_by_model_id': 1,
-                        'search_default_group_by_activittype': 1,
+                        'search_default_group_model_id': 1,
+                        'search_default_group_activittype': 1,
                 }</field>
                 <field name="search_view_id" ref='vcls-theme.todo_search_view'/>
                 <field name="view_ids" eval="[(5, 0, 0),
