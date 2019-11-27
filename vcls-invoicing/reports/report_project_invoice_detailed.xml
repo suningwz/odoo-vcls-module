@@ -190,7 +190,7 @@
         <report
                 id="project_invoice"
                 model="account.invoice"
-                string="Detailed report"
+                string="Invoice Detailed"
                 report_type="qweb-pdf"
                 name="vcls-invoicing.report_related_invoice"
                 file="vcls-invoicing.report_related_invoice"

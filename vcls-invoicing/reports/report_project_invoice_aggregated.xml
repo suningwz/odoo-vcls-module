@@ -57,7 +57,7 @@
         <report
                 id="project_invoice_aggregated"
                 model="account.invoice"
-                string="Aggregated report"
+                string="Invoice Simple"
                 report_type="qweb-pdf"
                 name="vcls-invoicing.report_aggregated_invoice"
                 file="vcls-invoicing.report_aggregated_invoice"
