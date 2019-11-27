@@ -21,7 +21,7 @@ class MailActivity(models.Model):
         for rec in self:
             empl = self.env['hr.employee'].search([('user_id','=',rec.user_id.id)])
             if empl:
-                rec.lm_ids = empl.lm_ids
+                rec.write({'lm_ids':[(6,0,empl.lm_ids.mapped('id'))]})
 
     def go_to_record(self):
         self.ensure_one()
