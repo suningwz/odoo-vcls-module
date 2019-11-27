@@ -33,5 +33,20 @@
                 sequence="6"
                 action="vcls-invoicing.action_ia_clients"
         />
+
+        <menuitem
+                id="menu_ia_session"
+                name="Invoicing Sessions"
+                parent="menu_ia_root"
+                sequence="9"    
+        />
+
+        <menuitem
+                id="menu_ia_session_ts"
+                name="Invoiceable Timesheets"
+                parent="menu_ia_session"
+                sequence="3"
+                action="vcls-timesheet.action_vcls_timesheet_tree_ia"    
+        />
     </data>
 </odoo>

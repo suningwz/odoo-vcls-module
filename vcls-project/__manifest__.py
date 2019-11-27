@@ -34,6 +34,7 @@
         'account',
         'hr_timesheet',
         'vcls_security',
+        'vcls-risk',
     ],
 
     # always loaded

@@ -241,16 +241,28 @@ class CustomerPortal(CustomerPortal):
             # START PROCESSING DATA
             error = CustomerPortal.check_timesheet(post)
             if not error:
+
                 project = task_sudo.project_id
                 if not project:
-                    error += [_('PLease ask the website administrator to link this task to a project')]
-                else:
+                    error += [_('Please ask the website administrator to link this task to a project')]
+
+                employee = request.env['hr.employee'].sudo().search([('user_id','=',request.env.user.id)])
+                if not employee:
+                    error += [_("No external employee found for {}").format(request.env.user.name)]
+                
+                #Over budget error
+                if task_sudo.total_hours_spent + float(post['unit_amount']) > task_sudo.planned_hours:
+                    error += [_('Overbudget error, only {} hours remaing in this task. Please contact your lead consultant.').format(task_sudo.planned_hours-task_sudo.total_hours_spent)]
+
+                if not error:
                     values = {
                         'date': datetime.strptime(post['date'], '%Y-%m-%d'),
                         'project_id': project.id,
                         'task_id': task_sudo.id,
-                        'unit_amount': post['unit_amount'],
+                        'employee_id': employee.id,
+                        'unit_amount': float(post['unit_amount']),
                         'name': post['name'],
+                        'time_category_id':post['time_category_id'],
                     }
                     analytic_line = request.env['account.analytic.line'].sudo().create(values)
                     analytic_line._link_portal_analytic_line_purchase(request.env.user)
@@ -268,11 +280,11 @@ class CustomerPortal(CustomerPortal):
 
         if post and task_sudo.user_id == request.env.user:
             # START PROCESSING DATA
-            error = self.check_timesheet(post)
+            error = CustomerPortal.check_timesheet(post)
             if len(error) == 0:
                 values = post.copy()
                 values['date'] = datetime.strptime(values['date'], '%Y-%m-%d')
-                values['stage_id'] = 'draft'
+                #values['stage_id'] = 'draft'
                 timesheet = request.env['account.analytic.line'].sudo().search([('id', '=', timesheet_id)])
                 if timesheet and not timesheet.validated:
                     timesheet.write(values)

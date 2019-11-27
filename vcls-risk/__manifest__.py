@@ -32,6 +32,7 @@
 
         ### VIEWS ###
         'views/risk_views.xml',
+        #'wizard/generic_confirm.xml',
 
         ### DATA ###
     ],

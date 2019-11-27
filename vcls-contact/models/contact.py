@@ -19,7 +19,7 @@ class ContactExt(models.Model):
     _inherit = 'res.partner'
     """_sql_constraints = [
         ('unique_legacy_analytical_account_id','unique(legacy_analytical_account_id)','Legacy Analytical Account ID (old sharepoint ID) must be unique. Please revise!'),
-        #('unique_altname','unique(altname)','THe COmpany ALTNAME must be unique. Please revise!'),
+        #('unique_altname','unique(altname)','The Company ALTNAME must be unique. Please revise!'),
     ]"""
     
     ### CUSTOM FIELDS FOR EVERY KIND OF CONTACTS ###
@@ -298,6 +298,12 @@ class ContactExt(models.Model):
 
     @api.model
     def create(self, vals):
+        if vals.get('email',False):
+            #we search for existing partners with the same email
+            existing = self.env['res.partner'].search([('email','=ilike',vals.get('email'))])
+            if existing:
+                raise UserError("Duplicates {}".format(existing.mapped('name')))
+            
         new_contact = super(ContactExt, self).create(vals)
         if new_contact.type != 'contact':
             type_contact = new_contact.type

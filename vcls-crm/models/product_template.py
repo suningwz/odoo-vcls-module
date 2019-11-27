@@ -48,18 +48,24 @@ class ProductTemplate(models.Model):
         ('invoice', 'Invoice'),
         ('project_supplier', 'Project supplier'),
         ('admin_supplier', 'Admin supplier'),
-    ], string="Vcls type",
-        compute='_get_vcls_type'
+        ('other','Other'),
+        ], string="Vcls type",
+        compute='_get_vcls_type',default='other',store=True
     )
 
     @api.multi
-    @api.depends('seniority_level_id', 'type')
+    @api.depends('seniority_level_id','type','recurring_invoice','sale_ok','purchase_ok','can_be_expensed','service_policy','service_tracking')
     def _get_vcls_type(self):
         for product in self:
+
+            if product.type == 'service' and product.sale_ok and not product.purchase_ok and not product.can_be_expensed and not product.recurring_invoice and product.service_policy=='delivered_manual':
+                product.vcls_type = 'vcls_service'
             if product.seniority_level_id:
                 product.vcls_type = 'rate'
-            elif product.type == 'service':
-                product.vcls_type = 'vcls_service'
+            if product.recurring_invoice:
+                product.vcls_type = 'subscription'   
+            else:
+                product.vcls_type = 'other'
 
 
 class Product(models.Model):

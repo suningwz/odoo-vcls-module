@@ -87,6 +87,19 @@ class Project(models.Model):
         copy=False, readonly=True
     )
 
+    risk_ids = fields.Many2many('risk', string='Risk')
+
+    risk_score = fields.Integer(
+        string='Risk Score',
+        compute = '_compute_risk_score',
+        store = True,
+    )
+
+    @api.depends('risk_ids','risk_ids.score')
+    def _compute_risk_score(self):
+        for project in self:
+            project.risk_score = sum(project.risk_ids.mapped('score'))
+
     @api.one
     @api.depends(
         'sale_line_id.order_id.order_line.invoice_lines',
