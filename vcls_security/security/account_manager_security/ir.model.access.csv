@@ -59,3 +59,6 @@ access_project_forecast,project.forecast,project_forecast.model_project_forecast
 access_project_project_account_manager,project.project on account_manager,project.model_project_project,vcls_security.vcls_account_manager,1,1,0,0
 access_project_task_type_project_user,project.task.type.project.user,project_task_default_stage.model_project_task_type,vcls_security.vcls_account_manager,1,0,0,0
 access_project_task,project.task,project.model_project_task,vcls_security.vcls_account_manager,1,1,0,0
+
+access_project_sale_line_employee_map_am,access_project_sale_line_employee_map_am,sale_timesheet.model_project_sale_line_employee_map,vcls_security.vcls_account_manager,1,1,1,1
+

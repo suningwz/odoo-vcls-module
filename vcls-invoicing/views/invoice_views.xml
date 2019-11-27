@@ -28,9 +28,7 @@
                 <xpath expr="//button[@name='preview_invoice']" position="after">
                     <button string="Print Activity report" type="object" class="btn-primary" name="action_print_activity_report"/>
                 </xpath>
-                <xpath expr="//button[@name='preview_invoice']" position="after">
-                    <button string="Print Activity report" type="object" class="btn-primary" name="action_print_activity_report"/>
-                </xpath>
+                
             </field>
         </record>
 

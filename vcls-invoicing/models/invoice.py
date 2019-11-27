@@ -9,6 +9,7 @@ from odoo.tools import email_re, email_split, email_escape_char, float_is_zero, 
     pycompat, date_utils
 
 from odoo.exceptions import AccessError, UserError, RedirectWarning, ValidationError, Warning
+from collections import OrderedDict
 
 
 import logging
@@ -42,6 +43,75 @@ class Invoice(models.Model):
 
     invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
     activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'activity.report.groupment')])
+
+    @api.multi
+    def _get_aggregated_invoice_report_data(self):
+        """
+        :param self:
+        :return: ordered dictionary with the following structure
+        {
+            section_line_id: {
+                rate_line_record : {
+                    'qty': qty,
+                    'price': price,
+                    'currency_id': currency,
+                }
+            }
+        }
+        """
+        self.ensure_one()
+        data = OrderedDict()
+        total_not_taxed = 0.
+        for timesheet_id in self.timesheet_ids:
+            rate_sale_line_id = timesheet_id.so_line
+            service_sale_line_id = timesheet_id.task_id.sale_line_id
+            service_section_line_id = service_sale_line_id.section_line_id
+            rates_dict = data.setdefault(service_section_line_id, OrderedDict())
+            values = rates_dict.setdefault(
+                rate_sale_line_id, {
+                    'qty': 0.,
+                    'price': rate_sale_line_id.price_unit,
+                    'currency_id': rate_sale_line_id.currency_id,
+                })
+            qty = timesheet_id.unit_amount_rounded
+            values['qty'] += qty
+            total_not_taxed += qty * values['price']
+        assert abs(total_not_taxed - self.amount_untaxed) < 0.001, _('Something went wrong')
+        return data
+
+    @api.multi
+    def _get_invoice_report_data(self):
+        """
+        :param self:
+        :return: ordered dictionary with the following structure
+        {
+            task1_record: {
+                rate_line_record : {
+                    'qty': qty,
+                    'price': price,
+                    'currency_id': currency,
+                }
+            }
+        }
+        """
+        self.ensure_one()
+        data = OrderedDict()
+        total_not_taxed = 0.
+        for timesheet_id in self.timesheet_ids:
+            rate_sale_line_id = timesheet_id.so_line
+            task_id = timesheet_id.task_id
+            rates_dict = data.setdefault(task_id, OrderedDict())
+            values = rates_dict.setdefault(
+                rate_sale_line_id, {
+                    'qty': 0.,
+                    'price': rate_sale_line_id.price_unit,
+                    'currency_id': rate_sale_line_id.currency_id,
+                })
+            qty = timesheet_id.unit_amount_rounded
+            values['qty'] += qty
+            total_not_taxed += qty * values['price']
+        assert abs(total_not_taxed - self.amount_untaxed) < 0.001, _('Something went wrong')
+        return data
 
     def get_communication_amount(self):
         total_amount = 0
@@ -186,35 +256,6 @@ class Invoice(models.Model):
         self.ensure_one()
         return lxml.html.document_fromstring(html_format).text_content()
 
-    """
-    def parent_quotation_informations(self):
-
-        if not self.origin:
-            return []
-        names = self.origin.split(', ')
-        customer_precedent_invoice = ""
-        quotation = self.env['sale.order'].search([('name', 'in', names)], limit=1)
-        if not quotation:
-            return []
-        parent_order = quotation.parent_id or quotation
-        while parent_order.parent_id:
-            parent_order = parent_order.parent_id
-        
-        if self.timesheet_limit_date:
-            customer_precedent_invoices = parent_order.partner_id.invoice_ids.filtered(
-                lambda i: i.id != self.id and i.timesheet_limit_date < self.timesheet_limit_date).sorted(
-                key=lambda v: v['timesheet_limit_date'], reverse=True)
-            customer_precedent_invoice = customer_precedent_invoices and\
-                customer_precedent_invoice[0].timesheet_limit_date.strftime("%d/%m/%Y")
-        
-        return [
-            ('name', parent_order.name),
-            ('scope_work', self.html_to_string(parent_order.scope_of_work) or ''),
-            ('po_id', parent_order.po_id.name or ''),
-            ('From', customer_precedent_invoice or ''),
-            ('To', self.timesheet_limit_date and self.timesheet_limit_date.strftime("%d/%m/%Y") or '')
-        ]
-    """
     def parent_quotation_informations(self):
 
         if not self.origin:

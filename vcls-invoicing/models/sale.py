@@ -129,13 +129,9 @@ class SaleOrder(models.Model):
     def compute_financial_config_readonly(self):
         self.financial_config_readonly =((self.project_id.user_id == self.env.user) or\
                                         (self.partner_id.invoice_admin_id == self.env.user) or\
+                                        (self.partner_id.user_id == self.env.user) or\
                                         (self.env.user.has_group('vcls_security.group_project_controller'))) and not self.parent_id
 
-    @api.one
-    @api.depends('project_id.user_id','partner_id.invoice_admin_id', 'parent_id')
-    def compute_financial_config_readonly(self):
-        self.financial_config_readonly =((self.project_id.user_id == self.env.user) or\
-                                        (self.partner_id.invoice_admin_id == self.env.user)) and not self.parent_id
 
     def action_risk(self):
         view_ids = [self.env.ref('vcls-risk.view_risk_tree').id,

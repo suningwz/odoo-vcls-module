@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="report_aggregated_document" inherit_id="vcls-invoicing.report_invoice_document" primary="True">
+            <xpath expr="//t[@t-set='data']" position="attributes">
+                <attribute name="t-value">o._get_aggregated_invoice_report_data()</attribute>
+            </xpath>
+            <table name="invoice_detailed_table" position="replace">
+                <table class="table table-sm o_main_table" name="invoice_aggregated_table">
+                <t t-foreach="list(data.keys())" t-as="service_section_line_id">
+                    <t t-set="rates_dict" t-value="data[service_section_line_id]"/>
+                    <thead>
+                    <tr><th colspan="4">
+                        <t t-esc="service_section_line_id.name"/>
+                    </th></tr>
+                    <tr>
+                        <th>Rate</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <t t-foreach="list(rates_dict.keys())" t-as="rate_sale_line_id">
+                    <tr t-att-style="'border-bottom: 4px solid;' if rate_sale_line_id_last
+                        and not service_section_line_id_last else ''">
+                        <t t-set="rate_values" t-value="rates_dict[rate_sale_line_id]"/>
+                        <t t-set="currency_id" t-value="rate_values['currency_id']"/>
+                        <td><t t-esc="rate_sale_line_id.name"/></td>
+                        <td><t t-esc="rate_values['qty']"/></td>
+                        <td><t t-esc="rate_values['price']"
+                        t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
+                        <td><t t-esc="rate_values['qty'] * rate_values['price']"
+                        t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
+                    </tr>
+                    </t>
+                    </tbody>
+                </t>
+                </table>
+                <div t-if='o.payment_term_id' style="margin-top:5%;">
+                    <strong>
+                        <span>Payment Term:</span>
+                        <t t-esc="o.payment_term_id.name"/>
+                    </strong>
+                </div>
+            </table>
+        </template>
+        <template id="report_aggregated_invoice">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="lang" t-value="o.partner_id.lang"/>
+                    <t t-call="vcls-invoicing.report_aggregated_document" t-lang="lang"/>
+                </t>
+            </t>
+        </template>
+        <report
+                id="project_invoice_aggregated"
+                model="account.invoice"
+                string="Invoice Simple"
+                report_type="qweb-pdf"
+                name="vcls-invoicing.report_aggregated_invoice"
+                file="vcls-invoicing.report_aggregated_invoice"
+        />
+    </data>
+</odoo>
