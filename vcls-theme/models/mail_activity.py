@@ -11,7 +11,8 @@ class MailActivity(models.Model):
     lm_ids = fields.Many2many(
         'res.users',
         compute='_get_lm_ids',
-        default = False
+        default = False,
+        store = True,
     )
 
     @api.depends('user_id')  
