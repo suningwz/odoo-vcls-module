@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, tools, api
+from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError
 
 
@@ -46,7 +46,7 @@ class SaleOrderLine(models.Model):
         project.update({'project_type': 'client'})
         return project
 
-    #We override the line creation in order to link them with existing project
+    # We override the line creation in order to link them with existing project
     @api.model_create_multi
     def create(self, vals_list):
         lines = super().create(vals_list)
@@ -57,6 +57,35 @@ class SaleOrderLine(models.Model):
         
         return lines
 
-    
-
-    
+    @api.multi
+    def unlink(self):
+        for order_line in self:
+            if order_line.vcls_type == 'rate':
+                related_timesheet = self.env['account.analytic.line'].sudo().search([
+                    ('so_line', '=', order_line.id),
+                ], limit=1)
+                if related_timesheet:
+                    raise ValidationError(
+                        _('You can not delete the "{}" order line has linked timesheets.'.format(order_line.name))
+                    )
+                # delete mapping
+                related_mapping = self.env['project.sale.line.employee.map'].sudo().search([
+                    ('sale_line_id', '=', order_line.id),
+                ])
+                if related_mapping:
+                    related_mapping.unlink()
+            # delete mapping linked forecast
+            related_forecasts = self.env['project.forecast'].sudo().search([
+                ('order_line_id', '=', order_line.id),
+            ])
+            if related_forecasts:
+                related_forecasts.unlink()
+            if order_line.vcls_type == 'vcls_service':
+                related_task = self.env['project.task'].sudo().search([
+                    '|',
+                    ('sale_order_line', '=', order_line.id),
+                    ('parent_id.sale_order_line', '=', order_line.id),
+                ])
+                if related_task:
+                    related_task.unlink()
+        return True
