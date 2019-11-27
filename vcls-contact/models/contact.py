@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
 class CountryGroup(models.Model):
@@ -13,6 +13,7 @@ class CountryGroup(models.Model):
         track_visibility='onchange',
         default=False,
     ) 
+
 
 class ContactExt(models.Model):
 
@@ -242,22 +243,21 @@ class ContactExt(models.Model):
             pass
             """ This estimator is related to the type of contact."""
 
-    @api.depends('category_id','create_folder','altname')
+    @api.depends('category_id', 'create_folder','altname')
     def _compute_sharepoint_folder(self):
-        """ for contact in self:
-            #search if this is an account contact
-            if self.env.ref('vcls-contact.category_account') in contact.category_id and contact.create_folder and contact.altname:
-                root = self.env.ref('vcls-contact.conf_path_sp_client_root').value
-                contact.sharepoint_folder = "{}{:.1}/{}".format(root,contact.altname,contact.altname) """
-            
-            #raise ValidationError("{}".format(contact.sharepoint_folder))
-                
+        pass
 
     # We reset the number of bounced emails to 0 in order to re-detect problems after email change
     @api.onchange('email')
-    def _reset_bounce(self):
+    def _onchange_mail(self):
         for contact in self:
             contact.message_bounce = 0
+            contact_id = contact.id if not isinstance(contact.id, models.NewId) else 0
+            if self.search([('id', '!=', contact_id), ('email', '=', contact.email)], limit=1):
+                return {'warning': {
+                    'title': _("Warning"),
+                    'message': _("A contact with this email already exists."),
+                }}
 
     ##################
     # ACTION METHODS #
