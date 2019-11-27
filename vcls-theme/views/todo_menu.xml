@@ -1,13 +1,59 @@
 <odoo>
     <data>
+        <!-- VIEWS -->
+        <record id="todo_tree_view" model="ir.ui.view">
+                <field name="name">todo.tree.view</field>
+                <field name="model">mail.activity</field>
+                <field name="arch" type="xml">
+                        <tree string="Next Activities" decoration-danger="date_deadline &lt; current_date" decoration-success="date_deadline == current_date" default_order="date_deadline" create="false">
+                                <field name="res_name"/>
+                                <field name="activity_type_id"/>
+                                <button string="open" class="oe_highlight" name="go_to_record" type="object"/>
+                                <field name="summary"/>
+                                <field name="date_deadline"/>
+                                <button string="Done" name="action_done" type="object" icon="fa-check text-success"/>
+                        </tree>
+                </field>
+        </record>
+
+        <record id="todo_search_view" model="ir.ui.view">
+                <field name="name">todo.search.view</field>
+                <field name="model">mail.activity</field>
+                <field name="arch" type="xml">
+                        <search string="ToDo">
+                                <field name="activity_type_id"/>
+                                <field name="res_model_id"/>
+                                <field name="summary"/>
+                                <separator/>
+                                <filter string="Late Activities" name="activities_overdue" domain="[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]" help="Show all records which has next action date is before today"/>
+                                <filter string="Today Activities" name="activities_today" domain="[('date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                                <filter string="Future Activities" name="activities_upcoming_all" domain="[('date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))                         ]"/>
+                                <separator/>
+                                <group expand="0" string="Group By">
+                                        <filter string="Deadline" name="date_deadline" context="{'group_by': 'date_deadline'}"/>
+                                        <filter string="Created By" name="createdby" context="{'group_by': 'create_user_id'}"/>
+                                        <filter string="Source" name="model_id" context="{'group_by': 'res_model_id'}"/>
+                                        <filter string="Activity Type" name="activittype" context="{'group_by': 'activity_type_id'}"/>
+                                </group>
+                        </search>
+                </field>
+        </record>
 
         <!-- ACTIONS -->
         <record id="todo_my_activities" model="ir.actions.act_window">
                 <field name="name">My ToDo</field>
                 <field name="res_model">mail.activity</field>
                 <field name="view_type">form</field>
-                <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity</field>
-            
+                <field name="view_mode">tree,form,calendar,graph</field>
+                <field name="domain">[('user_id', '=', uid)]</field>
+                <field name="context">{
+                        'search_default_group_by_model_id': 1,
+                        'search_default_group_by_activittype': 1,
+                }</field>
+                <field name="search_view_id" ref='vcls-theme.todo_search_view'/>
+                <field name="view_ids" eval="[(5, 0, 0),
+                        (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-theme.todo_tree_view')}),
+                ]"/>
         </record>
 
         
