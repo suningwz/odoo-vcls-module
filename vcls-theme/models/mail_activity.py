@@ -10,18 +10,23 @@ class MailActivity(models.Model):
 
     lm_ids = fields.Many2many(
         'res.users',
-        #compute='_get_lm_ids',
-        #store = True,
+        compute='_get_lm_ids',
+        compute_sudo=True,
+        store = True,
         )
 
-    """@api.depends('user_id')  
+    @api.depends('user_id')  
     def _get_lm_ids(self):
         #Populate a list of authorized user for domain filtering 
         for rec in self:
-            empl = self.env['hr.employee'].search([('user_id','=',rec.user_id.id)])
-            if empl:
-                rec.write({'lm_ids':[(6,0,empl.lm_ids.mapped('id'))]})
-        return False"""
+            if rec.user_id:
+                empl = self.env['hr.employee'].search([('user_id','=',rec.user_id.id)],limit=1)
+                if empl:
+                    rec.lm_ids = empl.lm_ids
+                else:
+                    rec.lm_ids = False
+            else:
+                rec.lm_ids = False
 
     @api.multi
     def open_record(self):
