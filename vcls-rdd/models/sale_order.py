@@ -78,6 +78,39 @@ class SaleOrder(models.Model):
                     self._cr.execute("DELETE FROM sale_order_line where id in %s", (tuple(key.ids),))
         return True
 
+    @api.multi
+    def delete_duplicate_hourly_rate_lines(self):
+        for order in self:
+            datas = {self.env['sale.order.line']: self.env['sale.order.line']}
+            last_parent = self.env['sale.order.line']
+            must_be_deleted = self.env['sale.order.line']
+            for line in order.order_line:
+                if line.display_type != 'line_section':
+                    datas[last_parent] += line
+                else:
+                    datas.update({line: self.env['sale.order.line']})
+                    last_parent = line
+            grouped_data = {}
+            named = {}
+            for key, vals in datas.items():
+                if vals and key.name == 'Hourly Rates':
+                    for val in vals:
+                        if val.name in grouped_data:
+                            if grouped_data[val.name] < val.price_unit:
+                                grouped_data[val.name] = val.price_unit
+                                must_be_deleted += named[val.name]
+                            else:
+                                must_be_deleted += val
+                        else:
+                            grouped_data[val.name] = val.price_unit
+                            named[val.name] = val
+            if must_be_deleted:
+                if len(must_be_deleted) > 1:
+                    self._cr.execute("DELETE FROM sale_order_line where id in {}".format(tuple(must_be_deleted.ids)))
+                else:
+                    self._cr.execute("DELETE FROM sale_order_line where id = {}".format(must_be_deleted.id))
+        return True
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
