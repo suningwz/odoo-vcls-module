@@ -16,7 +16,7 @@ class AnalyticLine(models.Model):
 
     stage_id = fields.Selection([
         # ('forecast', 'Stock'),
-        ('draft', 'Draft'), 
+        ('draft', '0. Draft'), 
         ('lc_review', '1. LC review'), 
         ('pc_review', '2. PC review'), 
         ('carry_forward', 'Carry Forward'),
