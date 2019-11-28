@@ -34,7 +34,7 @@ class MailActivity(models.Model):
             'target': 'current',
         }
     
-    """def action_feedback(self, feedback=False):
+    def action_feedback(self, feedback=False):
         # We override to set a safe context and block other tentative of deletion
         self = self.with_context(safe_unlink=True)
         return super(MailActivity, self).action_feedback(feedback)
@@ -45,4 +45,4 @@ class MailActivity(models.Model):
         user = self.env['res.users'].browse(self._uid)
         if not self.env.context.get('safe_unlink', False) and not user.has_group('base.group_system'):
             raise ValidationError("You are not authorized to cancel this activity.")
-        return super(MailActivity, self).unlink()"""
+        return super(MailActivity, self).unlink()
