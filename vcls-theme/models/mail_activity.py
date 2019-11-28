@@ -11,21 +11,25 @@ class MailActivity(models.Model):
     lm_ids = fields.Many2many(
         'res.users',
         compute='_get_lm_ids',
-        default = False,
+        compute_sudo=True,
         store = True,
-    )
+        )
 
     @api.depends('user_id')  
     def _get_lm_ids(self):
-        """ Populate a list of authorized user for domain filtering 
+        #Populate a list of authorized user for domain filtering 
         for rec in self:
-            empl = self.env['hr.employee'].search([('user_id','=',rec.user_id.id)])
-            if empl:
-                rec.write({'lm_ids':[(6,0,empl.lm_ids.mapped('id'))]})
-        """
-        return False
+            if rec.user_id:
+                empl = self.env['hr.employee'].search([('user_id','=',rec.user_id.id)],limit=1)
+                if empl:
+                    rec.lm_ids = empl.lm_ids
+                else:
+                    rec.lm_ids = False
+            else:
+                rec.lm_ids = False
 
-    def go_to_record(self):
+    @api.multi
+    def open_record(self):
         self.ensure_one()
         url = http.request.env['ir.config_parameter'].get_param('web.base.url')
         link = "{}/web#id={}&model={}".format(url, self.res_id, self.res_model)
@@ -34,3 +38,16 @@ class MailActivity(models.Model):
             'url': link,
             'target': 'current',
         }
+    
+    def action_feedback(self, feedback=False):
+        # We override to set a safe context and block other tentative of deletion
+        self = self.with_context(safe_unlink=True)
+        return super(MailActivity, self).action_feedback(feedback)
+
+
+    @api.multi
+    def unlink(self):
+        user = self.env['res.users'].browse(self._uid)
+        if not self.env.context.get('safe_unlink', False) and not user.has_group('base.group_system'):
+            raise ValidationError("You are not authorized to cancel this activity.")
+        return super(MailActivity, self).unlink()

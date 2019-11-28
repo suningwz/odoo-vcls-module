@@ -62,6 +62,11 @@ class Employee(models.Model):
         readonly = True,
         store = True
         )
+
+    address_home_id = fields.Many2one(
+        comodel_name='res.partner',
+        related='user_id.partner_id',
+        )
     
     
     # Administrative informations

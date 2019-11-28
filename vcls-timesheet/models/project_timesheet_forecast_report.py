@@ -8,12 +8,13 @@ class TimesheetForecastReport(models.Model):
 
     stage_id = fields.Selection([
         ('forecast', 'Stock'),
-        ('draft', 'Draft'), 
-        ('lc_review', 'LC review'), 
-        ('pc_review', 'PC review'), 
+        ('draft', '0. Draft'), 
+        ('lc_review', '1. LC review'), 
+        ('pc_review', '2. PC review'), 
         ('carry_forward', 'Carry Forward'),
-        ('adjustment_validation', 'Adjustment Validation'),
-        ('invoiceable', 'Invoiceable'),
+        ('adjustment_validation', '4. Adjustment Validation'),
+        ('invoiceable', '5. Invoiceable'),
+        ('invoiced', '6. Invoiced'),
         ('outofscope', 'Out Of Scope'),
     ], 'Stage', readonly=True)
 
@@ -93,8 +94,8 @@ class TimesheetForecastReport(models.Model):
                         E.id AS employee_id,
                         A.task_id AS task_id,
                         A.project_id AS project_id,
-                        null AS date,
                         -A.unit_amount AS number_hours,
+                        null AS date,
                         'timesheet' AS type,
                         A.stage_id AS stage_id,
                         (-A.so_line_unit_price * A.unit_amount_rounded) AS revenue,
