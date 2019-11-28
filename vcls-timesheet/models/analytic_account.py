@@ -17,12 +17,12 @@ class AnalyticLine(models.Model):
     stage_id = fields.Selection([
         # ('forecast', 'Stock'),
         ('draft', 'Draft'), 
-        ('lc_review', 'LC review'), 
-        ('pc_review', 'PC review'), 
+        ('lc_review', '1. LC review'), 
+        ('pc_review', '2. PC review'), 
         ('carry_forward', 'Carry Forward'),
-        ('adjustment_validation', 'Adjustment Validation'),
-        ('invoiceable', 'Invoiceable'),
-        ('invoiced', 'Invoiced'),
+        ('adjustment_validation', '4. Adjustment Validation'),
+        ('invoiceable', '5. Invoiceable'),
+        ('invoiced', '6. Invoiced'),
         ('outofscope', 'Out Of Scope'),
         ], default='draft')
 
