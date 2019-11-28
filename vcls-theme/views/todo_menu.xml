@@ -8,7 +8,7 @@
                         <tree string="Next Activities" decoration-danger="date_deadline &lt; current_date" decoration-success="date_deadline == current_date" default_order="date_deadline" create="false">
                                 <field name="res_name"/>
                                 <field name="activity_type_id"/>
-                                <button string="open" class="oe_highlight" name="go_to_record" type="object"/>
+                                <button string="open" class="oe_highlight" name="_go_to_record" type="object"/>
                                 <field name="summary"/>
                                 <field name="date_deadline"/>
                                 <button string="Done" name="action_done" type="object" icon="fa-check text-success"/>
