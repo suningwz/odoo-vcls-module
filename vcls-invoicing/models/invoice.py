@@ -154,8 +154,7 @@ class Invoice(models.Model):
                 for user in users_to_notify:
                     self.env['mail.activity'].create({
                     'res_id': invoice.id,
-                    'res_model_id': self.env.ref(
-                        'account.invoice').id,
+                    'res_model_id': self.env.ref('account.model_account_invoice').id,
                     'activity_type_id': activity_type.id,
                     'user_id': user.id,
                     'summary': _('Please review the invoice PDF for {}.').format(
