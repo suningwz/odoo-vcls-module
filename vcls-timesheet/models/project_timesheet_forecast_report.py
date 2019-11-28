@@ -12,9 +12,9 @@ class TimesheetForecastReport(models.Model):
         ('lc_review', '1. LC review'), 
         ('pc_review', '2. PC review'), 
         ('carry_forward', 'Carry Forward'),
-        ('adjustment_validation', '4. Adjustment Validation'),
-        ('invoiceable', '5. Invoiceable'),
-        ('invoiced', '6. Invoiced'),
+        ('adjustment_validation', '3. Adjustment Validation'),
+        ('invoiceable', '4. Invoiceable'),
+        ('invoiced', '5. Invoiced'),
         ('outofscope', 'Out Of Scope'),
     ], 'Stage', readonly=True)
 
@@ -121,3 +121,20 @@ class TimesheetForecastReport(models.Model):
                 )
             )
         """ % (self._table,))
+
+    @api.model
+    def _read_group_prepare(self, orderby, aggregated_fields, annotated_groupbys, query):
+        groupby_terms, orderby_terms = super(TimesheetForecastReport, self)._read_group_prepare(
+            orderby, aggregated_fields, annotated_groupbys, query
+        )
+        if '"stage_id"' in orderby_terms:
+            orderby_terms[orderby_terms.index('"stage_id"')] = """
+                CASE WHEN "{table}"."stage_id" = 'draft' THEN 0 
+                 WHEN "{table}"."stage_id" = 'lc_review' THEN 1  
+                 WHEN "{table}"."stage_id" = 'pc_review' THEN 2 
+                 WHEN "{table}"."stage_id" = 'adjustment_validation' THEN 3 
+                 WHEN "{table}"."stage_id" = 'invoiceable' THEN 4 
+                 WHEN "{table}"."stage_id" = 'invoiced' THEN 5 
+                 ELSE 6 END
+            """.format(table=self._table)
+        return groupby_terms, orderby_terms
