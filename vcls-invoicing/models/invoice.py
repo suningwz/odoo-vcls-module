@@ -144,6 +144,25 @@ class Invoice(models.Model):
 
         for invoice in self:
             invoice.write({'ready_for_approval': True})
+            #and we send a scheduled action to the AM and the LC's
+            activity_type = self.env['mail.activity.type'].search([('name','=','Invoice Review')],limit=1)
+            if activity_type:
+                users_to_notify = self.env['res.users']
+                users_to_notify |= invoice.partner_id.user_id
+                #users_to_notify |= invoice.invoice_line_ids.mapped('')
+                #users_to_notify 
+                for user in users_to_notify:
+                    self.env['mail.activity'].create({
+                    'res_id': invoice.id,
+                    'res_model_id': self.env.ref('account.model_account_invoice').id,
+                    'activity_type_id': activity_type.id,
+                    'user_id': user.id,
+                    'summary': _('Please review the invoice PDF for {}.').format(
+                        invoice.name),
+                    })
+
+
+
             
     @api.model
     def create(self, vals):

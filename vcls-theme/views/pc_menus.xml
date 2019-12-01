@@ -95,14 +95,14 @@
                 name="Project Follow-Up"
                 parent="menu_pc_project_follow_up"
                 sequence="1"
-                action="vcls-timesheet.project_followup_report_action_hours"
+                action="vcls-timesheet.project_followup_report_action_hours_pc"
         />
 
         <menuitem
                 id="menu_pc_followup_revenue"
                 name="Project Follow-Up(Revenue)"
                 parent="menu_pc_project_follow_up"
-                action="vcls-timesheet.project_followup_report_action_revenue"
+                action="vcls-timesheet.project_followup_report_action_revenue_pc"
                 sequence="2"
         />
 
