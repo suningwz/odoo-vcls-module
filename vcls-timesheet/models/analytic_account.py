@@ -360,9 +360,10 @@ class AnalyticLine(models.Model):
 
     @api.onchange('main_project_id')
     def onchange_task_id_project_related(self):
-        #we clear the existing task_id and project_id
-        self.task_id = False
-        self.project_id = False
+        #we clear the existing task_id and project_id if not logged from task
+        if not self._context.get('log_from_task',False):
+            self.task_id = False
+            self.project_id = False
         #we return the proper domain
         if self.main_project_id:
             projects = self.main_project_id | self.main_project_id.child_id
