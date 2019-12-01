@@ -133,7 +133,8 @@ class ProjectTask(models.Model):
             default_project_id=self.project_id.id,
             default_task_id=self.id,
             # One Employee/USer
-            default_employee_id=self.env.user.employee_ids.id)
+            default_employee_id=self.env.user.employee_ids.id,
+            log_from_task=True,)
         action.update({'context': ctx,
                        'target': 'new'})
         return action
