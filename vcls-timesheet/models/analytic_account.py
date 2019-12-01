@@ -157,10 +157,10 @@ class AnalyticLine(models.Model):
             if vals['unit_amount'] % 0.25 != 0:
                 old = vals.get('unit_amount', 0)
                 vals['unit_amount'] = math.ceil(old * 4) / 4
-                _logger.info(
+                """_logger.info(
                     "Timesheet Rounding from {} to {}"
                     .format(old, 'unit_amount')
-                )
+                )"""
 
             # check if this is a timesheet at risk
             vals['at_risk'] = self._get_at_risk_values(vals.get('project_id'),
@@ -176,6 +176,7 @@ class AnalyticLine(models.Model):
             project_id = self.env['project.project'].browse(vals['project_id'])
             main_project_id = project_id.parent_id or project_id
             vals['main_project_id'] = main_project_id.id
+
         return super(AnalyticLine, self).create(vals)
 
     @api.multi
@@ -359,6 +360,10 @@ class AnalyticLine(models.Model):
 
     @api.onchange('main_project_id')
     def onchange_task_id_project_related(self):
+        #we clear the existing task_id and project_id
+        self.task_id = False
+        self.project_id = False
+        #we return the proper domain
         if self.main_project_id:
             projects = self.main_project_id | self.main_project_id.child_id
             return {'domain': {
