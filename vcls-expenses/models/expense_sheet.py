@@ -2,6 +2,9 @@
 
 from odoo import models, fields, api
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class ExpenseSheet(models.Model):
     _inherit = 'hr.expense.sheet'
 
@@ -59,6 +62,7 @@ class ExpenseSheet(models.Model):
     @api.depends('type', 'project_id', 'employee_id')
     def _compute_user_id(self):
         for record in self:
+            
             if record.type == 'project':
                 if record.project_id:
                     record.user_id = record.project_id.user_id
@@ -79,6 +83,7 @@ class ExpenseSheet(models.Model):
     @api.onchange('project_id')
     def change_project(self):
         for rec in self:
+            _logger.info("EXPENSE PROJECT {}".format(rec.type))
             if rec.project_id:
                 #grab analytic account from the project
                 if rec.type == 'admin':
