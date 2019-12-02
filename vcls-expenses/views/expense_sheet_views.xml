@@ -126,6 +126,7 @@
             <xpath expr="//field[@name='account_move_id']" position="after">
                 <field name = 'company_id' readonly = "1" />
                 <field name = 'sale_order_id' readonly = "1" />
+                <field name = 'analytic_account_id' readonly = "1" />
             </xpath>
 
             <!-- MAKE THE FIELD READONLY -->

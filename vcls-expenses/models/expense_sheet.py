@@ -80,26 +80,37 @@ class ExpenseSheet(models.Model):
     @api.onchange('project_id')
     def change_project(self):
         for rec in self:
-            if rec.project_id and rec.project_id.analytic_account_id:
-                rec.analytic_account_id = rec.project_id.analytic_account_id.id
+            if rec.project_id:
+                #grab analytic account from the project
+                if rec.type == 'admin':
+                    rec.analytic_account_id = rec.project_id.analytic_account_id
+                    rec.sale_order_id = False
+
                 #we look for the SO in case of project (to be able to re-invoice)
-                if rec.type == 'project':
+                elif rec.type == 'project':
                     so = self.env['sale.order'].search([('project_id','=',rec.project_id.id)],limit=1)
                     if so:
                         rec.sale_order_id = so.id
                     else:
                         rec.sale_order_id = False
+                    rec.analytic_account_id = False
+
                 else:
-                    rec.sale_order_id = False          
+                    rec.sale_order_id = False
+                    rec.analytic_account_id = False          
 
     @api.multi
     def open_pop_up_add_expense(self):
         for rec in self:
             action = self.env.ref('vcls-expenses.action_pop_up_add_expense').read()[0]
-            action['context'] = {'default_employee_id': rec.employee_id.id,
-                                 'default_analytic_account_id': rec.analytic_account_id.id,
-                                 'default_sale_order_id': rec.sale_order_id.id,
-                                 'default_sheet_id': rec.id}
+            if rec.type == 'admin':
+                action['context'] = {'default_employee_id': rec.employee_id.id,
+                                    'default_analytic_account_id': rec.analytic_account_id.id,
+                                    'default_sheet_id': rec.id}
+            elif rec.type == 'project':
+                action['context'] = {'default_employee_id': rec.employee_id.id,
+                                    'default_sale_order_id': rec.sale_order_id.id,
+                                    'default_sheet_id': rec.id}
             return action
 
 class HrExpense(models.Model):
