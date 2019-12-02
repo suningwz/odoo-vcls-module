@@ -34,7 +34,8 @@
                             <field name="company_id" options="{'no_create': True}" attrs="{'readonly': [('access_level', 'not in', ['rm'])]}"/>
                         </group>
                         <group>
-                            <field name="activity_summary" string="Scope of Work"/>
+                            <field name="activity_summary" invisible="1"/>
+                            <field name="scope_of_work"/>
                         </group>
                     </group>
                 </xpath>
