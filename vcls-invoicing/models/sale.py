@@ -22,8 +22,8 @@ class SaleOrder(models.Model):
 
     risk_score = fields.Integer(
         string='Risk Score',
-        compute = '_compute_risk_score',
-        store = True,
+        compute='_compute_risk_score',
+        store=True,
     )
 
     po_id = fields.Many2one('invoicing.po', string ='Purchase Order')

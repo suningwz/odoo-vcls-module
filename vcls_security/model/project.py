@@ -4,6 +4,17 @@ from odoo import api, fields, models, tools, _
 from odoo.osv import expression
 
 
+class Task(models.Model):
+    _inherit = 'project.task'
+
+    # This will be used to avoid
+    # an unknown bug (The bug: LC cannot edit his project's tasks)
+    project_user_id = fields.Many2one(
+        'res.users', related='project_id.user_id',
+        store=True, readonly=True, string="Lead Consultant",
+    )
+
+
 class Project(models.Model):
     _inherit = 'project.project'
 

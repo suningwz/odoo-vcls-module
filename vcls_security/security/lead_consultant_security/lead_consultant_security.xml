@@ -10,11 +10,11 @@
         <field name="groups" eval="[(4, ref('vcls_security.vcls_lc'))]"/>
     </record>
 
-    <record model="ir.rule" id="task_lc_rule">
-        <field name="name">task: lc is user</field>
+    <record model="ir.rule" id="task_lead_consultant_rule">
+        <field name="name">Task: lead consultant is user</field>
         <field name="model_id" ref="project.model_project_task"/>
         <field name="domain_force">[
-            ('project_id.user_id', '=', user.id)
+            ('project_user_id', '=', user.id)
         ]</field>
         <field name="groups" eval="[(4, ref('vcls_security.vcls_lc'))]"/>
     </record>
@@ -25,32 +25,33 @@
         <field name="model_id" ref="sale.model_sale_order"/>
         <field name="domain_force">[
             '|','|',
-                ('project_id.user_id', '=', user.id),
+                ('project_user_id', '=', user.id),
                 ('project_id.privacy_visibility', '!=', 'followers'),
                 ('project_id.message_partner_ids', 'in', [user.partner_id.id])
         ]</field>
-        <field name="groups" eval="[(4, ref('vcls_lc'))]"/>
+        <field name="groups" eval="[(4, ref('vcls_security.vcls_lc'))]"/>
     </record>
 
     <record model="ir.rule" id="sale_order_line_lc_rule">
         <field name="name">Sale order line: lc is user</field>
         <field name="model_id" ref="sale.model_sale_order_line"/>
         <field name="domain_force">[
-            '|','|',
+            '|','|','|',
+                ('task_id.project_user_id', '=', user.id),
                 ('order_id.project_id.user_id', '=', user.id),
                 ('order_id.project_id.privacy_visibility', '!=', 'followers'),
                 ('order_id.project_id.message_partner_ids', 'in', [user.partner_id.id])
             ]</field>
-        <field name="groups" eval="[(4, ref('vcls_lc'))]"/>
+        <field name="groups" eval="[(4, ref('vcls_security.vcls_lc'))]"/>
     </record>
 
     <record model="ir.rule" id="forecast_project_lc_rule">
       <field name="name">Project forecast: lc full access his project's forecasts</field>
       <field name="model_id" ref="project_forecast.model_project_forecast"/>
       <field name="domain_force">[
-          ('project_id.user_id', '=', user.id),
+          ('project_user_id', '=', user.id),
       ]</field>
-      <field name="groups" eval="[(4,ref('vcls_lc'))]"/>
+      <field name="groups" eval="[(4,ref('vcls_security.vcls_lc'))]"/>
     </record>
 
 

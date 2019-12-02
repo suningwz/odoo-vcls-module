@@ -214,6 +214,7 @@
                                             <field name="car_info"/>
                                             <field name="car_allowance"/>
                                             <field name="transport_allowance"/>
+                                            <field name="mobility_type"/>
                                             <field name="lunch_allowance"/>
                                             <field name="phone"/>
                                         </tree>

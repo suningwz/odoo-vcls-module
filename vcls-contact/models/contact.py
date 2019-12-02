@@ -3,6 +3,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
+
 class CountryGroup(models.Model):
     _inherit = 'res.country.group'
 
@@ -15,13 +16,9 @@ class CountryGroup(models.Model):
     ) 
 
 
-class ContactExt(models.Model):
+class ResPartner(models.Model):
 
     _inherit = 'res.partner'
-    """_sql_constraints = [
-        ('unique_legacy_analytical_account_id','unique(legacy_analytical_account_id)','Legacy Analytical Account ID (old sharepoint ID) must be unique. Please revise!'),
-        #('unique_altname','unique(altname)','The Company ALTNAME must be unique. Please revise!'),
-    ]"""
     
     ### CUSTOM FIELDS FOR EVERY KIND OF CONTACTS ###
 
@@ -34,9 +31,9 @@ class ContactExt(models.Model):
 
     is_internal = fields.Boolean(
         string="Is Internal",
-        compute = '_compute_is_internal',
-        store = True,
-        default = False,
+        compute='_compute_is_internal',
+        store=True,
+        default=False,
     )
     
     stage = fields.Selection([
@@ -51,28 +48,20 @@ class ContactExt(models.Model):
     )
 
     sharepoint_folder = fields.Char(
-        string = 'Sharepoint Folder',
-        compute = '_compute_sharepoint_folder',
-        readonly = True,
+        string='Sharepoint Folder',
+        compute='_compute_sharepoint_folder',
+        readonly=True,
     )
 
-    """legacy_analytical_account_id = fields.Integer(
-        default = False,
-    )"""
-    
-    """custom_sp_link = fields.Char(
-        string = 'Custom Sharepoint Folder',
-    )"""
-
     create_folder = fields.Boolean(
-        string = "Create Sharepoint Folder",
+        string="Create Sharepoint Folder",
     )
 
     ### THe objective of this field is to assist responsible roles in contact completion exercise and maintain a good data quality
     completion_ratio = fields.Float(
-        string = "Est. Data Completion",
-        compute = '_compute_completion_ratio',
-        default = 0.0,
+        string="Est. Data Completion",
+        compute='_compute_completion_ratio',
+        default=0.0,
     )
 
     #Contact fields
@@ -84,13 +73,13 @@ class ContactExt(models.Model):
     user_id = fields.Many2one(
         'res.users',
         string = 'Account Manager',
-        domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
+        domain=lambda self: [("groups_id", "in", [self.env.ref('vcls_security.vcls_account_manager').id])]
     )
     #override to link
     activity_user_id = fields.Many2one(
         'res.users',
-        related = 'user_id',
-        store = True,
+        related='user_id',
+        store=True,
         domain=lambda self: [("groups_id", "=", self.env['res.groups'].search([('name','=', 'Account Manager')]).id)]
     )
 
@@ -101,18 +90,18 @@ class ContactExt(models.Model):
     #BD fields
     country_group_id = fields.Many2one(
         'res.country.group',
-        string = "Geographic Area",
-        compute = '_compute_country_group',
+        string="Geographic Area",
+        compute='_compute_country_group',
     )
     
     client_activity_ids = fields.Many2many(
         'client.activity',
-        string = 'Client Activity',
+        string='Client Activity',
     )
 
     client_product_ids = fields.Many2many(
         'client.product',
-        string = 'Client Product',
+        string='Client Product',
     )
 
     
@@ -120,29 +109,29 @@ class ContactExt(models.Model):
     #project management fields
     assistant_id = fields.Many2one(
         'res.users',
-        string = 'Project Assistant',
+        string='Project Assistant',
     )
 
     expert_id = fields.Many2one(
         'res.users',
-        string = 'Main Expert',
+        string='Main Expert',
     )
 
     #finance fields
     controller_id = fields.Many2one(
         'res.users',
-        string = 'Project Controller'
+        string='Project Controller'
     )
 
     invoice_admin_id = fields.Many2one(
         'res.users',
-        string = 'Invoice Administrator',
+        string='Invoice Administrator',
     )
 
     #connection with external systems
 
     altname = fields.Char(
-        string = 'AltName',
+        string='AltName',
     )
 
     ### FIELDS FOR INDIVIDUALS ###
@@ -157,36 +146,36 @@ class ContactExt(models.Model):
 
     functional_focus_id = fields.Many2one(
         'partner.functional.focus',
-        string = 'Functional  Focus',
+        string='Functional  Focus',
     )
 
     partner_seniority_id = fields.Many2one(
         'partner.seniority',
-        string = 'Seniority',
+        string='Seniority',
     )
 
     partner_assistant_id = fields.Many2one(
         'res.partner',
-        string = 'Contact Assistant',
+        string='Contact Assistant',
     )
 
     referent_id = fields.Many2one(
         'res.partner',
-        string = 'Referred By',
+        string='Referred By',
     )
 
     ### VIEW VISIBILITY
     see_segmentation = fields.Boolean (
-        compute = '_compute_visibility',
-        default = False,
-        store = True,
+        compute='_compute_visibility',
+        default=False,
+        store=True,
     )
     see_supplier = fields.Boolean (
-        compute = '_compute_visibility',
-        default = False,
-        store = True,
+        compute='_compute_visibility',
+        default=False,
+        store=True,
     )
-    #log note company change
+    # log note company change
     parent_id = fields.Many2one(
         track_visibility='always'
     )
@@ -194,35 +183,31 @@ class ContactExt(models.Model):
     # COMPUTE METHODS #
     ###################
     
-    @api.depends('category_id','company_type')
+    @api.depends('category_id', 'company_type')
     def _compute_visibility(self):
         for contact in self:
-            try:
-                contact.see_segmentation = False
-                if self.env.ref('vcls-contact.category_account') in contact.category_id and contact.is_company:
-                    contact.see_segmentation = True
-                
-                contact.see_supplier = False
-                if self.env.ref('vcls-contact.category_PS') in contact.category_id:
-                    contact.see_supplier = True
-            except Exception:
-                pass
-    
+            contact.see_segmentation = False
+            if self.env.ref('vcls-contact.category_account', raise_if_not_found=False) \
+                    in contact.category_id and contact.is_company:
+                contact.see_segmentation = True
+            contact.see_supplier = False
+            if self.env.ref('vcls-contact.category_PS', raise_if_not_found=False) in contact.category_id:
+                contact.see_supplier = True
+
     @api.onchange('category_id')
     def _update_booleans(self):
         for contact in self:
-            try:
-                if self.env.ref('vcls-contact.category_account') in contact.category_id:
-                    contact.customer = True
-                else:
-                    contact.customer = False
-                
-                if self.env.ref('vcls-contact.category_suppliers') in contact.category_id or self.env.ref('vcls-contact.category_PS') in contact.category_id or self.env.ref('vcls-contact.category_AS') in contact.category_id:
-                    contact.supplier = True
-                else:
-                    contact.supplier = False
-            except Exception:
-                pass
+            if self.env.ref('vcls-contact.category_account', raise_if_not_found=False) in contact.category_id:
+                contact.customer = True
+            else:
+                contact.customer = False
+
+            if self.env.ref('vcls-contact.category_suppliers', raise_if_not_found=False) in contact.category_id \
+                    or self.env.ref('vcls-contact.category_PS', raise_if_not_found=False) in contact.category_id \
+                    or self.env.ref('vcls-contact.category_AS', raise_if_not_found=False) in contact.category_id:
+                contact.supplier = True
+            else:
+                contact.supplier = False
 
     @api.depends('employee')
     def _compute_is_internal(self):
@@ -287,7 +272,6 @@ class ContactExt(models.Model):
         contact_ids = context.get('active_ids',[])
         self.env['res.partner'].browse(contact_ids).write({'stage': 5,'active':False})
     
-
     @api.onchange('category_id', 'company_type')
     def update_individual_tags(self):
         for contact in self:
@@ -299,18 +283,17 @@ class ContactExt(models.Model):
     @api.model
     def create(self, vals):
         if vals.get('email',False):
-            #we search for existing partners with the same email
+            # we search for existing partners with the same email
             existing = self.env['res.partner'].search([('email','=ilike',vals.get('email'))])
             if existing:
                 raise UserError("Duplicates {}".format(existing.mapped('name')))
             
-        new_contact = super(ContactExt, self).create(vals)
+        new_contact = super(ResPartner, self).create(vals)
         if new_contact.type != 'contact':
             type_contact = new_contact.type
             new_contact.write({'display_name' : new_contact.display_name + ' (' + type_contact + ')' })
         return new_contact
             
-
     def add_new_adress(self):
         view_id = self.env.ref('vcls-contact.view_form_contact_address').id
         return {
@@ -321,5 +304,10 @@ class ContactExt(models.Model):
             'target': 'new',
             'res_model': 'res.partner',
             'type': 'ir.actions.act_window',
-            'context':{'default_name' : self.name,'default_parent_id' : self.id, 'default_category_id' : self.category_id.ids, 'default_company_type' : 'person',}# 'default_stage':5
+            'context': {
+                'default_name': self.name,
+                'default_parent_id': self.id,
+                'default_category_id': self.category_id.ids,
+                'default_company_type': 'person'
+            }
         }

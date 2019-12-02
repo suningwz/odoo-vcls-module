@@ -2,6 +2,9 @@
 
 from odoo import models, fields, api
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class ExpenseSheet(models.Model):
     _inherit = 'hr.expense.sheet'
 
@@ -12,19 +15,26 @@ class ExpenseSheet(models.Model):
 
     type = fields.Selection([
         ('project', 'Project'),
-        ('admin', 'Admin')
+        ('admin', 'Admin'),
+        ('mobility', 'Mobility'),
     ], 
     required = True, string = 'Type')
 
+    #we link parent projects only
     project_id = fields.Many2one(
         'project.project', 
-        string = 'Related Project'
+        string = 'Related Project',
+        domain="[('parent_id','=',False)]",
     )
 
     analytic_account_id = fields.Many2one(
         'account.analytic.account', 
         string = 'Analytic Account',
-        required = True
+    )
+
+    sale_order_id = fields.Many2one(
+        'sale.order', 
+        string = 'Related Sale Order',
     )
 
     company_id = fields.Many2one(
@@ -52,26 +62,59 @@ class ExpenseSheet(models.Model):
     @api.depends('type', 'project_id', 'employee_id')
     def _compute_user_id(self):
         for record in self:
+            
             if record.type == 'project':
                 if record.project_id:
                     record.user_id = record.project_id.user_id
+                else:
+                    record.user_id = False
             else:
+                #line manager to be the approver
                 if record.employee_id:
                     record.user_id = record.employee_id.parent_id.user_id
+                else:
+                    record.user_id = False
+    
+    @api.onchange('type')
+    def change_type(self):
+        for sheet in self:
+            sheet.project_id=False
 
     @api.onchange('project_id')
     def change_project(self):
         for rec in self:
-            if rec.project_id and rec.project_id.analytic_account_id:
-                rec.analytic_account_id = rec.project_id.analytic_account_id.id
+            _logger.info("EXPENSE PROJECT {}".format(rec.type))
+            if rec.project_id:
+                #grab analytic account from the project
+                if rec.type == 'admin':
+                    rec.analytic_account_id = rec.project_id.analytic_account_id
+                    rec.sale_order_id = False
+
+                #we look for the SO in case of project (to be able to re-invoice)
+                elif rec.type == 'project':
+                    so = self.env['sale.order'].search([('project_id','=',rec.project_id.id)],limit=1)
+                    if so:
+                        rec.sale_order_id = so.id
+                    else:
+                        rec.sale_order_id = False
+                    rec.analytic_account_id = False
+
+                else:
+                    rec.sale_order_id = False
+                    rec.analytic_account_id = False          
 
     @api.multi
     def open_pop_up_add_expense(self):
         for rec in self:
             action = self.env.ref('vcls-expenses.action_pop_up_add_expense').read()[0]
-            action['context'] = {'default_employee_id': rec.employee_id.id,
-                                 'default_analytic_account_id': rec.analytic_account_id.id,
-                                 'default_sheet_id': rec.id}
+            if rec.type == 'admin':
+                action['context'] = {'default_employee_id': rec.employee_id.id,
+                                    'default_analytic_account_id': rec.analytic_account_id.id,
+                                    'default_sheet_id': rec.id}
+            elif rec.type == 'project':
+                action['context'] = {'default_employee_id': rec.employee_id.id,
+                                    'default_sale_order_id': rec.sale_order_id.id,
+                                    'default_sheet_id': rec.id}
             return action
 
 class HrExpense(models.Model):

@@ -94,7 +94,7 @@ class TimesheetForecastReport(models.Model):
                         E.id AS employee_id,
                         A.task_id AS task_id,
                         A.project_id AS project_id,
-                        -A.unit_amount AS number_hours,
+                        -A.unit_amount_rounded AS number_hours,
                         null AS date,
                         'timesheet' AS type,
                         A.stage_id AS stage_id,
