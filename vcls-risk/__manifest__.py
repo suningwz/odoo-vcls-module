@@ -18,23 +18,16 @@
     'version': '1.2.3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base',
-                'mail',
-                ],
+    'depends': [
+        'base',
+        'mail',
+    ],
 
     # always loaded
     'data': [
-        
-         ### SECURITY ###
         'security/security_groups.xml',
         'security/ir.model.access.csv',
-        
-
-        ### VIEWS ###
         'views/risk_views.xml',
-        #'wizard/generic_confirm.xml',
-
-        ### DATA ###
     ],
     # only loaded in demonstration mode
     'demo': [

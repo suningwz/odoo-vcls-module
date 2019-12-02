@@ -82,20 +82,28 @@ class Project(models.Model):
         relation="project_out_invoice_rel",
         column1="project_id",
         column2="invoice_id",
-        #compute_sudo=True, 
         store=True,
         copy=False, readonly=True
     )
 
-    risk_ids = fields.Many2many('risk', string='Risk')
+    risk_ids = fields.Many2many(
+        'risk', string='Risk',
+        compute='_get_risks',
+    )
 
     risk_score = fields.Integer(
         string='Risk Score',
-        compute = '_compute_risk_score',
-        store = True,
+        compute='_compute_risk_score',
+        store=True,
     )
 
-    @api.depends('risk_ids','risk_ids.score')
+    def _get_risks(self):
+        for project in self:
+            project.risk_ids = self.env['risk'].search([
+                ('resource', '=', 'project.project,{}'.format(project.id)),
+            ])
+
+    @api.depends('risk_ids', 'risk_ids.score')
     def _compute_risk_score(self):
         for project in self:
             project.risk_score = sum(project.risk_ids.mapped('score'))
@@ -154,10 +162,20 @@ class Project(models.Model):
 
     @api.multi
     def action_raise_new_risk(self):
-        """This function will trigger the Creation of Risks."""
         self.ensure_one()
-        # TODO: This action will be later Described
-        return True
+        action = self.env.ref('vcls-risk.action_view_risk_wizard').read()[0]
+        action['context'] = {
+            'default_resource': 'project.project,{}'.format(self.id)
+        }
+        return action
+
+    @api.multi
+    def show_risks(self):
+        self.ensure_one()
+        action = self.env.ref('vcls-risk.action_view_risk').read()[0]
+        action['domain'] = [('resource', '=', 'project.project,{}'.format(self.id))]
+        action['target'] = 'current'
+        return action
 
     @api.multi
     def sale_orders_tree_view(self):

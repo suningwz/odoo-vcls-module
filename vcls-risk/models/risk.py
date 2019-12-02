@@ -1,57 +1,47 @@
 # -*- coding: utf-8 -*-
 import datetime
-from odoo import models, fields, api, http
+from odoo import models, fields, api, http, _
 
 from odoo.exceptions import UserError, ValidationError
 
-class RiskType(models.Model):
 
+class RiskType(models.Model):
     _name = 'risk.type'
     _description = 'A Type of Risk'
 
-    name = fields.Char(required = True)
-
-    active = fields.Boolean(required = True)
-    
+    name = fields.Char(required=True)
+    active = fields.Boolean(required=True, default=True)
     description = fields.Char()
-    
-    model_name = fields.Char(required = True)
-    
+    model_name = fields.Char(required=True)
     group_id = fields.Many2one('res.groups')
-
     notify = fields.Boolean()
-    
-    weight = fields.Integer(default = 1)
-    
+    weight = fields.Integer(default=1)
     category = fields.Char()
+
 
 class Risk(models.Model):
     _name = 'risk'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'A Risk'
 
-    risk_type_id = fields.Many2one('risk.type',
-                                    string = "Type of risk",
-                                    required = True)
+    risk_type_id = fields.Many2one(
+        'risk.type', string="Type of risk",
+        required=True)
 
     note = fields.Char()
 
     resource = fields.Char(string='Resource', index=True, help="If not set, acts as a default value for new resources")
 
     risk_level = fields.Selection(
-        [(0, 'Solved'),(1, 'Low'), (2, 'Moderate'), (3, 'Significant'), (4, 'High')],
-         'Risk Level',
-         default = 2,
-         track_visibility="onchange",
-         )
+        [(0, 'Solved'), (1, 'Low'), (2, 'Moderate'), (3, 'Significant'), (4, 'High')],
+        'Risk Level',
+        default=2,
+        track_visibility="onchange",
+    )
 
-    last_notification = fields.Datetime(readonly = True)
+    last_notification = fields.Datetime(readonly=True)
 
-    score = fields.Integer(string = "Score", compute="_compute_score", store=True)
-
-    """acknowledged = fields.Boolean(
-        default = False,
-    )"""
+    score = fields.Integer(string="Score", compute="_compute_score", store=True)
 
     @api.depends('risk_level', 'risk_type_id.weight')
     def _compute_score(self):
@@ -63,7 +53,7 @@ class Risk(models.Model):
 
     @api.model
     def _raise_risk(self, risk_type, resource):
-        risk = self.env['risk'].create({'risk_type_id': risk_type.id, 'resource': resource})
+        risk = self.create({'risk_type_id': risk_type.id, 'resource': resource})
         risk.send_notification()
         return risk
 
@@ -77,8 +67,7 @@ class Risk(models.Model):
                 self.message_subscribe(partner_ids=partner_ids)
                 self.message_post(body="Risk created", partner_ids=[4, partner_ids])
                 self.last_notification = datetime.datetime.now()
-    
-    
+
     @api.onchange('risk_level')
     def _onchange_risk_level(self):
         group_id = self.risk_type_id.group_id
@@ -96,3 +85,15 @@ class Risk(models.Model):
                 'url': link,
                 'target': 'current',
             }
+
+    @api.constrains('resource')
+    def _check_resource(self):
+        if self.resource:
+            resource_parts = self.resource.split(',')
+            if len(resource_parts) != 2:
+                raise ValidationError(_('Wrong resource field format'))
+            res_model, res_id = resource_parts[0], resource_parts[1]
+            if res_model not in self.env:
+                raise ValidationError(_('Resource model is not valid'))
+            if not res_id.isdigit() or not self.env[res_model].browse(int(res_id)).exists():
+                raise ValidationError(_('Resource id is not valid'))
