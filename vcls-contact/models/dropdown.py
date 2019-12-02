@@ -3,6 +3,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError, ValidationError
 
+
 class ClientActivity(models.Model):
 
     _name = 'client.activity'
@@ -14,6 +15,7 @@ class ClientActivity(models.Model):
     name = fields.Char(
         required = True,
     )
+
 
 class ClientProduct(models.Model):
 
@@ -27,6 +29,7 @@ class ClientProduct(models.Model):
         required = True,
     )
 
+
 class FunctionalFocus(models.Model):
 
     _name = 'partner.functional.focus'
@@ -39,14 +42,15 @@ class FunctionalFocus(models.Model):
         required = True,
     )
 
+
 class PartnerSeniority(models.Model):
 
     _name = 'partner.seniority'
     _description = "Used to segment individuals according to their decision level in a company."
 
     active = fields.Boolean(
-        default = True,
+        default=True,
     )
     name = fields.Char(
-        required = True,
+        required=True,
     )

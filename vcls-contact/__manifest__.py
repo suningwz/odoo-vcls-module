@@ -24,7 +24,7 @@
         'contacts',
         'survey',
         'partner_company_group',
-        #'vcls-risk',
+        'vcls_security',
         ],
 
     # always loaded

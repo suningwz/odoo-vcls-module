@@ -42,6 +42,10 @@ class PurchaseOrder(models.Model):
         readonly=True,
     )
 
+    scope_of_work = fields.Html(
+        string="Scope of Work"
+    )
+
     ###################
     # COMPUTE METHODS #
     ###################

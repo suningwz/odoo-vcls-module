@@ -1,8 +1,8 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_project_project_lc,project.project on lc,project.model_project_project,vcls_security.vcls_lc,1,1,1,0
 access_project_task_type_project_lead_consultant,project.task.type.project.lead.consultant,project.model_project_task_type,vcls_security.vcls_lc,1,0,0,0
-access_project_task_lead_consultant,project.task lead_consultant,project.model_project_task,vcls_security.vcls_lc,1,1,0,0
-access_partner_task lead_consultant,base.res.partner lead_consultant,base.model_res_partner,vcls_security.vcls_lc,1,0,0,0
+access_project_task_lc,project.task lead_consultant,project.model_project_task,vcls_security.vcls_lc,1,1,0,0
+access_partner lead_consultant,base.res.partner lead_consultant,base.model_res_partner,vcls_security.vcls_lc,1,0,0,0
 access_project_forecast_lead_consultant,project.forecast lead_consultant,project_forecast.model_project_forecast,vcls_security.vcls_lc,1,1,1,1
 
 
