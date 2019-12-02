@@ -70,10 +70,11 @@ class Risk(models.Model):
 
     @api.onchange('risk_level')
     def _onchange_risk_level(self):
-        group_id = self.risk_type_id.group_id
-        if group_id:
-            if self.env.user not in self.risk_type_id.group_id.users:
-                raise UserError("You need to be part of {} to modify the risk level".format(group_id.name))
+        if not self._context.get('new_risk',False):
+            group_id = self.risk_type_id.group_id
+            if group_id:
+                if self.env.user not in self.risk_type_id.group_id.users:
+                    raise UserError("You need to be part of {} to modify the risk level".format(group_id.name))
 
     def go_to_record(self):
         resource = str(self.resource).split(',')

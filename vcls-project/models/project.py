@@ -165,7 +165,8 @@ class Project(models.Model):
         self.ensure_one()
         action = self.env.ref('vcls-risk.action_view_risk_wizard').read()[0]
         action['context'] = {
-            'default_resource': 'project.project,{}'.format(self.id)
+            'default_resource': 'project.project,{}'.format(self.id),
+            'new_risk':True,
         }
         return action
 
