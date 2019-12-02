@@ -27,7 +27,6 @@ class ExpenseSheet(models.Model):
     analytic_account_id = fields.Many2one(
         'account.analytic.account', 
         string = 'Analytic Account',
-        required = True
     )
 
     sale_order_id = fields.Many2one(
