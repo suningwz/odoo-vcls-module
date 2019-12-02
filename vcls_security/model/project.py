@@ -11,7 +11,7 @@ class Task(models.Model):
     # an unknown bug (The bug: LC cannot edit his project's tasks)
     project_user_id = fields.Many2one(
         'res.users', related='project_id.user_id',
-        store=True, readonly=True
+        store=True, readonly=True, string="Lead Consultant",
     )
 
 
