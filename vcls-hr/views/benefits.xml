@@ -17,6 +17,7 @@
                             <field name="car_info"/>
                             <field name="car_allowance"/>
                             <field name="transport_allowance"/>
+                            <field name="mobility_type" attrs="{'invisible':[('employee_id.office_id.name','!=','Boulogne')]}"/>
                             <field name="lunch_allowance"/>
                             <field name="phone"/>
                         </group>
@@ -39,6 +40,7 @@
                     <field name="car_info"/>
                     <field name="car_allowance"/>
                     <field name="transport_allowance"/>
+                    <field name="mobility_type" attrs="{'invisible':[('employee_id.office_id.name','!=','Boulogne')]}"/>
                     <field name="lunch_allowance"/>
                     <field name="phone"/>
                 </tree>

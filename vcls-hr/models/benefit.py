@@ -38,6 +38,15 @@ class Benefit(models.Model):
     transport_allowance = fields.Monetary(
         string='Transport allowance',)
     
+    mobility_type = fields.Selection(
+        selection = [
+            ('bike','Bike'),
+            ('public_yearly','Public (Yearly)'),
+            ('public_monthly','Public (Monthly)'),
+            ('parking','Parking'),
+        ]
+    )
+    
     lunch_allowance = fields.Monetary(
         string='Lunch allowance',)
     
