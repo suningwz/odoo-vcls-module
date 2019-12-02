@@ -101,7 +101,7 @@
 
             <xpath expr="//field[@name='employee_id']" position="before">
                 <field name = 'type' />
-                <field name = 'project_id' required = "1" no_create = "1" context="{'search_type':type}"/>
+                <field name = 'project_id' required = "1" create = "0" context="{'search_type':type}"/>
                 <!--<field name = 'project_id' attrs="{'invisible': [('type', '!=', 'project')], 'required': [('type', '=', 'project')]}" />-->
             </xpath>
 
@@ -125,6 +125,7 @@
             </xpath>
             <xpath expr="//field[@name='account_move_id']" position="after">
                 <field name = 'company_id' readonly = "1" />
+                <field name = 'sale_order_id' readonly = "1" />
             </xpath>
 
             <!-- MAKE THE FIELD READONLY -->
