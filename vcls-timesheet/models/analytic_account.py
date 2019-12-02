@@ -163,7 +163,7 @@ class AnalyticLine(models.Model):
                 )"""
 
             # check if this is a timesheet at risk
-            vals['at_risk'] = self._get_at_risk_values(vals.get('project_id'),
+            vals['at_risk'] = self.sudo()._get_at_risk_values(vals.get('project_id'),
                                                        vals.get('employee_id'))
 
         if vals.get('time_category_id') == self.env.ref('vcls-timesheet.travel_time_category').id:
@@ -184,7 +184,7 @@ class AnalyticLine(models.Model):
         # we automatically update the stage if the ts is validated and stage = draft
         so_update = False
         orders = self.env['sale.order']
-        _logger.info("ANALYTIC WRITE {}".format(vals))
+        #_logger.info("ANALYTIC WRITE {}".format(vals))
 
         # we loop the lines to manage specific usecases
         for line in self:
