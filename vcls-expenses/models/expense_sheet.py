@@ -84,7 +84,7 @@ class ExpenseSheet(models.Model):
                 rec.analytic_account_id = rec.project_id.analytic_account_id.id
                 #we look for the SO in case of project (to be able to re-invoice)
                 if rec.type == 'project':
-                    so = self.env['sale.order'].search([('project_id','=',rec.project_id)],limit=1)
+                    so = self.env['sale.order'].search([('project_id','=',rec.project_id.id)],limit=1)
                     if so:
                         rec.sale_order_id = so.id
                     else:
