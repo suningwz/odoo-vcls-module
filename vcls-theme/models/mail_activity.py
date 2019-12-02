@@ -51,7 +51,8 @@ class MailActivity(models.Model):
     @api.multi
     def unlink(self):
         user = self.env['res.users'].browse(self._uid)
-        if not self.env.context.get('safe_unlink', False) and not user.has_group('base.group_system'):
-            _logger.info("SAFE UNLINK {} - {}".format(self.mapped('res_name'),self.mapped('user_id.name')))
-            raise ValidationError("You are not authorized to cancel this activity.")
+        for act in self:
+            if not self.env.context.get('safe_unlink', False) and not user.has_group('base.group_system'):
+                _logger.info("SAFE UNLINK {} - {}".format(act.res_name,act.user_id.name))
+                raise ValidationError("You are not authorized to cancel this activity.")
         return super(MailActivity, self).unlink()
