@@ -4,6 +4,9 @@ from odoo import models, fields, api, http
 
 from odoo.exceptions import UserError, ValidationError
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class MailActivity(models.Model):
     
     _inherit = 'mail.activity'
@@ -49,5 +52,6 @@ class MailActivity(models.Model):
     def unlink(self):
         user = self.env['res.users'].browse(self._uid)
         if not self.env.context.get('safe_unlink', False) and not user.has_group('base.group_system'):
+            _logger.info("SAFE UNLINK {} - {}".format(self.mapped('name'),self.mapped('user_id.name')))
             raise ValidationError("You are not authorized to cancel this activity.")
         return super(MailActivity, self).unlink()
