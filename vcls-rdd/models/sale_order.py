@@ -74,7 +74,7 @@ class SaleOrder(models.Model):
                     datas.update({line: self.env['sale.order.line']})
                     last_parent = line
             for key,vals in datas.items():
-                if not vals and key.name == 'Hourly Rates':
+                if not vals and (key.name == 'Hourly Rates' or key.name == 'Subscriptions'):
                     self._cr.execute("DELETE FROM sale_order_line where id in %s", (tuple(key.ids),))
         return True
 
