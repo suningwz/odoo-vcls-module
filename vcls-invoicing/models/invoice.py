@@ -12,7 +12,6 @@ from odoo.tools import email_re, email_split, email_escape_char, float_is_zero, 
 from odoo.exceptions import AccessError, UserError, RedirectWarning, ValidationError, Warning
 from collections import OrderedDict
 
-
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -84,6 +83,7 @@ class Invoice(models.Model):
                 last_summary = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0]
                 laius += "Project Status for {} on {}:\n{}\n\n".format(project.name,last_summary.create_date,self.html_to_string(last_summary.external_summary))
             
+            _logger.info("SOW {} -- {}".format(project.scope_of_work,self.html_to_string(project.scope_of_work)))
             sow += "{}\n".format(self.html_to_string(project.scope_of_work))
 
 
@@ -214,7 +214,7 @@ class Invoice(models.Model):
 
         ret._get_so_data()
         ret._get_project_data()
-        
+
         # Get the default activity_report_template if not set
         if not ret.activity_report_template:
             invoice_line_ids = self.invoice_line_ids.filtered(lambda l: not l.display_type)
