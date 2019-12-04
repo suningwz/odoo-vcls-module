@@ -79,21 +79,23 @@
                 <field name="model">project.project</field>
                 <field name="inherit_id" ref="vcls-project.vcls_specific_project_form"/>
                 <field name="arch" type="xml">
-                    <group name="task_kpi" position="inside">
-                        <group string="Hours">
-                            <field name="forecasted_hours"/>
-                            <field name="realized_hours"/>
-                            <field name="valued_hours"/>
-                            <field name="invoiced_hours"/>
-                        </group>
-                        <group string="Budget">
-                            <field name="contractual_budget"/>
-                            <field name="forecasted_budget"/>
-                            <field name="realized_budget"/>
-                            <field name="valued_budget"/>
-                            <field name="invoiced_budget"/>
-                        </group>
-                    </group>
+                    <page name="summaries" position="after">
+                        <page name="kpi_details" string="KPI Details">
+                            <group string="Hours">
+                                <field name="forecasted_hours"/>
+                                <field name="realized_hours"/>
+                                <field name="valued_hours"/>
+                                <field name="invoiced_hours"/>
+                            </group>
+                            <group string="Budget">
+                                <field name="contractual_budget"/>
+                                <field name="forecasted_budget"/>
+                                <field name="realized_budget"/>
+                                <field name="valued_budget"/>
+                                <field name="invoiced_budget"/>
+                            </group>
+                        </page>
+                    </page>
                     <field name="consummed_completed_ratio" position="after">
                         <br/>
                         <field name="valuation_ratio" widget="percentpie" nolabel="1"/>
