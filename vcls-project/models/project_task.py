@@ -52,7 +52,8 @@ class ProjectTask(models.Model):
         'product.deliverable',
         readonly=True,
         store=True,
-        related='sale_line_id.product_id.deliverable_id'
+        related='sale_line_id.product_id.deliverable_id',
+        compute_sudo=True
     )
 
     ###################
