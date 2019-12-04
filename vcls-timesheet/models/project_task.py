@@ -72,15 +72,15 @@ class ProjectTask(models.Model):
             ])
             task.realized_budget = sum(
                 task.timesheet_ids.filtered(lambda t: t.stage_id not in ('draft', 'outofscope'))
-                    .mapped('unit_amount'*'so_line_unit_price')
+                    .mapped(lambda t:t.unit_amount * t.so_line_unit_price)
             )
             task.valued_budget = sum(
                 task.timesheet_ids.filtered(lambda t: t.stage_id not in ('draft', 'outofscope'))
-                    .mapped('unit_amount_rounded'*'so_line_unit_price')
+                    .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
             )
             task.invoiced_budget = sum(
                 task.timesheet_ids.filtered(lambda t: t.stage_id == 'invoiced')
-                    .mapped('unit_amount_rounded'*'so_line_unit_price')
+                    .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
             )
             task.forecasted_hours = sum(task.forecast_ids.mapped('resource_hours'))
             task.realized_hours = sum(task.timesheet_ids.filtered(
