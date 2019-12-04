@@ -73,13 +73,13 @@ class SaleOrderLine(models.Model):
                     ('sale_line_id', '=', order_line.id),
                 ])
                 if related_mapping:
-                    related_mapping.unlink()
+                    related_mapping.sudo().unlink()
             # delete linked forecast
             related_forecasts = self.env['project.forecast'].sudo().search([
                 ('order_line_id', '=', order_line.id),
             ])
             if related_forecasts:
-                related_forecasts.unlink()
+                related_forecasts.sudo().unlink()
             if order_line.vcls_type == 'vcls_service':
                 related_task = self.env['project.task'].sudo().search([
                     '|',
@@ -87,5 +87,5 @@ class SaleOrderLine(models.Model):
                     ('parent_id.sale_order_line', '=', order_line.id),
                 ])
                 if related_task:
-                    related_task.unlink()
+                    related_task.sudo().unlink()
         return super(SaleOrderLine, self).unlink()
