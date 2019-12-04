@@ -58,25 +58,23 @@
                             <field name="active"/>
                         </group>
                         <group>
-                            <group>
-                                <field name="partner_id" string="Client"/>
-                                <field name="scope_of_work"/>
-                            </group>
-                            <group>
-                            </group>
+                            
+                            <field name="partner_id" string="Client"/>
+                            <field name="scope_of_work"/>
+                            
+                        </group>
                         <group string="Project KPIs">
-                            <group>
+                            
                                 <field name="completion_ratio" widget="percentpie" nolabel="1"/>
                                 <br/>
                                 <field name="consumed_value" widget="percentpie" nolabel="1"/>
                                 <br/>
                                 <field name="consummed_completed_ratio" string="Project Health Ratio" widget="percentpie" nolabel="1"/>
-                            </group>
-                            <group name="task_kpi">
-                                
-                            </group>
                         </group>
+                        <group name="task_kpi">
+                            
                         </group>
+                        
                         <group>
                             <group string="Core Team">
                                 <field name="sale_order_id" invisible="1"/>
