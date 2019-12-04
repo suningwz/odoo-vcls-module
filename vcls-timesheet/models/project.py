@@ -4,28 +4,9 @@ from odoo import models, fields, api
 from datetime import datetime
 
 
-class ProjectTask(models.Model):
-    _inherit = 'project.task'
+class Project(models.Model):
+    _inherit = 'project.project'
 
-    time_category_ids = fields.Many2many(
-        'project.time_category',
-        string='Time Categories',
-        )
-    connected_employee_seniority_level_id = fields.Many2one(
-        comodel_name='hr.employee.seniority.level',
-        compute='_get_connected_employee_seniority_level_id',
-        string='Default Seniority'
-    )
-    date_start = fields.Datetime(default=False)
-    last_updated_timesheet_date = fields.Datetime(
-        compute='get_last_updated_timesheet_date',
-        compute_sudo=True,
-        store=True
-    )
-    forecast_ids = fields.One2many(
-        'project.forecast',
-        'task_id'
-    )
     contractual_budget = fields.Float(string="Contractual Budget")
     forecasted_budget = fields.Float(string="Forecasted Budget")
     realized_budget = fields.Float(string="Realized Budget")
@@ -36,64 +17,23 @@ class ProjectTask(models.Model):
     valued_hours = fields.Float(string="Valued Hours")
     invoiced_hours = fields.Float(string="Invoiced Hours")
     valuation_ratio = fields.Float(string="Valuation Ratio")
-    recompute_kpi = fields.Boolean(compute='_get_to_recompute', store=True)
 
-    @api.depends(
-        'sale_line_id.price_unit',
-        'sale_line_id.product_uom_qty',
-        'forecast_ids.hourly_rate',
-        'forecast_ids.resource_hours',
-        'timesheet_ids.stage_id',
-        'timesheet_ids.unit_amount',
-        'timesheet_ids.unit_amount_rounded',
-    )
-    def _get_to_recompute(self):
-        for task in self:
-            task.recompute_kpi = True
-
-    @api.model
-    def _cron_compute_kpi(self):
-        tasks = self.search([('recompute_kpi', '=', True)])
-        projects = self.env['project.project']
-        tasks._get_kpi()
-        for task in tasks:
-            task.recompute_kpi = False
-            projects |= task.project_id
-        projects._get_kpi()
-        # self._cr.execute('update project_task set ')
 
     @api.multi
     def _get_kpi(self):
-        for task in self:
-            task.contractual_budget = task.sale_line_id.price_unit * task.sale_line_id.product_uom_qty
-            task.forecasted_budget = sum([
-                hourly_rate * resource_hours for hourly_rate, resource_hours in
-                zip(task.forecast_ids.mapped('hourly_rate'), task.forecast_ids.mapped('resource_hours'))
-            ])
-            task.realized_budget = sum(
-                task.timesheet_ids.filtered(lambda t: t.stage_id not in ('draft', 'outofscope'))
-                    .mapped('unit_amount'*'so_line_unit_price')
-            )
-            task.valued_budget = sum(
-                task.timesheet_ids.filtered(lambda t: t.stage_id not in ('draft', 'outofscope'))
-                    .mapped('unit_amount_rounded'*'so_line_unit_price')
-            )
-            task.invoiced_budget = sum(
-                task.timesheet_ids.filtered(lambda t: t.stage_id == 'invoiced')
-                    .mapped('unit_amount_rounded'*'so_line_unit_price')
-            )
-            task.forecasted_hours = sum(task.forecast_ids.mapped('resource_hours'))
-            task.realized_hours = sum(task.timesheet_ids.filtered(
-                lambda t: t.stage_id not in ('draft', 'outofscope')
-            ).mapped('unit_amount'))
-            task.valued_hours = sum(task.timesheet_ids.filtered(
-                lambda t: t.stage_id not in ('draft', 'outofscope')
-            ).mapped('unit_amount_rounded'))
-            task.invoiced_hours = sum(task.timesheet_ids.filtered(
-                lambda t: t.stage_id == 'invoiced'
-            ).mapped('unit_amount_rounded'))
+        for project in self:
+            project.contractual_budget = sum(project.task_ids.mapped('contractual_budget'))
+            project.forecasted_budget = sum(project.task_ids.mapped('forecasted_budget'))
+            project.realized_budget = sum(project.task_ids.mapped('realized_budget'))
+            project.valued_budget = sum(project.task_ids.mapped('valued_budget'))
+            project.invoiced_budget = sum(project.task_ids.mapped('invoiced_budget'))
 
-            task.valuation_ratio = task.valued_hours / task.realized_hours if task.realized_hours else False
+            project.forecasted_hours = sum(project.task_ids.mapped('forecasted_hours'))
+            project.realized_hours = sum(project.task_ids.mapped('realized_hours'))
+            project.valued_hours = sum(project.task_ids.mapped('valued_hours'))
+            project.invoiced_hours = sum(project.task_ids.mapped('invoiced_hours'))
+
+            project.valuation_ratio = project.valued_hours / project.realized_hours if project.realized_hours else False
 
     @api.onchange('sale_line_id')
     def _onchange_lead_id(self):
