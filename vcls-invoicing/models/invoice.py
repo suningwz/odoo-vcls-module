@@ -83,8 +83,11 @@ class Invoice(models.Model):
                 last_summary = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0]
                 laius += "Project Status for {} on {}:\n{}\n\n".format(project.name,last_summary.create_date,self.html_to_string(last_summary.external_summary))
             
-            _logger.info("SOW {} -- {}".format(project.scope_of_work,self.html_to_string(project.scope_of_work)))
+            #_logger.info("SOW {} -- {}".format(project.scope_of_work,self.html_to_string(project.scope_of_work)))
             sow += "{}\n".format(self.html_to_string(project.scope_of_work))
+        
+        self.lc_laius = laius
+        self.scope_of_work = sow
 
 
 

@@ -67,17 +67,17 @@ class ProjectTask(models.Model):
                 hourly_rate * resource_hours for hourly_rate, resource_hours in
                 zip(task.forecast_ids.mapped('hourly_rate'), task.forecast_ids.mapped('resource_hours'))
             ])
-            task.realized_budget = task.sale_line_id.price_unit * sum(
+            task.realized_budget = sum(
                 task.timesheet_ids.filtered(lambda t: t.stage_id not in ('draft', 'outofscope'))
-                    .mapped('unit_amount')
+                    .mapped('unit_amount'*'so_line_unit_price')
             )
-            task.valued_budget = task.sale_line_id.price_unit * sum(
+            task.valued_budget = sum(
                 task.timesheet_ids.filtered(lambda t: t.stage_id not in ('draft', 'outofscope'))
-                    .mapped('unit_amount_rounded')
+                    .mapped('unit_amount_rounded'*'so_line_unit_price')
             )
-            task.invoiced_budget = task.sale_line_id.price_unit * sum(
+            task.invoiced_budget = sum(
                 task.timesheet_ids.filtered(lambda t: t.stage_id == 'invoiced')
-                    .mapped('unit_amount_rounded')
+                    .mapped('unit_amount_rounded'*'so_line_unit_price')
             )
             task.forecasted_hours = sum(task.forecast_ids.mapped('resource_hours'))
             task.realized_hours = sum(task.timesheet_ids.filtered(
@@ -86,9 +86,10 @@ class ProjectTask(models.Model):
             task.valued_hours = sum(task.timesheet_ids.filtered(
                 lambda t: t.stage_id not in ('draft', 'outofscope')
             ).mapped('unit_amount_rounded'))
-            task.valued_hours = sum(task.timesheet_ids.filtered(
+            task.invoiced_hours = sum(task.timesheet_ids.filtered(
                 lambda t: t.stage_id == 'invoiced'
             ).mapped('unit_amount_rounded'))
+
             task.valuation_ratio = task.valued_hours / task.realized_hours if task.realized_hours else False
 
     @api.onchange('sale_line_id')
