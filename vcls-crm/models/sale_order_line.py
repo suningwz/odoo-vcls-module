@@ -88,4 +88,4 @@ class SaleOrderLine(models.Model):
                 ])
                 if related_task:
                     related_task.unlink()
-        return True
+        return super(SaleOrderLine, self).unlink()
