@@ -26,16 +26,16 @@ class ProjectTask(models.Model):
         'project.forecast',
         'task_id'
     )
-    contractual_budget = fields.Float(string="Contractual Budget")
-    forecasted_budget = fields.Float(string="Forecasted Budget")
-    realized_budget = fields.Float(string="Realized Budget")
-    valued_budget = fields.Float(string="Valued Budget")
-    invoiced_budget = fields.Float(string="Invoiced Budget")
-    forecasted_hours = fields.Float(string="Forecasted Hours")
-    realized_hours = fields.Float(string="Realized Hours")
-    valued_hours = fields.Float(string="Valued Hours")
-    invoiced_hours = fields.Float(string="Invoiced Hours")
-    valuation_ratio = fields.Float(string="Valuation Ratio")
+    contractual_budget = fields.Float(string="Contractual Budget",readonly=True)
+    forecasted_budget = fields.Float(string="Forecasted Budget",readonly=True)
+    realized_budget = fields.Float(string="Realized Budget",readonly=True)
+    valued_budget = fields.Float(string="Valued Budget",readonly=True)
+    invoiced_budget = fields.Float(string="Invoiced Budget",readonly=True)
+    forecasted_hours = fields.Float(string="Forecasted Hours",readonly=True)
+    realized_hours = fields.Float(string="Realized Hours",readonly=True)
+    valued_hours = fields.Float(string="Valued Hours",readonly=True)
+    invoiced_hours = fields.Float(string="Invoiced Hours",readonly=True)
+    valuation_ratio = fields.Float(string="Valuation Ratio",readonly=True)
     recompute_kpi = fields.Boolean(compute='_get_to_recompute', store=True)
 
     @api.depends(

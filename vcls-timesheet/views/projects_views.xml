@@ -81,6 +81,7 @@
                 <field name="arch" type="xml">
                     <page name="summaries" position="after">
                         <page name="kpi_details" string="KPI Details">
+                            <group>
                             <group string="Hours">
                                 <field name="forecasted_hours"/>
                                 <field name="realized_hours"/>
@@ -93,6 +94,7 @@
                                 <field name="realized_budget"/>
                                 <field name="valued_budget"/>
                                 <field name="invoiced_budget"/>
+                            </group>
                             </group>
                         </page>
                     </page>
