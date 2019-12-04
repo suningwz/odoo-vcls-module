@@ -54,6 +54,22 @@
                         }"
                     />
                 </button>
+                <xpath expr="//page[last()]" position="after">
+                    <page string="KPI" name="kpi">
+                        <group>
+                            <field name="contractual_budget"/>
+                            <field name="forecasted_budget"/>
+                            <field name="realized_budget"/>
+                            <field name="valued_budget"/>
+                            <field name="invoiced_budget"/>
+                            <field name="forecasted_hours"/>
+                            <field name="realized_hours"/>
+                            <field name="valued_hours"/>
+                            <field name="invoiced_hours"/>
+                            <field name="valuation_ratio" class="oe_inline"/>
+                        </group>
+                    </page>
+                </xpath>
             </field>
         </record>
 

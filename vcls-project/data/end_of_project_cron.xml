@@ -14,5 +14,19 @@
             <field name="state">code</field>
             <field name="code">model.end_project_activities_scheduling()</field>
         </record>
+
+        <record id="tasks_kpi_recompute_cron" model="ir.cron">
+            <field name="name">Tasks kpi recompute</field>
+            <field name="active" eval="True" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="doall">True</field>
+            <field name="model_id" ref="model_project_task" />
+            <field name="state">code</field>
+            <field name="code">model._cron_compute_kpi()</field>
+        </record>
+
     </data>
 </odoo>
