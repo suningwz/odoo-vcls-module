@@ -74,7 +74,7 @@ class SaleOrderLine(models.Model):
                 ])
                 if related_mapping:
                     related_mapping.unlink()
-            # delete mapping linked forecast
+            # delete linked forecast
             related_forecasts = self.env['project.forecast'].sudo().search([
                 ('order_line_id', '=', order_line.id),
             ])
@@ -88,4 +88,4 @@ class SaleOrderLine(models.Model):
                 ])
                 if related_task:
                     related_task.unlink()
-        return True
+        return super(SaleOrderLine, self).unlink()
