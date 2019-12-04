@@ -29,7 +29,7 @@
       <field name="name">Project forecast: consultant full access his project's forecasts</field>
       <field name="model_id" ref="project_forecast.model_project_forecast"/>
       <field name="domain_force">[
-          ('project_user_id', '=', user.id),
+          ('project_id.user_id', '=', user.id),
       ]</field>
       <field name="groups" eval="[(4,ref('vcls_security.group_vcls_consultant'))]"/>
     </record>
