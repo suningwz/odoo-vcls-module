@@ -54,8 +54,15 @@
                         }"
                     />
                 </button>
+
+                <field name="consummed_completed_ratio" position="after">
+                    <br/>
+                    <field name="valuation_ratio" widget="percentpie" nolabel="1"/>
+                </field>
+                
                 <xpath expr="//page[last()]" position="after">
                     <page string="KPI" name="kpi">
+                    <group>
                         <group string="Hours">
                             <field name="forecasted_hours"/>
                             <field name="realized_hours"/>
@@ -69,6 +76,7 @@
                             <field name="valued_budget"/>
                             <field name="invoiced_budget"/>
                         </group>
+                    </group>
                     </page>
                 </xpath>
             </field>

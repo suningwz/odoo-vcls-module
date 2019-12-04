@@ -93,7 +93,7 @@ class ProjectTask(models.Model):
                 lambda t: t.stage_id == 'invoiced'
             ).mapped('unit_amount_rounded'))
 
-            task.valuation_ratio = task.valued_hours / task.realized_hours if task.realized_hours else False
+            task.valuation_ratio = 100.0*(task.valued_hours / task.realized_hours) if task.realized_hours else False
 
     @api.onchange('sale_line_id')
     def _onchange_lead_id(self):

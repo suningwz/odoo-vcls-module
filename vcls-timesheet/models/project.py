@@ -33,4 +33,4 @@ class Project(models.Model):
             project.valued_hours = sum(project.task_ids.mapped('valued_hours'))
             project.invoiced_hours = sum(project.task_ids.mapped('invoiced_hours'))
 
-            project.valuation_ratio = project.valued_hours / project.realized_hours if project.realized_hours else False
+            project.valuation_ratio = 100.0*(project.valued_hours / project.realized_hours) if project.realized_hours else False
