@@ -111,6 +111,16 @@ class SaleOrder(models.Model):
                     self._cr.execute("DELETE FROM sale_order_line where id = {}".format(must_be_deleted.id))
         return True
 
+    @api.multi
+    def _create_section(self, section):
+        self.ensure_one()
+        if section not in self.order_line.filtered(lambda l: l.display_type == 'line_section').mapped('name'):
+            self.env['sale.order.line'].create({
+                'display_type': 'line_section',
+                'name': section,
+                'order_id': self.id
+            })
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
@@ -119,6 +129,7 @@ class SaleOrderLine(models.Model):
     milestone_date = fields.Date("Milestone date")
     mig_qty_invoiced = fields.Float(readonly=True)
     mig_qty_delivered = fields.Float(readonly=True)
+    section_name = fields.Char()  # For migration only to remove after
 
     @api.multi
     def _get_ts_invoicing_mode(self, vals):
@@ -130,11 +141,17 @@ class SaleOrderLine(models.Model):
                 order.ts_invoicing_mode = invoicing_mode
             elif order.ts_invoicing_mode != invoicing_mode:
                 if order.child_ids:
+                    if vals.get('section_name'):
+                        order.child_ids[0]._create_section(vals.get('section_name'))
+                        del vals['section_name']
                     vals['order_id'] = order.child_ids[0].id
                 else:
                     new_order = order.copy({'ts_invoicing_mode': invoicing_mode,
                                             'parent_id': order.id,
                                             'order_line': []})
+                    if vals.get('section_name'):
+                        new_order._create_section(vals.get('section_name'))
+                        del vals['section_name']
                     vals['order_id'] = new_order.id
         return vals
 
