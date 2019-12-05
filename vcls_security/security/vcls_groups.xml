@@ -38,6 +38,7 @@
             eval="[
                 (5,0,0),
                 (4, ref('hr_timesheet.group_hr_timesheet_user')),
+                (4, ref('purchase.group_purchase_user')),
             ]"/>
     </record>
 
