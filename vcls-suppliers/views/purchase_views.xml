@@ -7,11 +7,30 @@
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
 
-                <!--
-                <xpath expr="//header" position="attributes">
+                <xpath expr="//action_rfq_send" position="attributes">
                     <attribute name="groups">vcls-suppliers.vcls_group_rm</attribute>
                 </xpath>
-                -->
+                <xpath expr="//print_quotation" position="attributes">
+                    <attribute name="groups">vcls-suppliers.vcls_group_rm</attribute>
+                </xpath>
+                <xpath expr="//button_confirm" position="attributes">
+                    <attribute name="groups">vcls-suppliers.vcls_group_rm</attribute>
+                </xpath>
+                <xpath expr="//button_approve" position="attributes">
+                    <attribute name="groups">vcls-suppliers.vcls_group_rm</attribute>
+                </xpath>
+                <xpath expr="//action_view_invoice" position="attributes">
+                    <attribute name="groups">vcls-suppliers.vcls_group_rm</attribute>
+                </xpath>
+                <xpath expr="//button_draft" position="attributes">
+                    <attribute name="groups">vcls-suppliers.vcls_group_rm</attribute>
+                </xpath>
+                <xpath expr="//button_cancel" position="attributes">
+                    <attribute name="groups">vcls-suppliers.vcls_group_rm</attribute>
+                </xpath>
+                <xpath expr="//button_done" position="attributes">
+                    <attribute name="groups">vcls-suppliers.vcls_group_rm</attribute>
+                </xpath>
 
                 <xpath expr="//group" position="replace">
                     <group>
