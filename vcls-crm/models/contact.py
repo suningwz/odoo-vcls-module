@@ -28,7 +28,7 @@ class ContactExt(models.Model):
 
     vcls_contact_id = fields.Many2one(
         'res.users',
-        string = "Initial Contact",
+        string = "VCLS Sponsor",
         domain = "[('employee','=',True)]",
     )
 
