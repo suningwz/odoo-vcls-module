@@ -257,7 +257,7 @@ class Leads(models.Model):
     initial_vcls_contact = fields.Many2one(
         'res.users', 
         default=lambda self: self.env.user.id,
-        string='VCLS Initial Contact'
+        string='VCLS Sponsor'
     )
 
     age = fields.Char(
@@ -474,6 +474,7 @@ class Leads(models.Model):
         data = super()._create_lead_partner_data(name, is_company, parent_id)
         data['country_group_id'] = self.country_group_id.id
         data['referent_id'] = self.referent_id.id
+        data['vcls_contact_id'] = self.initial_vcls_contact.id
         data['functional_focus_id'] = self.functional_focus_id.id
         data['partner_seniority_id'] = self.partner_seniority_id.id
         data['industry_id'] = self.industry_id.id
