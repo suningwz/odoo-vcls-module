@@ -44,4 +44,26 @@ or ((name='tax_comp_rule' or name='journal_comp_rule'
     or name='account_comp_rule' or name='account_move_comp_rule'
     or name='account_move_line_comp_rule')
     and module='account')
-)
+or ((name='hr_dept_comp_rule' or name='hr_job_comp_rule'
+    or name='hr_employee_comp_rule' ) and module='hr')
+);
+
+/*
+Deactivate some multi company rules
+relate to hr and hr_expense
+*/
+update ir_rule
+set active = false
+where id in (
+    select coalesce(res_id, -1)
+    from ir_model_data
+    where model='ir.rule'
+    and (
+    (name='hr_employee_comp_rule'
+    or name='hr_job_comp_rule'
+    or name='hr_dept_comp_rule')
+    and module='hr')
+    or ((name='hr_expense_comp_rule'
+    or name='hr_expense_report_comp_rule')
+    and module='hr_expense')
+);

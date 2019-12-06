@@ -2,7 +2,7 @@
 
 from odoo import models, fields, api
 from odoo.exceptions import UserError, ValidationError
-from odoo import exceptions
+
 
 class ContactExt(models.Model):
 
