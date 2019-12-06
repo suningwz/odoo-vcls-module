@@ -26,12 +26,6 @@ class ContactExt(models.Model):
         string = 'Opted Out',
     )
 
-    vcls_contact_id = fields.Many2one(
-        'res.users',
-        string = "VCLS Sponsor",
-        domain = "[('employee','=',True)]",
-    )
-
     default_currency_id = fields.Many2one(
         'res.currency',
         compute='_get_default_currency',
