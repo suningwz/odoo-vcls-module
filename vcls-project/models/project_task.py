@@ -48,10 +48,14 @@ class ProjectTask(models.Model):
         related = 'stage_id.allow_timesheet', string='Stage allow timesheets'
     )
     description_evolutions = fields.Html(string="Description Evolutions")
-    deliverable_id = fields.Many2one('product.deliverable', readonly=True,
-                                     store=True,
-                                     related='sale_line_id.product_id.deliverable_id')
-    
+    deliverable_id = fields.Many2one(
+        'product.deliverable',
+        readonly=True,
+        store=True,
+        related='sale_line_id.product_id.deliverable_id',
+        compute_sudo=True
+    )
+
     ###################
     # COMPUTE METHODS #
     ###################

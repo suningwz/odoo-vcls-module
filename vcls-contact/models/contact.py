@@ -179,6 +179,14 @@ class ResPartner(models.Model):
     parent_id = fields.Many2one(
         track_visibility='always'
     )
+
+    vcls_contact_id = fields.Many2one(
+        'res.users',
+        string = "VCLS Sponsor",
+        domain = "[('employee','=',True)]",
+    )
+
+
     ###################
     # COMPUTE METHODS #
     ###################

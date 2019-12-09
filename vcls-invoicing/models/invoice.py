@@ -3,14 +3,14 @@
 from odoo import models, fields, api, _
 import lxml
 from itertools import groupby
-from datetime import date
+from datetime import date, datetime, time
+from datetime import timedelta
 
 from odoo.tools import email_re, email_split, email_escape_char, float_is_zero, float_compare, \
     pycompat, date_utils
 
 from odoo.exceptions import AccessError, UserError, RedirectWarning, ValidationError, Warning
 from collections import OrderedDict
-
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -36,6 +36,11 @@ class Invoice(models.Model):
         string='Parent Timesheet Limit Date',
         compute='compute_parent_quotation_timesheet_limite_date'
     )
+
+    period_start = fields.Date()
+    lc_laius = fields.Text()
+    scope_of_work = fields.Text()
+
     vcls_due_date = fields.Date(string='Custom Due Date', compute='_compute_vcls_due_date')
     origin_sale_orders = fields.Char(compute='compute_origin_sale_orders',string='Origin')
 
@@ -43,6 +48,48 @@ class Invoice(models.Model):
 
     invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
     activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'activity.report.groupment')])
+
+    @api.multi
+    def _get_so_data(self):
+        self.ensure_one()
+        ### We look for info to build the Period start date
+        
+        period_start = self.timesheet_limit_date
+        min_date = period_start
+
+        if period_start:
+            for so in self.project_ids.mapped('sale_order_id'):
+                if so.invoicing_frequency == 'month':
+                    delta = 1
+                elif so.invoicing_frequency == 'trimester':
+                    delta = 3
+                else:
+                    delta = 0
+
+                if (period_start - timedelta(months=delta))<min_date:
+                    min_date = period_start - timedelta(months=delta)
+            
+            self.period_start = min_date
+
+
+    @api.multi
+    def _get_project_data(self):
+        self.ensure_one()
+        laius = ""
+        sow = ""
+        for project in self.project_ids:
+            #get last summary
+            if project.summary_ids:
+                last_summary = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0]
+                laius += "Project Status for {} on {}:\n{}\n\n".format(project.name,last_summary.create_date,self.html_to_string(last_summary.external_summary))
+            
+            #_logger.info("SOW {} -- {}".format(project.scope_of_work,self.html_to_string(project.scope_of_work)))
+            sow += "{}\n".format(self.html_to_string(project.scope_of_work))
+        
+        self.lc_laius = laius
+        self.scope_of_work = sow
+
+
 
     @api.multi
     def _get_aggregated_invoice_report_data(self):
@@ -167,6 +214,10 @@ class Invoice(models.Model):
     @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
+
+        ret._get_so_data()
+        ret._get_project_data()
+
         # Get the default activity_report_template if not set
         if not ret.activity_report_template:
             invoice_line_ids = self.invoice_line_ids.filtered(lambda l: not l.display_type)

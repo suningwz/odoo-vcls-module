@@ -74,7 +74,10 @@ class Project(models.Model):
     ta_ids = fields.Many2many('hr.employee', relation='rel_project_tas', related='core_team_id.ta_ids',
                               string='Ta')
 
-    invoices_count = fields.Integer(compute='_get_out_invoice_ids')
+    invoices_count = fields.Integer(
+        compute='_get_out_invoice_ids',
+        compute_sudo = True
+    )
     out_invoice_ids = fields.Many2many(
         string='Out invoices',
         compute='_get_out_invoice_ids',
@@ -83,7 +86,8 @@ class Project(models.Model):
         column1="project_id",
         column2="invoice_id",
         store=True,
-        copy=False, readonly=True
+        copy=False, readonly=True,
+        compute_sudo=True
     )
 
     risk_ids = fields.Many2many(
