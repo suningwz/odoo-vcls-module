@@ -71,7 +71,7 @@ class ProductTemplate(models.Model):
                 product.vcls_type = 'invoice'
                 continue 
 
-            if product.name == 'Communication Rate':
+            if product.name.lower() == 'Communication Rate'.lower():
                 product.vcls_type = 'expense'
                 continue   
             
