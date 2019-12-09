@@ -73,7 +73,6 @@
                                         <field name="assistant_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                         <field name="controller_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                         <field name="invoice_admin_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/> 
-                                        <field name="vcls_contact_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
                                     </group>
                                 </group>
 
