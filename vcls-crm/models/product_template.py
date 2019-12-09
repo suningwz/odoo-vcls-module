@@ -57,17 +57,20 @@ class ProductTemplate(models.Model):
     @api.depends('seniority_level_id','type','recurring_invoice','sale_ok','purchase_ok','can_be_expensed','service_policy','service_tracking')
     def _get_vcls_type(self):
         for product in self:
-            
-            if product.type == 'service' and product.sale_ok and not product.purchase_ok and not product.can_be_expensed and not product.recurring_invoice and product.service_policy=='delivered_manual':
-                product.vcls_type = 'vcls_service'
+
             if product.seniority_level_id:
                 product.vcls_type = 'rate'
-            if product.recurring_invoice:
-                product.vcls_type = 'subscription'   
+
+            elif product.recurring_invoice:
+                product.vcls_type = 'subscription'
+
+            elif product.type == 'service' and product.sale_ok and not product.purchase_ok and not product.can_be_expensed and not product.recurring_invoice and product.service_policy=='delivered_manual':
+                product.vcls_type = 'vcls_service'
+               
             else:
                 product.vcls_type = 'other'
-                
-            _logger.info("VCLS TYPE {} - {}, {}, {}, {}, {}, {}".format(product.vcls_type,product.name, product.sale_ok,product.purchase_ok, product.can_be_expensed, product.recurring_invoice, product.service_policy))
+
+            #_logger.info("VCLS TYPE {} - {}, {}, {}, {}, {}, {}".format(product.vcls_type,product.name, product.sale_ok,product.purchase_ok, product.can_be_expensed, product.recurring_invoice, product.service_policy))
 
 
 class Product(models.Model):
