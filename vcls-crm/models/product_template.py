@@ -46,6 +46,7 @@ class ProductTemplate(models.Model):
         ('vcls_service', 'VCLS service'),
         ('subscription', 'Subscription'),
         ('invoice', 'Invoice'),
+        ('expense', 'Expense'),
         ('project_supplier', 'Project supplier'),
         ('admin_supplier', 'Admin supplier'),
         ('other','Other'),
@@ -60,12 +61,34 @@ class ProductTemplate(models.Model):
 
             if product.seniority_level_id:
                 product.vcls_type = 'rate'
+                continue
 
-            elif product.recurring_invoice:
+            if product.recurring_invoice:
                 product.vcls_type = 'subscription'
+                continue
 
-            elif product.type == 'service' and product.sale_ok and not product.purchase_ok and not product.can_be_expensed and not product.recurring_invoice and product.service_policy=='delivered_manual':
+            if product.name == 'Deposit':
+                product.vcls_type = 'invoice'
+                continue 
+
+            if product.name == 'Communication Rate':
+                product.vcls_type = 'expense'
+                continue   
+            
+            if product.purchase_ok:
+                if 'Suppliers' in product.name :
+                    product.vcls_type = 'project_supplier'
+                else:
+                    product.vcls_type = 'admin_supplier'
+                continue
+            
+            if product.can_be_expensed:
+                product.vcls_type = "expense"
+                continue
+
+            if product.type == 'service' and product.sale_ok and not product.purchase_ok and not product.can_be_expensed and not product.recurring_invoice and product.service_policy=='delivered_manual':
                 product.vcls_type = 'vcls_service'
+                continue
                
             else:
                 product.vcls_type = 'other'
