@@ -152,6 +152,7 @@ class SaleOrderLine(models.Model):
             else:
                 pass
 
+            _logger.info("QTY DELIVERED: {} {} {}".format(line.order_id.invoicing_mode,line.product_id.vcls_type,line.name))
 
             """_logger.info("DELIVERED BEFORE: {} {}".format(line.name,line.qty_delivered))
             if line._is_linked_to_milestone_product(): 
