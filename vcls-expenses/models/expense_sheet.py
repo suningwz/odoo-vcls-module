@@ -140,7 +140,7 @@ class ExpenseSheet(models.Model):
                     'default_sale_order_id': rec.sale_order_id.id,
                     'default_sheet_id': rec.id}
             return action
-
+          
     """ We override this to ensure a default journal to be properly updated """
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
@@ -148,3 +148,28 @@ class ExpenseSheet(models.Model):
         self.department_id = self.employee_id.department_id
         #self.user_id = self.employee_id.expense_manager_id or self.employee_id.parent_id.user_id
         self.journal_id = self.env['account.journal'].search([('type', '=', 'purchase'),('company_id', '=', self.employee_id.company_id.id)], limit=1)
+
+class HrExpense(models.Model):
+
+    _inherit = "hr.expense"
+
+    is_product_employee = fields.Boolean(related='product_id.is_product_employee', readonly=True)
+
+    @api.model
+    def _setup_fields(self):
+        super(HrExpense, self)._setup_fields()
+        self._fields['unit_amount'].states = None
+        self._fields['unit_amount'].readonly = False
+        self._fields['product_uom_id'].readonly = True
+
+    @api.multi
+    def action_get_attachment_view(self):
+        self.ensure_one()
+        res = self.env['ir.actions.act_window'].for_xml_id('vcls-expenses', 'action_attachment_expense')
+        res['domain'] = [('res_model', '=', 'hr.expense'), ('res_id', 'in', self.ids)]
+        res['context'] = {'default_res_model': 'hr.expense', 'default_res_id': self.id}
+        res['view_mode'] = 'form'
+        res['view_id'] = self.env.ref('vcls-expenses.view_hr_expense_attachment')
+        res['target'] = 'new'
+        return res
+
