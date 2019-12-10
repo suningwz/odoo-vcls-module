@@ -126,6 +126,46 @@ class SaleOrderLine(models.Model):
 
         #_logger.info('Amount after filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
         return timesheets
+
+    @api.multi
+    @api.depends('product_uom_qty', 'price_unit','task_id.stage_id')
+    def _compute_qty_delivered(self):
+        """Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type"""
+        
+        super()._compute_qty_delivered()
+        for line in self:
+            #In Time & Material, we invoice the rate product lines and set the other services to 0
+            if line.order_id.invoicing_mode == 'tm':
+                if line.product_id.vcls_type == 'vcls_service':
+                    line.qty_delivered = 0.
+                else:
+                    pass
+            
+            elif line.order_id.invoicing_mode == 'fixed_price':
+                if line.product_id.vcls_type == 'vcls_service':
+                    line.qty_delivered = line.task_id.completion_ratio
+                elif line.product_id.vcls_type == 'rate':
+                    line.qty_delivered = 0.
+                else:
+                    pass
+            
+            else:
+                pass
+
+
+            """_logger.info("DELIVERED BEFORE: {} {}".format(line.name,line.qty_delivered))
+            if line._is_linked_to_milestone_product(): 
+                if line.price_unit:
+                    line.qty_delivered = (
+                        line.product_uom_qty
+                        * line.amount_delivered_from_task
+                        / (line.price_unit)
+                    )
+                    _logger.info("DELIVERED AFTER PRICE UNIT: {} {}".format(line.name,line.qty_delivered))
+                else:
+                    
+                    line.qty_delivered = 0.
+                    _logger.info("DELIVERED AFTER 0: {} {}".format(line.name,line.qty_delivered))"""
     
     # We need to override the OCA to take the rounded_unit_amount in account rather than the standard unit_amount
     @api.multi
