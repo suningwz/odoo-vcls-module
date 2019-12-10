@@ -147,4 +147,4 @@ class ExpenseSheet(models.Model):
         self.address_id = self.employee_id.sudo().address_home_id
         self.department_id = self.employee_id.department_id
         #self.user_id = self.employee_id.expense_manager_id or self.employee_id.parent_id.user_id
-        self.journal_id = self.env['account.journal'].search([('type', '=', 'purchase'),('company_id', '=', self.employee_id.company_id)], limit=1)
+        self.journal_id = self.env['account.journal'].search([('type', '=', 'purchase'),('company_id', '=', self.employee_id.company_id.id)], limit=1)
