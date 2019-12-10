@@ -11,6 +11,15 @@ class HrExpense(models.Model):
 
     _inherit = "hr.expense"
 
+    is_product_employee = fields.Boolean(related='product_id.is_product_employee', readonly=True)
+
+    @api.model
+    def _setup_fields(self):
+        super(HrExpense, self)._setup_fields()
+        self._fields['unit_amount'].states = None
+        self._fields['unit_amount'].readonly = False
+        self._fields['product_uom_id'].readonly = True
+
     @api.multi
     def action_get_attachment_view(self):
         self.ensure_one()
