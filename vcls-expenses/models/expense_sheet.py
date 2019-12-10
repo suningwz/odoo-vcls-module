@@ -60,7 +60,7 @@ class ExpenseSheet(models.Model):
     @api.constrains('journal_id', 'journal_id.company_id', 'company_id')
     def _check_expense_sheet_same_company(self):
         for sheet in self:
-            if not sheet.company_id:
+            if not sheet.company_id or not sheet.journal_id:
                 continue
             if sheet.journal_id.company_id != sheet.company_id:
                 raise ValidationError(
