@@ -140,3 +140,11 @@ class ExpenseSheet(models.Model):
                     'default_sale_order_id': rec.sale_order_id.id,
                     'default_sheet_id': rec.id}
             return action
+
+    """ We override this to ensure a default journal to be properly updated """
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        self.address_id = self.employee_id.sudo().address_home_id
+        self.department_id = self.employee_id.department_id
+        #self.user_id = self.employee_id.expense_manager_id or self.employee_id.parent_id.user_id
+        self.journal_id = self.env['account.journal'].search([('type', '=', 'purchase'),('company_id', '=', self.employee_id.company_id)], limit=1)
