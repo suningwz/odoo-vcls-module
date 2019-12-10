@@ -56,7 +56,11 @@
         <template id="report_invoice_document">
             <t t-call="web.external_layout">
                 <t t-set="o" t-value="o.with_context(lang=lang)"/>
-                <t t-set="data" t-value="o._get_invoice_report_data()"/>
+                <t t-set="data" t-value="o._get_detailed_invoice_report_data()"/>
+                <t t-set="rate_data" t-value="data['rate_data']"/>
+                <t t-set="rate_subtotal" t-value="data['rate_subtotal']"/>
+                <t t-set="fixed_price_data" t-value="data['fixed_price_data']"/>
+                <t t-set="expenses_and_communication_data" t-value="data['expenses_and_communication_data']"/>
                 <div class="page">
                     <h2>
                         <span t-if="o.type == 'out_invoice' and o.state in ('open', 'in_payment', 'paid')">Invoice</span>
@@ -95,10 +99,12 @@
                         </div>
                     </div>
 
+                    <div style="page-break-inside: avoid;">
+                    <h5 class="mb8">Consulting Services | Time &amp; Material</h5>
                     <t t-set="display_discount" t-value="any([l.discount for l in o.invoice_line_ids])"/>
                     <table class="table table-sm o_main_table" name="invoice_detailed_table">
-                    <t t-foreach="list(data.keys())" t-as="task_id">
-                        <t t-set="rates_dict" t-value="data[task_id]"/>
+                    <t t-foreach="list(rate_data.keys())" t-as="task_id">
+                        <t t-set="rates_dict" t-value="rate_data[task_id]"/>
                         <thead>
                         <tr><th colspan="4">
                             <t t-esc="task_id.name"/>
@@ -117,58 +123,178 @@
                             <t t-set="rate_values" t-value="rates_dict[rate_sale_line_id]"/>
                             <t t-set="currency_id" t-value="rate_values['currency_id']"/>
                             <td><t t-esc="rate_sale_line_id.name"/></td>
-                            <td><t t-esc="rate_values['qty']"/></td>
-                            <td><t t-esc="rate_values['price']"
+                            <td class="text-right"><t t-esc="rate_values['qty']"/></td>
+                            <td class="text-right"><t t-esc="rate_values['price']"
                             t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
-                            <td><t t-esc="rate_values['qty'] * rate_values['price']"
+                            <td class="text-right"><t t-esc="rate_values['qty'] * rate_values['price']"
                             t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
                         </tr>
                         </t>
                         </tbody>
                     </t>
                     </table>
+                    <div name="rate-total" class="row mb32 mt0">
+                        <div t-attf-class="col-4 ml-auto mt0">
+                            <table class="table table-sm">
+                                <tr class="border-black o_subtotal" >
+                                    <td><strong>Subtotal</strong></td>
+                                    <td class="text-right">
+                                        <t t-esc="rate_subtotal"
+                                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    </div>
+
+
+                    <div style="page-break-inside: avoid;" t-if="fixed_price_data">
+                    <h5 class="mb8 mt16">Consulting Services | Fixed Price</h5>
+                    <table class="table table-sm o_main_table" name="invoice_detailed_fixed_price_table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <t t-foreach="list(fixed_price_data.keys())" t-as="so_line_id">
+                        <t t-set="values" t-value="fixed_price_data[so_line_id]"/>
+                        <tr>
+                            <td><t t-esc="so_line_id.name"/></td>
+                            <td class="text-right"><t t-esc="values['subtotal']"
+                            t-options='{"widget": "monetary", "display_currency": values["currency_id"]}'/>
+                            </td>
+                        </tr>
+                    </t>
+                    </table>
+                    <div name="fixed-price-total" class="row mb32 mt0">
+                        <div t-attf-class="col-4 ml-auto mt0">
+                            <table class="table table-sm">
+                                <tr class="border-black o_subtotal" >
+                                    <td><strong>Subtotal</strong></td>
+                                    <td class="text-right">
+                                        <t t-esc="sum([value['subtotal'] for value in fixed_price_data.values()])"
+                                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    </div>
+
+
+                    <div style="page-break-inside: avoid;" t-if="any([l for l in o.invoice_line_ids if l.product_id.vcls_type == 'subscription'])">
+                    <h5 class="mb8 mt16">Fixed Fees</h5>
+                    <table class="table table-sm o_main_table" name="invoice_fixed_fees">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <t t-foreach="o.invoice_line_ids" t-as="invoice_line_id">
+                            <tr t-if="invoice_line_id.product_id.vcls_type == 'subscription'">
+                            <td><t t-esc="invoice_line_id.name"/></td>
+                            <td><t t-esc="invoice_line_id.price_subtotal"
+                            t-options='{"widget": "monetary", "display_currency": invoice_line_id.currency_id}'/></td>
+                            </tr>
+                        </t>
+                        </tbody>
+                    </table>
+                    <div name="subscription-total" class="row mb32 mt0">
+                        <div t-attf-class="col-4 ml-auto mt0">
+                            <table class="table table-sm">
+                                <tr class="border-black o_subtotal" >
+                                    <td><strong>Subtotal</strong></td>
+                                    <td class="text-right">
+                                        <t t-esc="sum([l.price_subtotal for l in o.invoice_line_ids if l.product_id.vcls_type == 'subscription'])"
+                                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    </div>
+
+
+                    <div style="page-break-inside: avoid;" t-if="expenses_and_communication_data">
+                    <h5 class="mb8 mt16">Expense</h5>
+                    <table class="table table-sm o_main_table" name="invoice_expenses">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <t t-foreach="list(expenses_and_communication_data)" t-as="category_id">
+                            <t t-set="data" t-value="expenses_and_communication_data[category_id]"/>
+                            <tr>
+                            <td><t t-esc="category_id.name"/></td>
+                            <td><t t-esc="data['subtotal']"
+                            t-options='{"widget": "monetary", "display_currency": data["currency_id"]}'/></td>
+                            </tr>
+                        </t>
+                        </tbody>
+                    </table>
+                    <div name="expense-total" class="row mb32 mt0">
+                        <div t-attf-class="col-4 ml-auto mt0">
+                            <table class="table table-sm">
+                                <tr class="border-black o_subtotal" >
+                                    <td><strong>Subtotal</strong></td>
+                                    <td class="text-right">
+                                        <t t-esc="sum([data['subtotal'] for data in expenses_and_communication_data.values()])"
+                                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    </div>
 
                     <div class="clearfix">
-    <div id="total" class="row">
-        <div t-attf-class="#{'col-4' if report_type != 'html' else 'col-sm-7 col-md-5'} ml-auto">
-            <table class="table table-sm">
-                <tr class="border-black o_subtotal" style="">
-                    <td><strong>Subtotal</strong></td>
-                    <td class="text-right">
-                        <span t-field="o.amount_untaxed"/>
-                    </td>
-                </tr>
-                <t t-foreach="o.amount_by_group" t-as="amount_by_group">
-                    <tr style="">
-                        <t t-if="len(o.tax_line_ids) == 1 and o.amount_untaxed == amount_by_group[2]">
-                            <td><span t-esc="amount_by_group[0]"/></td>
-                            <td class="text-right o_price_total">
-                                <span t-esc="amount_by_group[3]" />
-                            </td>
-                        </t>
-                        <t t-else="">
-                            <td>
-                                <span t-esc="amount_by_group[0]"/>
-                                <span>&amp;nbsp;<span>on</span>
-                                    <t t-esc="amount_by_group[4]"/>
-                                </span>
-                            </td>
-                            <td class="text-right o_price_total">
-                                <span t-esc="amount_by_group[3]"/>
-                            </td>
-                        </t>
-                    </tr>
-                </t>
-                <tr class="border-black o_total">
-                    <td><strong>Total</strong></td>
-                    <td class="text-right">
-                        <span t-field="o.amount_total"/>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </div>
-    </div>
+                    <div id="total" class="row">
+                        <div t-attf-class="#{'col-4' if report_type != 'html' else 'col-sm-7 col-md-5'} ml-auto">
+                            <table class="table table-sm">
+                                <tr class="border-black o_subtotal" style="">
+                                    <td><strong>Subtotal</strong></td>
+                                    <td class="text-right">
+                                        <span t-field="o.amount_untaxed"/>
+                                    </td>
+                                </tr>
+                                <t t-foreach="o.amount_by_group" t-as="amount_by_group">
+                                    <tr style="">
+                                        <t t-if="len(o.tax_line_ids) == 1 and o.amount_untaxed == amount_by_group[2]">
+                                            <td><span t-esc="amount_by_group[0]"/></td>
+                                            <td class="text-right o_price_total">
+                                                <span t-esc="amount_by_group[3]" />
+                                            </td>
+                                        </t>
+                                        <t t-else="">
+                                            <td>
+                                                <span t-esc="amount_by_group[0]"/>
+                                                <span>&amp;nbsp;<span>on</span>
+                                                    <t t-esc="amount_by_group[4]"/>
+                                                </span>
+                                            </td>
+                                            <td class="text-right o_price_total">
+                                                <span t-esc="amount_by_group[3]"/>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                </t>
+                                <tr class="border-black o_total">
+                                    <td><strong>Total</strong></td>
+                                    <td class="text-right">
+                                        <span t-field="o.amount_total"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    </div>
 
                     <div t-if='o.payment_term_id' style="margin-top:5%;">
                         <strong>
