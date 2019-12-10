@@ -93,4 +93,10 @@ class SaleOrder(models.Model):
         for so in self:
             so.forecasted_amount = sum(so.order_line.mapped('forecasted_amount'))
             #_logger.info("FORECASTED AMOUNT {}".format(so.forecasted_amount))
+    
+    #we override action_confirm in order to 
+    @api.multi
+    def _action_confirm(self):
+        self.action_sync()
+        res = super(SaleOrder, self)._action_confirm()
 

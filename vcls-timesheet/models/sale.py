@@ -61,7 +61,7 @@ class SaleOrder(models.Model):
     @api.multi
     @api.depends('timesheet_limit_date')
     def _compute_timesheet_ids(self):
-        _logger.info("TS PATH | vcls-timesheet | sale.order | _compute_timesheet_ids")
+        #_logger.info("TS PATH | vcls-timesheet | sale.order | _compute_timesheet_ids")
         # this method copy of base method, it injects date in domain
         for order in self:
             if order.analytic_account_id:
@@ -86,6 +86,7 @@ class SaleOrder(models.Model):
     @api.onchange('partner_id')
     def set_travel_invoicing_ratio(self):
         self.travel_invoicing_ratio = self.partner_id.travel_invoicing_ratio
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
@@ -128,7 +129,11 @@ class SaleOrderLine(models.Model):
         return timesheets
 
     @api.multi
-    @api.depends('product_uom_qty', 'price_unit','task_id.stage_id')
+    @api.depends(
+        'product_uom_qty',
+        'price_unit',
+        'task_id.stage_id',
+        'order_id.invoicing_mode')
     def _compute_qty_delivered(self):
         """Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type"""
         
@@ -143,7 +148,7 @@ class SaleOrderLine(models.Model):
             
             elif line.order_id.invoicing_mode == 'fixed_price':
                 if line.product_id.vcls_type == 'vcls_service':
-                    line.qty_delivered = line.task_id.completion_ratio
+                    line.qty_delivered = line.task_id.completion_ratio/100
                 elif line.product_id.vcls_type == 'rate':
                     line.qty_delivered = 0.
                 else:
@@ -152,7 +157,7 @@ class SaleOrderLine(models.Model):
             else:
                 pass
 
-            _logger.info("QTY DELIVERED: {} {} {}".format(line.order_id.invoicing_mode,line.product_id.vcls_type,line.name))
+            _logger.info("QTY DELIVERED: {} {} {} {}".format(line.order_id.invoicing_mode,line.product_id.vcls_type,line.name,line.qty_delivered))
 
             """_logger.info("DELIVERED BEFORE: {} {}".format(line.name,line.qty_delivered))
             if line._is_linked_to_milestone_product(): 
