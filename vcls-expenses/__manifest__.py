@@ -34,6 +34,7 @@
         # 'security/ir.model.access.csv',
         'security/expense_rules.xml',
         'views/expense_sheet_views.xml',
+        'views/product.xml',
         'views/expense_views.xml',
         'views/project_portal_templates.xml',
     ],
