@@ -2,7 +2,7 @@
 
 from odoo import models, fields, api
 from odoo.exceptions import UserError, ValidationError
-from odoo import exceptions
+
 
 class ContactExt(models.Model):
 
@@ -25,6 +25,12 @@ class ContactExt(models.Model):
     opted_out = fields.Boolean(
         string = 'Opted Out',
     )
+
+    """vcls_contact_id = fields.Many2one(
+        'res.users',
+        string = "Initial Contact",
+        domain = "[('employee','=',True)]",
+    )"""
 
     default_currency_id = fields.Many2one(
         'res.currency',

@@ -1,0 +1,56 @@
+# -*- coding: utf-8 -*-
+
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
+
+import logging
+_logger = logging.getLogger(__name__)
+
+
+class HrExpense(models.Model):
+
+    _inherit = "hr.expense"
+
+    @api.multi
+    def action_get_attachment_view(self):
+        self.ensure_one()
+        res = self.env['ir.actions.act_window'].for_xml_id('vcls-expenses', 'action_attachment_expense')
+        res['domain'] = [('res_model', '=', 'hr.expense'), ('res_id', 'in', self.ids)]
+        res['context'] = {'default_res_model': 'hr.expense', 'default_res_id': self.id}
+        res['view_mode'] = 'form'
+        res['view_id'] = self.env.ref('vcls-expenses.view_hr_expense_attachment')
+        res['target'] = 'new'
+        return res
+
+    @api.multi
+    def action_move_create(self):
+        expenses_by_company = {}
+        for expense in self:
+            expenses_by_company.setdefault(expense.company_id, self.env["hr.expense"])
+            expenses_by_company[expense.company_id] |= expense
+        results = {}
+        for company, groupped_expenses in expenses_by_company.items():
+            result = super(HrExpense, groupped_expenses.with_context(
+                force_company=company.id,
+                default_company_id=company.id,
+            )).action_move_create()
+            results.update(result)
+        return results
+
+    @api.multi
+    def _prepare_move_values(self):
+        move_values = super(HrExpense, self)._prepare_move_values()
+        move_values['company_id'] = self.sheet_id.company_id.id or move_values['company_id']
+        return move_values
+
+    @api.constrains('company_id', 'sheet_id.company_id')
+    def _check_expenses_same_company(self):
+        for expense in self:
+            if not expense.sheet_id or not expense.company_id:
+                continue
+            if expense.sheet_id.company_id != expense.company_id:
+                raise ValidationError(
+                    _('Error! Expense company must be the same as the report company.'))
+            if expense.account_id.company_id != expense.company_id:
+                raise ValidationError(
+                    _('Error! Expense company must be the same as the account company.'))

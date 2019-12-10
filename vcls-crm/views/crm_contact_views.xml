@@ -31,6 +31,12 @@
                     <field name="vat"/>
                 </field>
 
+                <!--
+                <field name="invoice_admin_id" position="after">
+                    <field name="vcls_contact_id" attrs="{'invisible': [('see_segmentation', '=', False)]}"/>
+                </field>
+                -->
+
                 <xpath expr="/form/sheet/notebook/page[5]" position="after">
                     <page name="marketing" string="Marketing Info" attrs="{'invisible': [('see_segmentation', '=', False)]}">
                     <field name="see_segmentation" invisible="1"/>

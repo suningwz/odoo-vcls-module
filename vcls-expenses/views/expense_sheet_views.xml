@@ -25,6 +25,12 @@
                                 attrs="{'invisible': [('sheet_id', '=', False)]}"/>
                     </header>
                 </xpath>
+                <xpath expr="//form" position="inside">
+                    <footer>
+                        <button string="Add" class="btn-primary" special="save"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </xpath>
             </field>
         </record>
 
@@ -123,9 +129,10 @@
                     <attribute name="readonly">1</attribute>
                 </field>
 
+                <!--
                 <button name="approve_expense_sheets" position="attributes">
                     <attribute name="string">FINANCE QC OK</attribute>
-                </button>
+                </button>-->
 
                 <xpath expr="//field[@name='payment_mode']" position="after">
                     <field name='analytic_account_id' invisible="1"/>
