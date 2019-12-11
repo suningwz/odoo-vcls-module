@@ -71,7 +71,6 @@ class Invoice(models.Model):
             
             self.period_start = min_date
 
-
     @api.multi
     def _get_project_data(self):
         self.ensure_one()
@@ -89,10 +88,32 @@ class Invoice(models.Model):
         self.lc_laius = laius
         self.scope_of_work = sow
 
-
-
     @api.multi
     def _get_aggregated_invoice_report_data(self):
+        rate_data, rate_subtotal = self._get_aggregated_invoice_report_rate_data()
+        fixed_price_data = self._get_aggregated_invoice_report_fixed_price()
+        expenses_and_communication_data = self._get_invoice_report_expenses_and_communication()
+        return {
+            'rate_data': rate_data,
+            'fixed_price_data': fixed_price_data,
+            'expenses_and_communication_data': expenses_and_communication_data,
+            'rate_subtotal': rate_subtotal,
+        }
+
+    @api.multi
+    def _get_detailed_invoice_report_data(self):
+        rate_data, rate_subtotal = self._get_detailed_invoice_report_rate_data()
+        fixed_price_data = self._get_detailed_invoice_report_fixed_price()
+        expenses_and_communication_data = self._get_invoice_report_expenses_and_communication()
+        return {
+            'rate_data': rate_data,
+            'fixed_price_data': fixed_price_data,
+            'expenses_and_communication_data': expenses_and_communication_data,
+            'rate_subtotal': rate_subtotal,
+        }
+
+    @api.multi
+    def _get_aggregated_invoice_report_rate_data(self):
         """
         :param self:
         :return: ordered dictionary with the following structure
@@ -111,6 +132,8 @@ class Invoice(models.Model):
         total_not_taxed = 0.
         for timesheet_id in self.timesheet_ids:
             rate_sale_line_id = timesheet_id.so_line
+            if not rate_sale_line_id.qty_invoiced:
+                continue
             service_sale_line_id = timesheet_id.task_id.sale_line_id
             service_section_line_id = service_sale_line_id.section_line_id
             rates_dict = data.setdefault(service_section_line_id, OrderedDict())
@@ -123,11 +146,11 @@ class Invoice(models.Model):
             qty = timesheet_id.unit_amount_rounded
             values['qty'] += qty
             total_not_taxed += qty * values['price']
-        assert abs(total_not_taxed - self.amount_untaxed) < 0.001, _('Something went wrong')
-        return data
+        # assert abs(total_not_taxed - self.amount_untaxed) < 0.001, _('Something went wrong')
+        return data, total_not_taxed
 
     @api.multi
-    def _get_invoice_report_data(self):
+    def _get_detailed_invoice_report_rate_data(self):
         """
         :param self:
         :return: ordered dictionary with the following structure
@@ -146,6 +169,8 @@ class Invoice(models.Model):
         total_not_taxed = 0.
         for timesheet_id in self.timesheet_ids:
             rate_sale_line_id = timesheet_id.so_line
+            if not rate_sale_line_id.qty_invoiced:
+                continue
             task_id = timesheet_id.task_id
             rates_dict = data.setdefault(task_id, OrderedDict())
             values = rates_dict.setdefault(
@@ -157,8 +182,92 @@ class Invoice(models.Model):
             qty = timesheet_id.unit_amount_rounded
             values['qty'] += qty
             total_not_taxed += qty * values['price']
-        assert abs(total_not_taxed - self.amount_untaxed) < 0.001, _('Something went wrong')
+        # assert abs(total_not_taxed - self.amount_untaxed) < 0.001, _('Something went wrong')
+        return data, total_not_taxed
+
+    @api.multi
+    def _get_detailed_invoice_report_fixed_price(self):
+        """
+        :param self:
+        :return: ordered dictionary with the following structure
+        {
+            service_line_record : {
+                'subtotal': subtotal,
+                'currency_id': currency,
+            }
+        }
+        """
+        self.ensure_one()
+        fixed_price_data = OrderedDict()
+        for line in self.invoice_line_ids:
+            if line.product_id.vcls_type != 'vcls_service':
+                continue
+            fixed_price_data.setdefault(line, {
+                'subtotal': line.price_subtotal,
+                'currency_id': line.currency_id,
+            })
+        for key in list(fixed_price_data):
+            value = fixed_price_data[key]
+            if not value['subtotal']:
+                del fixed_price_data[key]
+        return fixed_price_data
+
+    @api.multi
+    def _get_invoice_report_expenses_and_communication(self):
+        """
+        :param self:
+        :return: ordered dictionary with the following structure
+        {
+            product_category_record : {
+                'subtotal': subtotal,
+                'currency_id': currency,
+            }
+        }
+        """
+        self.ensure_one()
+        data = OrderedDict()
+        for line in self.invoice_line_ids:
+            if line.product_id.vcls_type not in ('expense', 'communication'):
+                continue
+            value = data.setdefault(line.product_id.categ_id, {
+                'subtotal': 0.,
+                'currency_id': line.currency_id,
+            })
+            value['subtotal'] += line.price_subtotal
+        for key in list(data):
+            value = data[key]
+            if not value['subtotal']:
+                del data[key]
         return data
+
+    @api.multi
+    def _get_aggregated_invoice_report_fixed_price(self):
+        """
+        :param self:
+        :return: ordered dictionary with the following structure
+        {
+            service_section_line_record : {
+                'subtotal': subtotal,
+                'currency_id': currency,
+            }
+        }
+        """
+        self.ensure_one()
+        fixed_price_data = OrderedDict()
+        for line in self.invoice_line_ids:
+            if line.product_id.vcls_type != 'vcls_service':
+                continue
+            section_line_id = line.section_line_id
+            value = fixed_price_data.setdefault(section_line_id, {
+                'subtotal': 0.,
+                'currency_id': line.currency_id,
+            })
+            value['subtotal'] += line.price_subtotal
+        for key in list(fixed_price_data):
+            value = fixed_price_data[key]
+            if not value['subtotal']:
+                del fixed_price_data[key]
+        return fixed_price_data
 
     def get_communication_amount(self):
         total_amount = 0
@@ -379,25 +488,3 @@ class Invoice(models.Model):
                 deliverable_lines += [line for line in same_deliverable]
                 deliverable_groups[deliverable_name] = deliverable_lines
         return deliverable_groups
-
-
-class AccountInvoiceLine(models.Model):
-    _inherit = 'account.invoice.line'
-
-    vcls_type = fields.Char(compute='linked_product_type', store=True)
-
-    @api.multi
-    @api.depends('product_id')
-    def linked_product_type(self):
-        for rec in self:
-            if rec.product_id.type == 'service' and rec.product_id.service_policy == 'delivered_timesheet' and \
-                    rec.product_id.service_tracking in ('no', 'project_only'):
-                rec.vcls_type = 'rates'
-            elif rec.product_id.type == 'service' and rec.product_id.service_policy == 'delivered_manual' and \
-                    rec.product_id.service_tracking == 'task_new_project' and \
-                    not any(l.product_id.seniority_level_id for l in rec.invoice_id.invoice_line_ids):
-                rec.vcls_type = 'fixed'
-            elif rec.product_id.type == 'service' and rec.product_id.service_policy == 'delivered_manual' and \
-                    rec.product_id.service_tracking == 'task_new_project' and \
-                    rec.invoice_id.invoice_line_ids.filtered(lambda r: r.product_id.seniority_level_id):
-                rec.vcls_type = 'tm'
