@@ -21,6 +21,8 @@
     'depends': ['vcls-crm',
                 'smile_data_integration',
                 'office365_framework',
+                'vcls-timesheet',
+                'vcls-project'
             ],
 
     # always loaded
