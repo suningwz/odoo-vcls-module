@@ -78,7 +78,7 @@ class SaleOrder(models.Model):
                     )
                 order.timesheet_ids = self.env[
                     'account.analytic.line'].search(domain)
-                _logger.info('{} found {}'.format(domain,order.timesheet_ids.mapped('name')))
+                #_logger.info('{} found {}'.format(domain,order.timesheet_ids.mapped('name')))
             else:
                 order.timesheet_ids = []
             order.timesheet_count = len(order.timesheet_ids)
@@ -157,22 +157,46 @@ class SaleOrderLine(models.Model):
             else:
                 pass
 
-            _logger.info("QTY DELIVERED: {} {} {} {}".format(line.order_id.invoicing_mode,line.product_id.vcls_type,line.name,line.qty_delivered))
-
-            """_logger.info("DELIVERED BEFORE: {} {}".format(line.name,line.qty_delivered))
-            if line._is_linked_to_milestone_product(): 
-                if line.price_unit:
-                    line.qty_delivered = (
-                        line.product_uom_qty
-                        * line.amount_delivered_from_task
-                        / (line.price_unit)
-                    )
-                    _logger.info("DELIVERED AFTER PRICE UNIT: {} {}".format(line.name,line.qty_delivered))
-                else:
-                    
-                    line.qty_delivered = 0.
-                    _logger.info("DELIVERED AFTER 0: {} {}".format(line.name,line.qty_delivered))"""
+            #_logger.info("QTY DELIVERED: {} {} {} {}".format(line.order_id.invoicing_mode,line.product_id.vcls_type,line.name,line.qty_delivered))
     
+    @api.multi
+    @api.depends(
+        'product_uom_qty',
+        'price_unit',
+        'task_id.stage_id',
+        'order_id.invoicing_mode')
+
+    def _get_invoice_qty(self):
+        for line in self:
+            if line._is_linked_to_milestone_product():
+                if line.price_unit:
+                    line.qty_invoiced = (
+                        line.product_uom_qty
+                        * line.amount_invoiced_from_task
+                        / line.price_unit
+                    )
+                else:
+                    line.qty_invoiced = 0.
+    
+        """Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type"""
+        super()._get_invoice_qty()
+        for line in self:
+            #In Time & Material, we invoice the rate product lines and set the other services to 0
+            if line.order_id.invoicing_mode == 'tm':
+                if line.product_id.vcls_type == 'vcls_service':
+                    line.qty_invoiced = 0.
+                else:
+                    pass
+            
+            elif line.order_id.invoicing_mode == 'fixed_price':
+                if line.product_id.vcls_type == 'rate':
+                    line.qty_invoiced = 0.
+                else:
+                    pass
+            
+            else:
+                pass
+
     # We need to override the OCA to take the rounded_unit_amount in account rather than the standard unit_amount
     @api.multi
     @api.depends(
