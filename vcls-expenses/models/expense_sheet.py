@@ -10,7 +10,15 @@ _logger = logging.getLogger(__name__)
 class ExpenseSheet(models.Model):
     _inherit = 'hr.expense.sheet'
 
-
+    def _default_project(self):
+        if self.type == 'admin':
+            def_project = self.env['project.project'].search([('type','=','internal'),('name','=','Admin Expenses')],limit=1)
+            if def_project:
+                self.project_id = def_project
+            else:
+                pass
+        else:
+            pass
     #################
     # CUSTOM FIELDS #
     #################
@@ -26,6 +34,7 @@ class ExpenseSheet(models.Model):
     project_id = fields.Many2one(
         'project.project', 
         string='Related Project',
+        default = '_default_project',
         domain="[('parent_id','=',False)]",
     )
 
@@ -100,6 +109,8 @@ class ExpenseSheet(models.Model):
     @api.onchange('type')
     def change_type(self):
         for sheet in self:
+            #if sheet.type == 'admin':
+
             sheet.project_id=False
 
     @api.onchange('project_id')
