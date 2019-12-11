@@ -23,7 +23,6 @@
                 'office365_framework',
                 'vcls-timesheet',
                 'vcls-project',
-                'vcls-etl',
             ],
 
     # always loaded
