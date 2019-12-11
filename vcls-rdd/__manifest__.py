@@ -22,7 +22,8 @@
                 'smile_data_integration',
                 'office365_framework',
                 'vcls-timesheet',
-                'vcls-project'
+                'vcls-project',
+                'vcls-etl',
             ],
 
     # always loaded
