@@ -8,4 +8,4 @@ from odoo import fields, models
 class ETLMap(models.Model):
     _inherit = 'etl.sync.keys'
 
-    migration_running = fields.Boolean(default=False)
+    migration_running = fields.Boolean()
