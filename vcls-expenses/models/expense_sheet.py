@@ -16,8 +16,8 @@ class ExpenseSheet(models.Model):
     #################
 
     type = fields.Selection([
-        ('project', 'Project'),
-        ('admin', 'Admin'),
+        ('project', 'Billable'),
+        ('admin', 'Non-Billable'),
         #('mobility', 'Mobility'),
     ], 
     required=True, string='Type', default='admin')
