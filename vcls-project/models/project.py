@@ -330,18 +330,21 @@ class Project(models.Model):
 
     @api.model
     def end_project_activities_scheduling(self):
-        for project in self.search([('active', '=', True)]):
-            if project.tasks and all(task.stage_id.status in ("completed", "cancelled") for task in project.task_ids):
+        for project_id in self.search([('active', '=', True), ('parent_id', '=', False)]):
+            task_ids = [task for child_id in project_id.child_id for task in child_id.task_ids]
+            if task_ids and all(task.stage_id.status in ("completed", "cancelled") for task in task_ids):
                 users_summary = {
-                    project.partner_id.user_id.id: _('Client Feedback'),
-                    project.user_id.id: _('End of project form filling'),
-                    project.partner_id.invoice_admin_id.id: _('Invoicing Closing')
-                }
-                activity_vals = {
-                    'act_type_xmlid': 'mail.mail_activity_data_todo',
-                    'automated': True
+                    project_id.partner_id.user_id.id: _('Client Feedback'),
+                    project_id.user_id.id: _('End of project form filling'),
+                    project_id.partner_id.invoice_admin_id.id: _('Invoicing Closing')
                 }
                 for user_id, summary in users_summary.items():
                     if user_id:
-                        activity_vals.update({'user_id': user_id, 'summary': summary})
-                        project.sudo().activity_schedule(**activity_vals)
+                        activity_vals = {
+                            'user_id': user_id,
+                            'summary': summary,
+                            'act_type_xmlid': 'mail.mail_activity_data_todo',
+                            'automated': True,
+                        }
+                        project_id.sudo().activity_schedule(**activity_vals)
+        return True
