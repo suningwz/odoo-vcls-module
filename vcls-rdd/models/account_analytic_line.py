@@ -4,7 +4,7 @@
 
 from odoo import fields, models, api
 
-from server.odoo.exceptions import UserError
+from odoo.exceptions import UserError
 
 
 class AccountAnalyticLine(models.Model):
