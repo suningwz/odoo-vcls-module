@@ -12,13 +12,14 @@ class ExpenseSheet(models.Model):
 
     def _default_project(self):
         if self.type == 'admin':
-            def_project = self.env['project.project'].search([('type','=','internal'),('name','=','Admin Expenses')],limit=1)
+            def_project = self.env['project.project'].search([('project_type','=','internal'),('name','=','Admin Expenses')],limit=1)
             if def_project:
                 self.project_id = def_project
             else:
                 pass
         else:
             pass
+
     #################
     # CUSTOM FIELDS #
     #################

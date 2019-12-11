@@ -313,6 +313,18 @@
         </record>
 
         <!-- VIEWS -->
+        <record model="ir.ui.view" id="project_project_view_form_simplified">
+            <field name="name">view_project_kanban_2</field>
+            <field name="model">project.project.view.form.simplified</field>
+            <field name="inherit_id" ref="project.project_project_view_form_simplified"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="project_type"/>
+                </field>
+                
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="view_project_kanban_2">
             <field name="name">view_project_kanban_2</field>
             <field name="model">project.project</field>
