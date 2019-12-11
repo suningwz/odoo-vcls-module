@@ -37,6 +37,7 @@
         'views/product.xml',
         'views/expense_views.xml',
         'views/project_portal_templates.xml',
+        'views/projects_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
