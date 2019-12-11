@@ -262,7 +262,7 @@ class ResPartner(models.Model):
         for contact in self:
             contact.message_bounce = 0
             contact_id = contact.id if not isinstance(contact.id, models.NewId) else 0
-            if self.search([('id', '!=', contact_id), ('email', '=', contact.email)], limit=1):
+            if contact.email and self.sudo().search([('id', '!=', contact_id), ('email', '=', contact.email)], limit=1):
                 return {'warning': {
                     'title': _("Warning"),
                     'message': _("A contact with this email already exists."),
