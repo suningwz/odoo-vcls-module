@@ -12,6 +12,7 @@ class HrExpense(models.Model):
     _inherit = "hr.expense"
 
     is_product_employee = fields.Boolean(related='product_id.is_product_employee', readonly=True, string="Product Employee")
+    
     project_id = fields.Many2one(
         'project.project', 
         related='sheet_id.project_id',
