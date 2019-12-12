@@ -157,6 +157,20 @@ class SaleOrderLine(models.Model):
                         new_order._create_section(vals.get('section_name'))
                         del vals['section_name']
                     vals['order_id'] = new_order.id
+            else:
+                if order.child_ids:
+                    if vals.get('section_name'):
+                        order._create_section(vals.get('section_name'))
+                        del vals['section_name']
+                    vals['order_id'] = order.id
+                else:
+                    new_order = order.copy({'ts_invoicing_mode': invoicing_mode,
+                                            'parent_id': order.id,
+                                            'order_line': []})
+                    if vals.get('section_name'):
+                        new_order._create_section(vals.get('section_name'))
+                        del vals['section_name']
+                    vals['order_id'] = new_order.id
         return vals
 
     @api.model
