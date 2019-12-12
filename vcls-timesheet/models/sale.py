@@ -161,7 +161,7 @@ class SaleOrderLine(models.Model):
 
             _logger.info("QTY DELIVERED: {} {} {} {}".format(line.order_id.invoicing_mode,line.product_id.vcls_type,line.name,line.qty_delivered))
     
-    @api.multi
+    """@api.multi
     @api.depends(
         'product_uom_qty',
         'price_unit',
@@ -187,7 +187,7 @@ class SaleOrderLine(models.Model):
                     pass
             
             else:
-                pass
+                pass"""
 
     # We need to override the OCA to take the rounded_unit_amount in account rather than the standard unit_amount
     @api.multi
