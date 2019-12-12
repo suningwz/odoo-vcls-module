@@ -157,7 +157,7 @@ class SaleOrderLine(models.Model):
             else:
                 pass
 
-            #_logger.info("QTY DELIVERED: {} {} {} {}".format(line.order_id.invoicing_mode,line.product_id.vcls_type,line.name,line.qty_delivered))
+            _logger.info("QTY DELIVERED: {} {} {} {}".format(line.order_id.invoicing_mode,line.product_id.vcls_type,line.name,line.qty_delivered))
     
     @api.multi
     @api.depends(
