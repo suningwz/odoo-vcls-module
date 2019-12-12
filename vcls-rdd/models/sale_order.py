@@ -139,6 +139,10 @@ class SaleOrderLine(models.Model):
             order = self.env['sale.order'].browse(vals.get('order_id'))
             if not order.ts_invoicing_mode:
                 order.ts_invoicing_mode = invoicing_mode
+                if vals.get('section_name'):
+                    order._create_section(vals.get('section_name'))
+                    del vals['section_name']
+                vals['order_id'] = order.id
             elif order.ts_invoicing_mode != invoicing_mode:
                 if order.child_ids:
                     if vals.get('section_name'):
