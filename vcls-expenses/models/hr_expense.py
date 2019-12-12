@@ -20,10 +20,9 @@ class HrExpense(models.Model):
     ], 
     related = 'sheet_id.type')"""
 
-    product_list = fields.Many2many(
-        'product.product',
+    product_list = fields.Char(
         store = False,
-        related = '_get_product_list',
+        compute = '_get_product_list',
     )
     
 
@@ -43,7 +42,8 @@ class HrExpense(models.Model):
     @api.depends('employee_id','project_id')
     def _get_product_list(self):
         for expense in self:
-            expense.product_list = self.env['product.product'].search([('can_be_expensed', '=', True),'|',('company_id','=',False),('company_id','=',expense.employee_id.company_id)])
+            products = self.env['product.product'].search([('can_be_expensed', '=', True),'|',('company_id','=',False),('company_id','=',expense.employee_id.company_id)])
+            expense.product_list = products.mapped('id')
 
     @api.multi
     def action_get_attachment_view(self):
