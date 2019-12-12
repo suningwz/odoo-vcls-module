@@ -44,10 +44,7 @@ class SaleOrder(models.Model):
     invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
     activity_report_template = fields.Many2one(
         'ir.actions.report',
-        domain=[('model', '=', 'activity.report.groupment')],
         default=lambda self: self.get_activity_report_template())
-    #activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.analytic.line'),
-    #                                                                        ('report_name', '=', 'activity_report')])
     communication_rate = fields.Selection([
         ('0.0', '0%'),
         ('0.005', '0.5%'),

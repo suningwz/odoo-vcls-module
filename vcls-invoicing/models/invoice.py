@@ -11,6 +11,7 @@ from odoo.tools import email_re, email_split, email_escape_char, float_is_zero, 
 
 from odoo.exceptions import AccessError, UserError, RedirectWarning, ValidationError, Warning
 from collections import OrderedDict
+from odoo.tools import OrderedSet
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -47,7 +48,7 @@ class Invoice(models.Model):
     ready_for_approval = fields.Boolean(default=False)
 
     invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
-    activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'activity.report.groupment')])
+    activity_report_template = fields.Many2one('ir.actions.report')
 
     @api.multi
     def _get_so_data(self):
@@ -87,6 +88,61 @@ class Invoice(models.Model):
         
         self.lc_laius = laius
         self.scope_of_work = sow
+
+    @api.multi
+    def _get_activity_report_data(self, detailed=True):
+        self.ensure_one()
+        task_rate_matrix_data = {}
+        project_rate_matrix_data = {}
+        time_category_rate_matrix_data = {}
+        product_obj = self.env['product.product']
+        rate_product_ids = product_obj
+        projects_row_data = OrderedDict()
+        for timesheet_id in self.timesheet_ids:
+            # check if so line is invoiced
+            if not timesheet_id.so_line.qty_invoiced:
+                continue
+            project_id = timesheet_id.project_id
+            task_id = timesheet_id.task_id
+            parent_task_id = task_id.parent_id or task_id
+            rate_product_id = timesheet_id.so_line.product_id
+            rate_product_ids |= rate_product_id
+            time_category_id = timesheet_id.time_category_id
+            unit_amount = timesheet_id.unit_amount
+            # project matrix data
+            project_rate_matrix_key = (project_id, rate_product_id)
+            project_rate_matrix_data.setdefault(project_rate_matrix_key, 0.)
+            project_rate_matrix_data[project_rate_matrix_key] += unit_amount
+            tasks_row_data = projects_row_data.setdefault(project_id, OrderedDict())
+            # task matrix data
+            task_rate_matrix_key = (project_id, parent_task_id, rate_product_id)
+            task_rate_matrix_data.setdefault(task_rate_matrix_key, 0.)
+            task_rate_matrix_data[task_rate_matrix_key] += unit_amount
+            time_category_row_data = tasks_row_data.setdefault(parent_task_id, OrderedDict())
+            # time category matrix data
+            if detailed:
+                time_category_matrix_key = (project_id, parent_task_id, time_category_id, rate_product_id)
+                time_category_rate_matrix_data.setdefault(time_category_matrix_key, 0.)
+                time_category_rate_matrix_data[time_category_matrix_key] += unit_amount
+                time_category_row_data.setdefault(time_category_id, None)
+        # reorder rate_product_ids according to the richer one
+        rate_product_ids = product_obj.browse(OrderedSet([
+            couple[1].id for couple in
+            sorted(
+                [(project_id, rate_product_id)
+                    for project_id in projects_row_data.keys()
+                    for rate_product_id in rate_product_ids],
+                key=lambda key: project_rate_matrix_data[key],
+                reverse=True
+            )
+        ]))
+        return {
+            'project_rate_matrix_data': project_rate_matrix_data,
+            'task_rate_matrix_data': task_rate_matrix_data,
+            'time_category_rate_matrix_data': time_category_rate_matrix_data,
+            'rate_product_ids': rate_product_ids,
+            'projects_row_data': projects_row_data,
+        }
 
     @api.multi
     def _get_aggregated_invoice_report_data(self):
@@ -390,7 +446,7 @@ class Invoice(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'target': 'new',
-            'res_model': 'activity.report.groupment',
+            'res_model': 'activity.report.wizard',
             'views': [(activity_form_id, 'form')],
             'view_id': activity_form_id,
             'context': ctx,
