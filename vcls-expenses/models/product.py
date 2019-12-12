@@ -25,7 +25,7 @@ class Product(models.Model):
             _logger.info("COMPANY {}".format(vcls_company))
             product_ids = super(Product, self)._search(args, offset, None, order, count=count, access_rights_uid=access_rights_uid)
             products = self.browse(product_ids)
-            products = products.filtered(lambda p: (not p.company_id) or (p.comapny_id==vcls_company))
+            products = products.filtered(lambda p: (not p.company_id) or (p.company_id.id==vcls_company))
             
             return products.ids
 
