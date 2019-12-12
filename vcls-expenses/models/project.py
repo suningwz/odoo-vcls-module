@@ -10,6 +10,9 @@ class Project(models.Model):
         'hr.expense.sheet',
         'project_id',
     )
+
+    allow_expense = fields.Boolean(default=True)
+
     
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
@@ -28,7 +31,7 @@ class Project(models.Model):
 
         elif search_type == 'admin':
             projects = self.browse(project_ids)
-            projects = projects.filtered(lambda p: p.project_type=='internal')
+            projects = projects.filtered(lambda p: p.project_type=='internal' and p.allow_expense)
             return projects.ids
 
         

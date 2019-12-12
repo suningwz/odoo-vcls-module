@@ -186,11 +186,27 @@ class ResPartner(models.Model):
         domain = "[('employee','=',True)]",
     )
 
+    client_status = fields.Selection([
+        ('new', 'New'),
+        ('active', 'Active'),
+        ('blacklisted', 'Blacklisted'),
+    ], compute='_get_client_status')
 
     ###################
     # COMPUTE METHODS #
     ###################
-    
+
+    @api.multi
+    @api.depends('sale_order_ids.state')
+    def _get_client_status(self):
+        for partner in self:
+            client_status = 'new'
+            for order_id in partner.sale_order_ids:
+                if order_id.state in ('sent', 'sale', 'done'):
+                    client_status = 'active'
+                    break
+            partner.client_status = client_status
+
     @api.depends('category_id', 'company_type')
     def _compute_visibility(self):
         for contact in self:
@@ -246,7 +262,7 @@ class ResPartner(models.Model):
         for contact in self:
             contact.message_bounce = 0
             contact_id = contact.id if not isinstance(contact.id, models.NewId) else 0
-            if self.search([('id', '!=', contact_id), ('email', '=', contact.email)], limit=1):
+            if contact.email and self.sudo().search([('id', '!=', contact_id), ('email', '=', contact.email)], limit=1):
                 return {'warning': {
                     'title': _("Warning"),
                     'message': _("A contact with this email already exists."),

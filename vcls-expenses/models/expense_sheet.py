@@ -10,28 +10,39 @@ _logger = logging.getLogger(__name__)
 class ExpenseSheet(models.Model):
     _inherit = 'hr.expense.sheet'
 
+    """def _default_project(self):
+        if self.type == 'admin':
+            def_project = self.env['project.project'].search([('project_type','=','internal'),('name','=','Admin Expenses')],limit=1)
+            if def_project:
+                self.project_id = def_project
+            else:
+                pass
+        else:
+            pass"""
 
     #################
     # CUSTOM FIELDS #
     #################
 
     type = fields.Selection([
-        ('project', 'Project'),
-        ('admin', 'Admin'),
-        ('mobility', 'Mobility'),
+        ('project', 'Billable'),
+        ('admin', 'Non-Billable'),
+        #('mobility', 'Mobility'),
     ], 
-    required=True, string='Type')
+    required=True, string='Type', default='admin')
 
     # we link parent projects only
     project_id = fields.Many2one(
         'project.project', 
         string='Related Project',
+        #default = '_default_project',
         domain="[('parent_id','=',False)]",
     )
 
     analytic_account_id = fields.Many2one(
         'account.analytic.account', 
         string='Analytic Account',
+        compute = '_compute_analytic_account',
     )
 
     sale_order_id = fields.Many2one(
@@ -60,7 +71,7 @@ class ExpenseSheet(models.Model):
     @api.constrains('journal_id', 'journal_id.company_id', 'company_id')
     def _check_expense_sheet_same_company(self):
         for sheet in self:
-            if not sheet.company_id:
+            if not sheet.company_id or not sheet.journal_id:
                 continue
             if sheet.journal_id.company_id != sheet.company_id:
                 raise ValidationError(
@@ -97,9 +108,16 @@ class ExpenseSheet(models.Model):
                 else:
                     record.user_id = False
     
+    @api.depends('project_id')
+    def _compute_analytic_account(self):
+        for sheet in self:
+            sheet.analytic_account_id = sheet.project_id.analytic_account_id
+    
     @api.onchange('type')
     def change_type(self):
         for sheet in self:
+            #if sheet.type == 'admin':
+
             sheet.project_id=False
 
     @api.onchange('project_id')
@@ -109,7 +127,7 @@ class ExpenseSheet(models.Model):
             if rec.project_id:
                 # grab analytic account from the project
                 if rec.type == 'admin':
-                    rec.analytic_account_id = rec.project_id.analytic_account_id
+                    #rec.analytic_account_id = rec.project_id.analytic_account_id
                     rec.sale_order_id = False
 
                 # we look for the SO in case of project (to be able to re-invoice)
@@ -119,11 +137,11 @@ class ExpenseSheet(models.Model):
                         rec.sale_order_id = so.id
                     else:
                         rec.sale_order_id = False
-                    rec.analytic_account_id = False
+                    #rec.analytic_account_id = False
 
                 else:
                     rec.sale_order_id = False
-                    rec.analytic_account_id = False          
+                    #rec.analytic_account_id = False          
 
     @api.multi
     def open_pop_up_add_expense(self):
@@ -140,3 +158,15 @@ class ExpenseSheet(models.Model):
                     'default_sale_order_id': rec.sale_order_id.id,
                     'default_sheet_id': rec.id}
             return action
+          
+    """ We override this to ensure a default journal to be properly updated """
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        self.address_id = self.employee_id.sudo().address_home_id
+        self.department_id = self.employee_id.department_id
+        #self.user_id = self.employee_id.expense_manager_id or self.employee_id.parent_id.user_id
+        self.journal_id = self.env['account.journal'].search([('type', '=', 'purchase'),('company_id', '=', self.employee_id.company_id.id)], limit=1)
+        self.bank_journal_id = self.env['account.journal'].search([('type', 'in', ['cash', 'bank']),('company_id', '=', self.employee_id.company_id.id)], limit=1)
+
+    
+

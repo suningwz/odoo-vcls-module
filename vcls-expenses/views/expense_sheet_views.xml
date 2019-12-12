@@ -110,28 +110,33 @@
 
 
         <record id="view_hr_expense_sheet_form" model="ir.ui.view">
-            <field name="name">product.template.timesheet.form</field>
+            <field name="name">view_hr_expense_sheet_form</field>
             <field name="model">hr.expense.sheet</field>
             <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form"/>
             <field name="arch" type="xml">
 
                 <xpath expr="//field[@name='employee_id']" position="before">
                     <field name='type'/>
-                    <field name='project_id' required="1" create="0" context="{'search_type':type}"/>
+                    <field name='project_id' required="1" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}' context="{'search_type':type}"/>
                     <!--<field name = 'project_id' attrs="{'invisible': [('type', '!=', 'project')], 'required': [('type', '=', 'project')]}" />-->
                 </xpath>
 
                 <field name="payment_mode" position="attributes">
-                    <attribute name="invisible">1</attribute>
+                    <attribute name="groups">hr_expense.group_hr_expense_manager</attribute>
                 </field>
 
                 <field name="user_id" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </field>
 
+                <field name="employee_id" position="attributes">
+                    <attribute name="options">{"no_open": True,"no_create": 1, "no_create_edit": 1}</attribute>
+                </field>
+
+                <!--
                 <button name="approve_expense_sheets" position="attributes">
                     <attribute name="string">FINANCE QC OK</attribute>
-                </button>
+                </button>-->
 
                 <xpath expr="//field[@name='payment_mode']" position="after">
                     <field name='analytic_account_id' invisible="1"/>
@@ -154,6 +159,7 @@
                         <tree decoration-danger="is_refused">
                             <field name="date"/>
                             <field name="name"/>
+                            <field name="payment_mode"/>
                             <field name="state" invisible="1"/>
                             <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
                             <field name="analytic_tag_ids" widget="many2many_tags"
@@ -173,7 +179,7 @@
                 </xpath>
 
                 <xpath expr="//button[@name='action_submit_sheet']" position="after">
-                    <button name="open_pop_up_add_expense" string="ADD EXPENSE" type="object" class="oe_highlight"/>
+                    <button name="open_pop_up_add_expense" string="ADD EXPENSE" type="object" states="draft" class="oe_highlight"/>
                 </xpath>
 
             </field>

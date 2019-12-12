@@ -36,6 +36,7 @@ class ETLMap(models.Model):
         string='State',
         default='upToDate' # For existing keys
     )
+    migration_running = fields.Boolean()
 
     @api.one
     def setState(self, state):

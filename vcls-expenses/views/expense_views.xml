@@ -10,20 +10,22 @@
                     <page string="General information">
                         <group>
                             <group>
-                                <field name="product_id" options="{'no_create': True, 'no_edit': True}" context="{'default_can_be_expensed': 1, 'tree_view_ref': 'hr_expense.product_product_expense_tree_view'}" />
-                                <field name="unit_amount" required="1" widget="monetary" options="{'currency_field': 'currency_id'}" />
+                                <field name="is_product_employee" invisible="1"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="product_id" options="{'no_create': True, 'no_edit': True}" context="{'vcls_expense_company':company_id,'default_can_be_expensed': 1, 'tree_view_ref': 'hr_expense.product_product_expense_tree_view'}" />
+                                <field name="unit_amount" required="1" widget="monetary" options="{'currency_field': 'currency_id'}"
+                                       attrs="{'readonly':['|', ('is_product_employee','=',True), ('state' ,'not in', ('draft','refused', 'reported'))]}" force_save="1"/>
                                 <label for="quantity" />
                                 <div>
                                     <field name="quantity" class="oe_inline" />
-                                    <field name="product_uom_id" widget="selection" class="oe_inline" groups="uom.group_uom" />
+                                    <field name="product_uom_id" widget="selection" class="oe_inline" groups="hr_expense.group_hr_expense_manager" readonly="1" force_save="1"/>
                                 </div>
-
                              </group>
                             <group>
 
-                                 <field name="date" />
+                                <field name="date" />
 
-                                 <field name="employee_id" groups="hr_expense.group_hr_expense_user" readonly="1" force_save="1" />
+                                <field name="employee_id" groups="hr_expense.group_hr_expense_user" readonly="1" force_save="1" />
                                 <field name="sheet_id" invisible="1" />
                                 <field name="currency_id" groups="base.group_multi_currency" />
 
@@ -32,13 +34,13 @@
                                 <field name="total_amount" widget='monetary' options="{'currency_field': 'currency_id'}" />
                                 <label for="payment_mode" />
                                 <div>
-                                    <field name="payment_mode" widget="radio" />
+                                    <field name="payment_mode" widget="radio" groups="hr_expense.group_hr_expense_manager"/>
                                 </div>
                             </group>
 
                          </group>
                     </page>
-                    <page string="Finance">
+                    <page string="Finance" groups="hr_expense.group_hr_expense_manager">
                         <group>
                             <field name="tax_ids" domain="[('type_tax_use', '=', 'purchase')]" widget="many2many_tags" groups="account.group_account_user" />
                             <field name="reference" />

@@ -14,6 +14,7 @@
                 (5,0,0),
                 (4, ref('hr_timesheet.group_hr_timesheet_user')),
                 (4, ref('sales_team.group_sale_salesman_all_leads')),
+                (4, ref('hr_expense.group_hr_expense_user')),
             ]"/>
     </record>
 

@@ -45,7 +45,6 @@
         'reports/report_project_invoice_detailed.xml',
         'reports/report_project_invoice_aggregated.xml',
         'reports/activity_reports.xml',
-        'reports/activities_report.xml',
 
         # Wizards #
         'wizard/activity_report_views.xml',
