@@ -40,7 +40,10 @@ class Leads(models.Model):
     @api.onchange('email_from')
     def _onchange_email_from(self):
         lead_id = self.id if not isinstance(self.id, models.NewId) else 0
-        if self.search([('type', '=', 'lead'), ('id', '!=', lead_id), ('email_from', '=', self.email_from)], limit=1):
+        if self.email_from and self.sudo().search([
+            ('type', '=', 'lead'), ('id', '!=', lead_id),
+            ('email_from', '=', self.email_from)], limit=1
+        ):
             return {
                 'warning': {
                     'title': _('Warning'),
