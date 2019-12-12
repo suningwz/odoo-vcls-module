@@ -43,7 +43,8 @@ class Leads(models.Model):
         if self.email_from and self.sudo().search([
             ('type', '=', 'lead'), ('id', '!=', lead_id),
             ('email_from', '=', self.email_from)], limit=1
-            ):
+        ):
+        
             return {
                 'warning': {
                     'title': _('Warning'),
