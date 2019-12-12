@@ -48,7 +48,7 @@ class HrExpense(models.Model):
             for item in products:
                 product_list += "'{}',".format(item.id)
             product_list += "]"
-            expense.product_list = product_list
+            expense.product_list = products.mapped('id')
 
     @api.multi
     def action_get_attachment_view(self):
