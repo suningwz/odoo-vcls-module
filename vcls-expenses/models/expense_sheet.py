@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 class ExpenseSheet(models.Model):
     _inherit = 'hr.expense.sheet'
 
-    def _default_project(self):
+    """def _default_project(self):
         if self.type == 'admin':
             def_project = self.env['project.project'].search([('project_type','=','internal'),('name','=','Admin Expenses')],limit=1)
             if def_project:
@@ -18,7 +18,7 @@ class ExpenseSheet(models.Model):
             else:
                 pass
         else:
-            pass
+            pass"""
 
     #################
     # CUSTOM FIELDS #
