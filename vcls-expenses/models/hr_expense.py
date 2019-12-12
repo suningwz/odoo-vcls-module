@@ -42,8 +42,9 @@ class HrExpense(models.Model):
     @api.depends('employee_id','project_id')
     def _get_product_list(self):
         for expense in self:
-            products = self.env['product.product'].search([('can_be_expensed', '=', True),'|',('company_id','=',False),('company_id','=',expense.employee_id.company_id)])
-            expense.product_list = products.mapped('id')
+            products = self.env['product.product'].search([('can_be_expensed', '=', True),'|',('company_id','=',False),('company_id','=',expense.employee_id.company_id.id)])
+            _logger.info("{}".format(products.mapped('id')))
+            expense.product_list = "{}".format(products.mapped('id'))
 
     @api.multi
     def action_get_attachment_view(self):
