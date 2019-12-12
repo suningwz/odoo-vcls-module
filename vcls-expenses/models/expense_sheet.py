@@ -42,6 +42,7 @@ class ExpenseSheet(models.Model):
     analytic_account_id = fields.Many2one(
         'account.analytic.account', 
         string='Analytic Account',
+        compute = '_compute_analytic_account',
     )
 
     sale_order_id = fields.Many2one(
@@ -107,6 +108,11 @@ class ExpenseSheet(models.Model):
                 else:
                     record.user_id = False
     
+    @api.depends('project_id')
+    def _compute_analytic_account(self):
+        for sheet in self:
+            sheet.analytic_account_id = sheet.project_id.analytic_account_id
+    
     @api.onchange('type')
     def change_type(self):
         for sheet in self:
@@ -121,7 +127,7 @@ class ExpenseSheet(models.Model):
             if rec.project_id:
                 # grab analytic account from the project
                 if rec.type == 'admin':
-                    rec.analytic_account_id = rec.project_id.analytic_account_id
+                    #rec.analytic_account_id = rec.project_id.analytic_account_id
                     rec.sale_order_id = False
 
                 # we look for the SO in case of project (to be able to re-invoice)
@@ -131,11 +137,11 @@ class ExpenseSheet(models.Model):
                         rec.sale_order_id = so.id
                     else:
                         rec.sale_order_id = False
-                    rec.analytic_account_id = False
+                    #rec.analytic_account_id = False
 
                 else:
                     rec.sale_order_id = False
-                    rec.analytic_account_id = False          
+                    #rec.analytic_account_id = False          
 
     @api.multi
     def open_pop_up_add_expense(self):
