@@ -12,7 +12,21 @@ class HrExpense(models.Model):
     _inherit = "hr.expense"
 
     is_product_employee = fields.Boolean(related='product_id.is_product_employee', readonly=True, string="Product Employee")
+
+    """type = fields.Selection([
+        ('project', 'Billable'),
+        ('admin', 'Non-Billable'),
+        #('mobility', 'Mobility'),
+    ], 
+    related = 'sheet_id.type')"""
+
+    product_list = fields.Many2many(
+        'product.product',
+        store = False,
+        related = '_get_product_list',
+    )
     
+
     project_id = fields.Many2one(
         'project.project', 
         related='sheet_id.project_id',
@@ -24,6 +38,12 @@ class HrExpense(models.Model):
         self._fields['unit_amount'].states = None
         self._fields['unit_amount'].readonly = False
         self._fields['product_uom_id'].readonly = True
+    
+    @api.multi
+    @api.depends('employee_id','project_id')
+    def _get_product_list(self):
+        for expense in self:
+            expense.product_list = self.env['product.product'].search([('can_be_expensed', '=', True),'|',('company_id','=',False),('company_id','=',expense.employee_id.company_id)])
 
     @api.multi
     def action_get_attachment_view(self):

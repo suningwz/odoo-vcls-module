@@ -179,7 +179,7 @@
                 </xpath>
 
                 <xpath expr="//button[@name='action_submit_sheet']" position="after">
-                    <button name="open_pop_up_add_expense" string="ADD EXPENSE" type="object" class="oe_highlight"/>
+                    <button name="open_pop_up_add_expense" string="ADD EXPENSE" type="object" states="draft" class="oe_highlight"/>
                 </xpath>
 
             </field>

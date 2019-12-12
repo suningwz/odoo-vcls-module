@@ -17,7 +17,7 @@
                                 <label for="quantity" />
                                 <div>
                                     <field name="quantity" class="oe_inline" />
-                                    <field name="product_uom_id" widget="selection" class="oe_inline" groups="uom.group_uom" readonly="1" force_save="1"/>
+                                    <field name="product_uom_id" widget="selection" class="oe_inline" groups="hr_expense.group_hr_expense_manager" readonly="1" force_save="1"/>
                                 </div>
                              </group>
                             <group>
@@ -39,7 +39,7 @@
 
                          </group>
                     </page>
-                    <page string="Finance">
+                    <page string="Finance" groups="hr_expense.group_hr_expense_manager">
                         <group>
                             <field name="tax_ids" domain="[('type_tax_use', '=', 'purchase')]" widget="many2many_tags" groups="account.group_account_user" />
                             <field name="reference" />
