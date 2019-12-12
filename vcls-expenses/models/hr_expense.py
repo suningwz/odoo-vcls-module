@@ -19,12 +19,13 @@ class HrExpense(models.Model):
         #('mobility', 'Mobility'),
     ], 
     related = 'sheet_id.type')
+    """
 
     product_list = fields.Char(
         store = False,
         compute = '_get_product_list',
     )
-    """
+    
     
 
     project_id = fields.Many2one(
