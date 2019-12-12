@@ -26,7 +26,7 @@ class AnalyticLine(models.Model):
         ('outofscope', 'Out Of Scope'),
         ], default='draft')
 
-    lc_comment = fields.Text(string="Comment")
+    lc_comment = fields.Char(string="Comment")
 
     deliverable_id = fields.Many2one(
         'product.deliverable',
@@ -53,7 +53,7 @@ class AnalyticLine(models.Model):
     # Rename description label
     name = fields.Char('External Comment', required=True)
 
-    internal_comment = fields.Char(string='Internal Comment')
+    internal_comment = fields.Char(string='')
 
     at_risk = fields.Boolean(string='Timesheet at risk', readonly=True)
 

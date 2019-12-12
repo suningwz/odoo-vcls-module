@@ -3,14 +3,15 @@
 from odoo import models, fields, api, _
 import lxml
 from itertools import groupby
-from datetime import date
+from datetime import date, datetime, time
+from datetime import timedelta
 
 from odoo.tools import email_re, email_split, email_escape_char, float_is_zero, float_compare, \
     pycompat, date_utils
 
 from odoo.exceptions import AccessError, UserError, RedirectWarning, ValidationError, Warning
 from collections import OrderedDict
-
+from odoo.tools import OrderedSet
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -36,16 +37,139 @@ class Invoice(models.Model):
         string='Parent Timesheet Limit Date',
         compute='compute_parent_quotation_timesheet_limite_date'
     )
+
+    period_start = fields.Date()
+    lc_laius = fields.Text()
+    scope_of_work = fields.Text()
+
     vcls_due_date = fields.Date(string='Custom Due Date', compute='_compute_vcls_due_date')
     origin_sale_orders = fields.Char(compute='compute_origin_sale_orders',string='Origin')
 
     ready_for_approval = fields.Boolean(default=False)
 
     invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
-    activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'activity.report.groupment')])
+    activity_report_template = fields.Many2one('ir.actions.report')
+
+    @api.multi
+    def _get_so_data(self):
+        self.ensure_one()
+        ### We look for info to build the Period start date
+        
+        period_start = self.timesheet_limit_date
+        min_date = period_start
+
+        if period_start:
+            for so in self.project_ids.mapped('sale_order_id'):
+                if so.invoicing_frequency == 'month':
+                    delta = 1
+                elif so.invoicing_frequency == 'trimester':
+                    delta = 3
+                else:
+                    delta = 0
+
+                if (period_start - timedelta(months=delta))<min_date:
+                    min_date = period_start - timedelta(months=delta)
+            
+            self.period_start = min_date
+
+    @api.multi
+    def _get_project_data(self):
+        self.ensure_one()
+        laius = ""
+        sow = ""
+        for project in self.project_ids:
+            #get last summary
+            if project.summary_ids:
+                last_summary = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0]
+                laius += "Project Status for {} on {}:\n{}\n\n".format(project.name,last_summary.create_date,self.html_to_string(last_summary.external_summary))
+            
+            #_logger.info("SOW {} -- {}".format(project.scope_of_work,self.html_to_string(project.scope_of_work)))
+            sow += "{}\n".format(self.html_to_string(project.scope_of_work))
+        
+        self.lc_laius = laius
+        self.scope_of_work = sow
+
+    @api.multi
+    def _get_activity_report_data(self, detailed=True):
+        self.ensure_one()
+        task_rate_matrix_data = {}
+        project_rate_matrix_data = {}
+        time_category_rate_matrix_data = {}
+        product_obj = self.env['product.product']
+        rate_product_ids = product_obj
+        projects_row_data = OrderedDict()
+        for timesheet_id in self.timesheet_ids:
+            # check if so line is invoiced
+            if not timesheet_id.so_line.qty_invoiced:
+                continue
+            project_id = timesheet_id.project_id
+            task_id = timesheet_id.task_id
+            parent_task_id = task_id.parent_id or task_id
+            rate_product_id = timesheet_id.so_line.product_id
+            rate_product_ids |= rate_product_id
+            time_category_id = timesheet_id.time_category_id
+            unit_amount = timesheet_id.unit_amount
+            # project matrix data
+            project_rate_matrix_key = (project_id, rate_product_id)
+            project_rate_matrix_data.setdefault(project_rate_matrix_key, 0.)
+            project_rate_matrix_data[project_rate_matrix_key] += unit_amount
+            tasks_row_data = projects_row_data.setdefault(project_id, OrderedDict())
+            # task matrix data
+            task_rate_matrix_key = (project_id, parent_task_id, rate_product_id)
+            task_rate_matrix_data.setdefault(task_rate_matrix_key, 0.)
+            task_rate_matrix_data[task_rate_matrix_key] += unit_amount
+            time_category_row_data = tasks_row_data.setdefault(parent_task_id, OrderedDict())
+            # time category matrix data
+            if detailed:
+                time_category_matrix_key = (project_id, parent_task_id, time_category_id, rate_product_id)
+                time_category_rate_matrix_data.setdefault(time_category_matrix_key, 0.)
+                time_category_rate_matrix_data[time_category_matrix_key] += unit_amount
+                time_category_row_data.setdefault(time_category_id, None)
+        # reorder rate_product_ids according to the richer one
+        rate_product_ids = product_obj.browse(OrderedSet([
+            couple[1].id for couple in
+            sorted(
+                [(project_id, rate_product_id)
+                    for project_id in projects_row_data.keys()
+                    for rate_product_id in rate_product_ids],
+                key=lambda key: project_rate_matrix_data[key],
+                reverse=True
+            )
+        ]))
+        return {
+            'project_rate_matrix_data': project_rate_matrix_data,
+            'task_rate_matrix_data': task_rate_matrix_data,
+            'time_category_rate_matrix_data': time_category_rate_matrix_data,
+            'rate_product_ids': rate_product_ids,
+            'projects_row_data': projects_row_data,
+        }
 
     @api.multi
     def _get_aggregated_invoice_report_data(self):
+        rate_data, rate_subtotal = self._get_aggregated_invoice_report_rate_data()
+        fixed_price_data = self._get_aggregated_invoice_report_fixed_price()
+        expenses_and_communication_data = self._get_invoice_report_expenses_and_communication()
+        return {
+            'rate_data': rate_data,
+            'fixed_price_data': fixed_price_data,
+            'expenses_and_communication_data': expenses_and_communication_data,
+            'rate_subtotal': rate_subtotal,
+        }
+
+    @api.multi
+    def _get_detailed_invoice_report_data(self):
+        rate_data, rate_subtotal = self._get_detailed_invoice_report_rate_data()
+        fixed_price_data = self._get_detailed_invoice_report_fixed_price()
+        expenses_and_communication_data = self._get_invoice_report_expenses_and_communication()
+        return {
+            'rate_data': rate_data,
+            'fixed_price_data': fixed_price_data,
+            'expenses_and_communication_data': expenses_and_communication_data,
+            'rate_subtotal': rate_subtotal,
+        }
+
+    @api.multi
+    def _get_aggregated_invoice_report_rate_data(self):
         """
         :param self:
         :return: ordered dictionary with the following structure
@@ -64,6 +188,8 @@ class Invoice(models.Model):
         total_not_taxed = 0.
         for timesheet_id in self.timesheet_ids:
             rate_sale_line_id = timesheet_id.so_line
+            if not rate_sale_line_id.qty_invoiced:
+                continue
             service_sale_line_id = timesheet_id.task_id.sale_line_id
             service_section_line_id = service_sale_line_id.section_line_id
             rates_dict = data.setdefault(service_section_line_id, OrderedDict())
@@ -76,11 +202,11 @@ class Invoice(models.Model):
             qty = timesheet_id.unit_amount_rounded
             values['qty'] += qty
             total_not_taxed += qty * values['price']
-        assert abs(total_not_taxed - self.amount_untaxed) < 0.001, _('Something went wrong')
-        return data
+        # assert abs(total_not_taxed - self.amount_untaxed) < 0.001, _('Something went wrong')
+        return data, total_not_taxed
 
     @api.multi
-    def _get_invoice_report_data(self):
+    def _get_detailed_invoice_report_rate_data(self):
         """
         :param self:
         :return: ordered dictionary with the following structure
@@ -99,6 +225,8 @@ class Invoice(models.Model):
         total_not_taxed = 0.
         for timesheet_id in self.timesheet_ids:
             rate_sale_line_id = timesheet_id.so_line
+            if not rate_sale_line_id.qty_invoiced:
+                continue
             task_id = timesheet_id.task_id
             rates_dict = data.setdefault(task_id, OrderedDict())
             values = rates_dict.setdefault(
@@ -110,8 +238,92 @@ class Invoice(models.Model):
             qty = timesheet_id.unit_amount_rounded
             values['qty'] += qty
             total_not_taxed += qty * values['price']
-        assert abs(total_not_taxed - self.amount_untaxed) < 0.001, _('Something went wrong')
+        # assert abs(total_not_taxed - self.amount_untaxed) < 0.001, _('Something went wrong')
+        return data, total_not_taxed
+
+    @api.multi
+    def _get_detailed_invoice_report_fixed_price(self):
+        """
+        :param self:
+        :return: ordered dictionary with the following structure
+        {
+            service_line_record : {
+                'subtotal': subtotal,
+                'currency_id': currency,
+            }
+        }
+        """
+        self.ensure_one()
+        fixed_price_data = OrderedDict()
+        for line in self.invoice_line_ids:
+            if line.product_id.vcls_type != 'vcls_service':
+                continue
+            fixed_price_data.setdefault(line, {
+                'subtotal': line.price_subtotal,
+                'currency_id': line.currency_id,
+            })
+        for key in list(fixed_price_data):
+            value = fixed_price_data[key]
+            if not value['subtotal']:
+                del fixed_price_data[key]
+        return fixed_price_data
+
+    @api.multi
+    def _get_invoice_report_expenses_and_communication(self):
+        """
+        :param self:
+        :return: ordered dictionary with the following structure
+        {
+            product_category_record : {
+                'subtotal': subtotal,
+                'currency_id': currency,
+            }
+        }
+        """
+        self.ensure_one()
+        data = OrderedDict()
+        for line in self.invoice_line_ids:
+            if line.product_id.vcls_type not in ('expense', 'communication'):
+                continue
+            value = data.setdefault(line.product_id.categ_id, {
+                'subtotal': 0.,
+                'currency_id': line.currency_id,
+            })
+            value['subtotal'] += line.price_subtotal
+        for key in list(data):
+            value = data[key]
+            if not value['subtotal']:
+                del data[key]
         return data
+
+    @api.multi
+    def _get_aggregated_invoice_report_fixed_price(self):
+        """
+        :param self:
+        :return: ordered dictionary with the following structure
+        {
+            service_section_line_record : {
+                'subtotal': subtotal,
+                'currency_id': currency,
+            }
+        }
+        """
+        self.ensure_one()
+        fixed_price_data = OrderedDict()
+        for line in self.invoice_line_ids:
+            if line.product_id.vcls_type != 'vcls_service':
+                continue
+            section_line_id = line.section_line_id
+            value = fixed_price_data.setdefault(section_line_id, {
+                'subtotal': 0.,
+                'currency_id': line.currency_id,
+            })
+            value['subtotal'] += line.price_subtotal
+        for key in list(fixed_price_data):
+            value = fixed_price_data[key]
+            if not value['subtotal']:
+                del fixed_price_data[key]
+        return fixed_price_data
 
     def get_communication_amount(self):
         total_amount = 0
@@ -167,6 +379,10 @@ class Invoice(models.Model):
     @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
+
+        ret._get_so_data()
+        ret._get_project_data()
+
         # Get the default activity_report_template if not set
         if not ret.activity_report_template:
             invoice_line_ids = self.invoice_line_ids.filtered(lambda l: not l.display_type)
@@ -230,7 +446,7 @@ class Invoice(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'target': 'new',
-            'res_model': 'activity.report.groupment',
+            'res_model': 'activity.report.wizard',
             'views': [(activity_form_id, 'form')],
             'view_id': activity_form_id,
             'context': ctx,
@@ -328,25 +544,3 @@ class Invoice(models.Model):
                 deliverable_lines += [line for line in same_deliverable]
                 deliverable_groups[deliverable_name] = deliverable_lines
         return deliverable_groups
-
-
-class AccountInvoiceLine(models.Model):
-    _inherit = 'account.invoice.line'
-
-    vcls_type = fields.Char(compute='linked_product_type', store=True)
-
-    @api.multi
-    @api.depends('product_id')
-    def linked_product_type(self):
-        for rec in self:
-            if rec.product_id.type == 'service' and rec.product_id.service_policy == 'delivered_timesheet' and \
-                    rec.product_id.service_tracking in ('no', 'project_only'):
-                rec.vcls_type = 'rates'
-            elif rec.product_id.type == 'service' and rec.product_id.service_policy == 'delivered_manual' and \
-                    rec.product_id.service_tracking == 'task_new_project' and \
-                    not any(l.product_id.seniority_level_id for l in rec.invoice_id.invoice_line_ids):
-                rec.vcls_type = 'fixed'
-            elif rec.product_id.type == 'service' and rec.product_id.service_policy == 'delivered_manual' and \
-                    rec.product_id.service_tracking == 'task_new_project' and \
-                    rec.invoice_id.invoice_line_ids.filtered(lambda r: r.product_id.seniority_level_id):
-                rec.vcls_type = 'tm'

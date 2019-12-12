@@ -54,7 +54,72 @@
                         }"
                     />
                 </button>
+
+                <field name="consummed_completed_ratio" position="after">
+                    <br/>
+                    <field name="valuation_ratio" widget="percentpie" nolabel="1"/>
+                </field>
+                
+                <xpath expr="//page[last()]" position="after">
+                    <page string="KPI" name="kpi">
+                    <group>
+                        <group string="Hours">
+                            <field name="forecasted_hours"/>
+                            <field name="realized_hours"/>
+                            <field name="valued_hours"/>
+                            <field name="invoiced_hours"/>
+                        </group>
+                        <group string="Budget">
+                            <field name="contractual_budget"/>
+                            <field name="forecasted_budget"/>
+                            <field name="realized_budget"/>
+                            <field name="valued_budget"/>
+                            <field name="invoiced_budget"/>
+                        </group>
+                    </group>
+                    </page>
+                </xpath>
             </field>
+        </record>
+
+        <record id="vcls_specific_project_form" model="ir.ui.view">
+                <field name="name">vcls.specific.project.form</field>
+                <field name="model">project.project</field>
+                <field name="inherit_id" ref="vcls-project.vcls_specific_project_form"/>
+                <field name="arch" type="xml">
+                    <button name="toggle_active" position="before">
+                        <button
+                            class="oe_stat_button"
+                            name="%(project_timesheet_forecast_report_action)d"
+                            type="action"
+                            icon="fa-calendar"
+                            string="Report Analysis"
+                        />
+                    </button>
+                    <page name="summaries" position="after">
+                        <page name="kpi_details" string="KPI Details">
+                            <group>
+                            <group string="Hours">
+                                <field name="forecasted_hours"/>
+                                <field name="realized_hours"/>
+                                <field name="valued_hours"/>
+                                <field name="invoiced_hours"/>
+                            </group>
+                            <group string="Budget">
+                                <field name="contractual_budget"/>
+                                <field name="forecasted_budget"/>
+                                <field name="realized_budget"/>
+                                <field name="valued_budget"/>
+                                <field name="invoiced_budget"/>
+                            </group>
+                            </group>
+                        </page>
+                    </page>
+                    <field name="consummed_completed_ratio" position="after">
+                        <br/>
+                        <field name="valuation_ratio" widget="percentpie" nolabel="1"/>
+                    </field> 
+                </field>
         </record>
 
     </data>

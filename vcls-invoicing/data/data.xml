@@ -6,11 +6,12 @@
             <field name="name">Invoicing</field>
         </record>
         <record id="product_communication_rate" model="product.template">
-            <field name="name">Communication rate</field>
+            <field name="name">Communication Rate</field>
             <field name="sale_ok" eval="True"/>
             <field name="purchase_ok" eval="False"/>
             <field name="active" eval="True" />
             <field name="type">service</field>
+            <field name="vcls_type">expense</field>
             <field name="service_tracking">no</field>
             <field name="service_policy">delivered_manual</field>
             <field name="categ_id" ref="product_category_invoice" />

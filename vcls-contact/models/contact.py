@@ -179,10 +179,34 @@ class ResPartner(models.Model):
     parent_id = fields.Many2one(
         track_visibility='always'
     )
+
+    vcls_contact_id = fields.Many2one(
+        'res.users',
+        string = "VCLS Sponsor",
+        domain = "[('employee','=',True)]",
+    )
+
+    client_status = fields.Selection([
+        ('new', 'New'),
+        ('active', 'Active'),
+        ('blacklisted', 'Blacklisted'),
+    ], compute='_get_client_status')
+
     ###################
     # COMPUTE METHODS #
     ###################
-    
+
+    @api.multi
+    @api.depends('sale_order_ids.state')
+    def _get_client_status(self):
+        for partner in self:
+            client_status = 'new'
+            for order_id in partner.sale_order_ids:
+                if order_id.state in ('sent', 'sale', 'done'):
+                    client_status = 'active'
+                    break
+            partner.client_status = client_status
+
     @api.depends('category_id', 'company_type')
     def _compute_visibility(self):
         for contact in self:

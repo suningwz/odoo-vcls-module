@@ -74,10 +74,12 @@ class SaleOrderLine(models.Model):
                 ])
                 if related_mapping:
                     related_mapping.sudo().unlink()
+
             # delete linked forecast
             related_forecasts = self.env['project.forecast'].sudo().search([
                 ('order_line_id', '=', order_line.id),
             ])
+            
             if related_forecasts:
                 related_forecasts.sudo().unlink()
             if order_line.vcls_type == 'vcls_service':

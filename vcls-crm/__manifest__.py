@@ -13,7 +13,7 @@
 
     'category': 'Uncategorized',
 
-    'version': '1.17',
+    'version': '1.18',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -36,6 +36,7 @@
         'vcls-risk',
         'sale_timesheet',
         'sale_purchase',
+        'sale_subscription',
         'vcls_security',
     ],
 

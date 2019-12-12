@@ -2,7 +2,7 @@
 <odoo>
     <record id="activity_report_form_view" model="ir.ui.view">
         <field name="name">Activity report</field>
-        <field name="model">activity.report.groupment</field>
+        <field name="model">activity.report.wizard</field>
         <field name="arch" type="xml">
             <form string="Invoice Sales Order">
                 <p class="oe_grey">

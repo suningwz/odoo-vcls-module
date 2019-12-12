@@ -58,18 +58,23 @@
                             <field name="active"/>
                         </group>
                         <group>
-                            <group>
-                                <field name="partner_id" string="Client"/>
-                                <field name="scope_of_work"/>
-                            </group>
+                            
+                            <field name="partner_id" string="Client"/>
+                            <field name="scope_of_work"/>
+                            
+                        </group>
+                        <group string="Project KPIs">
                             <group>
                                 <field name="completion_ratio" widget="percentpie" nolabel="1"/>
                                 <br/>
                                 <field name="consumed_value" widget="percentpie" nolabel="1"/>
+                            </group>
+                            <group>
                                 <br/>
                                 <field name="consummed_completed_ratio" string="Project Health Ratio" widget="percentpie" nolabel="1"/>
                             </group>
                         </group>
+                        
                         <group>
                             <group string="Core Team">
                                 <field name="sale_order_id" invisible="1"/>
@@ -308,6 +313,18 @@
         </record>
 
         <!-- VIEWS -->
+        <record model="ir.ui.view" id="project_project_view_form_simplified">
+            <field name="name">project.project.view.form.simplified</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.project_project_view_form_simplified"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="project_type"/>
+                </field>
+                
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="view_project_kanban_2">
             <field name="name">view_project_kanban_2</field>
             <field name="model">project.project</field>
@@ -352,7 +369,8 @@
             <field name="view_type">form</field>
             <field name="view_mode">kanban,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'kanban', 'view_id': ref('project.view_project_kanban')})]"/>
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>
             <field name="domain">['|',('project_type','!=', 'client'),('project_type','=',False)]</field>
         </record>
 

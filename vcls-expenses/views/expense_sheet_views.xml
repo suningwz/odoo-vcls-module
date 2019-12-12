@@ -1,77 +1,94 @@
 <odoo>
-  <data>
+    <data>
 
-    <!-- VIEWS OF ACTIONS -->
-    <record id="view_hr_expense_pop_up" model="ir.ui.view">
-      <field name="name">hr.expense.popup</field>
-      <field name="model">hr.expense</field>
-      <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
-      <field name="arch" type="xml">
-        <xpath expr="//header" position="replace">
-            <header invisible = "1">
-                  <button name="action_submit_expenses" string="Create Report" type="object" class="oe_highlight o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&lt;=', 0), ('sheet_id', '!=', False)]}"/>
-                  <widget name="attach_document" string="Attach Document" action="message_post" attrs="{'invisible': ['|', ('attachment_number', '&lt;', 1), ('id','=',False)]}"/>
-                  <widget name="attach_document" string="Attach Document" action="message_post" highlight="1" attrs="{'invisible': ['|',('attachment_number', '&gt;=', 1), ('id','=',False)]}"/>
-                  <button name="action_submit_expenses" string="Create Report" type="object" class="o_expense_submit" attrs="{'invisible': ['|', ('attachment_number', '&gt;=', 1), ('sheet_id', '!=', False)]}"/>
-                  <field name="state" widget="statusbar" statusbar_visible="draft,reported,approved,done,refused"/>
-                  <button name="action_view_sheet" type="object" string="View Report" class="oe_highlight" attrs="{'invisible': [('sheet_id', '=', False)]}"/>
-              </header>
-        </xpath>
-      </field>
-    </record>
+        <!-- VIEWS OF ACTIONS -->
+        <record id="view_hr_expense_pop_up" model="ir.ui.view">
+            <field name="name">hr.expense.popup</field>
+            <field name="model">hr.expense</field>
+            <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="replace">
+                    <header invisible="1">
+                        <button name="action_submit_expenses" string="Create Report" type="object"
+                                class="oe_highlight o_expense_submit"
+                                attrs="{'invisible': ['|', ('attachment_number', '&lt;=', 0), ('sheet_id', '!=', False)]}"/>
+                        <widget name="attach_document" string="Attach Document" action="message_post"
+                                attrs="{'invisible': ['|', ('attachment_number', '&lt;', 1), ('id','=',False)]}"/>
+                        <widget name="attach_document" string="Attach Document" action="message_post" highlight="1"
+                                attrs="{'invisible': ['|',('attachment_number', '&gt;=', 1), ('id','=',False)]}"/>
+                        <button name="action_submit_expenses" string="Create Report" type="object"
+                                class="o_expense_submit"
+                                attrs="{'invisible': ['|', ('attachment_number', '&gt;=', 1), ('sheet_id', '!=', False)]}"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="draft,reported,approved,done,refused"/>
+                        <button name="action_view_sheet" type="object" string="View Report" class="oe_highlight"
+                                attrs="{'invisible': [('sheet_id', '=', False)]}"/>
+                    </header>
+                </xpath>
+                <xpath expr="//form" position="inside">
+                    <footer>
+                        <button string="Add" class="btn-primary" special="save"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </xpath>
+            </field>
+        </record>
 
-    <!-- ACTIONS -->
-    <record id="action_pop_up_add_expense" model="ir.actions.act_window">
-      <field name="name">Add an expense</field>
-      <field name="res_model">hr.expense</field>
-      <field name="view_type">form</field>
-      <field name="view_mode">form</field>
-      <field name = 'view_id' ref='view_hr_expense_pop_up' />
-      <field name="target">new</field>
-    </record>
+        <!-- ACTIONS -->
+        <record id="action_pop_up_add_expense" model="ir.actions.act_window">
+            <field name="name">Add an expense</field>
+            <field name="res_model">hr.expense</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name='view_id' ref='view_hr_expense_pop_up'/>
+            <field name="target">new</field>
+        </record>
 
-    <!-- VIEWS -->     
-    <record id="view_hr_expense_attachment" model="ir.ui.view">
-      <field name="name">view_hr_expense_attachment</field>
-      <field name="model">ir.attachment</field>
-      <field name="arch" type="xml">
-        <form>
-          <sheet>
-                    <group>
+        <!-- VIEWS -->
+        <record id="view_hr_expense_attachment" model="ir.ui.view">
+            <field name="name">view_hr_expense_attachment</field>
+            <field name="model">ir.attachment</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
                         <group>
-                            <field name="name"/>
-                            <field name="folder_id" invisible="1"/>
-                            <field name="tag_ids" widget="many2many_tags" invisible="1"/>
-                            <field name="datas" filename="datas_fname" attrs="{'invisible':[('type','=','url')]}"/>
-                            <field name="datas_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}" class="oe_inline oe_right"/>
-                            <field name="owner_id" invisible="1"/>
-                            <field name="partner_id" invisible="1"/>
-                            <field name="file_size" invisible="1"/>
-                            <field name="type" readonly="1" invisible="1"/>
-                            <field name="url" invisible="1"/>
-                        </group>
-                        <group>
-                            <group invisible="1">
-                                <field name="thumbnail" nolabel="1" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;:&quot;thumbnail&quot;}"/>
+                            <group>
+                                <field name="name"/>
+                                <field name="folder_id" invisible="1"/>
+                                <field name="tag_ids" widget="many2many_tags" invisible="1"/>
+                                <field name="datas" filename="datas_fname" attrs="{'invisible':[('type','=','url')]}"/>
+                                <field name="datas_fname" invisible="1" attrs="{'invisible':[('type','=','url')]}"
+                                       class="oe_inline oe_right"/>
+                                <field name="owner_id" invisible="1"/>
+                                <field name="partner_id" invisible="1"/>
+                                <field name="file_size" invisible="1"/>
+                                <field name="type" readonly="1" invisible="1"/>
+                                <field name="url" invisible="1"/>
+                            </group>
+                            <group>
+                                <group invisible="1">
+                                    <field name="thumbnail" nolabel="1" widget="image" class="oe_avatar"
+                                           options="{&quot;preview_image&quot;:&quot;thumbnail&quot;}"/>
+                                </group>
                             </group>
                         </group>
-                    </group>
-                    <group invisible="1">
-                        <field name="res_model" readonly="1" attrs="{'invisible':[('res_model','=', False)]}"/>
-                        <field name="res_model_name" readonly="1" attrs="{ 'invisible' : [('res_model_name', '=', False)]}"/>
-                        <field name="create_date" readonly="1"/>
-                        <field name="create_uid" readonly="1"/>
-                        <field name="company_id" readonly="1"/>
-                        <field name="mimetype" readonly="1"/>
-                    </group>
-                </sheet>
-        </form>
-            
+                        <group invisible="1">
+                            <field name="res_model" readonly="1" attrs="{'invisible':[('res_model','=', False)]}"/>
+                            <field name="res_model_name" readonly="1"
+                                   attrs="{ 'invisible' : [('res_model_name', '=', False)]}"/>
+                            <field name="create_date" readonly="1"/>
+                            <field name="create_uid" readonly="1"/>
+                            <field name="company_id" readonly="1"/>
+                            <field name="mimetype" readonly="1"/>
+                        </group>
+                    </sheet>
+                </form>
 
-      </field>
-    </record>
 
-    <record id="action_attachment_expense" model="ir.actions.act_window">
+            </field>
+        </record>
+
+        <record id="action_attachment_expense" model="ir.actions.act_window">
             <field name="name">Attachments</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">ir.attachment</field>
@@ -81,82 +98,92 @@
             ]"/>
         </record>
 
-    <!-- ACTIONS 
-    <record id="action_pop_up_add_attachment" model="ir.actions.act_window">
-      <field name="name">Add an attachment</field>
-      <field name="res_model">hr.expense</field>
-      <field name="view_type">form</field>
-      <field name="view_mode">form</field>
-      <field name = 'view_id' ref='view_hr_expense_attachment' />
-      <field name="target">new</field>
-    </record>-->
+        <!-- ACTIONS
+        <record id="action_pop_up_add_attachment" model="ir.actions.act_window">
+          <field name="name">Add an attachment</field>
+          <field name="res_model">hr.expense</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name = 'view_id' ref='view_hr_expense_attachment' />
+          <field name="target">new</field>
+        </record>-->
 
-    
 
-    <record id="view_hr_expense_sheet_form" model="ir.ui.view">
-        <field name="name">product.template.timesheet.form</field>
-        <field name="model">hr.expense.sheet</field>
-        <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form"/>
-        <field name="arch" type="xml">
+        <record id="view_hr_expense_sheet_form" model="ir.ui.view">
+            <field name="name">view_hr_expense_sheet_form</field>
+            <field name="model">hr.expense.sheet</field>
+            <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form"/>
+            <field name="arch" type="xml">
 
-            <xpath expr="//field[@name='employee_id']" position="before">
-                <field name = 'type' />
-                <field name = 'project_id' required = "1" create = "0" context="{'search_type':type}"/>
-                <!--<field name = 'project_id' attrs="{'invisible': [('type', '!=', 'project')], 'required': [('type', '=', 'project')]}" />-->
-            </xpath>
+                <xpath expr="//field[@name='employee_id']" position="before">
+                    <field name='type'/>
+                    <field name='project_id' required="1" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}' context="{'search_type':type}"/>
+                    <!--<field name = 'project_id' attrs="{'invisible': [('type', '!=', 'project')], 'required': [('type', '=', 'project')]}" />-->
+                </xpath>
 
-            <field name="payment_mode" position="attributes">
-                <attribute name="invisible">1</attribute>
-            </field>
-
-            <field name="user_id" position="attributes">
-                <attribute name="readonly">1</attribute>
-            </field>
-
-            <button name="approve_expense_sheets" position="attributes">
-                <attribute name="string">FINANCE QC OK</attribute>
-            </button>
-
-            <xpath expr="//field[@name='payment_mode']" position="after">
-                <field name = 'analytic_account_id' invisible="1" />
-            </xpath>
-
-            <xpath expr="//field[@name='company_id']" position="replace">
-            </xpath>
-            <xpath expr="//field[@name='account_move_id']" position="after">
-                <field name = 'company_id' readonly = "1" />
-                <field name = 'sale_order_id' readonly = "1" />
-                <field name = 'analytic_account_id' readonly = "1" />
-            </xpath>
-
-            <!-- MAKE THE FIELD READONLY -->
-            <xpath expr="//field[@name='expense_line_ids']" position="replace">
-                <field name="expense_line_ids" nolabel="1" widget="many2many" domain="[('state', '=', 'draft')]" options="{'reload_on_button': True}" context="{'form_view_ref' : 'hr_expense.hr_expense_view_form_without_header', 'expense_adding_line': True}" readonly = "1">
-                  <tree decoration-danger="is_refused">
-                    <field name="date"/>
-                    <field name="name"/>
-                    <field name="state" invisible="1"/>
-                    <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
-                    <field name="analytic_tag_ids" widget="many2many_tags" groups="analytic.group_analytic_tags"/>
-                    <field name="message_unread" invisible="1"/>
-                    <field name="attachment_number" string=" "/>
-                    <button name="action_get_attachment_view" string="View Attachments" type="object" icon="fa-paperclip"/>
-                    <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/>
-                    <field name="currency_id" invisible="1"/>
-                    <field name="total_amount"/>
-                    <field name="company_currency_id" invisible="1"/>
-                    <field name="total_amount_company" groups="base.group_multi_currency"/>
-                    <field name="is_refused" invisible="True"/>
-                  </tree>
+                <field name="payment_mode" position="attributes">
+                    <attribute name="groups">hr_expense.group_hr_expense_manager</attribute>
                 </field>
-            </xpath>
 
-            <xpath expr="//button[@name='action_submit_sheet']" position="after">
-                <button name="open_pop_up_add_expense" string="ADD EXPENSE" type="object" class="oe_highlight" />
-            </xpath>
+                <field name="user_id" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </field>
 
-        </field>
-    </record>
+                <field name="employee_id" position="attributes">
+                    <attribute name="options">{"no_open": True,"no_create": 1, "no_create_edit": 1}</attribute>
+                </field>
 
-  </data>
+                <!--
+                <button name="approve_expense_sheets" position="attributes">
+                    <attribute name="string">FINANCE QC OK</attribute>
+                </button>-->
+
+                <xpath expr="//field[@name='payment_mode']" position="after">
+                    <field name='analytic_account_id' invisible="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='company_id']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='account_move_id']" position="after">
+                    <field name='company_id' readonly="1"/>
+                    <field name='sale_order_id' readonly="0"/>
+                    <field name='analytic_account_id' readonly="1"/>
+                </xpath>
+
+                <!-- MAKE THE FIELD READONLY -->
+                <xpath expr="//field[@name='expense_line_ids']" position="replace">
+                    <field name="expense_line_ids" nolabel="1" widget="many2many" domain="[('state', '=', 'draft')]"
+                           options="{'reload_on_button': True}"
+                           context="{'form_view_ref' : 'hr_expense.hr_expense_view_form_without_header', 'expense_adding_line': True}"
+                           readonly="1">
+                        <tree decoration-danger="is_refused">
+                            <field name="date"/>
+                            <field name="name"/>
+                            <field name="payment_mode"/>
+                            <field name="state" invisible="1"/>
+                            <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                            <field name="analytic_tag_ids" widget="many2many_tags"
+                                   groups="analytic.group_analytic_tags"/>
+                            <field name="message_unread" invisible="1"/>
+                            <field name="attachment_number" string=" "/>
+                            <button name="action_get_attachment_view" string="View Attachments" type="object"
+                                    icon="fa-paperclip"/>
+                            <field name="tax_ids" widget="many2many_tags" groups="account.group_account_user"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="total_amount"/>
+                            <field name="company_currency_id" invisible="1"/>
+                            <field name="total_amount_company" groups="base.group_multi_currency"/>
+                            <field name="is_refused" invisible="True"/>
+                        </tree>
+                    </field>
+                </xpath>
+
+                <xpath expr="//button[@name='action_submit_sheet']" position="after">
+                    <button name="open_pop_up_add_expense" string="ADD EXPENSE" type="object" states="draft" class="oe_highlight"/>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
 </odoo>

@@ -41,7 +41,7 @@ class SaleOrder(models.Model):
     
     invoicing_mode = fields.Selection([
         ('tm', 'Time & Material'), 
-        ('fixed_price', 'Fixed Price & Monthly Fees'), 
+        ('fixed_price', 'Fixed Price'), 
         ], default='tm',
         string="Invoicing Mode")
 
