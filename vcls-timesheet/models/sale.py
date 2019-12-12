@@ -170,7 +170,7 @@ class SaleOrderLine(models.Model):
         'order_id.invoicing_mode')
 
     def _get_invoice_qty(self):
-        """Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type"""
+        #Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type
         super()._get_invoice_qty()
         for line in self:
             #In Time & Material, we invoice the rate product lines and set the other services to 0
