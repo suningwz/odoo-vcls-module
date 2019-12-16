@@ -50,9 +50,9 @@
                     <attribute name="attrs">{'readonly': [('financial_config_readonly', '!=', True)]}</attribute>
                     <attribute name="force_save">1</attribute>
                 </xpath>
-                <field name="sale_order_template_id" position="after">
-                    <field name="activity_report_template"/>
-                </field>
+                <xpath expr="//group[@name='sale_pay']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
             </field>
     </record>
 
