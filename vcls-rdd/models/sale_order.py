@@ -205,6 +205,7 @@ class SaleOrderLine(models.Model):
         """
         Update qty delivered with migrating value if mig_qty_delivered is set
         """
+        super(SaleOrderLine, self)._compute_qty_delivered()
         lines_by_analytic = self.filtered(lambda sol: sol.qty_delivered_method == 'analytic')
         mapping = lines_by_analytic._get_delivered_quantity_by_analytic([('amount', '<=', 0.0)])
         for so_line in lines_by_analytic:
