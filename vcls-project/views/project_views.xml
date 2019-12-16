@@ -37,8 +37,8 @@
                                     type="action" icon="fa-calendar"/>
                             <button class="oe_stat_button" string="Timesheets" name="timesheets_tree_view"
                                     type="object" icon="fa-clock-o"/>
-                            <button class="oe_stat_button" string="Report Analysis" name="report_analysis_tree_view"
-                                    type="object" icon="fa-pencil-square-o"/>
+                            <!--<button class="oe_stat_button" string="Report Analysis" name="report_analysis_tree_view"
+                                    type="object" icon="fa-pencil-square-o"/>-->
                             <button class="oe_stat_button"
                                     name="core_team" type="object"
                                     icon="fa-stack-exchange" string="Core Team"
@@ -71,7 +71,7 @@
                             </group>
                             <group>
                                 <br/>
-                                <field name="consummed_completed_ratio" string="Project Health Ratio" widget="percentpie" nolabel="1"/>
+                                <field name="consummed_completed_ratio" string="BC / TC" widget="percentpie" nolabel="1"/>
                             </group>
                         </group>
                         
@@ -182,7 +182,7 @@
                                                         <field name="consumed_value" widget="percentage" nolabel="0"/>
                                                     </div>
                                                     <div>
-                                                        <field name="consumed_completed_ratio" string= "Project Health Ratio" widget="percentage"
+                                                        <field name="consumed_completed_ratio" string= "BC / TC" widget="percentage"
                                                             nolabel="0"/>
                                                     </div>
                                                 </div>
@@ -260,7 +260,7 @@
                             <br/>
                             <field name="consumed_value" widget="percentpie" nolabel="1"/>
                             <br/>
-                            <field name="consummed_completed_ratio" string="Project Health Ratio" widget="percentpie" nolabel="1"/>
+                            <field name="consummed_completed_ratio" string="BC / TC" widget="percentpie" nolabel="1"/>
                         </group>
                     </group>
                 </div>
@@ -298,7 +298,7 @@
                                                     <field name="consumed_value" widget="percentage" nolabel="0"/>
                                                 </div>
                                                 <div>
-                                                    <field name="consumed_completed_ratio" string= "Project Health Ratio" widget="percentage"
+                                                    <field name="consumed_completed_ratio" widget="percentage"
                                                            nolabel="0"/>
                                                 </div>
                                             </div>
