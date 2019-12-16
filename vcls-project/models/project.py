@@ -101,6 +101,20 @@ class Project(models.Model):
         store=True,
     )
 
+    invoiceable_amount = fields.Monetary(
+       related="sale_order_id.invoiceable_amount", readonly=True
+    )
+
+    invoicing_mode = fields.Selection(related="sale_order_id.invoicing_mode", readonly=True)
+
+    last_summary_date = fields.Datetime(string="Last Summary Date", compute="_compute_last_create_date", readonly=True)
+
+    @api.depends('summary_ids')
+    def _compute_last_create_date(self):
+        for project in self:
+            if project.summary_ids:
+                project.last_summary_date = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0].create_date
+
     def _get_risks(self):
         for project in self:
             project.risk_ids = self.env['risk'].search([
