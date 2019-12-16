@@ -157,10 +157,6 @@ class AnalyticLine(models.Model):
             if vals['unit_amount'] % 0.25 != 0:
                 old = vals.get('unit_amount', 0)
                 vals['unit_amount'] = math.ceil(old * 4) / 4
-                """_logger.info(
-                    "Timesheet Rounding from {} to {}"
-                    .format(old, 'unit_amount')
-                )"""
 
             # check if this is a timesheet at risk
             vals['at_risk'] = self.sudo()._get_at_risk_values(vals.get('project_id'),
@@ -346,6 +342,17 @@ class AnalyticLine(models.Model):
     @api.onchange('unit_amount_rounded', 'unit_amount')
     def get_required_lc_comment(self):
         for rec in self:
+            #we round to quarter to avoir the minute entry
+            if rec.unit_amount % 0.25 != 0:
+                rec.unit_amount = math.ceil(rec.unit_amount * 4) / 4
+            else:
+                pass
+            if rec.unit_amount_rounded % 0.25 != 0:
+                rec.unit_amount_rounded = math.ceil(rec.unit_amount_rounded * 4) / 4
+            else:
+                pass
+                 
+            #if the values aren't the same, then we force the lc_comment.
             if float_compare(rec.unit_amount_rounded, rec.unit_amount, precision_digits=2) == 0:
                 rec.required_lc_comment = False
             else:
