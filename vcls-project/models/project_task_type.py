@@ -8,7 +8,7 @@ class ProjectTaskType(models.Model):
     _inherit = 'project.task.type'
 
     completion_ratio = fields.Float(
-        string="Completion Ratio",
+        string="Task Complete",
         help="Task at this stage are inheriting related completion ratio."
     )
 
