@@ -55,7 +55,7 @@ class Project(models.Model):
     #ta_ids = fields.Many2many('hr.employee', string='Ta')
     completion_ratio = fields.Float('Task Complete', compute='compute_project_completion_ratio', store=True)
     consumed_value = fields.Float('Budget Consumed', compute='compute_project_consumed_value', store=True)
-    consummed_completed_ratio = fields.Float('Budget Consumed/Task Complete',
+    consummed_completed_ratio = fields.Float('BC / TC',
                                              compute='compute_project_consummed_completed_ratio', store=True)
     summary_ids = fields.One2many(
         'project.summary', 'project_id',

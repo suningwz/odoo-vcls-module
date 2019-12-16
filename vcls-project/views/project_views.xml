@@ -71,7 +71,7 @@
                             </group>
                             <group>
                                 <br/>
-                                <field name="consummed_completed_ratio" string="Project Health Ratio" widget="percentpie" nolabel="1"/>
+                                <field name="consummed_completed_ratio" string="BC / TC" widget="percentpie" nolabel="1"/>
                             </group>
                         </group>
                         
@@ -182,7 +182,7 @@
                                                         <field name="consumed_value" widget="percentage" nolabel="0"/>
                                                     </div>
                                                     <div>
-                                                        <field name="consumed_completed_ratio" string= "Project Health Ratio" widget="percentage"
+                                                        <field name="consumed_completed_ratio" string= "BC / TC" widget="percentage"
                                                             nolabel="0"/>
                                                     </div>
                                                 </div>
@@ -260,7 +260,7 @@
                             <br/>
                             <field name="consumed_value" widget="percentpie" nolabel="1"/>
                             <br/>
-                            <field name="consummed_completed_ratio" string="Project Health Ratio" widget="percentpie" nolabel="1"/>
+                            <field name="consummed_completed_ratio" string="BC / TC" widget="percentpie" nolabel="1"/>
                         </group>
                     </group>
                 </div>
