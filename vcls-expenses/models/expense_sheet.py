@@ -12,13 +12,8 @@ class ExpenseSheet(models.Model):
 
     @api.model
     def _default_project(self):
-        
-        def_project = self.env['project.project'].search([('project_type','=','internal'),('name','=','Non-Billable Expenses')],limit=1)
-        _logger.info("admin {}".format(def_project.name))
-        if def_project:
-            return def_project
-        else:
-            return False
+        return self.env['project.project'].search([('project_type','=','internal'),('name','=','Non-Billable Expenses')],limit=1)
+        #_logger.info("admin {}".format(def_project.name))
 
     #################
     # CUSTOM FIELDS #
@@ -122,7 +117,7 @@ class ExpenseSheet(models.Model):
     @api.onchange('project_id')
     def change_project(self):
         for rec in self:
-            _logger.info("EXPENSE PROJECT {}".format(rec.type))
+            #_logger.info("EXPENSE PROJECT {}".format(rec.type))
             if rec.project_id:
                 # grab analytic account from the project
                 if rec.type == 'admin':
