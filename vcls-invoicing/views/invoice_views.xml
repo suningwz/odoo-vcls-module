@@ -66,6 +66,8 @@
                     <field name="fiscal_position_id"/>
                     <field name="state"/>
                     <field name="origin_sale_orders"/>
+                    <field name="activity_ids"/>
+                    <field name="activity_state"/>
                 </tree>
             </field>
         </record>
