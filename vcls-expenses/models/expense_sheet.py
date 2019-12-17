@@ -29,7 +29,7 @@ class ExpenseSheet(models.Model):
     project_id = fields.Many2one(
         'project.project', 
         string='Related Project',
-        default = _default_project,
+        default = '_default_project',
         domain="[('parent_id','=',False)]",
     )
 
