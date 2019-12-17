@@ -15,14 +15,41 @@
             </field>
         </record>
 
+        <record id="view_pc_project_tree" model="ir.ui.view">
+            <field name="name">view_pc_project_tree</field>
+            <field name="model">project.project</field>
+            <field name="arch" type="xml">
+                <tree string="Project">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="user_id"/>
+                    <field name="invoiceable_amount"/>
+                    <field name="risk_score"/>
+                    <field name="risk_ids"  widget="many2many_tags"/>
+                    <field name="completion_ratio"/>
+                    <field name="consumed_value"/>
+                    <field name="consummed_completed_ratio"/>
+                    <field name="valuation_ratio"/>
+                    <field name="invoicing_mode"/>
+                    <field name="contractual_budget"/>
+                    <field name="forecasted_budget"/>
+                    <field name="realized_budget"/>
+                    <field name="valued_budget"/>
+                    <field name="invoiced_budget"/>
+                    <field name="last_summary_date"/>
+                </tree>
+            </field>
+        </record>
+
         <record id="action_pc_client_project" model="ir.actions.act_window">
             <field name="name">Projects</field>
             <field name="res_model">project.project</field>
             <field name="view_type">form</field>
-            <field name="view_mode">kanban,form</field>
+            <field name="view_mode">tree,activity,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-theme.view_pc_project_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]
+                "/>
             <field name="domain">[('project_type','=', 'client'),('parent_id','=', False)]</field>
             <field name="context">{"search_default_project_controller":1}</field>
         </record>
