@@ -362,3 +362,18 @@ class Project(models.Model):
                         }
                         project_id.sudo().activity_schedule(**activity_vals)
         return True
+
+    def invoicing_session_done(self):
+        """
+            Timesheets stage_id from pc_review to invoiceable
+        """
+        if not self.env.user.has_group('vcls_security.group_project_controller'):
+            raise ValidationError(_("You need to have the project controller access right."))
+        project_ids = self.browse(self._context.get('active_ids'))
+        all_projects = project_ids
+        for project in project_ids:
+            all_projects += project.child_id
+        timesheet_ids = self.env['account.analytic.line'].search([('main_project_id', 'in', all_projects.ids),
+                                                                 ('stage_id', '=', 'pc_review')])
+        if timesheet_ids:
+            timesheet_ids.write({'stage_id': 'invoiceable'})
