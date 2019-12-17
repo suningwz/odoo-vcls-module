@@ -10,24 +10,18 @@ _logger = logging.getLogger(__name__)
 class ExpenseSheet(models.Model):
     _inherit = 'hr.expense.sheet'
 
-    """def _default_project(self):
-        if self.type == 'admin':
-            def_project = self.env['project.project'].search([('project_type','=','internal'),('name','=','Admin Expenses')],limit=1)
-            if def_project:
-                self.project_id = def_project
-            else:
-                pass
-        else:
-            pass"""
+    @api.model
+    def _default_project(self):
+        return self.env['project.project'].search([('project_type','=','internal'),('name','=','Non-Billable Expenses')],limit=1).mapped('id')
+        ##_logger.info("admin {}".format(def_project.name))
 
     #################
     # CUSTOM FIELDS #
     #################
 
     type = fields.Selection([
-        ('project', 'Billable'),
+        #('project', 'Billable'),
         ('admin', 'Non-Billable'),
-        #('mobility', 'Mobility'),
     ], 
     required=True, string='Type', default='admin')
 
@@ -35,7 +29,7 @@ class ExpenseSheet(models.Model):
     project_id = fields.Many2one(
         'project.project', 
         string='Related Project',
-        #default = '_default_project',
+        default = _default_project,
         domain="[('parent_id','=',False)]",
     )
 
@@ -123,7 +117,7 @@ class ExpenseSheet(models.Model):
     @api.onchange('project_id')
     def change_project(self):
         for rec in self:
-            _logger.info("EXPENSE PROJECT {}".format(rec.type))
+            #_logger.info("EXPENSE PROJECT {}".format(rec.type))
             if rec.project_id:
                 # grab analytic account from the project
                 if rec.type == 'admin':
@@ -165,7 +159,7 @@ class ExpenseSheet(models.Model):
         self.address_id = self.employee_id.sudo().address_home_id
         self.department_id = self.employee_id.department_id
         #self.user_id = self.employee_id.expense_manager_id or self.employee_id.parent_id.user_id
-        self.journal_id = self.env['account.journal'].search([('type', '=', 'purchase'),('company_id', '=', self.employee_id.company_id.id)], limit=1)
+        self.journal_id = self.env['account.journal'].search([('type', '=', 'purchase'),('name', '=', 'Expenses'),('company_id', '=', self.employee_id.company_id.id)], limit=1)
         self.bank_journal_id = self.env['account.journal'].search([('type', 'in', ['cash', 'bank']),('company_id', '=', self.employee_id.company_id.id)], limit=1)
 
     

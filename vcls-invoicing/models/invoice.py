@@ -186,10 +186,9 @@ class Invoice(models.Model):
         self.ensure_one()
         data = OrderedDict()
         total_not_taxed = 0.
-        for timesheet_id in self.timesheet_ids:
+        for timesheet_id in self.timesheet_ids.filtered(lambda t: t.so_line.qty_invoiced)\
+                .sorted(lambda t: t.so_line.price_unit):
             rate_sale_line_id = timesheet_id.so_line
-            if not rate_sale_line_id.qty_invoiced:
-                continue
             service_sale_line_id = timesheet_id.task_id.sale_line_id
             service_section_line_id = service_sale_line_id.section_line_id
             rates_dict = data.setdefault(service_section_line_id, OrderedDict())
@@ -198,8 +197,13 @@ class Invoice(models.Model):
                     'qty': 0.,
                     'price': rate_sale_line_id.price_unit,
                     'currency_id': rate_sale_line_id.currency_id,
+                    'uom_id': rate_sale_line_id.product_uom,
                 })
-            qty = timesheet_id.unit_amount_rounded
+            timesheet_uom_id = timesheet_id.product_uom_id
+            qty = timesheet_uom_id._compute_quantity(
+                timesheet_id.unit_amount_rounded,
+                rate_sale_line_id.product_uom
+            )
             values['qty'] += qty
             total_not_taxed += qty * values['price']
         # assert abs(total_not_taxed - self.amount_untaxed) < 0.001, _('Something went wrong')
@@ -223,10 +227,9 @@ class Invoice(models.Model):
         self.ensure_one()
         data = OrderedDict()
         total_not_taxed = 0.
-        for timesheet_id in self.timesheet_ids:
+        for timesheet_id in self.timesheet_ids.filtered(lambda t: t.so_line.qty_invoiced)\
+                .sorted(lambda t: t.so_line.price_unit):
             rate_sale_line_id = timesheet_id.so_line
-            if not rate_sale_line_id.qty_invoiced:
-                continue
             task_id = timesheet_id.task_id
             rates_dict = data.setdefault(task_id, OrderedDict())
             values = rates_dict.setdefault(
@@ -234,8 +237,13 @@ class Invoice(models.Model):
                     'qty': 0.,
                     'price': rate_sale_line_id.price_unit,
                     'currency_id': rate_sale_line_id.currency_id,
+                    'uom_id': rate_sale_line_id.product_uom,
                 })
-            qty = timesheet_id.unit_amount_rounded
+            timesheet_uom_id = timesheet_id.product_uom_id
+            qty = timesheet_uom_id._compute_quantity(
+                timesheet_id.unit_amount_rounded,
+                rate_sale_line_id.product_uom
+            )
             values['qty'] += qty
             total_not_taxed += qty * values['price']
         # assert abs(total_not_taxed - self.amount_untaxed) < 0.001, _('Something went wrong')
@@ -361,6 +369,10 @@ class Invoice(models.Model):
             if activity_type:
                 users_to_notify = self.env['res.users']
                 users_to_notify |= invoice.partner_id.user_id
+                #we also notify the LM of the invoice admin
+                connected_employee = self.env['hr.employee'].search([('user_id','=',invoice.user_id.id)],limit=1)
+                if connected_employee:
+                    users_to_notify |= connected_employee.parent_id.user_id
                 #users_to_notify |= invoice.invoice_line_ids.mapped('')
                 #users_to_notify 
                 for user in users_to_notify:

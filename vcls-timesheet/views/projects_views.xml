@@ -1,9 +1,9 @@
 <odoo>
     <data>
-        <record id="project_timesheet_forecast_report_action" model="ir.actions.act_window">
+        <!--<record id="project_timesheet_forecast_report_action" model="ir.actions.act_window">
             <field name="name">Timesheet Forecast Analysis</field>
             <field name="res_model">project.timesheet.forecast.report.analysis</field>
-            <field name="view_mode">graph,pivot</field>
+            <field name="view_mode">pivot</field>
             <field name="search_view_id" ref="project_timesheet_forecast.project_timesheet_forecast_report_view_search"/>
             <field name="context">{
                 'pivot_row_groupby': ['employee_id'],
@@ -15,6 +15,17 @@
                 "search_default_project_id": [active_id], 
             }</field>
             <field name="help">This report performs analysis on your timesheet and forecast. This allow to have a global view of past forecast and what was really done. Comparing old estimation and effective work amount will help you to better plan your futur project.</field>
+        </record>-->
+
+        <record id="project_timesheet_forecast_report_action" model="ir.actions.act_window">
+            <field name="name">Project Follow-up Report Revenue</field>
+            <field name="res_model">project.timesheet.forecast.report.analysis</field>
+            <field name="view_mode">pivot</field>
+            <field name='view_id' ref='project_followup_report_pivot_view_revenue' />
+            <field name="context">{
+                "default_project_id": active_id, 
+                "search_default_project_id": [active_id],
+                }</field>
         </record>
     
         <record id="edit_project" model="ir.ui.view">

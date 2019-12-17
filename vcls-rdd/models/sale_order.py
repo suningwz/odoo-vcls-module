@@ -139,12 +139,30 @@ class SaleOrderLine(models.Model):
             order = self.env['sale.order'].browse(vals.get('order_id'))
             if not order.ts_invoicing_mode:
                 order.ts_invoicing_mode = invoicing_mode
+                if vals.get('section_name'):
+                    order._create_section(vals.get('section_name'))
+                    del vals['section_name']
+                vals['order_id'] = order.id
             elif order.ts_invoicing_mode != invoicing_mode:
                 if order.child_ids:
                     if vals.get('section_name'):
                         order.child_ids[0]._create_section(vals.get('section_name'))
                         del vals['section_name']
                     vals['order_id'] = order.child_ids[0].id
+                else:
+                    new_order = order.copy({'ts_invoicing_mode': invoicing_mode,
+                                            'parent_id': order.id,
+                                            'order_line': []})
+                    if vals.get('section_name'):
+                        new_order._create_section(vals.get('section_name'))
+                        del vals['section_name']
+                    vals['order_id'] = new_order.id
+            else:
+                if order.child_ids:
+                    if vals.get('section_name'):
+                        order._create_section(vals.get('section_name'))
+                        del vals['section_name']
+                    vals['order_id'] = order.id
                 else:
                     new_order = order.copy({'ts_invoicing_mode': invoicing_mode,
                                             'parent_id': order.id,
@@ -187,6 +205,7 @@ class SaleOrderLine(models.Model):
         """
         Update qty delivered with migrating value if mig_qty_delivered is set
         """
+        super(SaleOrderLine, self)._compute_qty_delivered()
         lines_by_analytic = self.filtered(lambda sol: sol.qty_delivered_method == 'analytic')
         mapping = lines_by_analytic._get_delivered_quantity_by_analytic([('amount', '<=', 0.0)])
         for so_line in lines_by_analytic:
