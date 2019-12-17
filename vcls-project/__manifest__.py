@@ -47,6 +47,7 @@
         'security/lc_security.xml',
         # DATA
         'data/end_of_project_cron.xml',
+        'data/project_server_action.xml',
         ### VIEWS ###
         'views/project_summary_views.xml',
         'views/task_type_views.xml',
