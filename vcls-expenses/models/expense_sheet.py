@@ -12,13 +12,11 @@ class ExpenseSheet(models.Model):
 
     @api.model
     def _default_project(self):
-        if self.type == 'admin':
-            def_project = self.env['project.project'].search([('project_type','=','internal'),('name','=','Non-Billable Expenses')],limit=1)
-            _logger.info("admin {}".format(def_project.name))
-            if def_project:
-                return def_project
-            else:
-                return False
+        
+        def_project = self.env['project.project'].search([('project_type','=','internal'),('name','=','Non-Billable Expenses')],limit=1)
+        _logger.info("admin {}".format(def_project.name))
+        if def_project:
+            return def_project
         else:
             return False
 
