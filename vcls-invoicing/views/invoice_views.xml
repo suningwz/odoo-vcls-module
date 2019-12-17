@@ -66,6 +66,8 @@
                     <field name="fiscal_position_id"/>
                     <field name="state"/>
                     <field name="origin_sale_orders"/>
+                    <field name="activity_ids"/>
+                    <field name="activity_state"/>
                 </tree>
             </field>
         </record>
@@ -84,7 +86,7 @@
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref='vcls-invoicing.ia_invoices_view_tree'/>
             <field name="domain">[]</field>
-            <field name="context">{'search_default_myinvoices':1,'group_by':['state']}</field>
+            <field name="context">{'search_default_myinvoices':1,'search_default_status':1}</field>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('ia_invoices_view_tree')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('account.invoice_form')}),

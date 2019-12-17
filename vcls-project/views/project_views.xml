@@ -336,6 +336,14 @@
                     <attribute name="create">0</attribute>
                     <attribute name="class">oe_background_grey o_kanban_dashboard o_project_kanban o_emphasize_colors o_vcls_open_form</attribute>
                 </xpath>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="risk_score"/>
+                </xpath>
+                <xpath expr="//div[@class='o_primary']" position="inside">
+                     <span class="badge badge-pill badge-danger" style="border: none;" t-if="record.risk_score.value > 0">
+                        Risk Score : <t t-esc="record.risk_score.value" />
+                    </span>
+                </xpath>
                 <a name="action_view_timesheet" position="replace"/>
             </field>
         </record>
