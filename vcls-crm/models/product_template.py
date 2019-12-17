@@ -76,7 +76,7 @@ class ProductTemplate(models.Model):
                     product.vcls_type = 'expense'
                     continue   
             
-            if product.purchase_ok:
+            if product.purchase_ok and product.name:
                 if 'Suppliers' in product.name :
                     product.vcls_type = 'project_supplier'
                 else:
