@@ -12,7 +12,7 @@ class ExpenseSheet(models.Model):
 
     @api.model
     def _default_project(self):
-        return self.env['project.project'].search([('project_type','=','internal'),('name','=','Non-Billable Expenses')],limit=1)
+        return self.env['project.project'].search([('project_type','=','internal'),('name','=','Non-Billable Expenses')],limit=1).mapped('id')
         #_logger.info("admin {}".format(def_project.name))
 
     #################
@@ -29,7 +29,7 @@ class ExpenseSheet(models.Model):
     project_id = fields.Many2one(
         'project.project', 
         string='Related Project',
-        default = '_default_project',
+        default = _default_project,
         domain="[('parent_id','=',False)]",
     )
 
