@@ -13,7 +13,7 @@ class ExpenseSheet(models.Model):
     @api.model
     def _default_project(self):
         return self.env['project.project'].search([('project_type','=','internal'),('name','=','Non-Billable Expenses')],limit=1).mapped('id')
-        #_logger.info("admin {}".format(def_project.name))
+        ##_logger.info("admin {}".format(def_project.name))
 
     #################
     # CUSTOM FIELDS #
