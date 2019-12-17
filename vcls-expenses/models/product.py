@@ -27,8 +27,9 @@ class Product(models.Model):
             if project.name == 'Mobility Boulogne':
                 _logger.info("MOBILITY {}".format(project.name))
                 product_ids = super(Product, self)._search(args, offset, None, order, count=count, access_rights_uid=access_rights_uid)
-                product_ids.filtered(lambda p: p.categ_id.name == 'Mobility Expenses')
-                return product_ids
+                products = self.browse(product_ids)
+                products = products.filtered(lambda p: p.categ_id.name == 'Mobility Expenses')
+                return products.ids
         
         #if we are in the context of a vcls custom search
         if vcls_company:
