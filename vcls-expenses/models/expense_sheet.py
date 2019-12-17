@@ -14,6 +14,7 @@ class ExpenseSheet(models.Model):
     def _default_project(self):
         if self.type == 'admin':
             def_project = self.env['project.project'].search([('project_type','=','internal'),('name','=','Non-Billable Expenses')],limit=1)
+            _logger.info("admin {}".format(def_project.name))
             if def_project:
                 return def_project
             else:
@@ -28,7 +29,6 @@ class ExpenseSheet(models.Model):
     type = fields.Selection([
         #('project', 'Billable'),
         ('admin', 'Non-Billable'),
-        #('mobility', 'Mobility'),
     ], 
     required=True, string='Type', default='admin')
 
