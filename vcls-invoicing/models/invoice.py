@@ -369,6 +369,10 @@ class Invoice(models.Model):
             if activity_type:
                 users_to_notify = self.env['res.users']
                 users_to_notify |= invoice.partner_id.user_id
+                #we also notify the LM of the invoice admin
+                connected_employee = self.env['hr.employee'].search([('user_id','=',invoice.user_id.id)],limit=1)
+                if connected_employee:
+                    users_to_notify |= connected_employee.parent_id.user_id
                 #users_to_notify |= invoice.invoice_line_ids.mapped('')
                 #users_to_notify 
                 for user in users_to_notify:
