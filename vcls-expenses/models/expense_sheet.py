@@ -10,22 +10,23 @@ _logger = logging.getLogger(__name__)
 class ExpenseSheet(models.Model):
     _inherit = 'hr.expense.sheet'
 
-    """def _default_project(self):
+    @api.model
+    def _default_project(self):
         if self.type == 'admin':
-            def_project = self.env['project.project'].search([('project_type','=','internal'),('name','=','Admin Expenses')],limit=1)
+            def_project = self.env['project.project'].search([('project_type','=','internal'),('name','=','Non-Billable Expenses')],limit=1)
             if def_project:
-                self.project_id = def_project
+                return def_project
             else:
-                pass
+                return False
         else:
-            pass"""
+            return False
 
     #################
     # CUSTOM FIELDS #
     #################
 
     type = fields.Selection([
-        ('project', 'Billable'),
+        #('project', 'Billable'),
         ('admin', 'Non-Billable'),
         #('mobility', 'Mobility'),
     ], 
@@ -35,7 +36,7 @@ class ExpenseSheet(models.Model):
     project_id = fields.Many2one(
         'project.project', 
         string='Related Project',
-        #default = '_default_project',
+        default = _default_project,
         domain="[('parent_id','=',False)]",
     )
 
