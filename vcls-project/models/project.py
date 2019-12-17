@@ -53,9 +53,9 @@ class Project(models.Model):
 
     #consultant_ids = fields.Many2many('hr.employee', string='Consultants')
     #ta_ids = fields.Many2many('hr.employee', string='Ta')
-    completion_ratio = fields.Float('Project completion', compute='compute_project_completion_ratio', store=True)
-    consumed_value = fields.Float('Consumed value', compute='compute_project_consumed_value', store=True)
-    consummed_completed_ratio = fields.Float('Consumed / Completion',
+    completion_ratio = fields.Float('Task Complete', compute='compute_project_completion_ratio', store=True)
+    consumed_value = fields.Float('Budget Consumed', compute='compute_project_consumed_value', store=True)
+    consummed_completed_ratio = fields.Float('BC / TC',
                                              compute='compute_project_consummed_completed_ratio', store=True)
     summary_ids = fields.One2many(
         'project.summary', 'project_id',
@@ -100,6 +100,20 @@ class Project(models.Model):
         compute='_compute_risk_score',
         store=True,
     )
+
+    invoiceable_amount = fields.Monetary(
+       related="sale_order_id.invoiceable_amount", readonly=True
+    )
+
+    invoicing_mode = fields.Selection(related="sale_order_id.invoicing_mode", readonly=True)
+
+    last_summary_date = fields.Datetime(string="Last Summary Date", compute="_compute_last_create_date", readonly=True)
+
+    @api.depends('summary_ids')
+    def _compute_last_create_date(self):
+        for project in self:
+            if project.summary_ids:
+                project.last_summary_date = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0].create_date
 
     def _get_risks(self):
         for project in self:
@@ -330,18 +344,36 @@ class Project(models.Model):
 
     @api.model
     def end_project_activities_scheduling(self):
-        for project in self.search([('active', '=', True)]):
-            if project.tasks and all(task.stage_id.status in ("completed", "cancelled") for task in project.task_ids):
+        for project_id in self.search([('active', '=', True), ('parent_id', '=', False)]):
+            task_ids = [task for child_id in project_id.child_id for task in child_id.task_ids]
+            if task_ids and all(task.stage_id.status in ("completed", "cancelled") for task in task_ids):
                 users_summary = {
-                    project.partner_id.user_id.id: _('Client Feedback'),
-                    project.user_id.id: _('End of project form filling'),
-                    project.partner_id.invoice_admin_id.id: _('Invoicing Closing')
-                }
-                activity_vals = {
-                    'act_type_xmlid': 'mail.mail_activity_data_todo',
-                    'automated': True
+                    project_id.partner_id.user_id.id: _('Client Feedback'),
+                    project_id.user_id.id: _('End of project form filling'),
+                    project_id.partner_id.invoice_admin_id.id: _('Invoicing Closing')
                 }
                 for user_id, summary in users_summary.items():
                     if user_id:
-                        activity_vals.update({'user_id': user_id, 'summary': summary})
-                        project.sudo().activity_schedule(**activity_vals)
+                        activity_vals = {
+                            'user_id': user_id,
+                            'summary': summary,
+                            'act_type_xmlid': 'mail.mail_activity_data_todo',
+                            'automated': True,
+                        }
+                        project_id.sudo().activity_schedule(**activity_vals)
+        return True
+
+    def invoicing_session_done(self):
+        """
+            Timesheets stage_id from pc_review to invoiceable
+        """
+        if not self.env.user.has_group('vcls_security.group_project_controller'):
+            raise ValidationError(_("You need to have the project controller access right."))
+        project_ids = self.browse(self._context.get('active_ids'))
+        all_projects = project_ids
+        for project in project_ids:
+            all_projects += project.child_id
+        timesheet_ids = self.env['account.analytic.line'].search([('main_project_id', 'in', all_projects.ids),
+                                                                 ('stage_id', '=', 'pc_review')])
+        if timesheet_ids:
+            timesheet_ids.write({'stage_id': 'invoiceable'})

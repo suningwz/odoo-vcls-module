@@ -9,7 +9,7 @@ class CrmLead(models.Model):
     agreement_id = fields.Many2one(
         'agreement',
         string='Related Agreement',
-        domain="['|',('partner_id','=',partner_id),('partner_id','=',partner_id.parent_id)]",
+        domain="['|',('partner_id','=',partner_id),('partner_id.parent_id','=',partner_id)]",
     )
 
     def _compute_agreement_count(self):

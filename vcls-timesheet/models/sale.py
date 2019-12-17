@@ -131,12 +131,14 @@ class SaleOrderLine(models.Model):
     @api.multi
     @api.depends(
         'product_uom_qty',
+        'amount_delivered_from_task',
         'price_unit',
         'task_id.stage_id',
         'order_id.invoicing_mode')
     def _compute_qty_delivered(self):
         """Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type"""
-        
+
+        _logger.info("QTY DELIVERED: {}".format(len(self)))
         super()._compute_qty_delivered()
         for line in self:
             #In Time & Material, we invoice the rate product lines and set the other services to 0
@@ -157,28 +159,18 @@ class SaleOrderLine(models.Model):
             else:
                 pass
 
-            #_logger.info("QTY DELIVERED: {} {} {} {}".format(line.order_id.invoicing_mode,line.product_id.vcls_type,line.name,line.qty_delivered))
+            _logger.info("QTY DELIVERED: {} {} {} {}".format(line.order_id.invoicing_mode,line.product_id.vcls_type,line.name,line.qty_delivered))
     
-    @api.multi
+    """@api.multi
     @api.depends(
         'product_uom_qty',
         'price_unit',
+        'amount_invoiced_from_task',
         'task_id.stage_id',
         'order_id.invoicing_mode')
 
     def _get_invoice_qty(self):
-        for line in self:
-            if line._is_linked_to_milestone_product():
-                if line.price_unit:
-                    line.qty_invoiced = (
-                        line.product_uom_qty
-                        * line.amount_invoiced_from_task
-                        / line.price_unit
-                    )
-                else:
-                    line.qty_invoiced = 0.
-    
-        """Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type"""
+        #Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type
         super()._get_invoice_qty()
         for line in self:
             #In Time & Material, we invoice the rate product lines and set the other services to 0
@@ -195,7 +187,7 @@ class SaleOrderLine(models.Model):
                     pass
             
             else:
-                pass
+                pass"""
 
     # We need to override the OCA to take the rounded_unit_amount in account rather than the standard unit_amount
     @api.multi

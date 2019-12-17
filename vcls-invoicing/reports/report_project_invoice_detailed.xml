@@ -106,11 +106,15 @@
                     <t t-foreach="list(rate_data.keys())" t-as="task_id">
                         <t t-set="rates_dict" t-value="rate_data[task_id]"/>
                         <thead>
+                        <tr t-if="not task_id_first">
+                            <!-- an inter table spacing-->
+                            <th colspan="4"></th>
+                        </tr>
                         <tr><th colspan="4">
                             <t t-esc="task_id.name"/>
                         </th></tr>
                         <tr>
-                            <th>Rate</th>
+                            <th>Description</th>
                             <th>Quantity</th>
                             <th>Price</th>
                             <th>Total</th>
@@ -118,12 +122,14 @@
                         </thead>
                         <tbody>
                         <t t-foreach="list(rates_dict.keys())" t-as="rate_sale_line_id">
-                        <tr t-att-style="'border-bottom: 4px solid;' if rate_sale_line_id_last
-                            and not task_id_last else ''">
+                        <tr>
                             <t t-set="rate_values" t-value="rates_dict[rate_sale_line_id]"/>
                             <t t-set="currency_id" t-value="rate_values['currency_id']"/>
                             <td><t t-esc="rate_sale_line_id.name"/></td>
-                            <td class="text-right"><t t-esc="rate_values['qty']"/></td>
+                            <td class="text-right">
+                                <t t-esc="rate_values['qty']"/>&amp;nbsp;
+                                <t t-esc="rate_values['uom_id'].name"/>
+                            </td>
                             <td class="text-right"><t t-esc="rate_values['price']"
                             t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
                             <td class="text-right"><t t-esc="rate_values['qty'] * rate_values['price']"

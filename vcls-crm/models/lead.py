@@ -44,6 +44,7 @@ class Leads(models.Model):
             ('type', '=', 'lead'), ('id', '!=', lead_id),
             ('email_from', '=', self.email_from)], limit=1
         ):
+        
             return {
                 'warning': {
                     'title': _('Warning'),

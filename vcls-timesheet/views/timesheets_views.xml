@@ -423,6 +423,9 @@
             <field name="model">account.analytic.line</field>
             <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_tree"/>
             <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="lc_comment" string="Internal Comment"/>
+                </field>
                 <xpath expr="//tree" position="attributes">
                     <attribute name="decoration-danger">at_risk==True</attribute>
                 </xpath>

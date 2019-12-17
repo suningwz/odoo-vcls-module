@@ -37,12 +37,12 @@ class ProjectTask(models.Model):
     )
 
     completion_ratio = fields.Float(
-        string='Task Completion',
+        string='Task Complete',
         related='stage_id.completion_ratio',
         group_operator='avg',
     )
     completion_elligible = fields.Boolean(string='Completion eligibility')
-    consummed_completed_ratio = fields.Float(compute='compute_consummed_completed_ratio', store=True)
+    consummed_completed_ratio = fields.Float(compute='compute_consummed_completed_ratio', store=True, string="Budget Consumed/Task Complete")
 
     stage_allow_ts = fields.Boolean(
         related = 'stage_id.allow_timesheet', string='Stage allow timesheets'

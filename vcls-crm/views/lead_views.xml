@@ -280,22 +280,6 @@
                     </group>
                 </page>
                 
-                <!--
-                <page name="resources" string="Resources">
-                    <group>
-                        <field name="resources_ids">
-                            <tree editable="bottom">
-                                <field name="project_role_id" no_create_edit="True" options="{'no_quick_create': True, 'no_create_edit' : True}" no_create="True"/>
-                                <field name="number" />
-                            </tree>
-                        </field>
-                    </group>
-                </page>
-                
-                <page string="Internal Notes" modifiers="{}">
-				    <field name="description" modifiers="{}"/>
-			    </page>
-                -->
                  
             </xpath>
 

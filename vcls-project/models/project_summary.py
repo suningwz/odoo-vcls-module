@@ -22,9 +22,9 @@ class ProjectSummary(models.Model):
     external_summary = fields.Html(
         'External summary'
     )
-    completion_ratio = fields.Float('Project completion')
-    consumed_value = fields.Float('Consumed value')
-    consumed_completed_ratio = fields.Float('Consumed completed value')
+    completion_ratio = fields.Float('Task Complete')
+    consumed_value = fields.Float('Budget Consumed')
+    consumed_completed_ratio = fields.Float('Budget Consumed/Task Complete')
 
     @api.multi
     def name_get(self):

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="vcls_server_action_invoicing_session_done" model="ir.actions.server">
+            <field name="name">Invoicing Session Done</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="model_project_project"/>
+            <field name="binding_model_id" ref="model_project_project"/>
+            <field name="state">code</field>
+            <field name="code">model.invoicing_session_done()</field>
+        </record>
+
+    </data>
+</odoo>
