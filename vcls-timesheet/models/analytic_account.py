@@ -288,7 +288,7 @@ class AnalyticLine(models.Model):
         if not user_authorized:
             raise ValidationError(_("You need to be part of the 'Project Controller' group to perform this operation. Thank you."))
 
-        _logger.info("NEW TS STAGE:{}".format(new_stage))
+        #_logger.info("NEW TS STAGE:{}".format(new_stage))
 
         if new_stage=='invoiceable':
             timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='pc_review' or r.stage_id=='carry_forward'))
