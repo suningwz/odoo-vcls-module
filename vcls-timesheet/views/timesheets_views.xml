@@ -165,7 +165,7 @@
                 <search string="Timesheet">
                     <field name="project_id"/>
                     <field name="task_id"/>
-                    <field name="rate_id"/>
+                    <field name="rate_id" string="Role"/>
                     <field name="employee_id"/>
                     <field name="date"/>
                     <field name="stage_id"/>
@@ -190,7 +190,7 @@
             <field name="name">vcls-timesheet.ia.view.tree</field>
             <field name="model">account.analytic.line</field>
             <field name="arch" type="xml">
-                <tree string="After Invoicing Session" editable="bottom" create="0" edit="0" >
+                <tree string="Invoicing Session" editable="bottom" create="0" edit="0" >
                     <field name="date" readonly="1" />
                     <field name="project_id" readonly="1" />
                     <field name="task_id" readonly="1"/>
