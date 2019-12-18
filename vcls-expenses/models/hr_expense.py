@@ -79,3 +79,14 @@ class HrExpense(models.Model):
             if expense.account_id.company_id != expense.company_id:
                 raise ValidationError(
                     _('Error! Expense company must be the same as the account company.'))
+
+    @api.multi
+    def open_pop_up_line(self):
+        self.ensure_one()
+        action = self.env.ref('vcls-expenses.action_pop_up_add_expense').read()[0]
+        action.update({
+            'res_id': self.id,
+            'flags': {'mode': 'readonly'},
+            'context': {'create': False},
+        })
+        return action
