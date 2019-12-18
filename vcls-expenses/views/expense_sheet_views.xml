@@ -154,6 +154,7 @@
                             <field name="company_currency_id" invisible="1"/>
                             <field name="total_amount_company" groups="base.group_multi_currency"/>
                             <field name="is_refused" invisible="True"/>
+                            <button class="oe_stat_button" name="open_pop_up_line" string="Display" type="object" icon="fa-search-plus"/>
                         </tree>
                     </field>
                 </xpath>
