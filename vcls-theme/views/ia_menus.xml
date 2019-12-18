@@ -43,7 +43,7 @@
 
         <menuitem
                 id="menu_ia_session_ts"
-                name="Invoiceable Timesheets"
+                name="Timesheets"
                 parent="menu_ia_session"
                 sequence="3"
                 action="vcls-timesheet.action_vcls_timesheet_tree_ia"    
