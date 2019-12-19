@@ -205,16 +205,16 @@ class SaleOrderLine(models.Model):
         """
         Update qty delivered with migrating value if mig_qty_delivered is set
         """
-        super(SaleOrderLine, self)._compute_qty_delivered()
-        lines_by_analytic = self.filtered(lambda sol: sol.qty_delivered_method == 'analytic')
-        mapping = lines_by_analytic._get_delivered_quantity_by_analytic([('amount', '<=', 0.0)])
-        for so_line in lines_by_analytic:
-            so_line.qty_delivered = mapping.get(so_line.id, 0.0)
-        # compute for manual lines
-        for line in self:
-            qty_delivered = line.mig_qty_delivered
-            if not qty_delivered and line.qty_delivered_method == 'manual':
-                qty_delivered = line.qty_delivered_manual or 0.0
-            line.qty_delivered = qty_delivered
-
-
+        if self.env.user.context_data_integration:
+            lines_by_analytic = self.filtered(lambda sol: sol.qty_delivered_method == 'analytic')
+            mapping = lines_by_analytic._get_delivered_quantity_by_analytic([('amount', '<=', 0.0)])
+            for so_line in lines_by_analytic:
+                so_line.qty_delivered = mapping.get(so_line.id, 0.0)
+            # compute for manual lines
+            for line in self:
+                qty_delivered = line.mig_qty_delivered
+                if not qty_delivered and line.qty_delivered_method == 'manual':
+                    qty_delivered = line.qty_delivered_manual or 0.0
+                line.qty_delivered = qty_delivered
+        else:
+            return super(SaleOrderLine, self)._compute_qty_delivered()
