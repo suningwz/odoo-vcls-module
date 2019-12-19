@@ -115,6 +115,8 @@
                                 <field name="realized_hours"/>
                                 <field name="valued_hours"/>
                                 <field name="invoiced_hours"/>
+                                <field name="pc_hours"/>
+                                <field name="cf_hours"/>
                             </group>
                             <group string="Budget">
                                 <field name="contractual_budget"/>
@@ -122,6 +124,8 @@
                                 <field name="realized_budget"/>
                                 <field name="valued_budget"/>
                                 <field name="invoiced_budget"/>
+                                <field name="pc_budget"/>
+                                <field name="cf_budget"/>
                             </group>
                             </group>
                         </page>

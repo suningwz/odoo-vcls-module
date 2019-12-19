@@ -26,17 +26,24 @@ class ProjectTask(models.Model):
         'project.forecast',
         'task_id'
     )
+
     contractual_budget = fields.Float(string="Contractual Budget",readonly=True)
     forecasted_budget = fields.Float(string="Forecasted Budget",readonly=True)
     realized_budget = fields.Float(string="Realized Budget",readonly=True)
     valued_budget = fields.Float(string="Valued Budget",readonly=True)
     invoiced_budget = fields.Float(string="Invoiced Budget",readonly=True)
+
     forecasted_hours = fields.Float(string="Forecasted Hours",readonly=True)
     realized_hours = fields.Float(string="Realized Hours",readonly=True)
     valued_hours = fields.Float(string="Valued Hours",readonly=True)
     invoiced_hours = fields.Float(string="Invoiced Hours",readonly=True)
     valuation_ratio = fields.Float(string="Valuation Ratio",readonly=True)
     recompute_kpi = fields.Boolean(compute='_get_to_recompute', store=True)
+
+    pc_budget = fields.Float(string="PC Review Budget",readonly=True)
+    cf_budget = fields.Float(string="Carry Forward Budget",readonly=True)
+    pc_hours = fields.Float(string="PC Review Hours",readonly=True)
+    cf_hours = fields.Float(string="Carry Forward Hours",readonly=True)
 
     @api.depends(
         'sale_line_id.price_unit',
@@ -78,6 +85,14 @@ class ProjectTask(models.Model):
                 task.timesheet_ids.filtered(lambda t: t.stage_id not in ('draft', 'outofscope'))
                     .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
             )
+            task.pc_budget = sum(
+                task.timesheet_ids.filtered(lambda t: t.stage_id in ('pc_review'))
+                    .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
+            )
+            task.cf_budget = sum(
+                task.timesheet_ids.filtered(lambda t: t.stage_id in ('carry_forward'))
+                    .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
+            )
             task.invoiced_budget = sum(
                 task.timesheet_ids.filtered(lambda t: t.stage_id == 'invoiced')
                     .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
@@ -88,6 +103,12 @@ class ProjectTask(models.Model):
             ).mapped('unit_amount'))
             task.valued_hours = sum(task.timesheet_ids.filtered(
                 lambda t: t.stage_id not in ('draft', 'outofscope')
+            ).mapped('unit_amount_rounded'))
+            task.pc_hours = sum(task.timesheet_ids.filtered(
+                lambda t: t.stage_id not in ('pc_review')
+            ).mapped('unit_amount_rounded'))
+            task.cf_hours = sum(task.timesheet_ids.filtered(
+                lambda t: t.stage_id not in ('carry_forward')
             ).mapped('unit_amount_rounded'))
             task.invoiced_hours = sum(task.timesheet_ids.filtered(
                 lambda t: t.stage_id == 'invoiced'
