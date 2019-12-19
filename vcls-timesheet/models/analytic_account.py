@@ -288,16 +288,17 @@ class AnalyticLine(models.Model):
         if not user_authorized:
             raise ValidationError(_("You need to be part of the 'Project Controller' group to perform this operation. Thank you."))
 
-        _logger.info("NEW TS STAGE:{}".format(new_stage))
+        #_logger.info("NEW TS STAGE:{}".format(new_stage))
 
         if new_stage=='invoiceable':
             timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='pc_review' or r.stage_id=='carry_forward'))
 
-            adj_validation_timesheets = timesheets_in.filtered(lambda r: r.required_lc_comment == True)
-            invoiceable_timesheets = (timesheets_in - adj_validation_timesheets) if adj_validation_timesheets else timesheets_in
+            #adj_validation_timesheets = timesheets_in.filtered(lambda r: r.required_lc_comment == True)
+            #invoiceable_timesheets = (timesheets_in - adj_validation_timesheets) if adj_validation_timesheets else timesheets_in
 
-            adj_validation_timesheets.write({'stage_id': 'adjustment_validation'})
-            invoiceable_timesheets.write({'stage_id': 'invoiceable'})
+            #adj_validation_timesheets.write({'stage_id': 'adjustment_validation'})
+            #invoiceable_timesheets.write({'stage_id': 'invoiceable'})
+            timesheets_in.write({'stage_id': 'invoiceable'})
 
         elif new_stage=='outofscope':
             timesheets_in = timesheets.filtered(lambda r: (r.stage_id=='pc_review' or r.stage_id=='carry_forward'))

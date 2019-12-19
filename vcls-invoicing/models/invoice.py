@@ -373,7 +373,8 @@ class Invoice(models.Model):
                 connected_employee = self.env['hr.employee'].search([('user_id','=',invoice.user_id.id)],limit=1)
                 if connected_employee:
                     users_to_notify |= connected_employee.parent_id.user_id
-                #users_to_notify |= invoice.invoice_line_ids.mapped('')
+                #we add the LC's
+                users_to_notify |= invoice.project_ids.mapped('user_id')
                 #users_to_notify 
                 for user in users_to_notify:
                     self.env['mail.activity'].create({
