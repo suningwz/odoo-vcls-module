@@ -102,7 +102,7 @@ class Project(models.Model):
     )
 
     invoiceable_amount = fields.Monetary(
-       related="sale_order_id.invoiceable_amount", readonly=True
+       related="sale_order_id.invoiceable_amount", readonly=True, store=True
     )
 
     invoicing_mode = fields.Selection(related="sale_order_id.invoicing_mode", readonly=True)
