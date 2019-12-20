@@ -93,13 +93,17 @@ class HrExpense(models.Model):
     
     @api.model
     def create(self, vals):
-        _logger.info("EXP CREATE {}".format(vals))
-        if vals.get('project_id', False):
-            project = self.env['project.project'].browse(vals.get('project_id'))
-            if 'Mobility' in project.name:
-                vals['payment_mode'] = 'company_account'
+
+        expense = super(HrExpense, self).create(vals)
+        if expense.project_id:
+            if 'Mobility' in expense.project_id.name:
+                expense.payment_mode = 'company_account'
+            else:
+                pass
+        else:
+            pass
             
-        return super(HrExpense, self).create(vals)
+        return expense
 
     @api.multi
     def write(self, vals):
