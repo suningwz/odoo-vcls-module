@@ -59,8 +59,12 @@ class ProjectTask(models.Model):
             task.recompute_kpi = True
 
     @api.model
-    def _cron_compute_kpi(self):
-        tasks = self.search([('recompute_kpi', '=', True)])
+    def _cron_compute_kpi(self,force=False):
+        if force:
+            tasks = self.search([])
+        else:
+            tasks = self.search([('recompute_kpi', '=', True)])
+            
         projects = self.env['project.project']
         tasks._get_kpi()
         for task in tasks:
