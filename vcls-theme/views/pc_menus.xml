@@ -9,12 +9,12 @@
                 <field name="user_id" position="attributes">
                         <attribute name="String">Lead Consultant</attribute>
                 </field>
-                <filter name="Manager" position="attributes">
+                <xpath expr="//filter[@name='Manager']" position="attributes">
                         <attribute name="String">Lead Consultant</attribute>
-                </filter>
-                <filter name="Partner" position="attributes">
+                </xpath>
+                <xpath expr="//filter[@name='Partner']" position="attributes">
                         <attribute name="String">Client</attribute>
-                </filter>
+                </xpath>
 
                 <xpath expr="//field[@name='user_id']" position="after">
                     <separator/>
