@@ -21,7 +21,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,activity,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-project.view_pc_project_tree')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-timesheet.view_pc_project_tree')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]
                 "/>
             <field name="domain">[('project_type','=', 'client'),('parent_id','=', False)]</field>
