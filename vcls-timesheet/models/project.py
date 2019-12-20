@@ -3,6 +3,9 @@
 from odoo import models, fields, api
 from datetime import datetime
 
+import logging
+_logger = logging.getLogger(__name__)
+
 
 class Project(models.Model):
     _inherit = 'project.project'
@@ -46,5 +49,6 @@ class Project(models.Model):
             project.valuation_ratio = 100.0*(project.valued_hours / project.realized_hours) if project.realized_hours else False
 
             #we recompute the invoiceable amount
-            project.sale_order_id.order_line._compute_untaxed_amount_to_invoice()
+            project.sale_order_id.order_line._compute_qty_delivered()
+            _logger.info("COMPUTE UNTAXED AMOUNT {}-{}".format(project.name,project.sale_order_id.order_line.mapped('name')))
 
