@@ -107,7 +107,7 @@ class HrExpense(models.Model):
 
     @api.multi
     def write(self, vals):
-        _logger.info("EXP WRITE {}".format(vals))
+        #_logger.info("EXP WRITE {}".format(vals))
         for exp in self:
             if vals.get('project_id', exp.project_id.id):
                 project = self.env['project.project'].browse(vals.get('project_id', exp.project_id.id))
