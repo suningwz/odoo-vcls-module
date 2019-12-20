@@ -377,3 +377,6 @@ class Project(models.Model):
                                                                  ('stage_id', '=', 'pc_review')])
         if timesheet_ids:
             timesheet_ids.write({'stage_id': 'invoiceable'})
+
+        #we trigger the computation of KPIs
+        self.env['project.task']._cron_compute_kpi()

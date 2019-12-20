@@ -120,6 +120,8 @@ class ProjectTask(models.Model):
 
             task.valuation_ratio = 100.0*(task.valued_hours / task.realized_hours) if task.realized_hours else False
 
+            task.sale_line_id._compute_untaxed_amount_to_invoice()
+
     @api.onchange('sale_line_id')
     def _onchange_lead_id(self):
         if not self.date_start:
