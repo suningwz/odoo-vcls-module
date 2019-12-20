@@ -99,3 +99,13 @@ class HrExpense(models.Model):
                 vals['payment_mode'] = 'company_account'
             
         return super(HrExpense, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        for exp in self:
+            if vals.get('project_id', exp.project_id.id):
+                project = self.env['project.project'].browse(vals.get('project_id', exp.project_id.id))
+                if 'Mobility' in project.name:
+                    vals['payment_mode'] = 'company_account'
+
+        return super(HrExpense, self).write(vals)
