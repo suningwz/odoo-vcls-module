@@ -6,14 +6,14 @@
             <field name="model">project.project</field>
             <field name="inherit_id" ref="project.view_project_project_filter"/>
             <field name="arch" type="xml">
-                <field name="user_id" position="attributes">
-                        <attribute name="String">Lead Consultant</attribute>
+                <field name="user_id" position="replace">
+                        <field name="user_id" string="Lead Consultant"/>
                 </field>
-                <xpath expr="//filter[@name='Manager']" position="attributes">
-                        <attribute name="String">Lead Consultant</attribute>
+                <xpath expr="//filter[@name='Manager']" position="replace">
+                        <filter name="Manager" string="Lead Consultant"/>
                 </xpath>
-                <xpath expr="//filter[@name='Partner']" position="attributes">
-                        <attribute name="String">Client</attribute>
+                <xpath expr="//filter[@name='Partner']" position="replace">
+                        <filter name="Partner" string="Client"/>
                 </xpath>
 
                 <xpath expr="//field[@name='user_id']" position="after">
