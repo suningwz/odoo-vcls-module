@@ -95,15 +95,15 @@ class SaleOrder(models.Model):
             for key, vals in datas.items():
                 if vals and key.name == 'Hourly Rates':
                     for val in vals:
-                        if val.name in grouped_data:
-                            if grouped_data[val.name] < val.price_unit:
-                                grouped_data[val.name] = val.price_unit
-                                must_be_deleted += named[val.name]
+                        if val.product_id.id in grouped_data:
+                            if grouped_data[val.product_id.id] < val.price_unit:
+                                grouped_data[val.product_id.id] = val.price_unit
+                                must_be_deleted += named[val.product_id.id]
                             else:
                                 must_be_deleted += val
                         else:
-                            grouped_data[val.name] = val.price_unit
-                            named[val.name] = val
+                            grouped_data[val.product_id.id] = val.price_unit
+                            named[val.product_id.id] = val
             if must_be_deleted:
                 if len(must_be_deleted) > 1:
                     self._cr.execute("DELETE FROM sale_order_line where id in {}".format(tuple(must_be_deleted.ids)))
