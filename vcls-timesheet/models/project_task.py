@@ -109,10 +109,10 @@ class ProjectTask(models.Model):
                 lambda t: t.stage_id not in ('draft', 'outofscope')
             ).mapped('unit_amount_rounded'))
             task.pc_hours = sum(task.timesheet_ids.filtered(
-                lambda t: t.stage_id not in ('pc_review')
+                lambda t: t.stage_id in ('pc_review')
             ).mapped('unit_amount_rounded'))
             task.cf_hours = sum(task.timesheet_ids.filtered(
-                lambda t: t.stage_id not in ('carry_forward')
+                lambda t: t.stage_id in ('carry_forward')
             ).mapped('unit_amount_rounded'))
             task.invoiced_hours = sum(task.timesheet_ids.filtered(
                 lambda t: t.stage_id == 'invoiced'
@@ -120,7 +120,7 @@ class ProjectTask(models.Model):
 
             task.valuation_ratio = 100.0*(task.valued_hours / task.realized_hours) if task.realized_hours else False
 
-            task.sale_line_id._compute_untaxed_amount_to_invoice()
+            #task.sale_line_id._compute_untaxed_amount_to_invoice()
 
     @api.onchange('sale_line_id')
     def _onchange_lead_id(self):
