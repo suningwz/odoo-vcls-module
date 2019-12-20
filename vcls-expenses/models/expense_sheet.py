@@ -90,7 +90,7 @@ class ExpenseSheet(models.Model):
     def _compute_user_id(self):
         for record in self:
             
-            if record.type == 'project':
+            if record.type == 'project' or ('Mobility' in record.project_id.name):
                 if record.project_id:
                     record.user_id = record.project_id.user_id
                 else:

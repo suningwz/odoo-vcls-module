@@ -90,3 +90,12 @@ class HrExpense(models.Model):
             'context': {'create': False},
         })
         return action
+    
+    @api.model
+    def create(self, vals):
+        if vals.get('project_id', False):
+            project = self.env['project.project'].browse(vals.get('project_id'))
+            if 'Mobility' in project.name:
+                vals['payment_mode'] = 'company_account'
+            
+        return super(HrExpense, self).create(vals)
