@@ -45,11 +45,6 @@
         'reports/report_project_invoice_detailed.xml',
         'reports/report_project_invoice_aggregated.xml',
         'reports/activity_reports.xml',
-
-        # Wizards #
-        'wizard/activity_report_views.xml',
-        
-       
     ],
     # only loaded in demonstration mode
     'demo': [
