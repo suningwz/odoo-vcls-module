@@ -67,9 +67,9 @@ class ProductTemplate(models.Model):
                 product.vcls_type = 'subscription'
                 continue
 
-            if product.name == 'Deposit':
+            """if product.name == 'Deposit':
                 product.vcls_type = 'invoice'
-                continue 
+                continue """
 
             if product.name:
                 if product.name.lower() == 'Communication Rate'.lower():
