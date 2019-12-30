@@ -573,11 +573,15 @@ class Invoice(models.Model):
     @api.multi
     def _get_invoice_report_filename(self, report_name):
         self.ensure_one()
+        project_string = ''
+        for project in self.project_ids:
+            project_string += project.name.split('|')[0]
+
         count_attachments = self.env['ir.attachment'].search_count([('res_model', '=', self._name),
                                                                     ('res_id', '=', self.id),
                                                                     ('name', 'like', report_name)]) + 1
         return (self.timesheet_limit_date and self.timesheet_limit_date.strftime('%Y-%m-%d') or '') \
-            + report_name + '_V' + str(count_attachments)
+            + project_string + report_name + '_V' + str(count_attachments)
 
     @api.multi
     def generate_report(self, report_template, report_name, message):
