@@ -193,7 +193,10 @@ class ResPartner(models.Model):
     ], compute='_get_client_status')
 
     #accounting fields for legacy integration
-    legacy_account = fields.Char()
+    legacy_account = fields.Char(
+        default="/",
+    )
+    
     external_account = fields.Char(
         compute = '_compute_external_account',
         store = True,
@@ -211,8 +214,10 @@ class ResPartner(models.Model):
                 continue
             if partner.employee:
                 #we grab the employee
-                partner.external_account = self.env['hr.employee'].search([('address_home_id.id','=',partner.id)],limit=1).mapped('employee_external_id')
-                continue
+                employee = self.env['hr.employee'].search([('address_home_id.id','=',partner.id)],limit=1)
+                if employee:
+                    partner.external_account = employee.employee_external_id
+                    continue
             else:
                 pass
 
@@ -326,6 +331,11 @@ class ResPartner(models.Model):
 
     @api.model
     def create(self, vals):
+
+        #if no ID defined, then increment using the sequence
+        if vals.get('legacy_account','/')=='/':
+            vals['legacy_account'] = self.env['ir.sequence'].next_by_code('seq_customer_account_id')
+
         if vals.get('email',False):
             # we search for existing partners with the same email
             existing = self.env['res.partner'].search([('email','=ilike',vals.get('email'))])

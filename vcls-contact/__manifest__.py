@@ -53,6 +53,9 @@
         ### ACTIONS ###
         'actions/contact_server_action.xml',
         # 'actions/cronjob.xml',
+
+        ### SEQUENCES ###
+        'sequences/partner_sequences.xml',
         ],
 
     # only loaded in demonstration mode
