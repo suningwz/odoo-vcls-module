@@ -32,7 +32,9 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         # Ignore Area_of_expertise__c
         
         result['sharepoint_folder'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUrl(SF_Account['Sharepoint_Folder__c']) # /!\
-        result['legacy_account'] = str(int(SF_Account['Sharepoint_ID__c']))
+        
+        if SF_Account['Sharepoint_ID__c']:
+            result['legacy_account'] = str(int(SF_Account['Sharepoint_ID__c']))
         
         result['description'] = ''
         
