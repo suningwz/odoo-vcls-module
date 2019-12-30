@@ -34,6 +34,7 @@
                     WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)
                 ) 
             </field>
+        </record>
 
         <record id="etl_sf_opportunity_query" model="ir.config_parameter">
             <field name="key">etl_sf_opportunity_query</field>
@@ -60,7 +61,6 @@
                 LastModifiedDate, Title, Seniority__c, Phone, Website, Description, LeadSource 
                 FROM Lead
             </field>
-
         </record>
 
         <record id="etl_sf_contract_query" model="ir.config_parameter">
@@ -74,7 +74,6 @@
                 Replaces_Supersedes__c, Type_of_Contract__c, VCLS_Status__c 
                 FROM Contract 
             </field>
-
         </record>
 
     </data>
