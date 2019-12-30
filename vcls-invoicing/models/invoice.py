@@ -565,7 +565,7 @@ class Invoice(models.Model):
         if self._context.get('_get_attachment_id'):
             return attachment_id
         return {
-            'type': 'ir.actions.act_url',
+            'type': 'url',
             'name': name,
             'url': '/web/content/%s/%s?download=true' % (attachment_id.id, name)
         }
