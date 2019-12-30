@@ -6,38 +6,22 @@
             <field name="model">project.project</field>
             <field name="inherit_id" ref="project.view_project_project_filter"/>
             <field name="arch" type="xml">
+                <field name="user_id" position="replace">
+                        <field name="user_id" string="Lead Consultant"/>
+                </field>
+                <xpath expr="//filter[@name='Manager']" position="replace">
+                        <filter name="Manager" string="Lead Consultant" context="{'group_by': 'user_id'}"/>
+                </xpath>
+                <xpath expr="//filter[@name='Partner']" position="replace">
+                        <filter name="Partner" string="Client" context="{'group_by': 'partner_id'}"/>
+                </xpath>
+
                 <xpath expr="//field[@name='user_id']" position="after">
                     <separator/>
-                    <filter string="My Projects" name="project_controller"
+                    <filter string="My PC Projects" name="project_controller"
                             domain="[('partner_id.controller_id','=', uid)]"/>
                 </xpath>
 
-            </field>
-        </record>
-
-        <record id="view_pc_project_tree" model="ir.ui.view">
-            <field name="name">view_pc_project_tree</field>
-            <field name="model">project.project</field>
-            <field name="arch" type="xml">
-                <tree string="Project">
-                    <field name="name"/>
-                    <field name="partner_id"/>
-                    <field name="user_id"/>
-                    <field name="invoiceable_amount"/>
-                    <field name="risk_score"/>
-                    <field name="risk_ids"  widget="many2many_tags"/>
-                    <field name="completion_ratio"/>
-                    <field name="consumed_value"/>
-                    <field name="consummed_completed_ratio"/>
-                    <field name="valuation_ratio"/>
-                    <field name="invoicing_mode"/>
-                    <field name="contractual_budget"/>
-                    <field name="forecasted_budget"/>
-                    <field name="realized_budget"/>
-                    <field name="valued_budget"/>
-                    <field name="invoiced_budget"/>
-                    <field name="last_summary_date"/>
-                </tree>
             </field>
         </record>
 
@@ -47,7 +31,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,activity,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-theme.view_pc_project_tree')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-timesheet.view_pc_project_tree')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]
                 "/>
             <field name="domain">[('project_type','=', 'client'),('parent_id','=', False)]</field>

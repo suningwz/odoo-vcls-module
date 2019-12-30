@@ -102,7 +102,7 @@ class Project(models.Model):
     )
 
     invoiceable_amount = fields.Monetary(
-       related="sale_order_id.invoiceable_amount", readonly=True
+       related="sale_order_id.invoiceable_amount", readonly=True, store=True
     )
 
     invoicing_mode = fields.Selection(related="sale_order_id.invoicing_mode", readonly=True)
@@ -377,3 +377,6 @@ class Project(models.Model):
                                                                  ('stage_id', '=', 'pc_review')])
         if timesheet_ids:
             timesheet_ids.write({'stage_id': 'invoiceable'})
+
+        #we trigger the computation of KPIs
+        self.env['project.task']._cron_compute_kpi()

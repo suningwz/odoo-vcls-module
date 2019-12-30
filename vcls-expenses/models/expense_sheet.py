@@ -89,12 +89,20 @@ class ExpenseSheet(models.Model):
     @api.depends('type', 'project_id', 'employee_id')
     def _compute_user_id(self):
         for record in self:
+
+            #mobility case
+            if record.project_id:
+                if ('Mobility' in record.project_id.name):
+                    record.user_id = record.project_id.user_id
+                    continue
             
+            #Billable case
             if record.type == 'project':
                 if record.project_id:
                     record.user_id = record.project_id.user_id
                 else:
                     record.user_id = False
+
             else:
                 # line manager to be the approver
                 if record.employee_id:
