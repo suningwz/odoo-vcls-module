@@ -32,6 +32,7 @@
         'views/etl_menu.xml',
         'views/templates.xml',
         'data/parameters.xml',
+        'data/queries.xml',
         'actions/etl_cronjob.xml',
 
         

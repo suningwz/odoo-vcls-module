@@ -37,7 +37,9 @@ class SFAccountSync(models.Model):
         sql += 'Supplier_Project__c, Activity__c, Product_Type__c, Industry, KimbleOne__InvoicingCurrencyIsoCode__c, Invoice_Administrator__c '
         sql += 'FROM Account '
         sql += 'WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null)) '
-        return sql
+        sql = self.env.ref('vcls-etl.etl_sf_account_query').value
+        _logger.info(sql)
+        return sql 
 
     def getModifiedRecordsOdoo(self):
         return self.env['res.partner'].search([('write_date','>', self.getStrLastRun()),('is_company','=',True),('is_internal','=',False)])
