@@ -192,9 +192,29 @@ class ResPartner(models.Model):
         ('blacklisted', 'Blacklisted'),
     ], compute='_get_client_status')
 
+    #accounting fields for legacy integration
+    legacy_account = fields.Char()
+    external_account = fields.Char(
+        compute = '_compute_external_account',
+        store = True,
+    )
+
     ###################
     # COMPUTE METHODS #
     ###################
+    @api.multi
+    @api.depends('legacy_account','customer','supplier','employee')
+    def _compute_external_account(self):
+        for partner in self:
+            if partner.customer:
+                partner.external_account = partner.legacy_account
+                continue
+            if partner.employee:
+                #we grab the employee
+                partner.external_account = self.env['hr.employee'].search([('address_home_id.id','=',partner.id)],limit=1).mapped('employee_external_id')
+                continue
+            else:
+                pass
 
     @api.multi
     @api.depends('sale_order_ids.state')
