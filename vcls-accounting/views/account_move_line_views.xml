@@ -1,0 +1,85 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    
+    <record model="ir.ui.view" id="expenses_move_line_tree">
+      <field name="name">expenses_account_move_line_tree</field>
+      <field name="model">account.move.line</field>
+      <field name="arch" type="xml">
+        <tree string="Expenses Entries" create="false">
+            <field name="journal_code" string="Journal 2"/>
+            <field name="external_account" string="AccountCode"/>
+            <field name="move_id" required="0" groups="account.group_account_user" string="ExpenseNumber"/>
+            <field name="name" string="ExpenseName"/>
+            <field name="ref"/>
+            <field name="date"/>
+            <field name="date_maturity" string="DueDate"/>
+            <field name="account_code"/>
+            <field name="debit" sum="Total Debit" string="D"/>
+            <field name="credit" sum="Total Credit" string="C"/>
+            <field name="reconciled" invisible="1"/>
+            <field name="currency_id" readonly="True" invisible="1"/>
+            <field name="company_currency_id" invisible="1"/>
+            <field name="company_id" invisible="1"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_account_move_line_filter">
+      <field name="name">view_account_move_line_filter</field>
+      <field name="model">account.move.line</field>
+      <field name="inherit_id" ref="account.view_account_move_line_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='partner']" position="before">
+                <filter string="Company" name="company" domain="[]" context="{'group_by':'company_id'}"/>
+            </xpath>
+
+        </field>
+      </field>
+    </record>
+    
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="vcls-accounting.action_expenses_move">
+      <field name="name">Expenses</field>
+      <field name="res_model">account.move.line</field>
+      <field name="view_mode">tree</field>
+      <field name="domain">[('journal_id.name','like','Expenses')]</field>
+      <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-accounting.expenses_move_line_tree')}),
+            ]"/>
+      <field name="context">{'search_default_company':1}</field>
+    </record>
+
+    <!-- server action to the one above -->
+    <!--
+    <record model="ir.actions.server" id="vcls-accounting.action_server">
+      <field name="name">vcls-accounting server</field>
+      <field name="model_id" ref="model_vcls-accounting_vcls-accounting"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+    -->
+
+    <!-- Top menu item -->
+    <!--
+    <menuitem name="vcls-accounting" id="vcls-accounting.menu_root"/>
+    -->
+    <!-- menu categories -->
+    <!--
+    <menuitem name="Menu 1" id="vcls-accounting.menu_1" parent="vcls-accounting.menu_root"/>
+    <menuitem name="Menu 2" id="vcls-accounting.menu_2" parent="vcls-accounting.menu_root"/>
+    -->
+    <!-- actions -->
+    
+    <menuitem name="List" id="vcls-accounting.menu_move_expenses" parent="account.menu_finance_entries_accounting_entries"
+              action="vcls-accounting.action_expenses_move"/>
+    
+  </data>
+</odoo>

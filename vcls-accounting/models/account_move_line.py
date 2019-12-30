@@ -9,3 +9,11 @@ class AccountAnalyticLine(models.Model):
     external_account = fields.Char(
         related = 'partner_id.external_account'
     )
+
+    journal_code = fields.Char(
+        related = 'journal_id.code'
+    )
+
+    account_code = fields.Char(
+        related = 'account_id.code'
+    )
