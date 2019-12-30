@@ -28,9 +28,18 @@
                     <button string="Ready for Approval" type="object" class="btn-primary" name="action_ready_for_approval" attrs="{'invisible': [('ready_for_approval', '=', True)]}"/>
                 </xpath>
                 <xpath expr="//button[@name='preview_invoice']" position="after">
-                    <button string="Print Activity report" type="object" class="btn-primary" name="action_print_activity_report"/>
+                    <button string="GENERATE ACTIVITY REPORT" type="object" class="btn-primary" name="action_generate_activity_report"/>
                 </xpath>
-                
+                <xpath expr="//button[@name='preview_invoice']" position="after">
+                    <button string="GENERATE DRAFT INVOICE" type="object" class="btn-primary" name="action_generate_draft_invoice"/>
+                </xpath>
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_activity_report_attachments" class="oe_stat_button" type="object" icon="fa-pencil-square-o" string="Activity Report"/>
+                    <button name="action_generate_draft_invoice_attachments" class="oe_stat_button" type="object" icon="fa-pencil-square-o" string="Draft Invoice"/>
+                </div>
+                <xpath expr="//button[@name='preview_invoice']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
             </field>
         </record>
 

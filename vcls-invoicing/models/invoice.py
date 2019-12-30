@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api, _
 import lxml
+import base64
 from itertools import groupby
 from datetime import date, datetime, time
 from datetime import timedelta
@@ -16,6 +17,9 @@ from odoo.tools import OrderedSet
 import logging
 _logger = logging.getLogger(__name__)
 
+DRAFTINVOICE = '_DraftInvoice'
+ACTIVITYREPORT = '_ActivityReport'
+
 
 class Invoice(models.Model):
     _inherit = 'account.invoice'
@@ -23,8 +27,8 @@ class Invoice(models.Model):
     def _get_default_po_id(self):
         return self.env['sale.order'].search([('invoice_ids', 'in', [self.id])], limit=1).po_id
 
-    po_id = fields.Many2one('invoicing.po', 
-                            default = _get_default_po_id,  
+    po_id = fields.Many2one('invoicing.po',
+                            default = _get_default_po_id,
                             string ='Purchase Order')
 
     user_id = fields.Many2one(
@@ -54,7 +58,7 @@ class Invoice(models.Model):
     def _get_so_data(self):
         self.ensure_one()
         ### We look for info to build the Period start date
-        
+
         period_start = self.timesheet_limit_date
         min_date = period_start
 
@@ -69,7 +73,7 @@ class Invoice(models.Model):
 
                 if (period_start - timedelta(months=delta))<min_date:
                     min_date = period_start - timedelta(months=delta)
-            
+
             self.period_start = min_date
 
     @api.multi
@@ -82,10 +86,10 @@ class Invoice(models.Model):
             if project.summary_ids:
                 last_summary = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0]
                 laius += "Project Status for {} on {}:\n{}\n\n".format(project.name,last_summary.create_date,self.html_to_string(last_summary.external_summary))
-            
+
             #_logger.info("SOW {} -- {}".format(project.scope_of_work,self.html_to_string(project.scope_of_work)))
             sow += "{}\n".format(self.html_to_string(project.scope_of_work))
-        
+
         self.lc_laius = laius
         self.scope_of_work = sow
 
@@ -351,10 +355,10 @@ class Invoice(models.Model):
             else:
                 total_amount += line.price_subtotal
         return total_amount
-    
+
     @api.multi
     def action_ready_for_approval(self):
-        
+
         if self.filtered(lambda inv: not inv.partner_id):
             raise UserError(_("The field Vendor is required, please complete it to validate the Vendor Bill."))
         if self.filtered(lambda inv: float_compare(inv.amount_total, 0.0, precision_rounding=inv.currency_id.rounding) == -1):
@@ -388,7 +392,7 @@ class Invoice(models.Model):
 
 
 
-            
+
     @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
@@ -423,7 +427,7 @@ class Invoice(models.Model):
                 line.quantity = 1
                 ret.with_context(communication_rate=True).invoice_line_ids += line
         return ret
-    
+
     @api.multi
     def write(self, vals):
         if vals.get('sent'):
@@ -449,21 +453,6 @@ class Invoice(models.Model):
                     for timesheet in self.timesheet_ids:
                         timesheet.stage_id = 'invoiceable'
         return ret
-        
-    def action_print_activity_report(self):
-        ctx = self._context.copy()
-        if not self.timesheet_ids:
-            raise UserError(_('There is no timesheet associated with the invoice: %s') % self.name)
-        ctx.update(default_invoice_id=self.id, invoice_id=self.id)
-        activity_form_id = self.env.ref('vcls-invoicing.activity_report_form_view').id
-        return {
-            'type': 'ir.actions.act_window',
-            'target': 'new',
-            'res_model': 'activity.report.wizard',
-            'views': [(activity_form_id, 'form')],
-            'view_id': activity_form_id,
-            'context': ctx,
-        }
 
     @api.depends('invoice_line_ids')
     def compute_parent_quotation_timesheet_limite_date(self):
@@ -516,9 +505,9 @@ class Invoice(models.Model):
         parent_order = quotation.parent_id or quotation
         while parent_order.parent_id:
             parent_order = parent_order.parent_id
-        
-        
-        
+
+
+
         return [
             ('name', parent_order.name),
             ('scope_work', self.html_to_string(parent_order.scope_of_work) or ''),
@@ -557,3 +546,79 @@ class Invoice(models.Model):
                 deliverable_lines += [line for line in same_deliverable]
                 deliverable_groups[deliverable_name] = deliverable_lines
         return deliverable_groups
+
+    @api.multi
+    def _create_activity_attachment(self, report_template, report_name):
+        self.ensure_one()
+        attachment_obj = self.env['ir.attachment']
+        data = report_template.render_qweb_pdf(self.ids)
+        name = self._get_invoice_report_filename(report_name)
+        values = {
+            'name': name,
+            'datas': base64.b64encode(data[0]),
+            'datas_fname': name,
+            'res_model': self._name,
+            'res_id': self.id,
+            'mimetype': 'application/pdf'
+        }
+        attachment_id = attachment_obj.create(values)
+        if self._context.get('_get_attachment_id'):
+            return attachment_id
+        return {
+            'type': 'ir.actions.act_url',
+            'name': name,
+            'url': '/web/content/%s/%s?download=true' % (attachment_id.id, name)
+        }
+
+    @api.multi
+    def _get_invoice_report_filename(self, report_name):
+        self.ensure_one()
+        count_attachments = self.env['ir.attachment'].search_count([('res_model', '=', self._name),
+                                                                    ('res_id', '=', self.id),
+                                                                    ('name', 'like', report_name)]) + 1
+        return (self.timesheet_limit_date and self.timesheet_limit_date.strftime('%Y-%m-%d') or '') \
+            + report_name + '_V' + str(count_attachments)
+
+    @api.multi
+    def generate_report(self, report_template, report_name, message):
+        self.ensure_one()
+        if not self.timesheet_ids:
+            raise UserError(_('There is no timesheet associated with the invoice: %s') % self.name)
+        if not report_template:
+            raise ValidationError(_(message))
+        # create attachment
+        return self._create_activity_attachment(report_template, report_name)
+
+    @api.multi
+    def action_generate_draft_invoice(self):
+        self.ensure_one()
+        return self.generate_report(self.invoice_template, DRAFTINVOICE, _("You need to select an invoice template"))
+
+    @api.multi
+    def action_generate_activity_report(self):
+        self.ensure_one()
+        return self.generate_report(self.activity_report_template,
+                                    ACTIVITYREPORT, _("You need to select an activity report template"))
+
+    @api.multi
+    def action_invoice_sent(self):
+        """
+        Override of action_invoice_sent to attach the invoice_template
+        """
+        res = super(Invoice, self).action_invoice_sent()
+        attachment_id = self.with_context(_get_attachment_id=True)._create_activity_attachment(self.invoice_template,
+                                                                                               self._get_invoice_report_filename(DRAFTINVOICE))
+        res['context'].update({'default_attachment_ids': attachment_id.ids})
+        return res
+
+    @api.multi
+    def action_activity_report_attachments(self):
+        action = self.env.ref('base.action_attachment').read()[0]
+        action['domain'] = [('res_id', '=', self.id), ('name', 'like', ACTIVITYREPORT)]
+        return action
+
+    @api.multi
+    def action_generate_draft_invoice_attachments(self):
+        action = self.env.ref('base.action_attachment').read()[0]
+        action['domain'] = [('res_id', '=', self.id), ('name', 'like', DRAFTINVOICE)]
+        return action
