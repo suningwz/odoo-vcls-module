@@ -565,7 +565,7 @@ class Invoice(models.Model):
         if self._context.get('_get_attachment_id'):
             return attachment_id
         return {
-            'type': 'url',
+            'type': 'binary',
             'name': name,
             'url': '/web/content/%s/%s?download=true' % (attachment_id.id, name)
         }
@@ -620,5 +620,6 @@ class Invoice(models.Model):
     @api.multi
     def action_generate_draft_invoice_attachments(self):
         action = self.env.ref('base.action_attachment').read()[0]
-        action['domain'] = [('res_id', '=', self.id), ('name', 'like', DRAFTINVOICE)]
+        #action['domain'] = [('res_id', '=', self.id), ('name', 'like', DRAFTINVOICE)]
+        action['domain'] = [('res_id', '=', self.id)]
         return action
