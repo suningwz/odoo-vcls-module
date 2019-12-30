@@ -106,7 +106,10 @@ class ExpenseSheet(models.Model):
             else:
                 # line manager to be the approver, or expense manager if specified for particular cases
                 if record.employee_id:
-                    record.user_id = record.employee_id.expense_manager_id.user_id if record.employee_id.expense_manager_id else record.employee_id.parent_id.user_id
+                    if record.employee_id.expense_manager_id:
+                        record.user_id = record.employee_id.expense_manager_id.user_id 
+                    else:
+                        record.user_id = record.employee_id.parent_id.user_id
                 else:
                     record.user_id = False
     
