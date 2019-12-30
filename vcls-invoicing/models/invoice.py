@@ -613,13 +613,13 @@ class Invoice(models.Model):
 
     @api.multi
     def action_activity_report_attachments(self):
-        action = self.env.ref('base.action_attachment').read()[0]
-        action['domain'] = [('res_id', '=', self.id), ('name', 'like', ACTIVITYREPORT)]
+        action = self.env.ref('vcls-invoicing.action_invoice_attachment').read()[0]
+        action['domain'] = [('res_id', '=', self.id),('name', 'like', ACTIVITYREPORT)]
         return action
 
     @api.multi
     def action_generate_draft_invoice_attachments(self):
-        action = self.env.ref('base.action_attachment').read()[0]
-        #action['domain'] = [('res_id', '=', self.id), ('name', 'like', DRAFTINVOICE)]
-        action['domain'] = [('res_id', '=', self.id)]
+        action = self.env.ref('vcls-invoicing.action_invoice_attachment').read()[0]
+        action['domain'] = [('res_id', '=', self.id),('name', 'like', DRAFTINVOICE)]
+        #action['domain'] = [('res_id', '=', self.id)]
         return action
