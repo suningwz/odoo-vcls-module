@@ -582,7 +582,7 @@ class Invoice(models.Model):
     @api.multi
     def generate_report(self, report_template, report_name, message):
         self.ensure_one()
-        if not self.timesheet_ids:
+        if not self.timesheet_ids and report_name==ACTIVITYREPORT:
             raise UserError(_('There is no timesheet associated with the invoice: %s') % self.name)
         if not report_template:
             raise ValidationError(_(message))

@@ -50,5 +50,5 @@ class Project(models.Model):
 
             #we recompute the invoiceable amount
             project.sale_order_id.order_line._compute_qty_delivered()
-            _logger.info("COMPUTE UNTAXED AMOUNT {}-{}".format(project.name,project.sale_order_id.order_line.mapped('name')))
+            #_logger.info("COMPUTE UNTAXED AMOUNT {}-{}".format(project.name,project.sale_order_id.order_line.mapped('name')))
 
