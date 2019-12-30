@@ -77,7 +77,7 @@
     -->
     <!-- actions -->
     
-    <menuitem name="List" id="vcls-accounting.menu_move_expenses" parent="account.menu_finance_entries_accounting_entries"
+    <menuitem name="Expenses" id="vcls-accounting.menu_move_expenses" parent="account.menu_finance_entries_accounting_entries"
               action="vcls-accounting.action_expenses_move"/>
     
   </data>
