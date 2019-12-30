@@ -77,6 +77,7 @@ class ProductTemplate(models.Model):
                     continue  
                 if product.name.lower() == 'deposit':
                     product.vcls_type = 'vcls_service' 
+                    continue
             
             if product.purchase_ok and product.name:
                 if 'Suppliers' in product.name :
