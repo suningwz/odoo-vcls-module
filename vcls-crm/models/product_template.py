@@ -74,7 +74,9 @@ class ProductTemplate(models.Model):
             if product.name:
                 if product.name.lower() == 'Communication Rate'.lower():
                     product.vcls_type = 'expense'
-                    continue   
+                    continue  
+                if product.name.lower() == 'deposit':
+                    product.vcls_type = 'vcls_service' 
             
             if product.purchase_ok and product.name:
                 if 'Suppliers' in product.name :
