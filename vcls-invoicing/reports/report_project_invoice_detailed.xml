@@ -190,7 +190,7 @@
                     </div>
 
 
-                    <div style="page-break-inside: avoid;" t-if="any([l for l in o.invoice_line_ids if l.product_id.vcls_type == 'subscription'])">
+                    <div style="page-break-inside: avoid;" t-if="any([l for l in o.invoice_line_ids if (l.product_id.vcls_type == 'subscription' or l.product_id.vcls_type == 'invoice')])">
                     <h5 class="mb8 mt16">Fixed Fees</h5>
                     <table class="table table-sm o_main_table" name="invoice_fixed_fees">
                         <thead>
@@ -201,7 +201,7 @@
                         </thead>
                         <tbody>
                         <t t-foreach="o.invoice_line_ids" t-as="invoice_line_id">
-                            <tr t-if="invoice_line_id.product_id.vcls_type == 'subscription'">
+                            <tr t-if="invoice_line_id.product_id.vcls_type == 'subscription' or invoice_line_id.product_id.vcls_type == 'invoice'">
                             <td><t t-esc="invoice_line_id.name"/></td>
                             <td><t t-esc="invoice_line_id.price_subtotal"
                             t-options='{"widget": "monetary", "display_currency": invoice_line_id.currency_id}'/></td>

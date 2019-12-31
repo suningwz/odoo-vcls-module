@@ -28,9 +28,18 @@
                     <button string="Ready for Approval" type="object" class="btn-primary" name="action_ready_for_approval" attrs="{'invisible': [('ready_for_approval', '=', True)]}"/>
                 </xpath>
                 <xpath expr="//button[@name='preview_invoice']" position="after">
-                    <button string="Print Activity report" type="object" class="btn-primary" name="action_print_activity_report"/>
+                    <button string="GENERATE ACTIVITY REPORT" type="object" class="btn-primary" name="action_generate_activity_report"/>
                 </xpath>
-                
+                <xpath expr="//button[@name='preview_invoice']" position="after">
+                    <button string="GENERATE DRAFT INVOICE" type="object" class="btn-primary" name="action_generate_draft_invoice"/>
+                </xpath>
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_activity_report_attachments" class="oe_stat_button" type="object" icon="fa-pencil-square-o" string="Activity Report"/>
+                    <button name="action_generate_draft_invoice_attachments" class="oe_stat_button" type="object" icon="fa-pencil-square-o" string="Draft Invoice"/>
+                </div>
+                <xpath expr="//button[@name='preview_invoice']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
             </field>
         </record>
 
@@ -101,6 +110,24 @@
             <field name="view_id" ref='vcls-invoicing.ia_invoices_view_tree'/>
             <field name="domain">[('partner_id.user_id','=', uid)]</field>
             <field name="context">{'search_default_draft':1,'group_by':['commercial_partner_id']}</field>
+        </record>
+
+        <record id="action_invoice_attachment" model="ir.actions.act_window">
+            <field name="name">Attachments</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ir.attachment</field>
+            <field name="view_type">form</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="base.view_attachment_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new document
+                </p>
+                <p>
+                    Also you will find here all the related documents and download it by clicking on any individual document.
+                </p>
+            </field>
+            <field name="domain">[('res_model','=','account.invoice')]</field>
         </record>
         
 

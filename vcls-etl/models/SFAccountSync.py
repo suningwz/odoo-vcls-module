@@ -25,19 +25,9 @@ class SFAccountSync(models.Model):
         return sql
     
     def getSQLForRecord(self):
-        sql = 'SELECT Id, Name, Supplier_Category__c, '
-        sql += 'Supplier_Status__c, Account_Level__c, LastModifiedDate, '
-        sql += 'BillingCountry, BillingState, BillingAddress, BillingStreet, '
-        sql += 'Phone, Fax, Area_of_expertise__c, Sharepoint_Folder__c, '
-        #sql += 'Phone, Fax, Area_of_expertise__c, Sharepoint_Folder__c, Sharepoint_ID__c, '
-        sql += 'Supplier_Description__c, Key_Information__c, Project_Assistant__c, '
-        sql += 'Supplier_Selection_Form_completed__c, Website, '
-        sql += 'Create_Sharepoint_Folder__c, OwnerId, Is_supplier__c, VCLS_Main_Contact__c, '
-        sql += 'Supplier__c, Type, Project_Controller__c, VCLS_Alt_Name__c,  '
-        sql += 'Supplier_Project__c, Activity__c, Product_Type__c, Industry, KimbleOne__InvoicingCurrencyIsoCode__c, Invoice_Administrator__c '
-        sql += 'FROM Account '
-        sql += 'WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null)) '
-        return sql
+        sql = self.env.ref('vcls-etl.etl_sf_account_query').value
+        _logger.info(sql)
+        return sql 
 
     def getModifiedRecordsOdoo(self):
         return self.env['res.partner'].search([('write_date','>', self.getStrLastRun()),('is_company','=',True),('is_internal','=',False)])
