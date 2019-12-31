@@ -95,15 +95,15 @@ class SaleOrder(models.Model):
             for key, vals in datas.items():
                 if vals and key.name == 'Hourly Rates':
                     for val in vals:
-                        if val.name in grouped_data:
-                            if grouped_data[val.name] < val.price_unit:
-                                grouped_data[val.name] = val.price_unit
-                                must_be_deleted += named[val.name]
+                        if val.product_id.id in grouped_data:
+                            if grouped_data[val.product_id.id] < val.price_unit:
+                                grouped_data[val.product_id.id] = val.price_unit
+                                must_be_deleted += named[val.product_id.id]
                             else:
                                 must_be_deleted += val
                         else:
-                            grouped_data[val.name] = val.price_unit
-                            named[val.name] = val
+                            grouped_data[val.product_id.id] = val.price_unit
+                            named[val.product_id.id] = val
             if must_be_deleted:
                 if len(must_be_deleted) > 1:
                     self._cr.execute("DELETE FROM sale_order_line where id in {}".format(tuple(must_be_deleted.ids)))
@@ -205,16 +205,16 @@ class SaleOrderLine(models.Model):
         """
         Update qty delivered with migrating value if mig_qty_delivered is set
         """
-        super(SaleOrderLine, self)._compute_qty_delivered()
-        lines_by_analytic = self.filtered(lambda sol: sol.qty_delivered_method == 'analytic')
-        mapping = lines_by_analytic._get_delivered_quantity_by_analytic([('amount', '<=', 0.0)])
-        for so_line in lines_by_analytic:
-            so_line.qty_delivered = mapping.get(so_line.id, 0.0)
-        # compute for manual lines
-        for line in self:
-            qty_delivered = line.mig_qty_delivered
-            if not qty_delivered and line.qty_delivered_method == 'manual':
-                qty_delivered = line.qty_delivered_manual or 0.0
-            line.qty_delivered = qty_delivered
-
-
+        if self.env.user.context_data_integration:
+            lines_by_analytic = self.filtered(lambda sol: sol.qty_delivered_method == 'analytic')
+            mapping = lines_by_analytic._get_delivered_quantity_by_analytic([('amount', '<=', 0.0)])
+            for so_line in lines_by_analytic:
+                so_line.qty_delivered = mapping.get(so_line.id, 0.0)
+            # compute for manual lines
+            for line in self:
+                qty_delivered = line.mig_qty_delivered
+                if not qty_delivered and line.qty_delivered_method == 'manual':
+                    qty_delivered = line.qty_delivered_manual or 0.0
+                line.qty_delivered = qty_delivered
+        else:
+            return super(SaleOrderLine, self)._compute_qty_delivered()

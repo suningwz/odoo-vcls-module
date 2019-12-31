@@ -44,16 +44,8 @@ class SFOpportunitySync(models.Model):
         return sql
     
     def getSQLForRecord(self):
-        sql =  'SELECT O.Id, O.Name, O.AccountId, O.StageName, O.Therapeutic_Area__c, '
-        sql += 'O.OwnerId, O.LastModifiedDate, O.ExpectedRevenue, O.Reasons_Lost_Comments__c, O.Probability, O.CloseDate, O.Deadline_for_Sending_Proposal__c, O.LeadSource, '
-        sql += 'O.Description, O.Client_Product_Description__c, O.CurrencyIsoCode, O.Product_Category__c, O.Amount, O.Geographic_Area__c, O.VCLS_Activities__c,Project_start_date__c '
-        sql += 'FROM Opportunity as O '
-        sql += 'Where O.AccountId In ('
-        sql +=  'SELECT A.Id '
-        sql +=  'FROM Account as A '
-        sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
-        sql += ') '
-        
+        sql = self.env.ref('vcls-etl.etl_sf_opportunity_query').value
+        _logger.info(sql)
         return sql
 
     def getModifiedRecordsOdoo(self):

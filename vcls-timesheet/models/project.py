@@ -3,6 +3,9 @@
 from odoo import models, fields, api
 from datetime import datetime
 
+import logging
+_logger = logging.getLogger(__name__)
+
 
 class Project(models.Model):
     _inherit = 'project.project'
@@ -17,6 +20,11 @@ class Project(models.Model):
     valued_hours = fields.Float(string="Valued Hours",readonly=True)
     invoiced_hours = fields.Float(string="Invoiced Hours",readonly=True)
     valuation_ratio = fields.Float(string="Valuation Ratio",readonly=True)
+
+    pc_budget = fields.Float(string="PC Review Budget",readonly=True)
+    cf_budget = fields.Float(string="Carry Forward Budget",readonly=True)
+    pc_hours = fields.Float(string="PC Review Hours",readonly=True)
+    cf_hours = fields.Float(string="Carry Forward Hours",readonly=True)
 
 
     @api.multi
@@ -33,4 +41,14 @@ class Project(models.Model):
             project.valued_hours = sum(project.task_ids.mapped('valued_hours'))
             project.invoiced_hours = sum(project.task_ids.mapped('invoiced_hours'))
 
+            project.pc_budget = sum(project.task_ids.mapped('pc_budget'))
+            project.cf_budget = sum(project.task_ids.mapped('cf_budget'))
+            project.pc_hours = sum(project.task_ids.mapped('pc_hours'))
+            project.cf_hours = sum(project.task_ids.mapped('cf_hours'))
+
             project.valuation_ratio = 100.0*(project.valued_hours / project.realized_hours) if project.realized_hours else False
+
+            #we recompute the invoiceable amount
+            project.sale_order_id.order_line._compute_qty_delivered()
+            #_logger.info("COMPUTE UNTAXED AMOUNT {}-{}".format(project.name,project.sale_order_id.order_line.mapped('name')))
+

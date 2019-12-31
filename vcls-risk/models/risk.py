@@ -43,6 +43,16 @@ class Risk(models.Model):
 
     score = fields.Integer(string="Score", compute="_compute_score", store=True)
 
+    name = fields.Char(
+        compute = '_compute_name',
+        store = True
+    )
+
+    @api.depends('risk_type_id','risk_level')
+    def _compute_name(self):
+        for risk in self:
+            risk.name = "{} - {}".format(risk.risk_type_id.name,risk.risk_level)
+
     @api.depends('risk_level', 'risk_type_id.weight')
     def _compute_score(self):
         for risk in self:

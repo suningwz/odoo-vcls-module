@@ -79,3 +79,39 @@ class HrExpense(models.Model):
             if expense.account_id.company_id != expense.company_id:
                 raise ValidationError(
                     _('Error! Expense company must be the same as the account company.'))
+
+    @api.multi
+    def open_pop_up_line(self):
+        self.ensure_one()
+        action = self.env.ref('vcls-expenses.action_pop_up_add_expense').read()[0]
+        action.update({
+            'res_id': self.id,
+            'flags': {'mode': 'readonly'},
+            'context': {'create': False},
+        })
+        return action
+    
+    @api.model
+    def create(self, vals):
+
+        expense = super(HrExpense, self).create(vals)
+        if expense.project_id:
+            if 'Mobility' in expense.project_id.name:
+                expense.payment_mode = 'company_account'
+            else:
+                pass
+        else:
+            pass
+            
+        return expense
+
+    @api.multi
+    def write(self, vals):
+        #_logger.info("EXP WRITE {}".format(vals))
+        for exp in self:
+            if vals.get('project_id', exp.project_id.id):
+                project = self.env['project.project'].browse(vals.get('project_id', exp.project_id.id))
+                if 'Mobility' in project.name:
+                    vals['payment_mode'] = 'company_account'
+
+        return super(HrExpense, self).write(vals)

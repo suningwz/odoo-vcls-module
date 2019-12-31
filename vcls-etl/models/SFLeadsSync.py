@@ -32,10 +32,8 @@ class SFLeadsSync(models.Model):
         return sql
     
     def getSQLForRecord(self):
-        sql = 'Select Id, Name, OwnerId, Activity__c, Address, City, Company, Content_Name__c, Country,PostalCode, Street, '
-        sql += 'CurrencyIsoCode, Email,First_VCLS_Contact_Point__c, '
-        sql += 'External_Referee__c, Fax, Functional_Focus__c, Inactive_Lead__c, Industry, Contact_us_Message__c, Initial_Product_Interest__c, '
-        sql += 'LastModifiedDate, Title, Seniority__c, Phone, Website, Description, LeadSource From Lead'
+        sql = self.env.ref('vcls-etl.etl_sf_lead_query').value
+        _logger.info(sql)
         return sql
 
     def getModifiedRecordsOdoo(self):
