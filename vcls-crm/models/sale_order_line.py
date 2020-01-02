@@ -64,32 +64,32 @@ class SaleOrderLine(models.Model):
     @api.multi
     def unlink(self):
         for order_line in self:
-            if order_line.vcls_type == 'rate':
-                related_timesheet = self.env['account.analytic.line'].sudo().search([
-                    ('so_line', '=', order_line.id),
-                ], limit=1)
-                if related_timesheet:
-                    raise ValidationError(
-                        _('You can not delete the "{}" order line has linked timesheets.'.format(order_line.name))
-                    )
-                # delete mapping
-                related_mapping = self.env['project.sale.line.employee.map'].sudo().search([
-                    ('sale_line_id', '=', order_line.id),
-                ])
-                if related_mapping:
-                    related_mapping.sudo().unlink()
+            related_timesheet = self.env['account.analytic.line'].sudo().search([
+                ('so_line', '=', order_line.id),
+            ], limit=1)
+            if related_timesheet:
+                raise ValidationError(
+                    _('You can not delete the "{}" order line has linked timesheets.'.format(order_line.name))
+                )
+            # delete mapping
+            related_mapping = self.env['project.sale.line.employee.map'].sudo().search([
+                ('sale_line_id', '=', order_line.id),
+            ])
+            if related_mapping:
+                related_mapping.sudo().unlink()
             # delete mapping linked forecast
             related_forecasts = self.env['project.forecast'].sudo().search([
                 ('order_line_id', '=', order_line.id),
             ])
             if related_forecasts:
                 related_forecasts.sudo().unlink()
-            if order_line.vcls_type == 'vcls_service':
+            if order_line.vcls_type != 'rate':
                 related_task = self.env['project.task'].sudo().search([
                     '|',
-                    ('sale_order_line', '=', order_line.id),
-                    ('parent_id.sale_order_line', '=', order_line.id),
+                    ('sale_line_id', '=', order_line.id),
+                    ('parent_id.sale_line_id', '=', order_line.id),
                 ])
                 if related_task:
+                    related_task.write({'sale_line_id': False})
                     related_task.sudo().unlink()
         return super(SaleOrderLine, self).unlink()
