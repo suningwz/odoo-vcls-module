@@ -103,6 +103,11 @@ class Leads(models.Model):
     # CUSTOM FIELDS #
     #################
 
+    manual_probability = fields.Boolean(
+        readonly=True,
+        default=False,
+    )
+
     # Related fields in order to avoid mismatch & errors
     opted_in = fields.Boolean(
         related = 'partner_id.opted_in',
@@ -346,6 +351,20 @@ class Leads(models.Model):
     ###################
     # COMPUTE METHODS #
     ###################
+
+    @api.onchange('probability')
+    def _onchange_probability(self):
+        self.manual_probability = True
+
+    #we override this one to exclude the case when manual_probability is True
+    @api.onchange('stage_id')
+    def _onchange_stage_id(self):
+        if not self.manual_probability or self.stage_id.probability == 100 or self.stage_id.probability == 0:
+            values = self._onchange_stage_id_values(self.stage_id.id)
+            self.update(values)
+        else:
+            pass
+
 
     @api.depends('country_id')
     def _compute_country_group(self):
