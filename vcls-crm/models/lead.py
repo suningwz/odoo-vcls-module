@@ -104,7 +104,6 @@ class Leads(models.Model):
     #################
 
     manual_probability = fields.Boolean(
-        readonly=True,
         default=False,
     )
 
