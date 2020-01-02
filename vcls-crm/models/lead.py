@@ -623,3 +623,10 @@ class Leads(models.Model):
             'type': 'ir.actions.act_window',
             'domain': "[('resource','=', '{},{}')]".format(self._name, self.id)
         }
+
+    @api.multi
+    def copy(self, default=None):
+        self.ensure_one()
+        if self.type == 'opportunity':
+            raise ValidationError(_('You cannot duplicate opportunities'))
+        return super(Leads, self).copy(default)

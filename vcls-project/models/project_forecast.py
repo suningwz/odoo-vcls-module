@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 import logging
 from datetime import datetime
@@ -130,3 +130,18 @@ class ProjectForecast(models.Model):
     def _action_server_forecast_from_order(self):
         server_action_id = self.env.ref('vcls-project.action_server_project_forecast_from_order').id
         return self._action_server_forecast(server_action_id, 'sale.order')
+
+    @api.multi
+    def button_form_from_list(self):
+        self.ensure_one()
+        view = {
+            'name': _('Details'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'project.forecast',
+            'view_id': self.env.ref('vcls-project.project_forecast_view_form').id,
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+            'res_id': self.id,
+        }
+        return view
