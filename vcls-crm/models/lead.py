@@ -344,7 +344,11 @@ class Leads(models.Model):
         
         vals['name']=self.build_opp_name(vals.get('internal_ref',self.internal_ref),vals.get('name',self.name))
 
-        _logger.info("{}".format(vals))
+        #we manage the case of manual_probability, we re-use the manually set value
+        if vals.get('stage_id') and self.manual_probability:
+            vals['probability']=self.probability
+
+        #_logger.info("{}".format(vals))
         return super(Leads, self).write(vals)
 
     ###################
@@ -359,6 +363,7 @@ class Leads(models.Model):
     @api.onchange('stage_id')
     def _onchange_stage_id(self):
         if not self.manual_probability or self.stage_id.probability == 100 or self.stage_id.probability == 0:
+            _logger.info("NEW STAGE PROB {}".format(self.stage_id.probability))
             values = self._onchange_stage_id_values(self.stage_id.id)
             self.update(values)
         else:
