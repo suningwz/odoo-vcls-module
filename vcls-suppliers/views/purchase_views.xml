@@ -38,7 +38,7 @@
                             <field name="expertise_id" widget="many2many_tags" required="1"/>
                             <field name="deliverable_ids" widget="many2many_tags" string="Deliverable(s)"/>
                             <field name="partner_ref" invisible="1"/>
-                            <field name="date_planned" string="Expected Answer Date"/>
+                            <field name="date_planned" string="Expected Answer Date" widget="Date"/>
                         </group>
                         <group string="Found Supplier">
                             <field name="partner_id" widget="res_partner_many2one" options="{'no_create': True}" context="{'supplier_search':True,'expertise_ids':expertise_id,'search_default_supplier':1, 'default_supplier':1, 'default_customer':0, 'show_vat': True}" domain="[('supplier','=',True)]" placeholder="Name, TIN, Email, or Reference"/>
@@ -59,6 +59,10 @@
                             <field name="scope_of_work"/>
                         </group>
                     </group>
+                </xpath>
+
+                <xpath expr="//page[@name='purchase_delivery_invoice']/field[@name='date_planned']" position="attributes">
+                    <attribute name="widget">date</attribute>
                 </xpath>
 
                 <xpath expr="//tree" position="replace">
