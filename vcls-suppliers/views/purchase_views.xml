@@ -7,6 +7,11 @@
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
 
+                <xpath expr="//field[@name='date_planned']" position="replace">
+                </xpath>
+                <xpath expr="//button[@name='action_set_date_planned']" position="replace">
+                </xpath>
+
                 <xpath expr="//button[@name='action_rfq_send']" position="attributes">
                     <attribute name="groups">vcls-suppliers.vcls_group_rm</attribute>
                 </xpath>
@@ -38,7 +43,15 @@
                             <field name="expertise_id" widget="many2many_tags" required="1"/>
                             <field name="deliverable_ids" widget="many2many_tags" string="Deliverable(s)"/>
                             <field name="partner_ref" invisible="1"/>
-                            <field name="date_planned" string="Expected Answer Date" widget="Date"/>
+                            <label for="date_planned"/>
+                            <div>
+                                <field name="date_planned" string="Expected Answer Date" widget="date" attrs="{'readonly': [('state', 'not in', ('draft', 'sent'))]}"/>
+                                <button name="action_set_date_planned" type="object"
+                                    states="draft,sent"
+                                    string="Set date to all order lines"
+                                    help="This changes the scheduled date of all order lines to the given date"
+                                    class="fa fa-calendar o_icon_button oe_edit_only"/>
+                            </div>
                         </group>
                         <group string="Found Supplier">
                             <field name="partner_id" widget="res_partner_many2one" options="{'no_create': True}" context="{'supplier_search':True,'expertise_ids':expertise_id,'search_default_supplier':1, 'default_supplier':1, 'default_customer':0, 'show_vat': True}" domain="[('supplier','=',True)]" placeholder="Name, TIN, Email, or Reference"/>
@@ -61,9 +74,7 @@
                     </group>
                 </xpath>
 
-                <xpath expr="//page[@name='purchase_delivery_invoice']/field[@name='date_planned']" position="attributes">
-                    <attribute name="widget">date</attribute>
-                </xpath>
+                
 
                 <xpath expr="//tree" position="replace">
                     <tree string="Purchase Order Lines" editable="bottom">
