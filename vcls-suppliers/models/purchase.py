@@ -60,7 +60,7 @@ class PurchaseOrder(models.Model):
     def _compute_default_rate_id(self):
         for purchase in self:
             #we search for an employee, having a user linked to the partner_id
-            ext_employee = self.env['hr.employee'].search([('user_id.partner_id','=',purchase.partner_id)],limit=1)
+            ext_employee = self.env['hr.employee'].search([('user_id.partner_id','=',purchase.partner_id.id)],limit=1)
             if ext_employee.default_rate_ids:
                 purchase.default_rate_id = ext_employee.default_rate_ids[0]
 
