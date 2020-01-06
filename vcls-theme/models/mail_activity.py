@@ -1,11 +1,21 @@
 # -*- coding: utf-8 -*-
 import datetime
+from dateutil.relativedelta import relativedelta
+
 from odoo import models, fields, api, http
 
 from odoo.exceptions import UserError, ValidationError
 
 import logging
 _logger = logging.getLogger(__name__)
+
+class MailActivityType(models.Model):
+    
+    _inherit = 'mail.activity.type'
+
+    default_delay = fields.Integer(
+        default = 0,
+    )
 
 class MailActivity(models.Model):
     
@@ -18,8 +28,9 @@ class MailActivity(models.Model):
         store = True,
         )
     
-    default_delay = fields.Integer(
-    )
+    """default_delay = fields.Integer(
+        default = 0,
+    )"""
 
     @api.depends('user_id')  
     def _get_lm_ids(self):
@@ -60,7 +71,20 @@ class MailActivity(models.Model):
                 raise ValidationError("You are not authorized to cancel this activity.")
         return super(MailActivity, self).unlink()
     
-    
+
     def activity_schedule(self, act_type_xmlid='', date_deadline=None, summary='', note='', **act_values):
+
+        if act_type_xmlid:
+            activity_type = self.sudo().env.ref(act_type_xmlid)
+        else:
+            activity_type = self.env['mail.activity.type'].sudo().browse(act_values['activity_type_id'])
+
+        if not date_deadline:
+            if activity_type.delay_unit == 'days':
+                date_deadline = fields.Date.context_today(self) + relativedelta(days=activity_type.default_delay)
+            elif activity_type.delay_unit == 'weeks':
+                date_deadline = fields.Date.context_today(self) + relativedelta(weeks=activity_type.default_delay)
+            elif activity_type.delay_unit == 'months':
+                date_deadline = fields.Date.context_today(self) + relativedelta(months=activity_type.default_delay)
 
         return super(MailActivity,self).activity_schedule(act_type_xmlid=act_type_xmlid, date_deadline=date_deadline, summary=summary, note=note, **act_values)
