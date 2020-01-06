@@ -17,6 +17,9 @@ class MailActivity(models.Model):
         compute_sudo=True,
         store = True,
         )
+    
+    default_delay = fields.Integer(
+    )
 
     @api.depends('user_id')  
     def _get_lm_ids(self):
@@ -56,3 +59,8 @@ class MailActivity(models.Model):
                 _logger.info("SAFE UNLINK {} - {}".format(act.res_name,act.user_id.name))
                 raise ValidationError("You are not authorized to cancel this activity.")
         return super(MailActivity, self).unlink()
+    
+    
+    def activity_schedule(self, act_type_xmlid='', date_deadline=None, summary='', note='', **act_values):
+
+        return super(MailActivity,self).activity_schedule(act_type_xmlid=act_type_xmlid, date_deadline=date_deadline, summary=summary, note=note, **act_values)
