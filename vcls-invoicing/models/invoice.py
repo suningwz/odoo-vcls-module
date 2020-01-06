@@ -616,7 +616,9 @@ class Invoice(models.Model):
         if not report_template:
             raise ValidationError(_(message))
         # create attachment
-        return self._create_activity_attachment(report_template, report_name)
+        attachemnt =  self._create_activity_attachment(report_template, report_name)
+        self._compute_attachment_count()
+        return attachment
 
     @api.multi
     def action_generate_draft_invoice(self):
