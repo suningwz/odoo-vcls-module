@@ -49,7 +49,7 @@ class PurchaseOrder(models.Model):
     default_rate_id = fields.Many2one(
         comodel_name = 'product.template',
         domain = "[('vcls_type','=','rate')]",
-        compute = 'compute_default_rate_id',
+        compute = '_compute_default_rate_id',
         store = True,
     )
 
