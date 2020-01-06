@@ -68,13 +68,13 @@ class Invoice(models.Model):
         default = 0,
     )
 
-    @api.depends('timesheet_limit_date','period_start','project_ids')
+    @api.depends('timesheet_limit_date','period_start')
     def compute_temp_name(self):
         for invoice in self:
             project_string=""
-            """for project in invoice.project_ids:
+            for project in invoice.project_ids:
                 if not project.parent_id and project.sale_order_id:
-                    project_string += project.sale_order_id.internal_ref + '-' """
+                    project_string += project.sale_order_id.internal_ref + '-' 
             #project_string = invoice.project_ids.filtered(lambda p: not p.parent_id).mapped('sale_order_id.internal_ref')
             invoice.temp_name = "{} from {} to {}".format(project_string,invoice.period_start,invoice.timesheet_limit_date)
 
