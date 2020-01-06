@@ -90,24 +90,3 @@ class MailActivity(models.Model):
                 pass
 
         return super(MailActivity, self).create(values)
-
-    """def activity_schedule(self, act_type_xmlid='', date_deadline=None, summary='', note='', **act_values):
-
-        if act_type_xmlid:
-            activity_type = self.sudo().env.ref(act_type_xmlid)
-        else:
-            activity_type = self.env['mail.activity.type'].sudo().browse(act_values['activity_type_id'])
-        
-        _logger.info("DEADLINE {} type {} unit {}".format(date_deadline,activity_type.delay_unit,activity_type.default_delay))
-
-        if not date_deadline:
-            if activity_type.delay_unit == 'days':
-                date_deadline = fields.Date.context_today(self) + relativedelta(days=activity_type.default_delay)
-            elif activity_type.delay_unit == 'weeks':
-                date_deadline = fields.Date.context_today(self) + relativedelta(weeks=activity_type.default_delay)
-            elif activity_type.delay_unit == 'months':
-                date_deadline = fields.Date.context_today(self) + relativedelta(months=activity_type.default_delay)
-            else:
-                date_deadline = fields.Date.context_today(self)
-
-        return super(MailActivity,self).activity_schedule(act_type_xmlid=act_type_xmlid, date_deadline=date_deadline, summary=summary, note=note, **act_values)"""

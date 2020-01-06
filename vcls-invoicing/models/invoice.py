@@ -42,6 +42,10 @@ class Invoice(models.Model):
         compute='compute_parent_quotation_timesheet_limite_date'
     )
 
+    temp_name = fields.Char(
+        compute = 'compute_temp_name',
+    )
+
     period_start = fields.Date()
     lc_laius = fields.Text()
     scope_of_work = fields.Text()
@@ -63,6 +67,12 @@ class Invoice(models.Model):
         compute='_compute_attachment_count',
         default = 0,
     )
+
+    @api.depends('timesheet_limit_date','period_start','project_ids')
+    def compute_temp_name(self):
+        for invoice in self:
+            project_string = invoice.project_ids.filtered(lambda p: not p.parent_id).mapped('sale_order_id.internal_ref')
+            invoice.temp_name = "{} from {} to {}".format(project_string,invoice.period_start,invoice.timesheet_limit_date)
 
     @api.multi
     def _compute_attachment_count(self):
