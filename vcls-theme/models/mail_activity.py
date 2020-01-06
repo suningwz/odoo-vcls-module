@@ -79,7 +79,7 @@ class MailActivity(models.Model):
         else:
             activity_type = self.env['mail.activity.type'].sudo().browse(act_values['activity_type_id'])
         
-        _logger.info("DEADLINE {}".format(date_deadline))
+        _logger.info("DEADLINE {} type {} unit {}".format(date_deadline,activity_type.delay_unit,activity_type.default_delay))
 
         if not date_deadline:
             if activity_type.delay_unit == 'days':
@@ -88,5 +88,7 @@ class MailActivity(models.Model):
                 date_deadline = fields.Date.context_today(self) + relativedelta(weeks=activity_type.default_delay)
             elif activity_type.delay_unit == 'months':
                 date_deadline = fields.Date.context_today(self) + relativedelta(months=activity_type.default_delay)
+            else:
+                date_deadline = fields.Date.context_today(self)
 
         return super(MailActivity,self).activity_schedule(act_type_xmlid=act_type_xmlid, date_deadline=date_deadline, summary=summary, note=note, **act_values)
