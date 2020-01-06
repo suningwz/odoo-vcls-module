@@ -2,6 +2,9 @@
 
 from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError
+from .product_template import VCLS_TYPES
+import itertools
+from operator import itemgetter
 
 
 class SaleOrderLine(models.Model):
@@ -33,6 +36,17 @@ class SaleOrderLine(models.Model):
                                           ('fp', 'Fixed price')],
                                          'Invoicing mode')
 
+    section_line_vcls_type = fields.Selection(VCLS_TYPES, compute='_get_section_line_vcls_type')
+
+    @api.multi
+    def _get_section_line_vcls_type(self):
+        for line in self:
+            order_line_ids = line.order_id.order_line
+            for order_line_id in order_line_ids:
+                if line.display_type == 'line_section' and order_line_id.sequence > line.sequence:
+                    line.section_line_vcls_type = order_line_id.vcls_type
+                    break
+
     @api.multi
     def _get_section_line_id(self):
         for line in self:
@@ -58,8 +72,16 @@ class SaleOrderLine(models.Model):
         for line in lines:
             if (line.product_id.service_tracking in ['project_only', 'task_new_project']) and not line.product_id.project_template_id:
                 line.project_id = line.order_id.project_id
-        
+        if not self._context.get('no_remap'):
+            lines._remap_line_sequence()
         return lines
+
+    @api.multi
+    def write(self, values):
+        result = super(SaleOrderLine, self).write(values)
+        if 'sequence' in values and not self._context.get('no_remap'):
+            self._remap_line_sequence()
+        return result
 
     @api.multi
     def unlink(self):
@@ -93,3 +115,9 @@ class SaleOrderLine(models.Model):
                     related_task.write({'sale_line_id': False})
                     related_task.sudo().unlink()
         return super(SaleOrderLine, self).unlink()
+
+    @api.multi
+    def _remap_line_sequence(self):
+        self.ensure_one()
+        for order_id, so_lines in itertools.groupby(self, itemgetter('order_id')):
+            order_id._remap_lines_sequence()

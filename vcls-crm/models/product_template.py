@@ -6,6 +6,18 @@ from odoo.exceptions import UserError, ValidationError
 import logging
 _logger = logging.getLogger(__name__)
 
+VCLS_TYPES = [
+    ('rate', 'Rate'),
+    ('vcls_service', 'VCLS service'),
+    ('subscription', 'Subscription'),
+    ('invoice', 'Invoice'),
+    ('expense', 'Expense'),
+    ('project_supplier', 'Project supplier'),
+    ('admin_supplier', 'Admin supplier'),
+    ('other', 'Other'),
+]
+
+
 class Deliverable(models.Model):
 
     _name = 'product.deliverable'
@@ -41,17 +53,9 @@ class ProductTemplate(models.Model):
         'product.deliverable',
         string='Deliverable',
     )
-    vcls_type = fields.Selection([
-        ('rate', 'Rate'),
-        ('vcls_service', 'VCLS service'),
-        ('subscription', 'Subscription'),
-        ('invoice', 'Invoice'),
-        ('expense', 'Expense'),
-        ('project_supplier', 'Project supplier'),
-        ('admin_supplier', 'Admin supplier'),
-        ('other','Other'),
-        ], string="Vcls type",
-        compute='_get_vcls_type',default='other',store=True
+    vcls_type = fields.Selection(
+        VCLS_TYPES, string="Vcls type",
+        compute='_get_vcls_type', default='other', store=True
     )
 
     @api.multi

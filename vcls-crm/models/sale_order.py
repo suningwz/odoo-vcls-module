@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, tools, api
-from dateutil.relativedelta import relativedelta
+from odoo import models, fields, tools, api, _
 
 from odoo.exceptions import UserError, ValidationError, Warning
 import math
@@ -323,3 +322,67 @@ class SaleOrder(models.Model):
         # need to add scope
         return suffix
 
+    @api.multi
+    def _remap_lines_sequence(self):
+        self.ensure_one()
+        sol = self.env['sale.order.line']
+        service_lines, subscription_lines = sol, sol
+        rate_lines, expense_lines, other_lines = sol, sol, sol
+        service_section_lines, subscription_section_lines = sol, sol
+        rate_section_lines, expense_section_lines, other_section_lines = sol, sol, sol
+        for line in sol.browse(reversed(self.order_line._ids)):
+            if not line.display_type:
+                vcls_type = line.product_id.vcls_type
+                if vcls_type == 'vcls_service':
+                    service_lines |= line
+                elif vcls_type == 'subscription':
+                    subscription_lines |= line
+                elif vcls_type == 'rate':
+                    rate_lines |= line
+                elif vcls_type == 'expense':
+                    expense_lines |= line
+                else:
+                    other_lines |= line
+            else:
+                if line.display_type == 'line_section':
+                    section_type = line.section_line_vcls_type
+                    if section_type == 'vcls_service':
+                        service_section_lines |= line
+                    elif section_type == 'subscription':
+                        subscription_section_lines |= line
+                    elif section_type == 'rate':
+                        rate_section_lines |= line
+                    elif section_type == 'expense':
+                        expense_section_lines |= line
+                    else:
+                        other_section_lines |= line
+        sequence = 0
+
+        def _set_sequence(lines, section_lines, sequence, order_field=False):
+            for section_line in section_lines:
+                sequence += 1
+                section_line.with_context(no_remap=True).sequence = sequence
+                sorted_lines = lines if not order_field else lines.sorted(key=order_field, reverse=True)
+                for service_line in sorted_lines:
+                    if service_line.section_line_id == section_line:
+                        sequence += 1
+                        section_line.with_context(no_remap=True).sequence = sequence
+            return sequence
+
+        sequence = _set_sequence(service_lines, service_section_lines, sequence)
+        sequence = _set_sequence(subscription_lines, subscription_section_lines, sequence)
+        sequence = _set_sequence(rate_lines, rate_section_lines, sequence, 'price_subtotal')
+        if not other_section_lines:
+            other_section_lines |= sol.with_context(no_remap=True).create({
+                'name': _('Fixed Fees'),
+                'display_type': 'line_section',
+                'order_id': self.id,
+            })
+        sequence = _set_sequence(other_lines, other_section_lines, sequence, 'price_unit')
+        if not expense_section_lines:
+            expense_section_lines |= sol.with_context(no_remap=True).create({
+                'name': _('Expenses'),
+                'display_type': 'line_section',
+                'order_id': self.id,
+            })
+        sequence = _set_sequence(expense_lines, expense_section_lines, sequence, 'create_date')
