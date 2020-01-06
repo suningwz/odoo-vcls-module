@@ -20,7 +20,7 @@
                 <xpath expr="//field[@name='number']" position="after">
                     <field name="temp_name" readonly="1" class="oe_inline" attrs="{'invisible': [('state','not in',('draft',))]}"/>
                 </xpath>
-
+                <!--
                 <xpath expr="/form/sheet/group" position="replace">
                     <group>
                         <group>
@@ -30,16 +30,16 @@
                             
                         </group>
                     </group>
-                </xpath>
+                </xpath>-->
 
-                <!--
+                
                 <xpath expr="//field[@name='team_id']" position="after">
                     <field name='po_id'/>
                     <field name='ready_for_approval' invisible="1"/>
                     <field name='lc_laius'/>
                     <field name='scope_of_work'/>
                 </xpath>
-                attrs="{'invisible': ['|',('ready_for_approval', '=', False),('state','!=','draft')]}"-->
+                <!--attrs="{'invisible': ['|',('ready_for_approval', '=', False),('state','!=','draft')]}"-->
                 <xpath expr="//button[@name='action_invoice_open']" position="before">
                     <button string="Ready for Approval" type="object" class="btn-primary" name="action_ready_for_approval" attrs="{'invisible': [('ready_for_approval', '=', True)]}"/>
                 </xpath>
