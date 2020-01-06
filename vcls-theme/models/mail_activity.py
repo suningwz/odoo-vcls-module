@@ -28,6 +28,10 @@ class MailActivity(models.Model):
         store = True,
         )
     
+    """default_delay = fields.Integer(
+        default = 0,
+    )"""
+
     @api.depends('user_id')  
     def _get_lm_ids(self):
         #Populate a list of authorized user for domain filtering 
@@ -68,10 +72,6 @@ class MailActivity(models.Model):
         return super(MailActivity, self).unlink()
     
 
-class MailActivityMixin(models.Model):
-    
-    _inherit = 'mail.activity.mixin'
-
     def activity_schedule(self, act_type_xmlid='', date_deadline=None, summary='', note='', **act_values):
 
         if act_type_xmlid:
@@ -91,4 +91,4 @@ class MailActivityMixin(models.Model):
             else:
                 date_deadline = fields.Date.context_today(self)
 
-        return super(MailActivityMixin,self).activity_schedule(act_type_xmlid=act_type_xmlid, date_deadline=date_deadline, summary=summary, note=note, **act_values)
+        return super(MailActivity,self).activity_schedule(act_type_xmlid=act_type_xmlid, date_deadline=date_deadline, summary=summary, note=note, **act_values)
