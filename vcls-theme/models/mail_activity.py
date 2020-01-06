@@ -71,8 +71,27 @@ class MailActivity(models.Model):
                 raise ValidationError("You are not authorized to cancel this activity.")
         return super(MailActivity, self).unlink()
     
+    @api.model
+    def create(self, values):
+        if values.get('activity_type_id'):
+            activity_type = self.env['mail.activity.type'].browse(values.get('activity_type_id'))
 
-    def activity_schedule(self, act_type_xmlid='', date_deadline=None, summary='', note='', **act_values):
+            if activity_type.default_delay>0 and values.get('date_deadline') == fields.Date.context_today(self):
+                #we compute a default deadline value, based on type configuration
+                if activity_type.delay_unit == 'days':
+                    values['date_deadline'] = fields.Date.context_today(self) + relativedelta(days=activity_type.default_delay)
+                elif activity_type.delay_unit == 'weeks':
+                    values['date_deadline'] = fields.Date.context_today(self) + relativedelta(weeks=activity_type.default_delay)
+                elif activity_type.delay_unit == 'months':
+                    values['date_deadline'] = fields.Date.context_today(self) + relativedelta(months=activity_type.default_delay)
+                else:
+                    pass
+            else:
+                pass
+
+        return super(MailActivity, self).create(values)
+
+    """def activity_schedule(self, act_type_xmlid='', date_deadline=None, summary='', note='', **act_values):
 
         if act_type_xmlid:
             activity_type = self.sudo().env.ref(act_type_xmlid)
@@ -91,4 +110,4 @@ class MailActivity(models.Model):
             else:
                 date_deadline = fields.Date.context_today(self)
 
-        return super(MailActivity,self).activity_schedule(act_type_xmlid=act_type_xmlid, date_deadline=date_deadline, summary=summary, note=note, **act_values)
+        return super(MailActivity,self).activity_schedule(act_type_xmlid=act_type_xmlid, date_deadline=date_deadline, summary=summary, note=note, **act_values)"""
