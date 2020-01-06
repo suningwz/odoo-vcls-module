@@ -21,25 +21,50 @@
                     <field name="temp_name" readonly="1" class="oe_inline" attrs="{'invisible': [('state','not in',('draft',))]}"/>
                 </xpath>
 
-                <xpath expr="/form/sheet/group" position="replace">
-                    <group>
-                        <group>
-                            <field name='scope_of_work'/>
-                        </group>
-                        <group>
-                            
-                        </group>
-                    </group>
+                <xpath expr="//field[@name='timesheet_limit_date']" position="replace">
                 </xpath>
 
-                
-                <!--<xpath expr="//field[@name='team_id']" position="after">
-                    <field name='po_id'/>
-                    <field name='ready_for_approval' invisible="1"/>
-                    <field name='lc_laius'/>
-                    <field name='scope_of_work'/>
+                <xpath expr="/form/sheet/group" position="replace">
+                    <group>
+                        <group string="Client">
+                            <field string="Client" name="partner_id" widget="res_partner_many2one" context="{'search_default_customer':1, 'show_address': 1, 'default_is_company': True, 'show_vat': True}" options="{&quot;always_reload&quot;: True, &quot;no_quick_create&quot;: True}" domain="[('customer', '=', True)]" required="1"/>
+                            <field name="payment_term_id"/>
+                            <field name="cash_rounding_id" groups="account.group_cash_rounding" invisible="1"/>
+                            <field name="user_id" groups="base.group_user" string="IA"/>
+                            <field name="invoice_template" required="1"/>
+                            <field name="activity_report_template" required="1"/>
+                        </group>
+                        <group string="Project">
+                            <field name='scope_of_work'/>  
+                            <field name='lc_laius'/> 
+                        </group>
+                    </group>
+
+                    <group string="Invoice">
+                        <group>
+                            <field name="date_invoice" options="{'datepicker': {'warn_future': true}}" invisible="1"/>
+                            <field name="date_due" attrs="{'readonly': ['|',('payment_term_id','!=',False), ('state', 'in', ['open', 'in_payment', 'paid'])]}" force_save="1" invisible="1"/>
+                            <field name="move_name" invisible="1"/> 
+                            <field name="vcls_due_date" string="Due Date"/>
+                            <field name="period_start" required="1"/>
+                            <field name="timesheet_limit_date" string="Period End" required="1"/>
+                        </group>
+                        <group>
+                            <label for="currency_id" groups="base.group_multi_currency"/>
+                            <div groups="base.group_multi_currency">
+                                <field name="currency_id" options="{'no_create': True, 'no_open': True}" class="oe_inline"/>
+                                <field name="company_currency_id" invisible="1"/>
+                            </div>
+                            <field name='po_id'/>
+                            <field name='ready_for_approval' invisible="1"/> 
+                        </group>
+                    </group>
+
                 </xpath>
+                
+                <!--
                 attrs="{'invisible': ['|',('ready_for_approval', '=', False),('state','!=','draft')]}"-->
+
                 <xpath expr="//button[@name='action_invoice_open']" position="before">
                     <button string="Ready for Approval" type="object" class="btn-primary" name="action_ready_for_approval" attrs="{'invisible': [('ready_for_approval', '=', True)]}"/>
                 </xpath>
