@@ -57,6 +57,7 @@
                             <field name="partner_id" widget="res_partner_many2one" options="{'no_create': True}" context="{'supplier_search':True,'expertise_ids':expertise_id,'search_default_supplier':1, 'default_supplier':1, 'default_customer':0, 'show_vat': True}" domain="[('supplier','=',True)]" placeholder="Name, TIN, Email, or Reference"/>
                             <field name="supplier_stage" string="Supplier Stage" />
                             <field name="currency_id"/>
+                            <field name="default_rate_id" string="VCLS Rate"/>
                             <field name="date_order" invisible="1"/>
                             <field name="access_level" invisible="1"/>
                             <field name="origin" attrs="{'invisible': [('origin','=',False)]}"/>
