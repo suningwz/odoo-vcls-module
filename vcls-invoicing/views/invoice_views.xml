@@ -34,8 +34,12 @@
                     <button string="GENERATE DRAFT INVOICE" type="object" class="btn-primary" name="action_generate_draft_invoice"/>
                 </xpath>
                 <div class="oe_button_box" name="button_box">
-                    <button name="action_activity_report_attachments" class="oe_stat_button" type="object" icon="fa-pencil-square-o" string="Activity Report"/>
-                    <button name="action_generate_draft_invoice_attachments" class="oe_stat_button" type="object" icon="fa-pencil-square-o" string="Draft Invoice"/>
+                    <button name="action_activity_report_attachments" class="oe_stat_button" type="object" icon="fa-pencil-square-o" string="Activity Report" attrs="{'invisible':[('report_count','=', 0)]}">
+                        <field name="report_count" widget="statinfo" string="Activity Report"/>
+                    </button>
+                    <button name="action_generate_draft_invoice_attachments" class="oe_stat_button" type="object" icon="fa-pencil-square-o" string="Draft Invoice" attrs="{'invisible':[('draft_count','=', 0)]}">/>
+                        <field name="draft_count" widget="statinfo" string="Draft Invoice"/>
+                    </button>
                 </div>
                 <xpath expr="//button[@name='preview_invoice']" position="attributes">
                     <attribute name="invisible">1</attribute>

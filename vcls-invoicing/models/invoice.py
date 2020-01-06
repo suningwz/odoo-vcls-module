@@ -54,6 +54,31 @@ class Invoice(models.Model):
     invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
     activity_report_template = fields.Many2one('ir.actions.report')
 
+    report_count = fields.Integer(
+        compute='_compute_attachment_count',
+        default = 0,
+    )
+
+    draft_count = fields.Integer(
+        compute='_compute_attachment_count',
+        default = 0,
+    )
+
+    @api.multi
+    def _compute_attachment_count(self):
+        for invoice in self:
+            drafts = self.env['ir.attachment'].search([('res_id', '=', self.id),('name', 'like', DRAFTINVOICE)])
+            if drafts:
+                invoice.draft_count = len(drafts)
+            else:
+                invoice.draft_count = 0
+
+            reports = self.env['ir.attachment'].search([('res_id', '=', self.id),('name', 'like', ACTIVITYREPORT)])
+            if reports:
+                invoice.report_count = len(reports)
+            else:
+                invoice.report_count = 0
+
     @api.multi
     def _get_so_data(self):
         self.ensure_one()
