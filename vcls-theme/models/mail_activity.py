@@ -78,6 +78,8 @@ class MailActivity(models.Model):
             activity_type = self.sudo().env.ref(act_type_xmlid)
         else:
             activity_type = self.env['mail.activity.type'].sudo().browse(act_values['activity_type_id'])
+        
+        _logger.info("DEADLINE {}".format(date_deadline))
 
         if not date_deadline:
             if activity_type.delay_unit == 'days':

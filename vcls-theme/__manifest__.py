@@ -30,6 +30,7 @@
         'vcls-invoicing',
         'vcls-legal',
         'vcls_security',
+        'vcls-expense',
     ],
 
     # always loaded
