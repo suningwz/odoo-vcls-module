@@ -22,6 +22,7 @@
         'base',
         'web',
         'utm',
+        'mail',
         'purchase',
         'vcls-crm',
         'vcls-suppliers',
