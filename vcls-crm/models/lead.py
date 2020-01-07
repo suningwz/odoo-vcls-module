@@ -364,7 +364,7 @@ class Leads(models.Model):
 
     @api.onchange('probability')
     def _onchange_probability(self):
-        self.manual_probability = True
+        self.write({'manual_probability' : True})
 
     #we override this one to exclude the case when manual_probability is True
     @api.onchange('stage_id')
