@@ -8,7 +8,7 @@
                 <xpath expr="//field[@name='app_country_group_id']" position="before">
                     <field name = 'product_name' />
                     <field name = 'product_description' />
-                    <field name = 'program_stage_id' />
+                    <field name = 'program_stage_id' readonly="1"/>
                 </xpath>
             </field>
         </record>

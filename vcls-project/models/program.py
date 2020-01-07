@@ -181,9 +181,10 @@ class Lead(models.Model):
         ('exploratory', 'Exploratory Clinical'),
         ('confirmatory', 'Confirmatory Clinical'),
         ('post', 'Post Marketing')],
-        'Program Stage',
-        related='program_id.stage_id',
-        readonly=True,)
+        string='Program Stage',
+        #related='program_id.stage_id',
+        #readonly=True,
+        )
     
     product_name = fields.Char(
         string = "Product Name",
@@ -194,6 +195,10 @@ class Lead(models.Model):
     product_description = fields.Text(
         related="program_id.product_description",
     )
+
+    @api.onchange('program_id')
+    def _onchange_program_id(self):
+        self.program_stage_id = self.program_id.stage_id
 
 class SaleOrder(models.Model):
 
