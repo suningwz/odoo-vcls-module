@@ -110,11 +110,13 @@
                         <group>
                             <field name="name"/>
                             <field name="client_id"/>
+                            <field name="client_product_ids"/>
                             <field name="product_name"/>
                             <field name="product_description"/>
-                            <field name="leader_id"/>
+                            
                         </group>
                         <group>
+                            <field name="leader_id"/>
                             <field name="stage_id"/>
                             <field name="app_country_group_id"/>
                             <!--
@@ -123,6 +125,20 @@
                             -->
                         </group>
                     </group>
+
+                    <group string="Therapeutic Information">
+                        <group string="Primary">
+                            <field name="prim_therapeutic_area_id" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}'/>
+                            <field name="prim_indication_id" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}' domain="[('therapeutic_area_id','=',prim_therapeutic_area_id)]"/>
+                            <field name="prim_detailed_indication"/>
+                        </group>
+                        <group string="Secondary">
+                            <field name="sec_therapeutic_area_id" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}'/>
+                            <field name="sec_indication_id" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}' domain="[('therapeutic_area_id','=',sec_therapeutic_area_id)]"/>
+                            <field name="sec_detailed_indication"/>
+                        </group>
+                    </group>
+
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers" help="Follow this program to automatically track the events associated." groups="base.group_user"/>

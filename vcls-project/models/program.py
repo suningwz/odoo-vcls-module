@@ -39,12 +39,31 @@ class ProjectProgram(models.Model):
         string = 'Client Product',
     )
 
-    #indication = fields.Char()
-
+   
     app_country_group_id = fields.Many2one(
         'res.country.group',
         string = "Application Geographic Area",
     )
+
+    prim_therapeutic_area_id = fields.Many2one(
+        'therapeutic.area',
+    )
+
+    prim_indication_id = fields.Many2one(
+       'targeted.indication', 
+    )
+
+    prim_detailed_indication = fields.Text()
+
+    sec_therapeutic_area_id = fields.Many2one(
+        'therapeutic.area',
+    )
+
+    sec_indication_id = fields.Many2one(
+       'targeted.indication', 
+    )
+
+    sec_detailed_indication = fields.Text()
 
     """therapeutic_area_ids = fields.Many2many(
         'therapeutic.area',
