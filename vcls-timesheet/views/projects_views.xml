@@ -38,8 +38,8 @@
                             class="oe_stat_button"
                             name="%(project_timesheet_forecast_report_action)d"
                             type="action"
-                            icon="fa-calendar"
-                            string="Report Analysis"
+                            icon="fa-table"
+                            string="Project Follow-up"
                         />
                     </button>
                 </field>
