@@ -231,7 +231,7 @@
                                 <field name="description" string="Internal Notes"/>
                             </group>
                         </group>
-                        <group string="Program Info">
+                        <group string="Program Info" name="program">
                             <field name="app_country_group_id" string="Scope Geographic Area"/>
                             <field name="therapeutic_area_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
                             <field name="targeted_indication_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>     

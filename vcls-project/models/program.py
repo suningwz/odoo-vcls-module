@@ -196,6 +196,10 @@ class Lead(models.Model):
         related="program_id.product_description",
     )
 
+    program_info = fields.Text(
+        related = 'program_id.program_info'
+    )
+
     @api.onchange('program_id')
     def _onchange_program_id(self):
         self.program_stage_id = self.program_id.stage_id
