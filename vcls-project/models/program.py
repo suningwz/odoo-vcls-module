@@ -34,6 +34,11 @@ class ProjectProgram(models.Model):
         help = 'The client product name',
     )
 
+    client_product_ids = fields.Many2many(
+        comodel_name = 'client.product',
+        string = 'Client Product',
+    )
+
     #indication = fields.Char()
 
     app_country_group_id = fields.Many2one(
@@ -127,6 +132,13 @@ class Lead(models.Model):
         'res.country.group',
         string = "Application Geographic Area",
         related = 'program_id.app_country_group_id',
+        readonly = True
+    )
+
+    client_product_ids = fields.Many2many(
+        'client.product',
+        string = 'Client Product',
+        related = 'program_id.client_product_ids',
         readonly = True
     )
 
