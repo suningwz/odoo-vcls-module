@@ -46,7 +46,7 @@ class ProjectProgram(models.Model):
         string = "Application Geographic Area",
     )
 
-    therapeutic_area_ids = fields.Many2many(
+    """therapeutic_area_ids = fields.Many2many(
         'therapeutic.area',
         string ='Therapeutic Area',
     )
@@ -54,7 +54,7 @@ class ProjectProgram(models.Model):
     targeted_indication_ids = fields.Many2many(
         'targeted.indication',
         string ='Targeted Indication',
-    )
+    )"""
 
      # Only 4 input so no need to create new object
     stage_id =  fields.Selection([('pre', 'Preclinical'),('exploratory', 'Exploratory Clinical'),
@@ -142,7 +142,7 @@ class Lead(models.Model):
         readonly = True
     )
 
-    therapeutic_area_ids = fields.Many2many(
+    """therapeutic_area_ids = fields.Many2many(
         'therapeutic.area',
         string ='Therapeutic Area',
         related = 'program_id.therapeutic_area_ids',
@@ -153,7 +153,7 @@ class Lead(models.Model):
         'targeted.indication',
         string ='Targeted Indication',
         related = 'program_id.targeted_indication_ids',
-        readonly = True)
+        readonly = True)"""
     
 
     program_stage_id = fields.Selection([
