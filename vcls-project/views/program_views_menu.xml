@@ -110,7 +110,7 @@
                         <group>
                             <field name="name"/>
                             <field name="client_id"/>
-                            <field name="client_product_ids"/>
+                            <field name="client_product_ids" widget="many2many_tags" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}'/>
                             <field name="product_name"/>
                             <field name="product_description"/>
                             
@@ -128,14 +128,14 @@
 
                     <group string="Therapeutic Information">
                         <group string="Primary">
-                            <field name="prim_therapeutic_area_id" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}'/>
-                            <field name="prim_indication_id" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}' domain="[('therapeutic_area_id','=',prim_therapeutic_area_id)]"/>
-                            <field name="prim_detailed_indication"/>
+                            <field name="prim_therapeutic_area_id" string="Therapeutic Area" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}'/>
+                            <field name="prim_indication_id" string="Indication" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}' domain="[('therapeutic_area_id','=',prim_therapeutic_area_id)]"/>
+                            <field name="prim_detailed_indication" string="Detailed Indication"/>
                         </group>
                         <group string="Secondary">
-                            <field name="sec_therapeutic_area_id" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}'/>
-                            <field name="sec_indication_id" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}' domain="[('therapeutic_area_id','=',sec_therapeutic_area_id)]"/>
-                            <field name="sec_detailed_indication"/>
+                            <field name="sec_therapeutic_area_id" string="Therapeutic Area" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}'/>
+                            <field name="sec_indication_id" string="Indication" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}' domain="[('therapeutic_area_id','=',sec_therapeutic_area_id)]"/>
+                            <field name="sec_detailed_indication" string="Detailed Indication"/>
                         </group>
                     </group>
 
