@@ -348,7 +348,7 @@ class Leads(models.Model):
         if vals.get('stage_id') and self.manual_probability:
             vals['probability']=self.probability
 
-        _logger.info("{}".format(vals))
+        _logger.info("{} Manual={}".format(vals,self.manual_probability))
         return super(Leads, self).write(vals)
 
     ###################
