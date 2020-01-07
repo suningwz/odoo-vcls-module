@@ -604,8 +604,8 @@ class Invoice(models.Model):
         if self._context.get('_get_attachment_id'):
             return attachment_id
         return {
-            'type': 'url',
-            'name': name,
+            'type': 'ir.actions.act_url',
+            'target': 'new',
             'url': '/web/content/%s/%s?download=true' % (attachment_id.id, name)
         }
 
@@ -650,6 +650,8 @@ class Invoice(models.Model):
         """
         Override of action_invoice_sent to attach the invoice_template
         """
+        if not self.invoice_template:
+            raise ValidationError(_('Please set an Invoice Template before'))
         res = super(Invoice, self).action_invoice_sent()
         attachment_id = self.with_context(_get_attachment_id=True)._create_activity_attachment(self.invoice_template,
                                                                                                self._get_invoice_report_filename(DRAFTINVOICE))
