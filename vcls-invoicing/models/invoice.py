@@ -42,6 +42,10 @@ class Invoice(models.Model):
         compute='compute_parent_quotation_timesheet_limite_date'
     )
 
+    temp_name = fields.Char(
+        compute = 'compute_temp_name',
+    )
+
     period_start = fields.Date()
     lc_laius = fields.Text()
     scope_of_work = fields.Text()
@@ -53,6 +57,41 @@ class Invoice(models.Model):
 
     invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
     activity_report_template = fields.Many2one('ir.actions.report')
+
+    report_count = fields.Integer(
+        compute='_compute_attachment_count',
+        default = 0,
+    )
+
+    draft_count = fields.Integer(
+        compute='_compute_attachment_count',
+        default = 0,
+    )
+
+    @api.depends('timesheet_limit_date','period_start')
+    def compute_temp_name(self):
+        for invoice in self:
+            project_string=""
+            for project in invoice.project_ids:
+                if not project.parent_id and project.sale_order_id:
+                    project_string += project.sale_order_id.internal_ref + ' | ' 
+            #project_string = invoice.project_ids.filtered(lambda p: not p.parent_id).mapped('sale_order_id.internal_ref')
+            invoice.temp_name = "{} from {} to {}".format(project_string,invoice.period_start,invoice.timesheet_limit_date)
+
+    @api.multi
+    def _compute_attachment_count(self):
+        for invoice in self:
+            drafts = self.env['ir.attachment'].search([('res_id', '=', self.id),('name', 'like', DRAFTINVOICE)])
+            if drafts:
+                invoice.draft_count = len(drafts)
+            else:
+                invoice.draft_count = 0
+
+            reports = self.env['ir.attachment'].search([('res_id', '=', self.id),('name', 'like', ACTIVITYREPORT)])
+            if reports:
+                invoice.report_count = len(reports)
+            else:
+                invoice.report_count = 0
 
     @api.multi
     def _get_so_data(self):
@@ -591,7 +630,9 @@ class Invoice(models.Model):
         if not report_template:
             raise ValidationError(_(message))
         # create attachment
-        return self._create_activity_attachment(report_template, report_name)
+        attachment =  self._create_activity_attachment(report_template, report_name)
+        self._compute_attachment_count()
+        return attachment
 
     @api.multi
     def action_generate_draft_invoice(self):

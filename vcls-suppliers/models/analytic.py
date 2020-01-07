@@ -56,7 +56,7 @@ class AnalyticLine(models.Model):
                 'name': sale_line_id.name,
                 'order_id': purchase_order.id,
                 'account_analytic_id': task.project_id.analytic_account_id.id,
-                'price_unit':employee.timesheet_cost,
+                #'price_unit':employee.timesheet_cost,
                 'product_qty':self.unit_amount,
             })
             purchase_line_cache = purchase_line_obj.new(values)

@@ -16,9 +16,6 @@
                 </div>
             </xpath>
 
-            <xpath expr="//span[@t-field='task.stage_id.name']" position="replace">
-                <span t-esc="task.sudo().stage_id.name" class=" badge badge-pill badge-info" title="Current stage of this task"/>
-            </xpath>
             <xpath expr="//div[@t-if='task.date_deadline']" position="after">
                 <div class="col-12 col-md-6">
                     <strong>Planned Hours:</strong> <span t-esc="task.planned_hours" t-options='{"widget": "float", "precision": 1}'/>

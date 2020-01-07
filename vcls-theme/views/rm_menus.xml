@@ -123,7 +123,7 @@
             id="menu_rm_config_product"
             name="Products"
             parent="menu_rm_config_main"
-            action="sale.product_template_action"
+            action="purchase.product_normal_action_puchased"
             sequence="6"
         />
 
