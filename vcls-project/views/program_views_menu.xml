@@ -94,13 +94,16 @@
                         <button class="oe_stat_button o_res_partner_tip_opp" type="action"
                             name="%(crm.crm_lead_opportunities)d"
                             icon="fa-star"
-                            groups="sales_team.group_sale_salesman"
                             context="{'search_default_program_id': active_id}">
                             <field string="Opportunities" name="opportunity_count" widget="statinfo"/>
                         </button>
                         <button class="oe_stat_button" type="action"
                             name="%(open_view_project_program)d" icon="fa-puzzle-piece">
                             <field string="Main project" name="project_count" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                            name="action_projects_followup" icon="fa-table">
+                            <field string="Projects Follow-up" name="project_count" widget="statinfo"/>
                         </button>
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive">

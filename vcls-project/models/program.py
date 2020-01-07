@@ -80,6 +80,16 @@ class ProjectProgram(models.Model):
         result = dict((data['program_id'][0], data['program_id_count']) for data in project_data)
         for program in self:
             program.project_count = result.get(program.id, 0)
+    
+    @api.multi
+    def action_projects_followup(self):
+        self.ensure_one()
+        action = self.env.ref('vcls-timesheet.project_timesheet_forecast_report_action').read()[0]
+        project_ids = self.env['project.project'].search([('program_id','=',self.id)]).mapped('id')
+        action['context'] = { 
+                "search_default_project_id": project_ids,
+                }
+        return action
 
 
 ### ADD PROGRAM TO OTHER MODELS ###
