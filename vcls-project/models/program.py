@@ -191,7 +191,7 @@ class Lead(models.Model):
         related='program_id.product_name',
     )
 
-    product_description = fields.Char(
+    product_description = fields.Text(
         related="program_id.product_description",
     )
 
