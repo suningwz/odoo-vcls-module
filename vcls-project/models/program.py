@@ -7,7 +7,7 @@ class ProjectProgram(models.Model):
 
     _name = 'project.program'
     _description = 'Client Program'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(
         required = True,
