@@ -95,7 +95,7 @@ class ProjectProgram(models.Model):
                    'sec_therapeutic_area_id','sec_indication_id','sec_detailed_indication', )
     def _compute_program_info(self):
         for program in self:
-            info = "{} Program | {} for {} in {} \nled by {}:\n\n".format(program.client_id.name,program.name,program.product_name,program.app_country_group_id,program.leader_id.name)
+            info = "{} Program | {} for {} in {} \nled by {}:\n\n".format(program.client_id.name,program.name,program.product_name,program.app_country_group_id.name,program.leader_id.name)
             if program.prim_therapeutic_area_id:
                 info += "Primary Therapeutic Info:\nArea | {}\nIndication | {}\nDetails | {}\n\n".format(program.prim_therapeutic_area_id.name,program.prim_indication_id.name,program.prim_detailed_indication)
             if program.sec_therapeutic_area_id:
