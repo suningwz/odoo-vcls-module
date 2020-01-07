@@ -65,6 +65,11 @@ class ProjectProgram(models.Model):
 
     sec_detailed_indication = fields.Text()
 
+    program_info = fields.Text(
+        compute = '_compute_program_info',
+        store = True,
+    )
+
     """therapeutic_area_ids = fields.Many2many(
         'therapeutic.area',
         string ='Therapeutic Area',
@@ -79,14 +84,24 @@ class ProjectProgram(models.Model):
     stage_id =  fields.Selection([('pre', 'Preclinical'),('exploratory', 'Exploratory Clinical'),
     ('confirmatory', 'Confirmatory Clinical'), ('post', 'Post Marketing')], 'Stage', default='pre')
     
-    product_description = fields.Char()
+    product_description = fields.Text()
     
     sale_order_count = fields.Integer(compute='_compute_sale_order_count', string='Sale Order Count')
     opportunity_count = fields.Integer(compute='_compute_opportunity_count', string='Opportunity Count')
     project_count = fields.Integer(compute='_compute_project_count', string='Main Project Count')
 
-   
-    
+    @api.depends('name','product_name','client_id','leader_id','app_country_group_id',
+                   'prim_therapeutic_area_id','prim_indication_id','prim_detailed_indication',
+                   'sec_therapeutic_area_id','sec_indication_id','sec_detailed_indication', )
+    def _compute_program_info(self):
+        for program in self:
+            info = "{} Program | {} for {} in {} \nled by {}:\n\n".format(program.client_id.name,program.name,program.product_name,program.app_country_group_id,program.leader_id.name)
+            if program.prim_therapeutic_area_id:
+                info += "Primary Therapeutic Info:\nArea | {}\nIndication | {}\nDetails | {}\n\n".format(program.prim_therapeutic_area_id.name,program.prim_indication_id.name,program.prim_detailed_indication)
+            if program.sec_therapeutic_area_id:
+                info += "Secondary Therapeutic Info:\nArea | {}\nIndication | {}\nDetails | {}\n\n".format(program.sec_therapeutic_area_id.name,program.sec_indication_id.name,program.sec_detailed_indication)
+            program.program_info = info
+
     def _compute_sale_order_count(self):
         order_data = self.env['sale.order'].read_group([('program_id', 'in', self.ids)], ['program_id'], ['program_id'])
         result = dict((data['program_id'][0], data['program_id_count']) for data in order_data)
@@ -154,26 +169,12 @@ class Lead(models.Model):
         readonly = True
     )
 
-    client_product_ids = fields.Many2many(
+    """client_product_ids = fields.Many2many(
         'client.product',
         string = 'Client Product',
         related = 'program_id.client_product_ids',
         readonly = True
-    )
-
-    """therapeutic_area_ids = fields.Many2many(
-        'therapeutic.area',
-        string ='Therapeutic Area',
-        related = 'program_id.therapeutic_area_ids',
-        readonly = True
-    )
-    
-    targeted_indication_ids = fields.Many2many(
-        'targeted.indication',
-        string ='Targeted Indication',
-        related = 'program_id.targeted_indication_ids',
-        readonly = True)"""
-    
+    )"""
 
     program_stage_id = fields.Selection([
         ('pre', 'Preclinical'),
