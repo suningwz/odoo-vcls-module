@@ -44,6 +44,7 @@
                     </header>
                     <sheet>
                         <field name="active" invisible="1"/>
+                        <field name="manual_probability" invisible="1"/>
                         <div class="oe_button_box" name="button_box">
                             <button class="oe_stat_button" type="object" context="{'partner_id': partner_id}" name="action_schedule_meeting" icon="fa-calendar">
                                 <div class="o_stat_info">

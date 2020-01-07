@@ -345,9 +345,11 @@ class Leads(models.Model):
             
             lead_vals['name']=self.build_opp_name(lead_vals.get('internal_ref',lead.internal_ref),lead_vals.get('name',lead.name))
 
-            #we manage the case of manual_probability, we re-use the manually set value
+            #we manage the case of manual_probability, we re-use the manually set value, except if new one is 0 or 100
             if lead_vals.get('stage_id') and lead.manual_probability:
-                lead_vals['probability']=lead.probability
+                stage = self.env['crm.stage'].browse(lead_vals.get('stage_id'))
+                if stage.probability not in [0.0,100.00]:
+                    lead_vals['probability']=lead.probability
 
             _logger.info("{} Manual={}".format(lead_vals,lead.manual_probability))
 
