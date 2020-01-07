@@ -28,6 +28,11 @@
                         string="Sales Orders">
                     </button>
                 </xpath>
+
+                <xpath expr="//button[@name='action_view_project_ids']" position="attributes">    
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
                 <field name="name" position="attributes">
                     <attribute name="readonly">0</attribute>
                 </field>
