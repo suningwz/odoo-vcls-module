@@ -117,8 +117,10 @@
                         <group>
                             <field name="stage_id"/>
                             <field name="app_country_group_id"/>
+                            <!--
                             <field name="therapeutic_area_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
                             <field name="targeted_indication_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
+                            -->
                         </group>
                     </group>
                     </sheet>
