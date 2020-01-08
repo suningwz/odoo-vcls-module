@@ -109,12 +109,13 @@ class SaleOrder(models.Model):
         if customer_last_invoice and customer_last_invoice.timesheet_limit_date and \
                 self.invoicing_frequency and self.invoicing_frequency != 'milestone':
             if self.invoicing_frequency == 'month':
+                #end of the next months
                 new_date = customer_last_invoice.timesheet_limit_date +\
-                           relativedelta(day=1, months=2) -\
+                           relativedelta(day=1, months=1) -\
                            relativedelta(day=1)
             if self.invoicing_frequency == 'trimester':
                 new_date = customer_last_invoice.timesheet_limit_date +\
-                           relativedelta(day=1, months=4) -\
+                           relativedelta(day=1, months=3) -\
                            relativedelta(day=1)
             self.timesheet_limit_date = new_date
 
