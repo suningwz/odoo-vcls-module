@@ -68,6 +68,8 @@ class Invoice(models.Model):
         default = 0,
     )
 
+    communication_rate = fields.Float()
+
     @api.depends('timesheet_limit_date','period_start')
     def compute_temp_name(self):
         for invoice in self:
@@ -96,24 +98,35 @@ class Invoice(models.Model):
     @api.multi
     def _get_so_data(self):
         self.ensure_one()
-        ### We look for info to build the Period start date
 
-        period_start = self.timesheet_limit_date
-        min_date = period_start
+        ### we initiate default values for the variables
+        timesheet_limit_date = fields.Date.today()
+        delta = 0
+        self.communication_rate = 0
 
-        if period_start:
-            for so in self.project_ids.mapped('sale_order_id'):
-                if so.invoicing_frequency == 'month':
-                    delta = 1
-                elif so.invoicing_frequency == 'trimester':
-                    delta = 3
-                else:
-                    delta = 0
+        for so in self.project_ids.mapped('sale_order_id'):
 
-                if (period_start - timedelta(months=delta))<min_date:
-                    min_date = period_start - timedelta(months=delta)
+            if so.timesheet_limit_date:
+                if so.timesheet_limit_date < timesheet_limit_date:
+                    timesheet_limit_date = so.timesheet_limit_date
+            
+            if so.invoicing_frequency == 'month' and delta < 1:
+                delta = 1
+            if so.invoicing_frequency == 'trimester' and delta < 3:
+                delta = 3
+            
+            if not self.invoice_template and so.invoice_template:
+                self.invoice_template = so.invoice_template
 
-            self.period_start = min_date
+            if not self.activity_report_template and so.activity_report_template:
+                self.activity_report_template = so.activity_report_template
+            
+            if self.communication_rate < so.communication_rate:
+                self.communication_rate = so.communication_rate
+
+
+        self.timesheet_limit_date = timesheet_limit_date
+        self.period_start = timesheet_limit_date - timedelta(months=delta)
 
     @api.multi
     def _get_project_data(self):
@@ -439,20 +452,20 @@ class Invoice(models.Model):
         ret._get_so_data()
         ret._get_project_data()
 
-        # Get the default activity_report_template if not set
+        """# Get the default activity_report_template if not set
         if not ret.activity_report_template:
             invoice_line_ids = self.invoice_line_ids.filtered(lambda l: not l.display_type)
             if invoice_line_ids:
                 sale_line_ids = invoice_line_ids[0].sale_line_ids
                 if sale_line_ids:
                     activity_report_template_id = sale_line_ids[0].activity_report_template.id
-                    ret.activity_report_template = activity_report_template_id
+                    ret.activity_report_template = activity_report_template_id"""
 
-        partner = ret.partner_id
+        #partner = ret.partner_id
         if ret.partner_id.invoice_admin_id:
             ret.user_id = ret.partner_id.invoice_admin_id
-        if partner.communication_rate:
-            _logger.info("COM RATE {}".format(partner.communication_rate))
+        
+        if self.communication_rate>0:
             try:
                 total_amount = ret.get_communication_amount()
             except:
@@ -462,9 +475,10 @@ class Invoice(models.Model):
                 line.invoice_id = ret.id
                 line.product_id = self.env.ref('vcls-invoicing.product_communication_rate').id
                 line._onchange_product_id()
-                line.price_unit = total_amount * partner.communication_rate / 100
+                line.price_unit = total_amount * self.communication_rate / 100
                 line.quantity = 1
                 ret.with_context(communication_rate=True).invoice_line_ids += line
+
         return ret
 
     @api.multi
@@ -473,8 +487,8 @@ class Invoice(models.Model):
             vals.update({'invoice_sending_date': fields.Datetime.now()})
         ret = super(Invoice, self).write(vals)
         for rec in self:
-            partner = rec.partner_id
-            if partner.communication_rate and not self.env.context.get('communication_rate'):
+            #partner = rec.partner_id
+            if rec.communication_rate and not self.env.context.get('communication_rate'):
                 try:
                     total_amount = ret.get_communication_amount()
                 except:
@@ -484,7 +498,7 @@ class Invoice(models.Model):
                     line.invoice_id = rec.id
                     line.product_id = self.env.ref('vcls-invoicing.product_communication_rate').id
                     line._onchange_product_id()
-                    line.price_unit = total_amount * partner.communication_rate / 100
+                    line.price_unit = total_amount * rec.communication_rate / 100
                     line.quantity = 1
                     rec.with_context(communication_rate=True).invoice_line_ids += line
             if rec.state == 'cancel':
