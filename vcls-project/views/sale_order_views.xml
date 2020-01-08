@@ -11,7 +11,7 @@
                     <button type="object"
                         name="action_view_family_parent_project"
                         class="oe_stat_button"
-                        icon="fa-pencil-square"
+                        icon="fa-puzzle-piece"
                         attrs="{'invisible': [('parent_project_id', '=', False)]}"
                         string="Project">
                     </button>
@@ -29,7 +29,7 @@
                     <attribute name="invisible">1</attribute>
                 </button>
                 <button name='action_view_project_ids' position="attributes">
-                    <attribute name="invisible">0</attribute>
+                    <attribute name="invisible">1</attribute>
                 </button>
                 <xpath expr="//header" position="inside">
                     <button name="quotation_program_print" string="Print all program's quotation" type="object" states="draft" class="btn-primary"/>
