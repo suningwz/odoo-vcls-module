@@ -6,6 +6,7 @@ import base64
 from itertools import groupby
 from datetime import date, datetime, time
 from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 
 from odoo.tools import email_re, email_split, email_escape_char, float_is_zero, float_compare, \
     pycompat, date_utils
@@ -126,7 +127,7 @@ class Invoice(models.Model):
 
 
         self.timesheet_limit_date = timesheet_limit_date
-        self.period_start = timesheet_limit_date - timedelta(months=delta)
+        self.period_start = timesheet_limit_date - relativedelta(months=delta)
 
     @api.multi
     def _get_project_data(self):
