@@ -343,7 +343,7 @@ class ResPartner(models.Model):
         if vals.get('email',False):
             # we search for existing partners with the same email
             existing = self.env['res.partner'].search([('email','=ilike',vals.get('email'))])
-            _logger.info("email {} existing {}".format(vals.get('email'),existing.mapped('name')))
+            _logger.info("email {} existing {} all vals {}".format(vals.get('email'),existing.mapped('name'),vals))
             if existing:
                 raise UserError("Duplicates {}".format(existing.mapped('name')))
             
