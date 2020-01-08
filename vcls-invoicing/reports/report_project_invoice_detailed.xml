@@ -99,7 +99,7 @@
                         </div>
                     </div>
 
-                    <div style="page-break-inside: avoid;">
+                    <div style="page-break-inside: avoid;" t-if="rate_data">
                     <h5 class="mb8">Consulting Services | Time &amp; Material</h5>
                     <t t-set="display_discount" t-value="any([l.discount for l in o.invoice_line_ids])"/>
                     <table class="table table-sm o_main_table" name="invoice_detailed_table">
