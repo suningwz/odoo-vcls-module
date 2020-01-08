@@ -3,6 +3,7 @@
 from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare
+from datetime import timedelta
 
 import logging
 import datetime
@@ -430,3 +431,27 @@ class AnalyticLine(models.Model):
     def pc_review_approve_timesheets(self):
         self.search([('stage_id', '=', 'pc_review'), ('lc_comment', '=', False)]).\
             write({'stage_id': 'invoiceable'})
+
+    @api.model
+    def _smart_timesheeting_cron(self):
+        tasks = self.env['project.task'].search([
+            ('project_id', '!=', False),
+            ('effective_hours', '>', 0),
+            ('timesheet_ids.date', '>', fields.Datetime.now() - timedelta(days=7)),
+            ('timesheet_ids.date', '<', fields.Datetime.now()),
+        ])
+        for task in tasks:
+            self.create({
+                'date': fields.Date.today(),
+                'task_id': task.id,
+                'amount': 0,
+                'company_id': task.company_id,
+                'project_id': task.project_id.id,
+            })
+
+    def _timesheet_preprocess(self, vals):
+        vals = super(AnalyticLine, self)._timesheet_preprocess(vals)
+        if vals.get('project_id'):
+            project = self.env['project.project'].browse(vals['project_id'])
+            vals['main_project_id'] = project.id or project.parent_id.id
+        return vals

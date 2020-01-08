@@ -3,6 +3,10 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 class CountryGroup(models.Model):
     _inherit = 'res.country.group'
@@ -337,10 +341,12 @@ class ResPartner(models.Model):
             vals['legacy_account'] = self.env['ir.sequence'].next_by_code('seq_customer_account_id')
 
         if vals.get('email',False):
-            # we search for existing partners with the same email
+            # we search for existing partners with the same email, but we authorize the creation of a company AND an individual with the same email
             existing = self.env['res.partner'].search([('email','=ilike',vals.get('email'))])
+            #_logger.info("email {} existing {} all vals {}".format(vals.get('email'),existing.mapped('name'),vals))
             if existing:
-                raise UserError("Duplicates {}".format(existing.mapped('name')))
+                if vals.get('is_company') == existing.is_company:
+                    raise UserError("Duplicates {}".format(existing.mapped('name')))
             
         new_contact = super(ResPartner, self).create(vals)
         if new_contact.type != 'contact':

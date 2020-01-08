@@ -2,15 +2,15 @@
     <data>
 
 
-        <record id="action_view_forecast_from_task" model="ir.actions.act_window">
+        <record id="action_forecast_from_task" model="ir.actions.act_window">
             <field name="name">Forecast</field>
             <field name="res_model">project.forecast</field>
-            <field name="view_mode">gantt,tree,form</field>
+            <field name="view_mode">tree,gantt,form</field>
             <field name="view_ids"
                 eval="[(5,0,0),
-                    (0, 0, {'view_mode': 'gantt', 'view_id': ref('project_forecast_view_gantt')}),
+                    (0, 0, {'view_mode': 'tree', 'view_id': ref('project_forecast.project_forecast_view_tree')}),
                     (0, 0, {'view_mode': 'form', 'view_id': ref('project_forecast_view_form')}),
-                    (0, 0, {'view_mode': 'tree', 'view_id': ref('project_forecast.project_forecast_view_tree')})
+                    (0, 0, {'view_mode': 'gantt', 'view_id': ref('project_forecast_view_gantt')}),
                 ]"/>
             <field name="context">{
                 'group_by': ['project_id', 'deliverable_id', 'task_id'],
@@ -41,7 +41,7 @@
                     <button type="action"
                             class="oe_stat_button"
                             icon="fa-calendar"
-                            name="%(action_view_forecast_from_task)d"
+                            name="%(action_forecast_from_task)d"
                             string="Forecast">
                     </button>
                 </xpath>

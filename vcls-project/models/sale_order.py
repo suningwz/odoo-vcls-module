@@ -63,7 +63,7 @@ class SaleOrder(models.Model):
             'view_mode': 'form',
             'res_model': 'project.project',
             'res_id': parent_project_id.id,
-            'view_id': False,
+            'view_id': self.env.ref('vcls-project.vcls_specific_project_form').id,
             'context': self.env.context,
         }
 

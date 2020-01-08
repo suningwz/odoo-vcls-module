@@ -192,7 +192,7 @@
                                 </kanban>
                             </field>
                         </page>
-                        <page name="billing_employee_rate" string="Invoicing" attrs="{'invisible': [('billable_type', '=', 'no')]}" groups="vcls-hr.vcls_group_superuser_lvl2">
+                        <page name="billing_employee_rate" string="Invoicing" attrs="{'invisible': [('billable_type', '=', 'no')]}" groups="vcls-hr.vcls_group_superuser_lvl2,vcls-suppliers.vcls_group_rm">
                             <group>
                                 <field name="billable_type" invisible="1"/>
                                 <field name="sale_order_id" attrs="{'invisible': [('billable_type', '=', 'no')]}"/>
@@ -322,6 +322,17 @@
                     <field name="project_type"/>
                 </field>
                 
+            </field>
+        </record>
+
+        <record id="view_project_project_filter" model="ir.ui.view">
+            <field name="name">project.project.select</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.view_project_project_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name = 'program_id'/>
+                </xpath>
             </field>
         </record>
 

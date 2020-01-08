@@ -77,7 +77,7 @@ class SaleOrder(models.Model):
         related = 'core_team_id.lead_consultant',
     )
 
-    @api.depends('order_line','order_line.untaxed_amount_to_invoice')
+    @api.depends('order_line','order_line.untaxed_amount_to_invoice','order_line.qty_invoiced')
     def _compute_invoiceable_amount(self):
         for so in self:
             #if the so has child, then we add child invoiceable amount to the total
@@ -109,12 +109,13 @@ class SaleOrder(models.Model):
         if customer_last_invoice and customer_last_invoice.timesheet_limit_date and \
                 self.invoicing_frequency and self.invoicing_frequency != 'milestone':
             if self.invoicing_frequency == 'month':
+                #end of the next months
                 new_date = customer_last_invoice.timesheet_limit_date +\
-                           relativedelta(day=1, months=2) -\
+                           relativedelta(day=1, months=1) -\
                            relativedelta(day=1)
             if self.invoicing_frequency == 'trimester':
                 new_date = customer_last_invoice.timesheet_limit_date +\
-                           relativedelta(day=1, months=4) -\
+                           relativedelta(day=1, months=3) -\
                            relativedelta(day=1)
             self.timesheet_limit_date = new_date
 

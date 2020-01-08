@@ -1,11 +1,21 @@
 # -*- coding: utf-8 -*-
 import datetime
+from dateutil.relativedelta import relativedelta
+
 from odoo import models, fields, api, http
 
 from odoo.exceptions import UserError, ValidationError
 
 import logging
 _logger = logging.getLogger(__name__)
+
+class MailActivityType(models.Model):
+    
+    _inherit = 'mail.activity.type'
+
+    default_delay = fields.Integer(
+        default = 0,
+    )
 
 class MailActivity(models.Model):
     
@@ -17,6 +27,10 @@ class MailActivity(models.Model):
         compute_sudo=True,
         store = True,
         )
+    
+    """default_delay = fields.Integer(
+        default = 0,
+    )"""
 
     @api.depends('user_id')  
     def _get_lm_ids(self):
@@ -56,3 +70,23 @@ class MailActivity(models.Model):
                 _logger.info("SAFE UNLINK {} - {}".format(act.res_name,act.user_id.name))
                 raise ValidationError("You are not authorized to cancel this activity.")
         return super(MailActivity, self).unlink()
+    
+    @api.model
+    def create(self, values):
+        if values.get('activity_type_id'):
+            activity_type = self.env['mail.activity.type'].browse(values.get('activity_type_id'))
+
+            if activity_type.default_delay>0 and values.get('date_deadline') == fields.Date.context_today(self):
+                #we compute a default deadline value, based on type configuration
+                if activity_type.delay_unit == 'days':
+                    values['date_deadline'] = fields.Date.context_today(self) + relativedelta(days=activity_type.default_delay)
+                elif activity_type.delay_unit == 'weeks':
+                    values['date_deadline'] = fields.Date.context_today(self) + relativedelta(weeks=activity_type.default_delay)
+                elif activity_type.delay_unit == 'months':
+                    values['date_deadline'] = fields.Date.context_today(self) + relativedelta(months=activity_type.default_delay)
+                else:
+                    pass
+            else:
+                pass
+
+        return super(MailActivity, self).create(values)

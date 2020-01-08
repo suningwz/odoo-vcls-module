@@ -8,7 +8,7 @@
 
                 <xpath expr="//group[@name='name']" position="before">
                     <h1 modifiers="{}">
-				        <field name="opp_name" placeholder="(Automatic) AltName-XXX| Please add a short Opp name." attrs="{'invisible': [('name', '=', 'merge')], 'required': [('name', '!=', 'merge')]}"/>
+				        <field name="opp_name" placeholder="(Automatic) AltName-XXX| Short description" attrs="{'invisible': [('name', '=', 'merge')], 'required': [('name', '!=', 'merge')]}"/>
 			        </h1>
                 </xpath>
             </field>

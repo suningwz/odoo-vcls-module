@@ -27,7 +27,7 @@
         <t t-set="projects_row_data" t-value="data['projects_row_data']"/>
         <div class="page">
             <div class="oe_structure"/>
-            <h5 class="text-center mt-3 mb-3">
+            <h5 class="text-center mt-3">
                 <span t-if="o.type == 'out_invoice' and o.state in ('open', 'in_payment', 'paid')">Activity report for invoice</span>
                 <span t-if="o.type == 'out_invoice' and o.state == 'draft'">Activity report for draft Invoice</span>
                 <span t-if="o.type == 'out_invoice' and o.state == 'cancel'">Activity report for cancelled Invoice</span>
@@ -36,12 +36,19 @@
                 <span t-if="o.type == 'in_invoice'">Activity report for vendor Bill</span>
                 <span t-field="o.number"/>
             </h5>
+            <h6 class="text-center mt-1 mb-3" t-if="o.period_start and o.timesheet_limit_date">
+                <span>Invoice Period: </span>
+                <t t-esc="o.period_start"/>
+                <span> - </span>
+                <t t-esc="o.timesheet_limit_date"/>
+            </h6>
             <table class="table table-sm o_main_table">
                 <thead>
                     <th></th>
                     <th t-foreach="rate_product_ids" t-as="rate_product_id">
                         <t t-esc="rate_product_id.name"/>
                     </th>
+                    <th>Grand Total</th>
                 </thead>
                 <tbody>
                     <t t-foreach="list(projects_row_data)" t-as="project_id">
@@ -51,6 +58,9 @@
                             <td t-foreach="rate_product_ids" t-as="rate_product_id" class="text-right">
                                 <t t-esc="project_rate_matrix_data.get((project_id, rate_product_id), '-')"/>
                             </td>
+                            <td class="text-right">
+                                <t t-esc="sum([project_rate_matrix_data.get((project_id, rate_product_id), 0) for rate_product_id in rate_product_ids])"/>
+                            </td>
                         </tr>
                         <t t-foreach="list(tasks_row_data)" t-as="task_id">
                             <t t-set="time_category_row_data" t-value="tasks_row_data[task_id]"/>
@@ -58,6 +68,9 @@
                                 <td class="pl-3"><t t-esc="task_id.name"/></td>
                                 <td t-foreach="rate_product_ids" t-as="rate_product_id" class="text-right">
                                     <t t-esc="task_rate_matrix_data.get((project_id, task_id, rate_product_id), '-')"/>
+                                </td>
+                                <td class="text-right">
+                                    <t t-esc="sum([task_rate_matrix_data.get((project_id, task_id, rate_product_id), 0) for rate_product_id in rate_product_ids])"/>
                                 </td>
                             </tr>
                         </t>
@@ -107,6 +120,9 @@
                 </td>
                 <td t-foreach="rate_product_ids" t-as="rate_product_id" class="text-right">
                     <t t-esc="time_category_rate_matrix_data.get((project_id, task_id, time_category_id, rate_product_id), '-')"/>
+                </td>
+                <td class="text-right">
+                    <t t-esc="sum([time_category_rate_matrix_data.get((project_id, task_id, time_category_id, rate_product_id), 0) for rate_product_id in rate_product_ids])"/>
                 </td>
             </tr>
         </t>
