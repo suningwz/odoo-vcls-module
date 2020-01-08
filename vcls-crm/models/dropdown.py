@@ -28,6 +28,11 @@ class TargetedIndication(models.Model):
     name = fields.Char(
         required = True,
     ) 
+
+    therapeutic_area_id = fields.Many2one(
+        comodel_name = 'therapeutic.area',
+        required = True,
+    )
     
 
 class StageDevelopment(models.Model):

@@ -22,6 +22,7 @@
             <field name="res_model">sale.order</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,graph</field>
+            <field name="search_view_id" ref="sale.sale_order_view_search_inherit_quotation"/>
             <field name="context">{'search_default_program_id': active_id}</field>
             <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">
@@ -69,13 +70,6 @@
             <field name="view_id" ref="project.view_project_kanban"/>
             <field name="search_view_id" ref="project.view_project_project_filter"/>
             <field name="target">main</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Create a new project
-                </p><p>
-                    Or <a type="action" name="%(project.ir_actions_server_project_sample)d" tabindex="-1">activate a sample project</a> to play with.
-                </p>
-            </field>
         </record>
         
         <record model="ir.ui.view" id="view_project_program_form">
@@ -83,22 +77,29 @@
             <field name="model">project.program</field>
             <field name="arch" type="xml">
                 <form>
+                    <sheet>
                     <div class="oe_button_box" name="button_box" groups="base.group_user">
-                        <button class="oe_stat_button" type="action"
-                            name="%(act_res_partner_2_sale_order)d" icon="fa-usd">
-                            <field string="Sales" name="sale_order_count" widget="statinfo"/>
-                        </button>
+
                         <button class="oe_stat_button o_res_partner_tip_opp" type="action"
                             name="%(crm.crm_lead_opportunities)d"
                             icon="fa-star"
-                            groups="sales_team.group_sale_salesman"
                             context="{'search_default_program_id': active_id}">
                             <field string="Opportunities" name="opportunity_count" widget="statinfo"/>
                         </button>
+
                         <button class="oe_stat_button" type="action"
-                            name="%(open_view_project_program)d" icon="fa-tasks">
+                            name="%(act_res_partner_2_sale_order)d" icon="fa-usd"
+                            context="{'search_default_program_id': active_id}">
+                            <field string="Sales" name="sale_order_count" widget="statinfo"/>
+                        </button>
+                        
+                        <button class="oe_stat_button" type="action"
+                            name="%(open_view_project_program)d" icon="fa-puzzle-piece">
                             <field string="Main project" name="project_count" widget="statinfo"/>
                         </button>
+
+                        <button class="oe_stat_button" type="object" name="action_projects_followup" icon="fa-table" string="Projects Follow-up"/>
+
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive">
                             <field name="active" widget="boolean_button"
@@ -109,17 +110,41 @@
                         <group>
                             <field name="name"/>
                             <field name="client_id"/>
+                            <field name="client_product_ids" widget="many2many_tags" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}'/>
                             <field name="product_name"/>
                             <field name="product_description"/>
-                            <field name="leader_id"/>
+                            
                         </group>
                         <group>
+                            <field name="leader_id"/>
                             <field name="stage_id"/>
                             <field name="app_country_group_id"/>
+                            <!--
                             <field name="therapeutic_area_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
                             <field name="targeted_indication_ids" widget="many2many_tags" options="{'no_quick_create': True, 'no_create_edit' : True}"/>
+                            -->
                         </group>
                     </group>
+
+                    <group string="Therapeutic Information">
+                        <group string="Primary">
+                            <field name="prim_therapeutic_area_id" string="Therapeutic Area" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}'/>
+                            <field name="prim_indication_id" string="Indication" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}' domain="[('therapeutic_area_id','=',prim_therapeutic_area_id)]"/>
+                            <field name="prim_detailed_indication" string="Detailed Indication"/>
+                        </group>
+                        <group string="Secondary">
+                            <field name="sec_therapeutic_area_id" string="Therapeutic Area" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}'/>
+                            <field name="sec_indication_id" string="Indication" options='{"no_open": True,"no_create": 1, "no_create_edit": 1}' domain="[('therapeutic_area_id','=',sec_therapeutic_area_id)]"/>
+                            <field name="sec_detailed_indication" string="Detailed Indication"/>
+                        </group>
+                    </group>
+
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" help="Follow this program to automatically track the events associated." groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                    </div>
                 </form>
             </field>
         </record>

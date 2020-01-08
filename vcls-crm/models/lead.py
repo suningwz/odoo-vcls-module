@@ -103,9 +103,7 @@ class Leads(models.Model):
     # CUSTOM FIELDS #
     #################
 
-    manual_probability = fields.Boolean(
-        default=False,
-    )
+    manual_probability = fields.Boolean()
 
     # Related fields in order to avoid mismatch & errors
     opted_in = fields.Boolean(
@@ -326,30 +324,39 @@ class Leads(models.Model):
         # END OF MODS
         return lead
     
+    @api.multi
     def write(self, vals):
-        if (vals.get('type',False) == 'lead' or self.type == 'lead'):
-            if vals.get('contact_name', False) and vals.get('contact_lastname', False) and vals.get('contact_middlename', False):
-                    vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
-            elif vals.get('contact_name', False) and vals.get('contact_lastname', False):
-                    vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
+        for lead in self:
+            lead_vals = {**vals} #we make a copy of the vals to avoid iterative updates
+            if (lead_vals.get('type',False) == 'lead' or lead.type == 'lead'):
+                if lead_vals.get('contact_name', False) and lead_vals.get('contact_lastname', False) and lead_vals.get('contact_middlename', False):
+                        lead_vals['name'] = lead_vals['contact_name'] + " " + lead_vals['contact_middlename'] + " " + lead_vals['contact_lastname']
+                elif lead_vals.get('contact_name', False) and lead_vals.get('contact_lastname', False):
+                        lead_vals['name'] = lead_vals['contact_name'] + " " + lead_vals['contact_lastname']
 
-        #we manage the reference of the opportunity, if we change the type or update an opportunity not having a ref defined
-        #_logger.info("INTERNAL REF {}".format(vals.get('internal_ref',self.internal_ref)))
-        if (vals.get('type',False) == 'opportunity' or self.type == 'opportunity') and not vals.get('internal_ref',self.internal_ref):
-            client = self.env['res.partner'].browse(vals.get('partner_id',self.partner_id.id)) #if a new client defined or was already existing
-            if client:
-                vals['internal_ref']=client._get_new_ref()[0]
-            else:
-                vals['internal_ref']=False
-        
-        vals['name']=self.build_opp_name(vals.get('internal_ref',self.internal_ref),vals.get('name',self.name))
+            #we manage the reference of the opportunity, if we change the type or update an opportunity not having a ref defined
+            #_logger.info("INTERNAL REF {}".format(vals.get('internal_ref',self.internal_ref)))
+            if (lead_vals.get('type',False) == 'opportunity' or lead.type == 'opportunity') and not lead_vals.get('internal_ref',lead.internal_ref):
+                client = self.env['res.partner'].browse(lead_vals.get('partner_id',lead.partner_id.id)) #if a new client defined or was already existing
+                if client:
+                    lead_vals['internal_ref']=client._get_new_ref()[0]
+                else:
+                    lead_vals['internal_ref']=False
+            
+            lead_vals['name']=self.build_opp_name(lead_vals.get('internal_ref',lead.internal_ref),lead_vals.get('name',lead.name))
 
-        #we manage the case of manual_probability, we re-use the manually set value
-        if vals.get('stage_id') and self.manual_probability:
-            vals['probability']=self.probability
+            #we manage the case of manual_probability, we re-use the manually set value, except if new one is 0 or 100
+            if lead_vals.get('stage_id') and lead.manual_probability:
+                stage = self.env['crm.stage'].browse(lead_vals.get('stage_id'))
+                if stage.probability not in [0.0,100.00]:
+                    lead_vals['probability']=lead.probability
 
-        #_logger.info("{}".format(vals))
-        return super(Leads, self).write(vals)
+            _logger.info("{} Manual={}".format(lead_vals,lead.manual_probability))
+
+            if not super(Leads, self).write(lead_vals):
+                return False
+
+        return True
 
     ###################
     # COMPUTE METHODS #
@@ -357,11 +364,12 @@ class Leads(models.Model):
 
     @api.onchange('probability')
     def _onchange_probability(self):
-        self.manual_probability = True
+        self.manual_probability=True
 
     #we override this one to exclude the case when manual_probability is True
     @api.onchange('stage_id')
     def _onchange_stage_id(self):
+        _logger.info("NEW STAGE PROB {}".format(self.stage_id.probability))
         if not self.manual_probability or self.stage_id.probability == 100 or self.stage_id.probability == 0:
             _logger.info("NEW STAGE PROB {}".format(self.stage_id.probability))
             values = self._onchange_stage_id_values(self.stage_id.id)

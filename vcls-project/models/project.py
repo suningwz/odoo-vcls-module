@@ -2,6 +2,8 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError,UserError
+from datetime import datetime, time
+from dateutil.relativedelta import relativedelta
 
 import logging
 
@@ -377,6 +379,13 @@ class Project(models.Model):
                                                                  ('stage_id', '=', 'pc_review')])
         if timesheet_ids:
             timesheet_ids.write({'stage_id': 'invoiceable'})
+        
+        #we update the timesheet limit date to the end of the previous month
+        today = fields.Date.today()
+        ts_limit_date =  today.replace(day=1) - relativedelta(days=1)
+        if all_projects:
+            all_projects.mapped('sale_order_id').write({'timesheet_limit_date':ts_limit_date})
+
 
         #we trigger the computation of KPIs
         self.env['project.task']._cron_compute_kpi()

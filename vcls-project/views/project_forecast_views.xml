@@ -23,6 +23,10 @@
                     <filter name="group_by_department_id" string="Department"
                         context="{'group_by': 'department_id'}"/>
                 </xpath>
+                <xpath expr="//search/group/filter[@name='group_by_task_id']" position="before">
+                    <filter name="group_by_deliverable_id" string="Deliverable"
+                        context="{'group_by': 'deliverable_id'}"/>
+                </xpath>
             </field>
         </record>
 
@@ -156,8 +160,10 @@
                       (0, 0, {'view_mode': 'form', 'view_id': ref('project_forecast_view_form')}),
                 ]"/>
             <field name="context">{
-                'group_by': ['project_id', 'deliverable_id', 'task_id'],
                 'search_default_project_id': active_id,
+                'search_default_group_by_project_id': 1,
+                'search_default_group_by_deliverable_id': 1,
+                'search_default_group_by_task_id': 1,
             }</field>
         </record>
 

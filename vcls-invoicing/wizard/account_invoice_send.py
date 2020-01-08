@@ -14,3 +14,8 @@ class AccountInvoiceSend(models.TransientModel):
             composer = self.env['mail.compose.message'].browse(res['composer_id'])
             composer.attachment_ids = self._context.get('default_attachment_ids')
         return res
+
+    @api.onchange('template_id')
+    def onchange_template_id(self):
+        super(AccountInvoiceSend, self).onchange_template_id()
+        self.attachment_ids = self.env['ir.attachment'].browse(self._context.get('default_attachment_ids', []))

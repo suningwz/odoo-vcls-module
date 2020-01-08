@@ -7,6 +7,7 @@ class ProjectProgram(models.Model):
 
     _name = 'project.program'
     _description = 'Client Program'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(
         required = True,
@@ -33,14 +34,43 @@ class ProjectProgram(models.Model):
         help = 'The client product name',
     )
 
-    #indication = fields.Char()
+    client_product_ids = fields.Many2many(
+        comodel_name = 'client.product',
+        string = 'Client Product',
+    )
 
+   
     app_country_group_id = fields.Many2one(
         'res.country.group',
         string = "Application Geographic Area",
     )
 
-    therapeutic_area_ids = fields.Many2many(
+    prim_therapeutic_area_id = fields.Many2one(
+        'therapeutic.area',
+    )
+
+    prim_indication_id = fields.Many2one(
+       'targeted.indication', 
+    )
+
+    prim_detailed_indication = fields.Text()
+
+    sec_therapeutic_area_id = fields.Many2one(
+        'therapeutic.area',
+    )
+
+    sec_indication_id = fields.Many2one(
+       'targeted.indication', 
+    )
+
+    sec_detailed_indication = fields.Text()
+
+    program_info = fields.Text(
+        compute = '_compute_program_info',
+        store = True,
+    )
+
+    """therapeutic_area_ids = fields.Many2many(
         'therapeutic.area',
         string ='Therapeutic Area',
     )
@@ -48,20 +78,30 @@ class ProjectProgram(models.Model):
     targeted_indication_ids = fields.Many2many(
         'targeted.indication',
         string ='Targeted Indication',
-    )
+    )"""
 
      # Only 4 input so no need to create new object
     stage_id =  fields.Selection([('pre', 'Preclinical'),('exploratory', 'Exploratory Clinical'),
     ('confirmatory', 'Confirmatory Clinical'), ('post', 'Post Marketing')], 'Stage', default='pre')
     
-    product_description = fields.Char()
+    product_description = fields.Text()
     
     sale_order_count = fields.Integer(compute='_compute_sale_order_count', string='Sale Order Count')
     opportunity_count = fields.Integer(compute='_compute_opportunity_count', string='Opportunity Count')
     project_count = fields.Integer(compute='_compute_project_count', string='Main Project Count')
 
-   
-    
+    @api.depends('name','product_name','client_id','leader_id','app_country_group_id',
+                   'prim_therapeutic_area_id','prim_indication_id','prim_detailed_indication',
+                   'sec_therapeutic_area_id','sec_indication_id','sec_detailed_indication', )
+    def _compute_program_info(self):
+        for program in self:
+            info = "{} Program | {} for {} in {} \nled by {}:\n\n".format(program.client_id.name,program.name,program.product_name,program.app_country_group_id.name,program.leader_id.name)
+            if program.prim_therapeutic_area_id:
+                info += "Primary Therapeutic Info:\nArea | {}\nIndication | {}\nDetails | {}\n\n".format(program.prim_therapeutic_area_id.name,program.prim_indication_id.name,program.prim_detailed_indication)
+            if program.sec_therapeutic_area_id:
+                info += "Secondary Therapeutic Info:\nArea | {}\nIndication | {}\nDetails | {}\n\n".format(program.sec_therapeutic_area_id.name,program.sec_indication_id.name,program.sec_detailed_indication)
+            program.program_info = info
+
     def _compute_sale_order_count(self):
         order_data = self.env['sale.order'].read_group([('program_id', 'in', self.ids)], ['program_id'], ['program_id'])
         result = dict((data['program_id'][0], data['program_id_count']) for data in order_data)
@@ -79,6 +119,16 @@ class ProjectProgram(models.Model):
         result = dict((data['program_id'][0], data['program_id_count']) for data in project_data)
         for program in self:
             program.project_count = result.get(program.id, 0)
+    
+    @api.multi
+    def action_projects_followup(self):
+        self.ensure_one()
+        action = self.env.ref('vcls-timesheet.project_timesheet_forecast_report_action').read()[0]
+        project_ids = self.env['project.project'].search([('program_id','=',self.id)]).mapped('id')
+        action['context'] = { 
+                "search_default_project_id": project_ids,
+                }
+        return action
 
 
 ### ADD PROGRAM TO OTHER MODELS ###
@@ -119,28 +169,22 @@ class Lead(models.Model):
         readonly = True
     )
 
-    therapeutic_area_ids = fields.Many2many(
-        'therapeutic.area',
-        string ='Therapeutic Area',
-        related = 'program_id.therapeutic_area_ids',
+    """client_product_ids = fields.Many2many(
+        'client.product',
+        string = 'Client Product',
+        related = 'program_id.client_product_ids',
         readonly = True
-    )
-    
-    targeted_indication_ids = fields.Many2many(
-        'targeted.indication',
-        string ='Targeted Indication',
-        related = 'program_id.targeted_indication_ids',
-        readonly = True)
-    
+    )"""
 
     program_stage_id = fields.Selection([
         ('pre', 'Preclinical'),
         ('exploratory', 'Exploratory Clinical'),
         ('confirmatory', 'Confirmatory Clinical'),
         ('post', 'Post Marketing')],
-        'Program Stage',
-        related='program_id.stage_id',
-        readonly=True,)
+        string='Program Stage',
+        #related='program_id.stage_id',
+        #readonly=True,
+        )
     
     product_name = fields.Char(
         string = "Product Name",
@@ -148,9 +192,17 @@ class Lead(models.Model):
         related='program_id.product_name',
     )
 
-    product_description = fields.Char(
+    product_description = fields.Text(
         related="program_id.product_description",
     )
+
+    program_info = fields.Text(
+        related = 'program_id.program_info'
+    )
+
+    @api.onchange('program_id')
+    def _onchange_program_id(self):
+        self.program_stage_id = self.program_id.stage_id
 
 class SaleOrder(models.Model):
 

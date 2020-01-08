@@ -325,6 +325,17 @@
             </field>
         </record>
 
+        <record id="view_project_project_filter" model="ir.ui.view">
+            <field name="name">project.project.select</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.view_project_project_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name = 'program_id'/>
+                </xpath>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="view_project_kanban_2">
             <field name="name">view_project_kanban_2</field>
             <field name="model">project.project</field>
