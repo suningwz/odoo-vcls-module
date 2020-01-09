@@ -112,7 +112,7 @@ class Invoice(models.Model):
                 so_ids |= sline.order_id
 
 
-        _logger.info("GET SO DATA {}".format(so_ids.mapped('name')))
+        _logger.info("GET SO DATA {} so {} for {}".format(self.partner_id,self.invoice_line_ids,so_ids.mapped('name')))
 
         for so in self.project_ids.mapped('sale_order_id'):
 
@@ -461,7 +461,7 @@ class Invoice(models.Model):
     @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
-        _logger.info("INVOICE CREATED {}".format(ret.temp_name))
+        _logger.info("INVOICE CREATED {}".format(vals))
 
         ret._get_so_data()
         _logger.info("INVOICE SO DATA  date {} rate {}".format(ret.timesheet_limit_date,ret.communication_rate))
