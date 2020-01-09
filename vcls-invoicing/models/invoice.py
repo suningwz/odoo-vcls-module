@@ -494,9 +494,9 @@ class Invoice(models.Model):
     @api.multi
     def write(self, vals):
         ret = False
-        _logger.info("INVOICE UPDATE START {} ".format(vals))
+        
         for inv in self:
-            
+            _logger.info("INVOICE UPDATE START {} {}".format(inv.project_ids.name,vals))
             #inv._get_so_data()
             
             ret = super(Invoice, inv).write(vals)
