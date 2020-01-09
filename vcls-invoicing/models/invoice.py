@@ -492,9 +492,10 @@ class Invoice(models.Model):
 
     @api.multi
     def write(self, vals):
+        ret = False
         for inv in self:
             _logger.info("INVOICE UPDATE START {} {}".format(inv.temp_name, inv.invoice_line_ids.mapped('name')))
-            ret = super(Invoice, self).write(vals)
+            ret = super(Invoice, inv).write(vals)
             _logger.info("INVOICE UPDATE END {} {}".format(inv.temp_name, inv.invoice_line_ids.mapped('name')))
         
         """if vals.get('sent'):
