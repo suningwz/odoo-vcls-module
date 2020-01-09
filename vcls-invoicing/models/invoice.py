@@ -543,10 +543,13 @@ class Invoice(models.Model):
 
     @api.multi
     def unlink(self):
-        if self.timesheet_ids:
-            for timesheet in self.timesheet_ids:
-                timesheet.stage_id = 'invoiceable'
-        return super(Invoice, self).unlink()
+        for invoice in self:
+            if invoice.timesheet_ids:
+                for timesheet in invoice.timesheet_ids:
+                    timesheet.stage_id = 'invoiceable'
+                    ret = super(Invoice, invoice).unlink()
+
+        return ret
 
     @api.multi
     def html_to_string(self, html_format):
