@@ -166,7 +166,7 @@ class Invoice(models.Model):
         sow = ""
         timesheet_limit_date = fields.Date.today()
         delta = 0
-        communication_rate = 0
+        communication_rate = 0.0
         invoice_template = False
         activity_report_template = False
 
@@ -198,8 +198,8 @@ class Invoice(models.Model):
             if not activity_report_template and so.activity_report_template:
                 activity_report_template = so.activity_report_template
             
-            if communication_rate < so.communication_rate:
-                communication_rate = so.communication_rate  
+            if communication_rate < float(so.communication_rate):
+                communication_rate = float(so.communication_rate)  
 
         vals.update({   'lc_laius': laius,
                         'scope_of_work': sow,
