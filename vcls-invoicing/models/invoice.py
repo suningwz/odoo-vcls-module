@@ -205,8 +205,8 @@ class Invoice(models.Model):
                         'scope_of_work': sow,
                         'timesheet_limit_date': timesheet_limit_date,
                         'period_start': timesheet_limit_date - relativedelta(months=delta),
-                        'invoice_template': invoice_template,
-                        'activity_report_template': activity_report_template,
+                        'invoice_template': invoice_template.id,
+                        'activity_report_template': activity_report_template.id,
                         'communication_rate': communication_rate,
                         })
         return vals
