@@ -123,11 +123,12 @@ class Invoice(models.Model):
                 self.activity_report_template = so.activity_report_template
             
             if self.communication_rate < so.communication_rate:
-                self.communication_rate = so.communication_rate
-
+                self.communication_rate = so.communication_rate  
 
         self.timesheet_limit_date = timesheet_limit_date
         self.period_start = timesheet_limit_date - relativedelta(months=delta)
+
+        #_logger.info("SO DATA {}".format(self.timesheet_limit_date,self.period_start,self.invoice_template,self.activity_report_template,self.communication_rate))
 
     @api.multi
     def _get_project_data(self):
@@ -449,7 +450,7 @@ class Invoice(models.Model):
     @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
-        _logger.info("INVOICE CREATED {}".format(ret.name))
+        _logger.info("INVOICE CREATED {}".format(ret.temp_name))
 
         ret._get_so_data()
         _logger.info("INVOICE SO DATA  date {} rate {}".format(ret.timesheet_limit_date,ret.communication_rate))
@@ -474,7 +475,7 @@ class Invoice(models.Model):
             except:
                 total_amount = False
             
-            _logger.info("INVOICE CREATED {}".format(ret.name))
+            _logger.info("INVOICE CREATED {}".format(ret.temp_name))
             if total_amount:
                 line = self.env['account.invoice.line'].new()
                 line.invoice_id = ret.id
@@ -494,7 +495,7 @@ class Invoice(models.Model):
         
         for rec in self:
             #partner = rec.partner_id
-            _logger.info("INVOICE UPDATED {}".format(rec.name))
+            _logger.info("INVOICE UPDATED {}".format(rec.temp_name))
             if rec.communication_rate and not self.env.context.get('communication_rate'):
                 try:
                     total_amount = ret.get_communication_amount()
