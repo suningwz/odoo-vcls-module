@@ -104,8 +104,15 @@ class Invoice(models.Model):
         timesheet_limit_date = fields.Date.today()
         delta = 0
         self.communication_rate = 0
+        so_ids = self.env['sale.order']
 
-        _logger.info("GET SO DATA {} in {}".format(self.project_ids,self.project_ids.mapped('sale_order_id')))
+        #we get the related so because project_ids is still empty at this stage
+        for iline in self.invoice_line_ids.filtered(lambda l: not l.display_type):
+            for sline in iline.sale_line_ids:
+                so_ids |= sline.order_id
+
+
+        _logger.info("GET SO DATA {}".format(so_ids.mapped('name')))
 
         for so in self.project_ids.mapped('sale_order_id'):
 
