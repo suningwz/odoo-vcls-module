@@ -449,8 +449,10 @@ class Invoice(models.Model):
     @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
+        _logger.info("INVOICE CREATED {}".format(ret.name))
 
         ret._get_so_data()
+        _logger.info("INVOICE SO DATA  date {} rate {}".format(ret.timesheet_limit_date,ret.communication_rate))
         ret._get_project_data()
 
         """# Get the default activity_report_template if not set
@@ -471,6 +473,8 @@ class Invoice(models.Model):
                 total_amount = ret.get_communication_amount()
             except:
                 total_amount = False
+            
+            _logger.info("INVOICE CREATED {}".format(ret.name))
             if total_amount:
                 line = self.env['account.invoice.line'].new()
                 line.invoice_id = ret.id
@@ -487,8 +491,10 @@ class Invoice(models.Model):
         if vals.get('sent'):
             vals.update({'invoice_sending_date': fields.Datetime.now()})
         ret = super(Invoice, self).write(vals)
+        
         for rec in self:
             #partner = rec.partner_id
+            _logger.info("INVOICE UPDATED {}".format(rec.name))
             if rec.communication_rate and not self.env.context.get('communication_rate'):
                 try:
                     total_amount = ret.get_communication_amount()
