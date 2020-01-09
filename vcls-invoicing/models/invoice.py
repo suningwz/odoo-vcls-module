@@ -115,7 +115,9 @@ class Invoice(models.Model):
                 delta = 1
             if so.invoicing_frequency == 'trimester' and delta < 3:
                 delta = 3
-            
+
+            _logger.info("SO DATA {} rate {}".format(so.name,so.communication_rate))
+
             if not self.invoice_template and so.invoice_template:
                 self.invoice_template = so.invoice_template
 
