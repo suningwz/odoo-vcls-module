@@ -105,6 +105,8 @@ class Invoice(models.Model):
         delta = 0
         self.communication_rate = 0
 
+         _logger.info("GET SO DATA {}".format(self.project_ids.mapped('sale_order_id')))
+
         for so in self.project_ids.mapped('sale_order_id'):
 
             if so.timesheet_limit_date:
