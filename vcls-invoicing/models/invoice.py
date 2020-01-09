@@ -461,16 +461,19 @@ class Invoice(models.Model):
     @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
-        _logger.info("INVOICE CREATED {} {}".format(ret.temp_name, ret.invoice_line_ids.mapped('name')))
+
+        #Invoice Administrator becomes the user
+        if ret.partner_id.invoice_admin_id:
+            ret.user_id = ret.partner_id.invoice_admin_id
+
+        #_logger.info("INVOICE CREATED {} {}".format(ret.temp_name, ret.invoice_line_ids.mapped('name')))
+        return ret
+
         """_logger.info("INVOICE CREATED {}".format(vals))
 
         ret._get_so_data()
         _logger.info("INVOICE SO DATA  date {} rate {}".format(ret.timesheet_limit_date,ret.communication_rate))
         ret._get_project_data()
-
-        #partner = ret.partner_id
-        if ret.partner_id.invoice_admin_id:
-            ret.user_id = ret.partner_id.invoice_admin_id
         
         if self.communication_rate>0:
             try:
@@ -488,13 +491,13 @@ class Invoice(models.Model):
                 line.quantity = 1
                 ret.with_context(communication_rate=True).invoice_line_ids += line"""
 
-        return ret
-
     @api.multi
     def write(self, vals):
         ret = False
         for inv in self:
             _logger.info("INVOICE UPDATE START {} {}".format(inv.temp_name, inv.invoice_line_ids.mapped('name')))
+            inv._get_so_data()
+            
             ret = super(Invoice, inv).write(vals)
             _logger.info("INVOICE UPDATE END {} {}".format(inv.temp_name, inv.invoice_line_ids.mapped('name')))
         
