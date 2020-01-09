@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '1.12',
+    'version': '1.11',
 
 
     # any module necessary for this one to work correctly
@@ -26,7 +26,6 @@
         'hr',
         'hr_contract',
         'hr_holidays',
-        'hr_appraisal',
         'mail',
         'snailmail',
         'vcls-helpdesk',

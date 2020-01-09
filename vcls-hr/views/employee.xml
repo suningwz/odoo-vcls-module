@@ -35,13 +35,6 @@
                     <sheet>
                         
                         <div class="oe_button_box" name="button_box">
-                            <button name="%(hr_appraisal.open_view_hr_appraisal_tree2)d"
-                                class="oe_stat_button"
-                                icon="fa-sitemap"
-                                attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}"
-                                type="action">
-                                <field name="appraisal_count" widget="statinfo"/>
-                            </button>
                             <button name="toggle_active" type="object" groups="hr.group_hr_user" class="oe_stat_button" icon="fa-archive">
                                 <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
                             </button>
@@ -227,39 +220,6 @@
                                         </tree>
                                     </field>
                                 </group> 
-                            </page>
-
-                            <page string="Appraisal" attrs="{'invisible': [('access_level', 'not in', ['hr','lm','me'])]}">
-                                <group string="Send Appraisal Form To" col="4">
-                                    <field name="appraisal_by_manager"/>
-                                    <field name="appraisal_manager_ids" nolabel="1" placeholder="Select Appraisal Reviewer..." widget="many2many_tags" options="{'color_field': 'color'}" attrs="{'invisible':[('appraisal_by_manager','=',False)]}" readonly="0"/>
-                                    <field name="appraisal_manager_survey_id" nolabel="1" placeholder="Appraisal Form..." attrs="{'invisible':[('appraisal_by_manager','=',False)]}"/>
-
-                                    <field name="appraisal_self"/>
-                                    <field name="appraisal_employee" nolabel="1" attrs="{'invisible':[('appraisal_self','=',False)]}"/>
-                                    <field name="appraisal_self_survey_id" nolabel="1" placeholder="Appraisal Form..." attrs="{'invisible':[('appraisal_self','=',False)]}"/>
-
-                                    <field name="appraisal_by_collaborators"/>
-                                    <field name="appraisal_collaborators_ids" nolabel="1" placeholder="Select Appraisal Reviewer..." widget="many2many_tags" options="{'color_field': 'color'}" attrs="{'invisible':[('appraisal_by_collaborators','=',False)]}"/>
-                                    <field name="appraisal_collaborators_survey_id" nolabel="1" placeholder="Appraisal Form..." attrs="{'invisible':[('appraisal_by_collaborators','=',False)]}"/>
-                                    <field name="appraisal_by_colleagues"/>
-                                    <field name="appraisal_colleagues_ids" nolabel="1" placeholder="Select Appraisal Reviewer..." widget="many2many_tags" options="{'color_field': 'color'}" attrs="{'invisible':[('appraisal_by_colleagues','=',False)]}" readonly="0"/>
-                                    <field name="appraisal_colleagues_survey_id" placeholder="Appraisal Form..." nolabel="1" attrs="{'invisible':[('appraisal_by_colleagues','=',False)]}"/>
-                                    <field name="child_ids" invisible="1"/>
-                                </group>
-                                <group string="Periodicity" col="2">
-                                    <group>
-                                        <field name="periodic_appraisal"/>
-                                    </group>
-                                    <group attrs="{'invisible':[('periodic_appraisal','=',False)]}">
-                                        <field name="appraisal_date" attrs="{'required':[('periodic_appraisal','=',True)]}"/>
-                                        <label for="appraisal_frequency" string="Repeat Every"/>
-                                        <div class="o_row">
-                                            <field name="appraisal_frequency" attrs="{'required':[('periodic_appraisal','=',True)]}" class="oe_inline"/>
-                                            <field name="appraisal_frequency_unit" attrs="{'required':[('periodic_appraisal','=',True)]}" class="oe_inline"/>
-                                        </div>
-                                    </group>
-                                </group>
                             </page>
 
                             
