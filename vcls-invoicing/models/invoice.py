@@ -494,12 +494,13 @@ class Invoice(models.Model):
     @api.multi
     def write(self, vals):
         ret = False
+        _logger.info("INVOICE UPDATE START {} ".format(vals))
         for inv in self:
-            _logger.info("INVOICE UPDATE START {} {}".format(inv.temp_name, inv.invoice_line_ids.mapped('name')))
-            inv._get_so_data()
+            
+            #inv._get_so_data()
             
             ret = super(Invoice, inv).write(vals)
-            _logger.info("INVOICE UPDATE END {} {}".format(inv.temp_name, inv.invoice_line_ids.mapped('name')))
+            #_logger.info("INVOICE UPDATE END {} {}".format(inv.temp_name, inv.invoice_line_ids.mapped('name')))
         
         """if vals.get('sent'):
             vals.update({'invoice_sending_date': fields.Datetime.now()})
