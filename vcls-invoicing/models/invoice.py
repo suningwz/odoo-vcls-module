@@ -461,20 +461,12 @@ class Invoice(models.Model):
     @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
-        _logger.info("INVOICE CREATED {}".format(vals))
+        _logger.info("INVOICE CREATED {} {}".format(ret.temp_name, ret.invoice_line_ids.mapped('name')))
+        """_logger.info("INVOICE CREATED {}".format(vals))
 
         ret._get_so_data()
         _logger.info("INVOICE SO DATA  date {} rate {}".format(ret.timesheet_limit_date,ret.communication_rate))
         ret._get_project_data()
-
-        """# Get the default activity_report_template if not set
-        if not ret.activity_report_template:
-            invoice_line_ids = self.invoice_line_ids.filtered(lambda l: not l.display_type)
-            if invoice_line_ids:
-                sale_line_ids = invoice_line_ids[0].sale_line_ids
-                if sale_line_ids:
-                    activity_report_template_id = sale_line_ids[0].activity_report_template.id
-                    ret.activity_report_template = activity_report_template_id"""
 
         #partner = ret.partner_id
         if ret.partner_id.invoice_admin_id:
@@ -494,13 +486,18 @@ class Invoice(models.Model):
                 line._onchange_product_id()
                 line.price_unit = total_amount * self.communication_rate / 100
                 line.quantity = 1
-                ret.with_context(communication_rate=True).invoice_line_ids += line
+                ret.with_context(communication_rate=True).invoice_line_ids += line"""
 
         return ret
 
     @api.multi
     def write(self, vals):
-        if vals.get('sent'):
+        for inv in self:
+            _logger.info("INVOICE UPDATE START {} {}".format(inv.temp_name, inv.invoice_line_ids.mapped('name')))
+            ret = super(Invoice, self).write(vals)
+            _logger.info("INVOICE UPDATE END {} {}".format(inv.temp_name, inv.invoice_line_ids.mapped('name')))
+        
+        """if vals.get('sent'):
             vals.update({'invoice_sending_date': fields.Datetime.now()})
         ret = super(Invoice, self).write(vals)
         
@@ -523,7 +520,7 @@ class Invoice(models.Model):
             if rec.state == 'cancel':
                 if self.timesheet_ids:
                     for timesheet in self.timesheet_ids:
-                        timesheet.stage_id = 'invoiceable'
+                        timesheet.stage_id = 'invoiceable'"""
         return ret
 
     @api.depends('invoice_line_ids')
