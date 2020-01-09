@@ -96,7 +96,7 @@ class Invoice(models.Model):
             else:
                 invoice.report_count = 0
 
-    @api.multi
+    """@api.multi
     def _get_so_data(self):
         self.ensure_one()
 
@@ -139,9 +139,9 @@ class Invoice(models.Model):
         self.timesheet_limit_date = timesheet_limit_date
         self.period_start = timesheet_limit_date - relativedelta(months=delta)
 
-        #_logger.info("SO DATA {}".format(self.timesheet_limit_date,self.period_start,self.invoice_template,self.activity_report_template,self.communication_rate))
+        #_logger.info("SO DATA {}".format(self.timesheet_limit_date,self.period_start,self.invoice_template,self.activity_report_template,self.communication_rate))"""
 
-    @api.multi
+    """@api.multi
     def _get_project_data(self):
         self.ensure_one()
         laius = ""
@@ -156,7 +156,61 @@ class Invoice(models.Model):
             sow += "{}\n".format(self.html_to_string(project.scope_of_work))
 
         self.lc_laius = laius
-        self.scope_of_work = sow
+        self.scope_of_work = sow"""
+    
+    @api.multi
+    def _get_source_data(self,vals):
+        self.ensure_one()
+        #we initiate variables
+        laius = ""
+        sow = ""
+        timesheet_limit_date = fields.Date.today()
+        delta = 0
+        communication_rate = 0
+        invoice_template = False
+        activity_report_template = False
+
+        #loop in projects
+        for project in self.project_ids:
+            #get last summary
+            if project.summary_ids:
+                last_summary = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0]
+                laius += "Project Status for {} on {}:\n{}\n\n".format(project.name,last_summary.create_date,self.html_to_string(last_summary.external_summary))
+
+            sow += "{}\n".format(self.html_to_string(project.scope_of_work))
+
+            #sales.order info
+            so = project.sale_order_id
+            if so.timesheet_limit_date:
+                if so.timesheet_limit_date < timesheet_limit_date:
+                    timesheet_limit_date = so.timesheet_limit_date
+            
+            if so.invoicing_frequency == 'month' and delta < 1:
+                delta = 1
+            if so.invoicing_frequency == 'trimester' and delta < 3:
+                delta = 3
+
+            #_logger.info("SO DATA {} rate {}".format(so.name,so.communication_rate))
+
+            if not invoice_template and so.invoice_template:
+                invoice_template = so.invoice_template
+
+            if not activity_report_template and so.activity_report_template:
+                activity_report_template = so.activity_report_template
+            
+            if communication_rate < so.communication_rate:
+                communication_rate = so.communication_rate  
+
+        vals.update({   'lc_laius': laius,
+                        'scope_of_work': sow,
+                        'timesheet_limit_date': timesheet_limit_date,
+                        'period_start': timesheet_limit_date - relativedelta(months=delta),
+                        'invoice_template': invoice_template,
+                        'activity_report_template': activity_report_template,
+                        'communication_rate': communication_rate,
+                        })
+        return vals
+
 
     @api.multi
     def _get_activity_report_data(self, detailed=True):
@@ -496,14 +550,25 @@ class Invoice(models.Model):
         ret = False
         
         for inv in self:
-            _logger.info("INVOICE UPDATE START {} {}".format(inv.project_ids.name,vals))
-            #inv._get_so_data()
             
+            if not self.env.context.get('source_data'):
+                vals = inv._get_source_data(vals)
+                _logger.info("SOURCE DATA {} \n{}".format(inv.temp_name,vals))
+                self = self.with_context(source_data=True)
+
+            if vals.get('sent'):
+                vals.update({'invoice_sending_date': fields.Datetime.now()})
+
+            #call parent
             ret = super(Invoice, inv).write(vals)
-            #_logger.info("INVOICE UPDATE END {} {}".format(inv.temp_name, inv.invoice_line_ids.mapped('name')))
+
+            #release timesheets if any
+            if inv.state == 'cancel':
+                if inv.timesheet_ids:
+                    for timesheet in inv.timesheet_ids:
+                        timesheet.stage_id = 'invoiceable'
         
-        """if vals.get('sent'):
-            vals.update({'invoice_sending_date': fields.Datetime.now()})
+        """
         ret = super(Invoice, self).write(vals)
         
         for rec in self:
@@ -522,10 +587,7 @@ class Invoice(models.Model):
                     line.price_unit = total_amount * rec.communication_rate / 100
                     line.quantity = 1
                     rec.with_context(communication_rate=True).invoice_line_ids += line
-            if rec.state == 'cancel':
-                if self.timesheet_ids:
-                    for timesheet in self.timesheet_ids:
-                        timesheet.stage_id = 'invoiceable'"""
+            """
         return ret
 
     @api.depends('invoice_line_ids')
