@@ -550,14 +550,13 @@ class Invoice(models.Model):
         ret = False
         
         for inv in self:
-            
-            if not self.env.context.get('source_data'):
-                vals = inv._get_source_data(vals)
-                _logger.info("SOURCE DATA {} \n{}".format(inv.temp_name,vals))
-                self = self.with_context(source_data=True)
 
             if vals.get('sent'):
                 vals.update({'invoice_sending_date': fields.Datetime.now()})
+
+            if not self.env.context.get('source_data'):
+                vals = inv.with_context(source_data=True)._get_source_data(vals)
+                _logger.info("SOURCE DATA {} \n{}".format(inv.temp_name,vals))
 
             #call parent
             ret = super(Invoice, inv).write(vals)
