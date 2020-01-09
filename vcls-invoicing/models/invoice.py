@@ -548,7 +548,8 @@ class Invoice(models.Model):
             if invoice.timesheet_ids:
                 for timesheet in invoice.timesheet_ids:
                     timesheet.stage_id = 'invoiceable'
-                    ret = super(Invoice, invoice).unlink()
+        
+            ret = super(Invoice, invoice).unlink()
 
         return ret
 
