@@ -509,9 +509,6 @@ class Invoice(models.Model):
                         invoice.name),
                     })
 
-
-
-
     @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
