@@ -167,8 +167,8 @@ class Invoice(models.Model):
         timesheet_limit_date = fields.Date.today()
         delta = 0
         communication_rate = 0.0
-        invoice_template = False
-        activity_report_template = False
+        invoice_template = self.env['ir.actions.report']
+        activity_report_template = self.env['ir.actions.report']
 
         #loop in projects
         for project in self.project_ids:

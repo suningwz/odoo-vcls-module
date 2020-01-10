@@ -27,21 +27,20 @@
         <t t-set="projects_row_data" t-value="data['projects_row_data']"/>
         <div class="page">
             <div class="oe_structure"/>
-            <h5 class="text-center mt-3">
-                <span t-if="o.type == 'out_invoice' and o.state in ('open', 'in_payment', 'paid')">Activity report for invoice</span>
-                <span t-if="o.type == 'out_invoice' and o.state == 'draft'">Activity report for draft Invoice</span>
-                <span t-if="o.type == 'out_invoice' and o.state == 'cancel'">Activity report for cancelled Invoice</span>
-                <span t-if="o.type == 'out_refund'">Activity report for credit Note</span>
-                <span t-if="o.type == 'in_refund'">Activity report for vendor Credit Note</span>
-                <span t-if="o.type == 'in_invoice'">Activity report for vendor Bill</span>
-                <span t-field="o.number"/>
-            </h5>
-            <h6 class="text-center mt-1 mb-3" t-if="o.period_start and o.timesheet_limit_date">
+            <div class="pt-4 pl-2 pb-3">
+            <h4>
+                <t t-set="invoice_name"
+                   t-value="o.number or o.temp_name or 'invoice'"/>
+                <span>Activity report for</span>
+                <span t-esc="invoice_name"/>
+            </h4>
+            <h6 class="mt-1" t-if="o.period_start and o.timesheet_limit_date">
                 <span>Invoice Period: </span>
                 <t t-esc="o.period_start"/>
                 <span> - </span>
                 <t t-esc="o.timesheet_limit_date"/>
             </h6>
+            </div>
             <table class="table table-sm o_main_table">
                 <thead>
                     <th></th>
