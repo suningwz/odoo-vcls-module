@@ -164,8 +164,8 @@ class Invoice(models.Model):
         #we initiate variables
         laius = ""
         sow = ""
-        timesheet_limit_date = fields.Date.today()
-        period_start = fields.Date.today()
+        timesheet_limit_date = False
+        period_start = False
         delta = 0
         communication_rate = 0.0
         invoice_template = self.env['ir.actions.report']
@@ -193,9 +193,16 @@ class Invoice(models.Model):
             #sales.order info
             so = project.sale_order_id
             #Timesheet limit date
+            """if so.timesheet_limit_date:
+                if so.timesheet_limit_date < timesheet_limit_date:
+                    timesheet_limit_date = so.timesheet_limit_date"""
+            
             if not vals.get('timesheet_limit_date',self.timesheet_limit_date):
                 if so.timesheet_limit_date:
-                    if so.timesheet_limit_date < timesheet_limit_date:
+                    if timesheet_limit_date:
+                        if so.timesheet_limit_date < timesheet_limit_date:
+                            timesheet_limit_date = so.timesheet_limit_date
+                    else:
                         timesheet_limit_date = so.timesheet_limit_date
             else:
                 timesheet_limit_date = vals.get('timesheet_limit_date',self.timesheet_limit_date)
@@ -555,7 +562,7 @@ class Invoice(models.Model):
         if ret.partner_id.invoice_admin_id:
             ret.user_id = ret.partner_id.invoice_admin_id
 
-        _logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals.get('timesheet_limit_date'),ret.timesheet_limit_date))
+        #_logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals.get('timesheet_limit_date'),ret.timesheet_limit_date))
         return ret
 
         """_logger.info("INVOICE CREATED {}".format(vals))
