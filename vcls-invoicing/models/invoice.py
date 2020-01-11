@@ -165,6 +165,7 @@ class Invoice(models.Model):
         laius = ""
         sow = ""
         timesheet_limit_date = fields.Date.today()
+        period_start = fields.Date.today()
         delta = 0
         communication_rate = 0.0
         invoice_template = self.env['ir.actions.report']
@@ -172,39 +173,66 @@ class Invoice(models.Model):
 
         #loop in projects
         for project in self.project_ids:
-            #get last summary
-            if project.summary_ids:
-                last_summary = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0]
-                laius += "Project Status for {} on {}:\n{}\n\n".format(project.name,last_summary.create_date,self.html_to_string(last_summary.external_summary))
 
-            sow += "{}\n".format(self.html_to_string(project.scope_of_work))
+            #get last  as laius if non exists
+            if not vals.get('lc_laius',self.lc_laius):
+                if project.summary_ids:
+                    last_summary = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0]
+                    laius += "Project Status for {} on {}:\n{}\n\n".format(project.name,last_summary.create_date,self.html_to_string(last_summary.external_summary))
+            else:
+                laius = vals.get('lc_laius',self.lc_laius)
+
+            #get sow if non exists
+            if not vals.get('scope_of_work',self.scope_of_work):
+                sow += "{}\n".format(self.html_to_string(project.scope_of_work))
+            else:
+                sow = vals.get('scope_of_work',self.scope_of_work)
 
             #sales.order info
             so = project.sale_order_id
-            if so.timesheet_limit_date:
-                if so.timesheet_limit_date < timesheet_limit_date:
-                    timesheet_limit_date = so.timesheet_limit_date
+            #Timesheet limit date
+            if not vals.get('timesheet_limit_date',self.timesheet_limit_date):
+                if so.timesheet_limit_date:
+                    if so.timesheet_limit_date < timesheet_limit_date:
+                        timesheet_limit_date = so.timesheet_limit_date
+            else:
+                timesheet_limit_date = vals.get('timesheet_limit_date',self.timesheet_limit_date)
             
-            if so.invoicing_frequency == 'month' and delta < 1:
-                delta = 1
-            if so.invoicing_frequency == 'trimester' and delta < 3:
-                delta = 3
+            if not vals.get('period_start',self.period_start):
+                if so.invoicing_frequency == 'month' and delta < 1:
+                    delta = 1
+                if so.invoicing_frequency == 'trimester' and delta < 3:
+                    delta = 3
+                period_start = timesheet_limit_date - relativedelta(months=delta)
+            else:
+                period_start = vals.get('period_start',self.period_start)
 
             #_logger.info("SO DATA {} rate {}".format(so.name,so.communication_rate))
+            #Invoice Template
+            if not vals.get('invoice_template',self.invoice_template):
+                if not invoice_template and so.invoice_template:
+                    invoice_template = so.invoice_template
+            else:
+                invoice_template = vals.get('invoice_template',self.invoice_template)
 
-            if not invoice_template and so.invoice_template:
-                invoice_template = so.invoice_template
-
-            if not activity_report_template and so.activity_report_template:
-                activity_report_template = so.activity_report_template
+            #Activity Report template
+            if not vals.get('activity_report_template',self.activity_report_template):
+                if not activity_report_template and so.activity_report_template:
+                    activity_report_template = so.activity_report_template
+            else:
+                activity_report_template = vals.get('activity_report_template',self.activity_report_template)
             
-            if communication_rate < float(so.communication_rate):
-                communication_rate = float(so.communication_rate)  
+            #Communication  Rate
+            if not vals.get('communication_rate',self.communication_rate):
+                if communication_rate < float(so.communication_rate):
+                    communication_rate = float(so.communication_rate) 
+            else:
+                communication_rate = vals.get('communication_rate',self.communication_rate) 
 
         vals.update({   'lc_laius': laius,
                         'scope_of_work': sow,
                         'timesheet_limit_date': timesheet_limit_date,
-                        'period_start': timesheet_limit_date - relativedelta(months=delta),
+                        'period_start': period_start,
                         'invoice_template': invoice_template.id,
                         'activity_report_template': activity_report_template.id,
                         'communication_rate': communication_rate,
