@@ -555,7 +555,7 @@ class Invoice(models.Model):
         if ret.partner_id.invoice_admin_id:
             ret.user_id = ret.partner_id.invoice_admin_id
 
-        #_logger.info("INVOICE CREATED {} {}".format(ret.temp_name, ret.invoice_line_ids.mapped('name')))
+        _logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals.get('timesheet_limit_date'),ret.timesheet_limit_date))
         return ret
 
         """_logger.info("INVOICE CREATED {}".format(vals))
