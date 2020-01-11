@@ -177,6 +177,7 @@ class Invoice(models.Model):
             #get last  as laius if non exists
             if not vals.get('lc_laius',self.lc_laius):
                 if project.summary_ids:
+                    _logger.info("SUMMARIES {}".format(project.summary_ids.mapped('project_id')))
                     last_summary = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0]
                     laius += "Project Status for {} on {}:\n{}\n\n".format(project.name,last_summary.create_date,self.html_to_string(last_summary.external_summary))
             else:
