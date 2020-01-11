@@ -25,12 +25,12 @@ ACTIVITYREPORT = '_ActivityReport'
 class Invoice(models.Model):
     _inherit = 'account.invoice'
 
-    def _get_default_po_id(self):
-        return self.env['sale.order'].search([('invoice_ids', 'in', [self.id])], limit=1).po_id
+    #def _get_default_po_id(self):
+        #return self.env['sale.order'].search([('invoice_ids', 'in', [self.id])], limit=1).po_id
 
     po_id = fields.Many2one('invoicing.po',
-                            default = _get_default_po_id,
-                            string ='Purchase Order')
+                            #default = _get_default_po_id,
+                            string ='Client PO ref.')
 
     user_id = fields.Many2one(
         'res.users',
@@ -170,6 +170,7 @@ class Invoice(models.Model):
         communication_rate = 0.0
         invoice_template = self.env['ir.actions.report']
         activity_report_template = self.env['ir.actions.report']
+        po_id = False
 
         #loop in projects
         for project in self.project_ids:
@@ -177,9 +178,9 @@ class Invoice(models.Model):
             #get last  as laius if non exists
             if not vals.get('lc_laius',self.lc_laius):
                 if project.summary_ids:
-                    _logger.info("SUMMARIES {}".format(project.summary_ids.mapped('project_id')))
+                    #_logger.info("SUMMARIES {}".format(project.summary_ids.mapped('project_id')))
                     last_summary = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0]
-                    laius += "Project Status for {} on {}:\n{}\n\n".format(project.name,last_summary.create_date,self.html_to_string(last_summary.external_summary))
+                    laius += "Project Status on {}:\n{}\n\n".format(last_summary.create_date.date(),self.html_to_string(last_summary.external_summary))
             else:
                 laius = vals.get('lc_laius',self.lc_laius)
 
@@ -209,6 +210,13 @@ class Invoice(models.Model):
                 period_start = vals.get('period_start',self.period_start)
 
             #_logger.info("SO DATA {} rate {}".format(so.name,so.communication_rate))
+            #PO id
+            if not vals.get('po_id',self.po_id):
+                if not po_id and so.po_id:
+                    po_id = so.po_id
+            else:
+                po_id = vals.get('po_id',self.po_id)
+
             #Invoice Template
             if not vals.get('invoice_template',self.invoice_template):
                 if not invoice_template and so.invoice_template:
@@ -234,6 +242,7 @@ class Invoice(models.Model):
                         'scope_of_work': sow,
                         'timesheet_limit_date': timesheet_limit_date,
                         'period_start': period_start,
+                        'po_id': po_id.id,
                         'invoice_template': invoice_template.id,
                         'activity_report_template': activity_report_template.id,
                         'communication_rate': communication_rate,
