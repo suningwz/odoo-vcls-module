@@ -118,6 +118,7 @@
             <field name="arch" type="xml">
                 <tree string="Invoices">
                     <field name="name" string="Reference"/>
+                    <field name="temp_name" string="Name"/>
                     <field name="company_id"/>
                     <field name="partner_id"/>
                     <field name="amount_total"/>

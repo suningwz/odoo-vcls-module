@@ -25,12 +25,12 @@ ACTIVITYREPORT = '_ActivityReport'
 class Invoice(models.Model):
     _inherit = 'account.invoice'
 
-    def _get_default_po_id(self):
-        return self.env['sale.order'].search([('invoice_ids', 'in', [self.id])], limit=1).po_id
+    #def _get_default_po_id(self):
+        #return self.env['sale.order'].search([('invoice_ids', 'in', [self.id])], limit=1).po_id
 
     po_id = fields.Many2one('invoicing.po',
-                            default = _get_default_po_id,
-                            string ='Purchase Order')
+                            #default = _get_default_po_id,
+                            string ='Client PO ref.')
 
     user_id = fields.Many2one(
         'res.users',
@@ -96,55 +96,102 @@ class Invoice(models.Model):
             else:
                 invoice.report_count = 0
 
+    
     @api.multi
-    def _get_so_data(self):
+    def _get_source_data(self,vals):
         self.ensure_one()
-
-        ### we initiate default values for the variables
-        timesheet_limit_date = fields.Date.today()
-        delta = 0
-        self.communication_rate = 0
-
-        for so in self.project_ids.mapped('sale_order_id'):
-
-            if so.timesheet_limit_date:
-                if so.timesheet_limit_date < timesheet_limit_date:
-                    timesheet_limit_date = so.timesheet_limit_date
-            
-            if so.invoicing_frequency == 'month' and delta < 1:
-                delta = 1
-            if so.invoicing_frequency == 'trimester' and delta < 3:
-                delta = 3
-            
-            if not self.invoice_template and so.invoice_template:
-                self.invoice_template = so.invoice_template
-
-            if not self.activity_report_template and so.activity_report_template:
-                self.activity_report_template = so.activity_report_template
-            
-            if self.communication_rate < so.communication_rate:
-                self.communication_rate = so.communication_rate
-
-
-        self.timesheet_limit_date = timesheet_limit_date
-        self.period_start = timesheet_limit_date - relativedelta(months=delta)
-
-    @api.multi
-    def _get_project_data(self):
-        self.ensure_one()
+        #we initiate variables
         laius = ""
         sow = ""
+        timesheet_limit_date = False
+        period_start = False
+        delta = 0
+        communication_rate = 0.0
+        invoice_template = self.env['ir.actions.report']
+        activity_report_template = self.env['ir.actions.report']
+        po_id = self.env['invoicing.po']
+
+        #loop in projects
         for project in self.project_ids:
-            #get last summary
-            if project.summary_ids:
-                last_summary = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0]
-                laius += "Project Status for {} on {}:\n{}\n\n".format(project.name,last_summary.create_date,self.html_to_string(last_summary.external_summary))
 
-            #_logger.info("SOW {} -- {}".format(project.scope_of_work,self.html_to_string(project.scope_of_work)))
-            sow += "{}\n".format(self.html_to_string(project.scope_of_work))
+            #get last  as laius if non exists
+            if not vals.get('lc_laius',self.lc_laius):
+                if project.summary_ids:
+                    #_logger.info("SUMMARIES {}".format(project.summary_ids.mapped('project_id')))
+                    last_summary = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0]
+                    laius += "Project Status on {}:\n{}\n\n".format(last_summary.create_date.date(),self.html_to_string(last_summary.external_summary))
+            else:
+                laius = vals.get('lc_laius',self.lc_laius)
 
-        self.lc_laius = laius
-        self.scope_of_work = sow
+            #get sow if non exists
+            if not vals.get('scope_of_work',self.scope_of_work):
+                sow += "{}\n".format(self.html_to_string(project.scope_of_work))
+            else:
+                sow = vals.get('scope_of_work',self.scope_of_work)
+
+            #sales.order info
+            so = project.sale_order_id
+            #Timesheet limit date
+            
+            if not vals.get('timesheet_limit_date',self.timesheet_limit_date):
+                if so.timesheet_limit_date:
+                    if timesheet_limit_date:
+                        if so.timesheet_limit_date < timesheet_limit_date:
+                            timesheet_limit_date = so.timesheet_limit_date
+                    else:
+                        timesheet_limit_date = so.timesheet_limit_date
+            else:
+                timesheet_limit_date = vals.get('timesheet_limit_date',self.timesheet_limit_date)
+            
+            if not vals.get('period_start',self.period_start):
+                if so.invoicing_frequency == 'month' and delta < 1:
+                    delta = 1
+                if so.invoicing_frequency == 'trimester' and delta < 3:
+                    delta = 3
+                period_start = timesheet_limit_date + relativedelta(months=-1*delta,days=1)
+            else:
+                period_start = vals.get('period_start',self.period_start)
+
+            #_logger.info("SO DATA {} rate {}".format(so.name,so.communication_rate))
+            #PO id
+            if not vals.get('po_id',self.po_id):
+                if not po_id and so.po_id:
+                    po_id = so.po_id
+            else:
+                po_id = vals.get('po_id',self.po_id)
+
+            #Invoice Template
+            if not vals.get('invoice_template',self.invoice_template):
+                if not invoice_template and so.invoice_template:
+                    invoice_template = so.invoice_template
+            else:
+                invoice_template = vals.get('invoice_template',self.invoice_template)
+
+            #Activity Report template
+            if not vals.get('activity_report_template',self.activity_report_template):
+                if not activity_report_template and so.activity_report_template:
+                    activity_report_template = so.activity_report_template
+            else:
+                activity_report_template = vals.get('activity_report_template',self.activity_report_template)
+            
+            #Communication  Rate
+            if not vals.get('communication_rate',self.communication_rate):
+                if communication_rate < float(so.communication_rate):
+                    communication_rate = float(so.communication_rate) 
+            else:
+                communication_rate = vals.get('communication_rate',self.communication_rate) 
+
+        vals.update({   'lc_laius': laius,
+                        'scope_of_work': sow,
+                        'timesheet_limit_date': timesheet_limit_date,
+                        'period_start': period_start,
+                        'po_id': po_id.id,
+                        'invoice_template': invoice_template.id,
+                        'activity_report_template': activity_report_template.id,
+                        'communication_rate': communication_rate,
+                        })
+        return vals
+
 
     @api.multi
     def _get_activity_report_data(self, detailed=True):
@@ -443,34 +490,30 @@ class Invoice(models.Model):
                         invoice.name),
                     })
 
-
-
-
     @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
 
-        ret._get_so_data()
-        ret._get_project_data()
-
-        """# Get the default activity_report_template if not set
-        if not ret.activity_report_template:
-            invoice_line_ids = self.invoice_line_ids.filtered(lambda l: not l.display_type)
-            if invoice_line_ids:
-                sale_line_ids = invoice_line_ids[0].sale_line_ids
-                if sale_line_ids:
-                    activity_report_template_id = sale_line_ids[0].activity_report_template.id
-                    ret.activity_report_template = activity_report_template_id"""
-
-        #partner = ret.partner_id
+        #Invoice Administrator becomes the user
         if ret.partner_id.invoice_admin_id:
             ret.user_id = ret.partner_id.invoice_admin_id
+
+        #_logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals.get('timesheet_limit_date'),ret.timesheet_limit_date))
+        return ret
+
+        """_logger.info("INVOICE CREATED {}".format(vals))
+
+        ret._get_so_data()
+        _logger.info("INVOICE SO DATA  date {} rate {}".format(ret.timesheet_limit_date,ret.communication_rate))
+        ret._get_project_data()
         
         if self.communication_rate>0:
             try:
                 total_amount = ret.get_communication_amount()
             except:
                 total_amount = False
+            
+            _logger.info("INVOICE CREATED {}".format(ret.temp_name))
             if total_amount:
                 line = self.env['account.invoice.line'].new()
                 line.invoice_id = ret.id
@@ -478,17 +521,54 @@ class Invoice(models.Model):
                 line._onchange_product_id()
                 line.price_unit = total_amount * self.communication_rate / 100
                 line.quantity = 1
-                ret.with_context(communication_rate=True).invoice_line_ids += line
-
-        return ret
+                ret.with_context(communication_rate=True).invoice_line_ids += line"""
 
     @api.multi
     def write(self, vals):
-        if vals.get('sent'):
-            vals.update({'invoice_sending_date': fields.Datetime.now()})
+        ret = False
+        
+        for inv in self:
+
+            if vals.get('sent'):
+                vals.update({'invoice_sending_date': fields.Datetime.now()})
+
+            if not self.env.context.get('source_data'):
+                vals = inv.with_context(source_data=True)._get_source_data(vals)
+
+            #call parent
+            ret = super(Invoice, inv).write(vals)
+
+            #release timesheets if any
+            if inv.state == 'cancel':
+                if inv.timesheet_ids:
+                    for timesheet in inv.timesheet_ids:
+                        timesheet.stage_id = 'invoiceable'
+            
+            #communication rate
+            #_logger.info("COM RATE {} {}".format(inv.communication_rate,self.env.context.get('communication_rate')))
+            if inv.communication_rate > 0 and not self.env.context.get('communication_rate'):
+                try:
+                    total_amount = inv.get_communication_amount()
+                except:
+                    total_amount = False
+                    #_logger.info("COM RATE ERROR")
+                if total_amount:
+                    line = self.env['account.invoice.line'].new()
+                    line.invoice_id = inv.id
+                    line.product_id = self.env.ref('vcls-invoicing.product_communication_rate').id
+                    line._onchange_product_id()
+                    line.price_unit = total_amount * inv.communication_rate
+                    line.name = "Communication ({}%)".format(100*inv.communication_rate)
+                    #_logger.info("COM RATE PRICE {}".format(line.price_unit))
+                    line.quantity = 1
+                    inv.with_context(communication_rate=True).invoice_line_ids += line
+        
+        """
         ret = super(Invoice, self).write(vals)
+        
         for rec in self:
             #partner = rec.partner_id
+            _logger.info("INVOICE UPDATED {}".format(rec.temp_name))
             if rec.communication_rate and not self.env.context.get('communication_rate'):
                 try:
                     total_amount = ret.get_communication_amount()
@@ -502,10 +582,7 @@ class Invoice(models.Model):
                     line.price_unit = total_amount * rec.communication_rate / 100
                     line.quantity = 1
                     rec.with_context(communication_rate=True).invoice_line_ids += line
-            if rec.state == 'cancel':
-                if self.timesheet_ids:
-                    for timesheet in self.timesheet_ids:
-                        timesheet.stage_id = 'invoiceable'
+            """
         return ret
 
     @api.depends('invoice_line_ids')
@@ -537,10 +614,14 @@ class Invoice(models.Model):
 
     @api.multi
     def unlink(self):
-        if self.timesheet_ids:
-            for timesheet in self.timesheet_ids:
-                timesheet.stage_id = 'invoiceable'
-        return super(Invoice, self).unlink()
+        for invoice in self:
+            if invoice.timesheet_ids:
+                for timesheet in invoice.timesheet_ids:
+                    timesheet.stage_id = 'invoiceable'
+        
+            ret = super(Invoice, invoice).unlink()
+
+        return ret
 
     @api.multi
     def html_to_string(self, html_format):

@@ -53,11 +53,6 @@ class SaleOrder(models.Model):
     
     #We override the OCA to inject the stage domain
     
-    """@api.depends(
-        'timesheet_limit_date',
-        'analytic_account_id.line_ids.stage_id',
-        'analytic_account_id.line_ids.unit_amount_rounded',
-        'analytic_account_id.line_ids.date')"""
     @api.multi
     @api.depends('timesheet_limit_date')
     def _compute_timesheet_ids(self):
