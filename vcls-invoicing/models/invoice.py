@@ -534,7 +534,6 @@ class Invoice(models.Model):
 
             if not self.env.context.get('source_data'):
                 vals = inv.with_context(source_data=True)._get_source_data(vals)
-                _logger.info("SOURCE DATA {} \n{}".format(inv.temp_name,vals))
 
             #call parent
             ret = super(Invoice, inv).write(vals)
@@ -546,17 +545,20 @@ class Invoice(models.Model):
                         timesheet.stage_id = 'invoiceable'
             
             #communication rate
+            _logger.info("COM RATE {} {}".format(inv.communication_rate,self.env.context.get('communication_rate')))
             if inv.communication_rate > 0 and not self.env.context.get('communication_rate'):
                 try:
                     total_amount = ret.get_communication_amount()
                 except:
                     total_amount = False
+                    _logger.info("COM RATE ERROR")
                 if total_amount:
                     line = self.env['account.invoice.line'].new()
                     line.invoice_id = inv.id
                     line.product_id = self.env.ref('vcls-invoicing.product_communication_rate').id
                     line._onchange_product_id()
                     line.price_unit = total_amount * inv.communication_rate
+                    _logger.info("COM RATE PRICE {}".format(line.price_unit))
                     line.quantity = 1
                     inv.with_context(communication_rate=True).invoice_line_ids += line
         
