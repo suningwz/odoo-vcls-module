@@ -170,7 +170,7 @@ class Invoice(models.Model):
         communication_rate = 0.0
         invoice_template = self.env['ir.actions.report']
         activity_report_template = self.env['ir.actions.report']
-        po_id = False
+        po_id = self.env['invoicing.po']
 
         #loop in projects
         for project in self.project_ids:
