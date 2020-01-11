@@ -96,67 +96,6 @@ class Invoice(models.Model):
             else:
                 invoice.report_count = 0
 
-    """@api.multi
-    def _get_so_data(self):
-        self.ensure_one()
-
-        ### we initiate default values for the variables
-        timesheet_limit_date = fields.Date.today()
-        delta = 0
-        self.communication_rate = 0
-        so_ids = self.env['sale.order']
-
-        #we get the related so because project_ids is still empty at this stage
-        for iline in self.invoice_line_ids.filtered(lambda l: not l.display_type):
-            for sline in iline.sale_line_ids:
-                so_ids |= sline.order_id
-
-
-        _logger.info("GET SO DATA {} so {} for {}".format(self.partner_id,self.invoice_line_ids,so_ids.mapped('name')))
-
-        for so in self.project_ids.mapped('sale_order_id'):
-
-            if so.timesheet_limit_date:
-                if so.timesheet_limit_date < timesheet_limit_date:
-                    timesheet_limit_date = so.timesheet_limit_date
-            
-            if so.invoicing_frequency == 'month' and delta < 1:
-                delta = 1
-            if so.invoicing_frequency == 'trimester' and delta < 3:
-                delta = 3
-
-            _logger.info("SO DATA {} rate {}".format(so.name,so.communication_rate))
-
-            if not self.invoice_template and so.invoice_template:
-                self.invoice_template = so.invoice_template
-
-            if not self.activity_report_template and so.activity_report_template:
-                self.activity_report_template = so.activity_report_template
-            
-            if self.communication_rate < so.communication_rate:
-                self.communication_rate = so.communication_rate  
-
-        self.timesheet_limit_date = timesheet_limit_date
-        self.period_start = timesheet_limit_date - relativedelta(months=delta)
-
-        #_logger.info("SO DATA {}".format(self.timesheet_limit_date,self.period_start,self.invoice_template,self.activity_report_template,self.communication_rate))"""
-
-    """@api.multi
-    def _get_project_data(self):
-        self.ensure_one()
-        laius = ""
-        sow = ""
-        for project in self.project_ids:
-            #get last summary
-            if project.summary_ids:
-                last_summary = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0]
-                laius += "Project Status for {} on {}:\n{}\n\n".format(project.name,last_summary.create_date,self.html_to_string(last_summary.external_summary))
-
-            #_logger.info("SOW {} -- {}".format(project.scope_of_work,self.html_to_string(project.scope_of_work)))
-            sow += "{}\n".format(self.html_to_string(project.scope_of_work))
-
-        self.lc_laius = laius
-        self.scope_of_work = sow"""
     
     @api.multi
     def _get_source_data(self,vals):
@@ -193,9 +132,6 @@ class Invoice(models.Model):
             #sales.order info
             so = project.sale_order_id
             #Timesheet limit date
-            """if so.timesheet_limit_date:
-                if so.timesheet_limit_date < timesheet_limit_date:
-                    timesheet_limit_date = so.timesheet_limit_date"""
             
             if not vals.get('timesheet_limit_date',self.timesheet_limit_date):
                 if so.timesheet_limit_date:
@@ -608,6 +544,21 @@ class Invoice(models.Model):
                 if inv.timesheet_ids:
                     for timesheet in inv.timesheet_ids:
                         timesheet.stage_id = 'invoiceable'
+            
+            #communication rate
+            if inv.communication_rate > 0 and not self.env.context.get('communication_rate'):
+                try:
+                    total_amount = ret.get_communication_amount()
+                except:
+                    total_amount = False
+                if total_amount:
+                    line = self.env['account.invoice.line'].new()
+                    line.invoice_id = inv.id
+                    line.product_id = self.env.ref('vcls-invoicing.product_communication_rate').id
+                    line._onchange_product_id()
+                    line.price_unit = total_amount * inv.communication_rate
+                    line.quantity = 1
+                    inv.with_context(communication_rate=True).invoice_line_ids += line
         
         """
         ret = super(Invoice, self).write(vals)
