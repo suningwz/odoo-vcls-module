@@ -212,7 +212,7 @@ class Invoice(models.Model):
                     delta = 1
                 if so.invoicing_frequency == 'trimester' and delta < 3:
                     delta = 3
-                period_start = timesheet_limit_date - relativedelta(months=delta)
+                period_start = timesheet_limit_date + relativedelta(months=-1*delta,days=1)
             else:
                 period_start = vals.get('period_start',self.period_start)
 
