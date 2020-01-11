@@ -551,14 +551,15 @@ class Invoice(models.Model):
                     total_amount = inv.get_communication_amount()
                 except:
                     total_amount = False
-                    _logger.info("COM RATE ERROR")
+                    #_logger.info("COM RATE ERROR")
                 if total_amount:
                     line = self.env['account.invoice.line'].new()
                     line.invoice_id = inv.id
                     line.product_id = self.env.ref('vcls-invoicing.product_communication_rate').id
                     line._onchange_product_id()
                     line.price_unit = total_amount * inv.communication_rate
-                    _logger.info("COM RATE PRICE {}".format(line.price_unit))
+                    line.name = "Communication ({}%)".format(100*inv.communication_rate)
+                    #_logger.info("COM RATE PRICE {}".format(line.price_unit))
                     line.quantity = 1
                     inv.with_context(communication_rate=True).invoice_line_ids += line
         
