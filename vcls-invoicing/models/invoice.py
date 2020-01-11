@@ -545,10 +545,10 @@ class Invoice(models.Model):
                         timesheet.stage_id = 'invoiceable'
             
             #communication rate
-            _logger.info("COM RATE {} {}".format(inv.communication_rate,self.env.context.get('communication_rate')))
+            #_logger.info("COM RATE {} {}".format(inv.communication_rate,self.env.context.get('communication_rate')))
             if inv.communication_rate > 0 and not self.env.context.get('communication_rate'):
                 try:
-                    total_amount = ret.get_communication_amount()
+                    total_amount = inv.get_communication_amount()
                 except:
                     total_amount = False
                     _logger.info("COM RATE ERROR")
