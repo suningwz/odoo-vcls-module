@@ -12,6 +12,9 @@
     'version': '0.0.1',
     'depends': [
         'project',
+        'vcls-project',
+        'vcls-crm',
+        'vcls_security',
     ],
     'data': [
         'security/ir.model.access.csv',
