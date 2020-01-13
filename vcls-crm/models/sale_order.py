@@ -214,7 +214,9 @@ class SaleOrder(models.Model):
             for so in self:
                 if so.expected_end_date and so.expected_start_date and expected_start_date:
                     so.expected_end_date = expected_start_date + (so.expected_end_date - so.expected_start_date)
-        return super(SaleOrder, self).write(vals)
+        ret = super(SaleOrder, self).write(vals)
+        self.remap()
+        return ret 
 
     ###################
     # COMPUTE METHODS #
@@ -412,7 +414,7 @@ class SaleOrder(models.Model):
                 del services_data[key]
         return services_data, services_subtotal
 
-    @api.onchange('order_line')
+    @api.multi
     def remap(self):
         for so in self:
             sect_index = 0
