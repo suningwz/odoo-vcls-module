@@ -143,6 +143,11 @@ class Leads(models.Model):
         string = 'Referee',
     )
 
+    stakeholder_ids = fields.Many2many(
+        'res.partner',
+        string = 'Stakeholders',
+    )
+
     functional_focus_id = fields.Many2one(
         'partner.functional.focus',
         string = 'Functional  Focus',
