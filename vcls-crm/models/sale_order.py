@@ -415,12 +415,15 @@ class SaleOrder(models.Model):
     @api.onchange('order_line')
     def remap(self):
         for so in self:
-            #we get the sections
-            #sections = so.order_line.filtered(lambda l: not l.section_line_id.id)
-            #for sect in sections:
-                #_logger.info("SECTION {} - {} | {}".format(sect.sequence,sect.name,sect.section_line_id))
+            sect_index = 0
             for line in so.order_line:
-                if not line.section_line_id:
-                    _logger.info("SECTION {} - {} | {}".format(line.sequence,line.name,line.section_line_id))
+                if not line.section_line_id: #this is a section line
+                    sect_index += 100
+                    line_index = 0
+                    
+                line.sequence = sect_index + line_index
+                line_index += 1
+            
+                _logger.info("REMAP {} - {} | {}".format(line.sequence,line.name,line.section_line_id))
 
 
