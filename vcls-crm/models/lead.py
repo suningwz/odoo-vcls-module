@@ -373,6 +373,21 @@ class Leads(models.Model):
     # COMPUTE METHODS #
     ###################
 
+    @api.onchange('industry_id')
+    def _onchange_industry_id(self):
+        if self.partner_id:
+            self.partner_id.industry_id = self.industry_id
+    
+    @api.onchange('client_activity_ids')
+    def _onchange_client_activity_ids(self):
+        if self.partner_id:
+            self.partner_id.client_activity_ids |= self.client_activity_ids
+    
+    @api.onchange('client_product_ids')
+    def _onchange_client_product_ids(self):
+        if self.partner_id:
+            self.partner_id.client_product_ids |= self.client_product_ids
+
     @api.onchange('probability')
     def _onchange_probability(self):
         self.manual_probability=True
