@@ -418,6 +418,7 @@ class SaleOrder(models.Model):
                 _logger.info("{} - {} | {}".format(line.sequence,line.name,line.section_line_id))
 
     def action_sync(self):
+        _logger.info("SYNC")
         self.remap()
         return super(SaleOrder, self).action_sync()
 
