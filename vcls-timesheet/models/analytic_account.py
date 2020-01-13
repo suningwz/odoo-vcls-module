@@ -155,10 +155,9 @@ class AnalyticLine(models.Model):
     def create(self, vals):
         if vals.get('employee_id', False) and vals.get('project_id', False):
             # rounding to 15 mins
-            if vals['unit_amount']>0:
-                if vals['unit_amount'] % 0.25 != 0:
-                    old = vals.get('unit_amount', 0)
-                    vals['unit_amount'] = math.ceil(old * 4) / 4
+            if vals['unit_amount'] % 0.25 != 0:
+                old = vals.get('unit_amount', 0)
+                vals['unit_amount'] = math.ceil(old * 4) / 4
 
             # check if this is a timesheet at risk
             vals['at_risk'] = self.sudo()._get_at_risk_values(vals.get('project_id'),
@@ -459,7 +458,7 @@ class AnalyticLine(models.Model):
                 self.create({
                     'date': now + timedelta(days=1),
                     'task_id': task.id,
-                    'amount': 0,
+                    'unit_amount': 0.0,
                     'company_id': task.company_id.id,
                     'project_id': task.project_id.id,
                     'main_project_id': parent_project_id.id,
