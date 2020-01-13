@@ -437,7 +437,7 @@ class AnalyticLine(models.Model):
         days = hourly_offset//24
         remainder = hourly_offset%24
 
-        timesheets = self.env.search([
+        timesheets = self.search([
             ('project_id', '!=', False),
             ('unit_amount', '>', 0),
             ('date', '>', fields.Datetime.now() - timedelta(days=days+7,hours=remainder)),
