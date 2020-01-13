@@ -354,8 +354,9 @@
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="risk_score"/>
                 </xpath>
+                <!--
                 <xpath expr="//field[@name='sequence']" position="replace">
-                </xpath>
+                </xpath>-->
                 <xpath expr="//div[@class='o_primary']" position="inside">
                      <span class="badge badge-pill badge-danger" style="border: none;" t-if="record.risk_score.value > 0">
                         Risk Score : <t t-esc="record.risk_score.value" />
