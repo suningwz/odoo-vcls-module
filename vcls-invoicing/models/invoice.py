@@ -143,7 +143,7 @@ class Invoice(models.Model):
             else:
                 timesheet_limit_date = vals.get('timesheet_limit_date',self.timesheet_limit_date)
             
-            if not vals.get('period_start',self.period_start):
+            if not vals.get('period_start',self.period_start) and timesheet_limit_date:
                 if so.invoicing_frequency == 'month' and delta < 1:
                     delta = 1
                 if so.invoicing_frequency == 'trimester' and delta < 3:

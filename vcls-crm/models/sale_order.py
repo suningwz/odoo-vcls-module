@@ -412,3 +412,13 @@ class SaleOrder(models.Model):
                 del services_data[key]
         return services_data, services_subtotal
 
+    def remap(self):
+        for so in self:
+            for line in so.order_line:
+                _logger.info("{} - {}".format(line.sequence,line.name))
+
+    def action_sync(self):
+        self.remap()
+        return super(SaleOrder, self).action_sync()
+
+

@@ -563,9 +563,9 @@ class Leads(models.Model):
         return data
 
     def _onchange_partner_id_values(self, partner_id):
-        _logger.info("Partner Id Values {}".format(partner_id))
+        #_logger.info("Partner Id Values {}".format(partner_id))
         result = super(Leads, self)._onchange_partner_id_values(partner_id)
-        _logger.info("Partner Id Values RAW {}".format(result))
+        #_logger.info("Partner Id Values RAW {}".format(result))
         if partner_id:
             partner = self.env["res.partner"].browse(partner_id)
             result.update({
