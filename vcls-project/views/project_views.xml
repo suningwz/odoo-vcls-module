@@ -26,6 +26,9 @@
                             <button class="oe_stat_button" name="sale_orders_tree_view" type="object" icon="fa-barcode">
                                 <field string="Quotation(s)" name="orders_count" widget="statinfo"/>
                             </button>
+                            <button class="oe_stat_button" name="action_open_subscriptions" type="object" icon="fa-book" attrs="{'invisible': [('subscription_count', '=', 0)]}">
+                                <field name="subscription_count" widget="statinfo" string="Subscriptions"/>
+                            </button>
                             <button class="oe_stat_button" name="invoices_tree_view"
                                     type="object" icon="fa-money">
                                 <field string="Invoices" name="invoices_count" widget="statinfo"/>
