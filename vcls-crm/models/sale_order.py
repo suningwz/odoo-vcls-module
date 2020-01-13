@@ -415,7 +415,7 @@ class SaleOrder(models.Model):
     def remap(self):
         for so in self:
             for line in so.order_line:
-                _logger.info("{} - {}".format(line.sequence,line.name))
+                _logger.info("{} - {} | {}".format(line.sequence,line.name,line.section_line_id))
 
     def action_sync(self):
         self.remap()
