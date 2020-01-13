@@ -420,10 +420,18 @@ class SaleOrder(models.Model):
                 if not line.section_line_id: #this is a section line
                     sect_index += 100
                     line_index = 0
-                    
+
                 line.sequence = sect_index + line_index
                 line_index += 1
+                
+            #we order the rates in decreasing unit_price order
+            rate_lines = so.order_line.filtered(lambda r: r.product_id.vcls_type == 'rate')
+            if rate_lines:
+                min_seq = min(rate_lines.mapped('sequence'))
+                for line in rate_lines.sorted(lambda s: s.unit_price, reverse=True):
+                    line.sequence = min_seq
+                    min_seq += 1
             
-                _logger.info("REMAP {} - {} | {}".format(line.sequence,line.name,line.section_line_id))
+                #_logger.info("REMAP {} - {} | {}".format(line.sequence,line.name,line.section_line_id))
 
 
