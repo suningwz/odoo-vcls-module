@@ -86,7 +86,7 @@ class SaleOrderLine(models.Model):
             # Now in case this line is a rate , we search for all forecasts
             # having the the same rate employee (employee_id) using the mapping table
             # within the same project
-            if rate_employee:
+            if rate_employee and order_line.order_id.project_id:
                 forecast_domain = expression.OR([
                     forecast_domain, [
                         '&',
