@@ -15,6 +15,11 @@ class SaleOrder(models.Model):
             default_company_id=self.company_id.id,
             force_company=self.company_id.id,
         )._timesheet_service_generation()
+
+        #we update the sequence of the task related
+        for line in self.order_line.filtered(lambda t: t.task_id):
+            line.task_id.sequence = line.sequence
+
         milestone_tasks = self.get_milestone_tasks()
         rate_order_lines = self.get_rate_tasks()
         for order_line in rate_order_lines:
@@ -62,7 +67,7 @@ class SaleOrder(models.Model):
             r.product_id.service_policy == 'delivered_manual' and
             r.product_id.service_tracking == 'task_new_project'
         )
-        return order_lines.sorted(reverse=True).mapped('task_id')
+        return order_lines.mapped('task_id')
 
     @api.multi
     def get_rate_tasks(self):
