@@ -433,7 +433,24 @@ class AnalyticLine(models.Model):
             write({'stage_id': 'invoiceable'})
 
     @api.model
-    def _smart_timesheeting_cron(self):
+    def _smart_timesheeting_cron(self,hourly_offset=0):
+        days = hourly_offset//24
+        remainder = hourly_offset%24
+
+        timesheets = self.env.search([
+            ('project_id', '!=', False),
+            ('unit_amount', '>', 0),
+            ('date', '>', fields.Datetime.now() - timedelta(days=days+7,hours=remainder)),
+            ('date', '<', fields.Datetime.now() - timedelta(days=days,hours=remainder)),
+        ])
+
+        for task in timesheets.mapped('task_id'):
+            task_ts = timesheets.filtered(lambda t: t.task_id == task.id)
+            for employee in task_ts.mapped('employee_id'):
+                _logger.info("SMART TIMESHEETING: {} on {}".fomat(task.name,employee.name))
+
+
+        """# We look for timesheets of the previous week
         tasks = self.env['project.task'].search([
             ('project_id', '!=', False),
             ('effective_hours', '>', 0),
@@ -447,7 +464,7 @@ class AnalyticLine(models.Model):
                 'amount': 0,
                 'company_id': task.company_id,
                 'project_id': task.project_id.id,
-            })
+            })"""
 
     def _timesheet_preprocess(self, vals):
         vals = super(AnalyticLine, self)._timesheet_preprocess(vals)
