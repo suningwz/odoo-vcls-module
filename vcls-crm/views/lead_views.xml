@@ -246,6 +246,7 @@
                         </group>
                         <group>
                             <field name="technical_adv_id" />
+                            <field name="proposal_writer_id" context="{'default_groups_ref': ['vcls-crm.proposal_writer_group']}"/>
                         </group>
                         <group string="Extended BID team" colspan="2">
                             <field name="support_team" nolabel="1" options="{'no_quick_create': True, 'no_create_edit': True, 'no_create': True}" string="Other Technical Experts">
@@ -255,7 +256,7 @@
                             </field>
                         </group>
                         <group string="Client Stakeholders" colspan="2">
-                            <field name="stakeholder_ids" nolabel="1" domain="[('partner_id','=',partner_id)]" options="{'no_quick_create': True, 'no_create_edit': True, 'no_create': True}" string="">
+                            <field name="stakeholder_ids" nolabel="1" domain="[('partner_id.id','=',partner_id)]" options="{'no_quick_create': True, 'no_create_edit': True, 'no_create': True}" string="">
                                 <tree editable="bottom" create = '1'>
                                     <field name="name" />
                                 </tree>

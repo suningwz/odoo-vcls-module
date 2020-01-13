@@ -221,6 +221,12 @@ class Leads(models.Model):
         track_visibility='onchange', 
         )
     
+    proposal_writer_id = fields.Many2one(
+        'hr.employee', 
+        string='Proposal Writer', 
+        track_visibility='onchange', 
+        )
+    
     support_team = fields.Many2many(
         'hr.employee', 
         string='Other Technical Experts', 
