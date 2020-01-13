@@ -424,11 +424,11 @@ class SaleOrder(models.Model):
                 line.sequence = sect_index + line_index
                 line_index += 1
                 
-            #we order the rates in decreasing unit_price order
+            #we order the rates in decreasing price_unit order
             rate_lines = so.order_line.filtered(lambda r: r.product_id.vcls_type == 'rate')
             if rate_lines:
                 min_seq = min(rate_lines.mapped('sequence'))
-                for line in rate_lines.sorted(lambda s: s.unit_price, reverse=True):
+                for line in rate_lines.sorted(lambda s: s.price_unit, reverse=True):
                     line.sequence = min_seq
                     min_seq += 1
             
