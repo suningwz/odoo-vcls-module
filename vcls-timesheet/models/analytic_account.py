@@ -456,7 +456,7 @@ class AnalyticLine(models.Model):
                 #_logger.info("SMART TIMESHEETING: {} on {}".format(task.name,employee.name))
                 #we finally create the ts
                 self.create({
-                    'date': now + dimedelta(days=1),
+                    'date': now + timedelta(days=1),
                     'task_id': task.id,
                     'amount': 0,
                     'company_id': task.company_id.id,
