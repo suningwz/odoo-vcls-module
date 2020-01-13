@@ -62,7 +62,7 @@ class SaleOrder(models.Model):
             r.product_id.service_policy == 'delivered_manual' and
             r.product_id.service_tracking == 'task_new_project'
         )
-        return order_lines.mapped('task_id')
+        return order_lines.sorted(reverse=True).mapped('task_id')
 
     @api.multi
     def get_rate_tasks(self):
