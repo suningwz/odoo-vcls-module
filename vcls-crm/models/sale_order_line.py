@@ -2,6 +2,7 @@
 
 from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.osv import expression
 
 
 class SaleOrderLine(models.Model):
@@ -71,20 +72,38 @@ class SaleOrderLine(models.Model):
                 raise ValidationError(
                     _('You can not delete the "{}" order line has linked timesheets.'.format(order_line.name))
                 )
-            # delete mapping
             related_mapping = self.env['project.sale.line.employee.map'].sudo().search([
                 ('sale_line_id', '=', order_line.id),
             ])
-            if related_mapping:
-                related_mapping.sudo().unlink()
             # delete mapping linked forecast
+            rate_employee = related_mapping.mapped('employee_id')
 
-            related_forecasts = self.env['project.forecast'].sudo().search([
+            # forecast deletion
+            # in case this line is a service: delete forecast related to service line
+            forecast_domain = [
                 ('order_line_id', '=', order_line.id),
-            ])
+            ]
+            # Now in case this line is a rate , we search for all forecasts
+            # having the the same rate employee (employee_id) using the mapping table
+            # within the same project
+            if rate_employee:
+                forecast_domain = expression.OR([
+                    forecast_domain, [
+                        '&',
+                        ('employee_id', 'in', rate_employee.ids),
+                        ('project_id', '=', order_line.order_id.project_id.id),
+                    ]
+                ])
+
+            related_forecasts = self.env['project.forecast'].sudo().search(forecast_domain)
             
             if related_forecasts:
                 related_forecasts.sudo().unlink()
+
+            # delete mapping
+            if related_mapping:
+                related_mapping.sudo().unlink()
+
             if order_line.vcls_type != 'rate':
                 related_task = self.env['project.task'].sudo().search([
                     '|',
