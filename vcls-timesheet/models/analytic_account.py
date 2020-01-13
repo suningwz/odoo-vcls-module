@@ -447,7 +447,7 @@ class AnalyticLine(models.Model):
         for task in timesheets.mapped('task_id'):
             task_ts = timesheets.filtered(lambda t: t.task_id == task.id)
             for employee in task_ts.mapped('employee_id'):
-                _logger.info("SMART TIMESHEETING: {} on {}".fomat(task.name,employee.name))
+                _logger.info("SMART TIMESHEETING: {} on {}".format(task.name,employee.name))
 
 
         """# We look for timesheets of the previous week
