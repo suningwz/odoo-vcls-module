@@ -117,7 +117,7 @@
             <field name="priority">10</field>
             <field name="arch" type="xml">
                 <tree string="Invoices">
-                    <field name="name"invisible="1"/>
+                    <field name="name" invisible="1"/>
                     <field name="number" string="Reference"/>
                     <field name="temp_name" string="Name"/>
                     <field name="company_id"/>
