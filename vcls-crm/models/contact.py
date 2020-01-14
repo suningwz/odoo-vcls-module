@@ -42,6 +42,10 @@ class ContactExt(models.Model):
         default = 0,
         )
 
+    contact_us_message = fields.Char(
+        readonly = True,
+    )
+
     @api.multi
     @api.depends('property_product_pricelist')
     def _get_default_currency(self):
