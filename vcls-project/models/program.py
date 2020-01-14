@@ -89,6 +89,7 @@ class ProjectProgram(models.Model):
     sale_order_count = fields.Integer(compute='_compute_sale_order_count', string='Sale Order Count')
     opportunity_count = fields.Integer(compute='_compute_opportunity_count', string='Opportunity Count')
     project_count = fields.Integer(compute='_compute_project_count', string='Main Project Count')
+    invoice_count = fields.Integer(compute='_compute_invoice_count', string='Invoice Count')
 
     @api.depends('name','product_name','client_id','leader_id','app_country_group_id',
                    'prim_therapeutic_area_id','prim_indication_id','prim_detailed_indication',
@@ -120,6 +121,10 @@ class ProjectProgram(models.Model):
         for program in self:
             program.project_count = result.get(program.id, 0)
     
+    def _compute_invoice_count(self):
+        for program in self:
+            program.invoice_count = sum(self.env['project.project'].search([('program_id','=',program.id)]).mapped('invoices_count'))
+    
     @api.multi
     def action_projects_followup(self):
         self.ensure_one()
@@ -127,6 +132,16 @@ class ProjectProgram(models.Model):
         project_ids = self.env['project.project'].search([('program_id','=',self.id)]).mapped('id')
         action['context'] = { 
                 "search_default_project_id": project_ids,
+                }
+        return action
+    
+    @api.multi
+    def action_open_invoices(self):
+        self.ensure_one()
+        action = self.env.ref('vcls-invoicing.action_ia_invoices').read()[0]
+        invoice_ids = self.env['project.project'].search([('program_id','=',self.id)]).mapped('out_invoice_ids.id')
+        action['context'] = { 
+                "search_default_invoice_id": invoice_ids,
                 }
         return action
 
