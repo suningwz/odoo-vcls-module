@@ -5,6 +5,10 @@
             <field name="name">Senior Management Risk Group</field>
         </record>
 
+        <record id="proposal_writer_group" model="res.groups">
+            <field name="name">Is Proposal Writer</field>
+        </record>
+
         <record id="vcls-crm.module_category_bus_dev" model="ir.module.category">
             <field name="sequence">42</field>
             <field name="name">Business Development</field>

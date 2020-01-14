@@ -214,7 +214,9 @@ class SaleOrder(models.Model):
             for so in self:
                 if so.expected_end_date and so.expected_start_date and expected_start_date:
                     so.expected_end_date = expected_start_date + (so.expected_end_date - so.expected_start_date)
-        return super(SaleOrder, self).write(vals)
+        ret = super(SaleOrder, self).write(vals)
+        self.remap()
+        return ret 
 
     ###################
     # COMPUTE METHODS #
@@ -411,4 +413,27 @@ class SaleOrder(models.Model):
             if not value['subtotal']:
                 del services_data[key]
         return services_data, services_subtotal
+
+    @api.multi
+    def remap(self):
+        for so in self:
+            sect_index = 0
+            for line in so.order_line:
+                if not line.section_line_id: #this is a section line
+                    sect_index += 100
+                    line_index = 0
+
+                line.sequence = sect_index + line_index
+                line_index += 1
+                
+            #we order the rates in decreasing price_unit order
+            rate_lines = so.order_line.filtered(lambda r: r.product_id.vcls_type == 'rate')
+            if rate_lines:
+                min_seq = min(rate_lines.mapped('sequence'))
+                for line in rate_lines.sorted(lambda s: s.price_unit, reverse=True):
+                    line.sequence = min_seq
+                    min_seq += 1
+            
+                #_logger.info("REMAP {} - {} | {}".format(line.sequence,line.name,line.section_line_id))
+
 

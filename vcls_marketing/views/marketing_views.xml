@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record id="project_marketing_tree" model="ir.ui.view">
+        <field name="name">project.marketing.tree</field>
+        <field name="model">project.marketing</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="task_marketing_tree" model="ir.ui.view">
+        <field name="name">task.marketing.tree</field>
+        <field name="model">task.marketing</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="project_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="project_marketing_form" model="ir.ui.view">
+        <field name="name">project.marketing.form</field>
+        <field name="model">project.marketing</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="event_type"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="task_marketing_form" model="ir.ui.view">
+        <field name="name">task.marketing.form</field>
+        <field name="model">task.marketing</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="organizer_id"/>
+                <field name="business_line_id"/>
+                <field name="country_group_id"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="action_marketing_project" model="ir.actions.act_window">
+        <field name="name">Lead Source</field>
+        <field name="res_model">project.marketing</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+        (0, 0, {'view_mode': 'tree', 'view_id': ref('project_marketing_tree')}),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('project_marketing_form')})]"/>
+    </record>
+
+    <record id="action_marketing_task" model="ir.actions.act_window">
+        <field name="name">Marketing Campaign</field>
+        <field name="res_model">task.marketing</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+        (0, 0, {'view_mode': 'tree', 'view_id': ref('task_marketing_tree')}),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('task_marketing_form')})]"/>
+    </record>
+
+</data>
+</odoo>
+

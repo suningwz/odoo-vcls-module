@@ -143,7 +143,7 @@ class Invoice(models.Model):
             else:
                 timesheet_limit_date = vals.get('timesheet_limit_date',self.timesheet_limit_date)
             
-            if not vals.get('period_start',self.period_start):
+            if not vals.get('period_start',self.period_start) and timesheet_limit_date:
                 if so.invoicing_frequency == 'month' and delta < 1:
                     delta = 1
                 if so.invoicing_frequency == 'trimester' and delta < 3:
@@ -185,11 +185,16 @@ class Invoice(models.Model):
                         'scope_of_work': sow,
                         'timesheet_limit_date': timesheet_limit_date,
                         'period_start': period_start,
-                        'po_id': po_id.id,
-                        'invoice_template': invoice_template.id,
-                        'activity_report_template': activity_report_template.id,
                         'communication_rate': communication_rate,
                         })
+        
+        if po_id:
+            vals.update({'po_id': po_id.id})
+        if invoice_template:
+            vals.update({'invoice_template': invoice_template.id})
+        if activity_report_template:
+            vals.update({'activity_report_template': activity_report_template.id})
+
         return vals
 
 
@@ -501,28 +506,6 @@ class Invoice(models.Model):
         #_logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals.get('timesheet_limit_date'),ret.timesheet_limit_date))
         return ret
 
-        """_logger.info("INVOICE CREATED {}".format(vals))
-
-        ret._get_so_data()
-        _logger.info("INVOICE SO DATA  date {} rate {}".format(ret.timesheet_limit_date,ret.communication_rate))
-        ret._get_project_data()
-        
-        if self.communication_rate>0:
-            try:
-                total_amount = ret.get_communication_amount()
-            except:
-                total_amount = False
-            
-            _logger.info("INVOICE CREATED {}".format(ret.temp_name))
-            if total_amount:
-                line = self.env['account.invoice.line'].new()
-                line.invoice_id = ret.id
-                line.product_id = self.env.ref('vcls-invoicing.product_communication_rate').id
-                line._onchange_product_id()
-                line.price_unit = total_amount * self.communication_rate / 100
-                line.quantity = 1
-                ret.with_context(communication_rate=True).invoice_line_ids += line"""
-
     @api.multi
     def write(self, vals):
         ret = False
@@ -563,26 +546,6 @@ class Invoice(models.Model):
                     line.quantity = 1
                     inv.with_context(communication_rate=True).invoice_line_ids += line
         
-        """
-        ret = super(Invoice, self).write(vals)
-        
-        for rec in self:
-            #partner = rec.partner_id
-            _logger.info("INVOICE UPDATED {}".format(rec.temp_name))
-            if rec.communication_rate and not self.env.context.get('communication_rate'):
-                try:
-                    total_amount = ret.get_communication_amount()
-                except:
-                    total_amount = False
-                if total_amount:
-                    line = self.env['account.invoice.line'].new()
-                    line.invoice_id = rec.id
-                    line.product_id = self.env.ref('vcls-invoicing.product_communication_rate').id
-                    line._onchange_product_id()
-                    line.price_unit = total_amount * rec.communication_rate / 100
-                    line.quantity = 1
-                    rec.with_context(communication_rate=True).invoice_line_ids += line
-            """
         return ret
 
     @api.depends('invoice_line_ids')

@@ -143,6 +143,11 @@ class Leads(models.Model):
         string = 'Referee',
     )
 
+    stakeholder_ids = fields.Many2many(
+        'res.partner',
+        string = 'Stakeholders',
+    )
+
     functional_focus_id = fields.Many2one(
         'partner.functional.focus',
         string = 'Functional  Focus',
@@ -213,6 +218,12 @@ class Leads(models.Model):
     technical_adv_id = fields.Many2one(
         'hr.employee', 
         string='PIC', 
+        track_visibility='onchange', 
+        )
+    
+    proposal_writer_id = fields.Many2one(
+        'hr.employee', 
+        string='Proposal Writer', 
         track_visibility='onchange', 
         )
     
@@ -361,6 +372,21 @@ class Leads(models.Model):
     ###################
     # COMPUTE METHODS #
     ###################
+
+    @api.onchange('industry_id')
+    def _onchange_industry_id(self):
+        if self.partner_id:
+            self.partner_id.industry_id = self.industry_id
+    
+    @api.onchange('client_activity_ids')
+    def _onchange_client_activity_ids(self):
+        if self.partner_id:
+            self.partner_id.client_activity_ids |= self.client_activity_ids
+    
+    @api.onchange('client_product_ids')
+    def _onchange_client_product_ids(self):
+        if self.partner_id:
+            self.partner_id.client_product_ids |= self.client_product_ids
 
     @api.onchange('probability')
     def _onchange_probability(self):
@@ -563,9 +589,9 @@ class Leads(models.Model):
         return data
 
     def _onchange_partner_id_values(self, partner_id):
-        _logger.info("Partner Id Values {}".format(partner_id))
+        #_logger.info("Partner Id Values {}".format(partner_id))
         result = super(Leads, self)._onchange_partner_id_values(partner_id)
-        _logger.info("Partner Id Values RAW {}".format(result))
+        #_logger.info("Partner Id Values RAW {}".format(result))
         if partner_id:
             partner = self.env["res.partner"].browse(partner_id)
             result.update({

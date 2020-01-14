@@ -93,13 +93,19 @@ class ExpenseSheet(models.Model):
             #mobility case
             if record.project_id:
                 if ('Mobility' in record.project_id.name):
-                    record.user_id = record.project_id.user_id
+                    if record.project_id.user_id == record.employee_id.user_id: #you can't approve yourself
+                        record.user_id = record.employee_id.expense_manager_id or record.employee_id.parent_id.user_id
+                    else:
+                        record.user_id = record.project_id.user_id
                     continue
             
             #Billable case
             if record.type == 'project':
                 if record.project_id:
-                    record.user_id = record.project_id.user_id
+                    if record.project_id.user_id == record.employee_id.user_id: #you can't approve yourself
+                        record.user_id = record.project_id.partner_id.controller_id
+                    else:
+                        record.user_id = record.project_id.user_id
                 else:
                     record.user_id = False
 
