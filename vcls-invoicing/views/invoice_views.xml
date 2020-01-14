@@ -117,17 +117,19 @@
             <field name="priority">10</field>
             <field name="arch" type="xml">
                 <tree string="Invoices">
-                    <field name="name" string="Reference"/>
+                    <field name="name"invisible="1"/>
+                    <field name="number" string="Reference"/>
                     <field name="temp_name" string="Name"/>
                     <field name="company_id"/>
                     <field name="partner_id"/>
-                    <field name="amount_total"/>
-                    <field name="parent_quotation_timesheet_limite_date"/>
+                    <field name="origin_sale_orders"/>
+                    <field name="period_start" string="Period Start"/>
+                    <field name="timesheet_limite_date" string="Period End"/>
                     <field name="invoice_sending_date" string="Sending Date"/>
-                    <field name="vcls_due_date"/>
+                    <field name="vcls_due_date" string="Due Date"/>
+                    <field name="amount_total"/>
                     <field name="fiscal_position_id"/>
                     <field name="state"/>
-                    <field name="origin_sale_orders"/>
                     <field name="activity_ids"/>
                     <field name="activity_state"/>
                 </tree>
