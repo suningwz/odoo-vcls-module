@@ -100,7 +100,7 @@
 
                         <button class="oe_stat_button" type="object" name="action_projects_followup" icon="fa-table" string="Projects Follow-up"/>
 
-                        <button class="oe_stat_button" type="action"
+                        <button class="oe_stat_button" type="object"
                             name="action_open_invoices" icon="fa-pencil-square-o">
                             <field string="Invoices" name="invoice_count" widget="statinfo"/>
                         </button>

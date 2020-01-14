@@ -126,7 +126,7 @@
                     <field name="period_start" string="Period Start"/>
                     <field name="timesheet_limit_date" string="Period End"/>
                     <field name="invoice_sending_date" string="Sending Date"/>
-                    <field name="vcls_due_date" string="Due Date"/>
+                    <field name="vcls_due_date" string="Due Date" widget="date"/>
                     <field name="amount_total"/>
                     <field name="fiscal_position_id"/>
                     <field name="state"/>
