@@ -140,9 +140,7 @@ class ProjectProgram(models.Model):
         self.ensure_one()
         action = self.env.ref('vcls-invoicing.action_ia_invoices').read()[0]
         invoice_ids = self.env['project.project'].search([('program_id','=',self.id)]).mapped('out_invoice_ids.id')
-        action['context'] = { 
-                "search_default_invoice_id": invoice_ids,
-                }
+        action['domain'] = [('id', '=', invoice_ids)]
         return action
 
 
