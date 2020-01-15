@@ -42,7 +42,7 @@
                     </div>
                     <div class="oe_title">
                         <h1>
-                            <field name="name" placeholder="Project Name" readonly="1"/>
+                            <field name="name" placeholder="Project Name"/>
                         </h1>
                     </div>
                     <group invisible="1" string="Hidden Fields">
@@ -61,7 +61,6 @@
                             <field name="privacy_visibility" widget="radio"/>
                             <field name="project_type"/>
                             <field name="allow_timesheets"/>
-                            <field name="allow_forecast"/>
                         </group>
                         <group name="misc">
                             <group string="Configuration" groups="base.group_no_one" name="configuration">
