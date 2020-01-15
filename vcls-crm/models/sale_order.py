@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, tools, api
-from dateutil.relativedelta import relativedelta
+from collections import OrderedDict
+from odoo.tools import OrderedSet
 
 from odoo.exceptions import UserError, ValidationError, Warning
 import math
@@ -112,6 +113,15 @@ class SaleOrder(models.Model):
                                           ('fp', 'Fixed price')],
                                          'Invoicing mode')
 
+    report_details = fields.Selection([
+        ('simple', 'simple'),
+        ('detailed', 'detailed')],
+        'Report details', default='simple'
+    )
+    report_rate = fields.Boolean(
+        'Report rate', default=True
+    )
+
     ###############
     # ORM METHODS #
     ###############
@@ -204,7 +214,9 @@ class SaleOrder(models.Model):
             for so in self:
                 if so.expected_end_date and so.expected_start_date and expected_start_date:
                     so.expected_end_date = expected_start_date + (so.expected_end_date - so.expected_start_date)
-        return super(SaleOrder, self).write(vals)
+        ret = super(SaleOrder, self).write(vals)
+        self.remap()
+        return ret 
 
     ###################
     # COMPUTE METHODS #
@@ -322,4 +334,106 @@ class SaleOrder(models.Model):
         
         # need to add scope
         return suffix
+
+    @api.multi
+    def _get_aggregated_order_report_data(self):
+        services_data, services_subtotal = self._get_aggregated_order_report_services()
+        return {
+            'services_subtotal': services_subtotal,
+            'services_data': services_data,
+        }
+
+    @api.multi
+    def _get_detailed_order_report_data(self):
+        services_data, services_subtotal = self._get_detailed_order_report_services()
+        return {
+            'services_subtotal': services_subtotal,
+            'services_data': services_data,
+        }
+
+    @api.multi
+    def _get_detailed_order_report_services(self):
+        """
+        :param self:
+        :return: ordered dictionary with the following structure
+        { 'service_section_line_record': {
+                service_line_record : {
+                    'subtotal': subtotal,
+                    'currency_id': currency,
+                }
+            },...
+        }
+        """
+        self.ensure_one()
+        services_data = OrderedDict()
+        services_subtotal = 0.
+        for line in self.order_line:
+            if line.product_id.vcls_type != 'vcls_service':
+                continue
+            section_line_id = line.section_line_id
+            section_services_data = services_data.setdefault(section_line_id, OrderedDict())
+            section_services_data.setdefault(line, {
+                'subtotal': line.price_subtotal,
+                'currency_id': line.currency_id,
+            })
+            services_subtotal += line.price_subtotal
+        for services_data_key in services_data:
+            for key in list(services_data[services_data_key]):
+                value = services_data[services_data_key][key]
+                if not value['subtotal']:
+                    del services_data[services_data_key][key]
+        return services_data, services_subtotal
+
+    @api.multi
+    def _get_aggregated_order_report_services(self):
+        """
+        :param self:
+        :return: ordered dictionary with the following structure
+        { 'service_section_line_record': {
+                    'subtotal': subtotal,
+                    'currency_id': currency,
+            },...
+        }
+        """
+        self.ensure_one()
+        services_data = OrderedDict()
+        services_subtotal = 0.
+        for line in self.order_line:
+            if line.product_id.vcls_type != 'vcls_service':
+                continue
+            section_line_id = line.section_line_id
+            section_services_data = services_data.setdefault(section_line_id, {
+                'subtotal': 0.,
+                'currency_id': line.currency_id,
+            })
+            section_services_data['subtotal'] += line.price_subtotal
+            services_subtotal += line.price_subtotal
+        for key in list(services_data):
+            value = services_data[key]
+            if not value['subtotal']:
+                del services_data[key]
+        return services_data, services_subtotal
+
+    @api.multi
+    def remap(self):
+        for so in self:
+            sect_index = 0
+            for line in so.order_line:
+                if not line.section_line_id: #this is a section line
+                    sect_index += 100
+                    line_index = 0
+
+                line.sequence = sect_index + line_index
+                line_index += 1
+                
+            #we order the rates in decreasing price_unit order
+            rate_lines = so.order_line.filtered(lambda r: r.product_id.vcls_type == 'rate')
+            if rate_lines:
+                min_seq = min(rate_lines.mapped('sequence'))
+                for line in rate_lines.sorted(lambda s: s.price_unit, reverse=True):
+                    line.sequence = min_seq
+                    min_seq += 1
+            
+                #_logger.info("REMAP {} - {} | {}".format(line.sequence,line.name,line.section_line_id))
+
 

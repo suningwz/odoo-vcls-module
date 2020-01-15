@@ -111,6 +111,72 @@ class Project(models.Model):
 
     last_summary_date = fields.Datetime(string="Last Summary Date", compute="_compute_last_create_date", readonly=True)
 
+    subscription_count = fields.Integer(compute='_compute_subscription_count')
+
+    date_start = fields.Date(
+        string='Start Date',
+        compute='_compute_dates',)
+
+    date = fields.Date(
+        string='Expiration Date',
+        compute='_compute_dates',
+        index=True,
+        track_visibility='onchange',
+        ) 
+    
+    def _compute_dates(self):
+        for project in self:
+            tasks = project.task_ids.filtered(lambda t: t.date_start and t.date_end)
+            if tasks:
+                project.date_start = min(tasks.mapped('date_start')).date()
+                project.date = max(tasks.mapped('date_end')).date()
+            elif project.sale_order_id:
+                project.date_start = project.sale_order_id.expected_start_date
+                project.date = project.sale_order_id.expected_end_date
+            else:
+                project.date_start = False
+                project.date = False
+
+
+    def _compute_subscription_count(self):
+        """Compute the number of distinct subscriptions linked to the orders of the project(s)."""
+        for project in self:
+            all_projects = project
+            if project.child_id:
+                all_projects |= project.child_id
+            if project.parent_id:
+                all_projects |= project.parent_id
+
+            sub_count = len(self.env['sale.order.line'].read_group([('order_id', 'in', all_projects.mapped('sale_order_id.id')), ('subscription_id', '!=', False)],
+                                                    ['subscription_id'], ['subscription_id']))
+            project.subscription_count = sub_count
+    
+    def action_open_subscriptions(self):
+        """Display the linked subscription and adapt the view to the number of records to display."""
+        self.ensure_one()
+
+        all_projects = self
+        if self.child_id:
+            all_projects |= self.child_id
+        if self.parent_id:
+            all_projects |= self.parent_id
+
+        subscriptions = all_projects.mapped('sale_order_id.order_line.subscription_id')
+
+        action = self.env.ref('sale_subscription.sale_subscription_action').read()[0]
+        if len(subscriptions) > 1:
+            action['domain'] = [('id', 'in', subscriptions.ids)]
+        elif len(subscriptions) == 1:
+            form_view = [(self.env.ref('sale_subscription.sale_subscription_view_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state,view) for state,view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = subscriptions.ids[0]
+        else:
+            action = {'type': 'ir.actions.act_window_close'}
+        return action
+
     @api.depends('summary_ids')
     def _compute_last_create_date(self):
         for project in self:

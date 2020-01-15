@@ -8,7 +8,7 @@
     """,
     'author': "VCLS",
     'website': "http://www.voisinconsulting.com",
-    'version': '0.0.5',
+    'version': '0.0.6',
     'depends': [
         'base',
         'project',

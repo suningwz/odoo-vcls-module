@@ -35,11 +35,11 @@ class SaleOrder(models.Model):
         default =lambda self: self.partner_id.invoicing_frequency,
     )
     
-    timesheet_limit_date = fields.Date(
+    """timesheet_limit_date = fields.Date(
         compute='_compute_timesheet_limit_date',
         inverse='_inverse_timesheet_limit_date',
         store=True,
-    )
+    )"""
     
     invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
     activity_report_template = fields.Many2one(
@@ -96,7 +96,7 @@ class SaleOrder(models.Model):
         if risk_ids:
             self.risk_ids |= risk_ids
 
-    @api.one
+    """@api.one
     @api.depends('partner_id.invoice_ids', 'partner_id.invoice_ids.state',
                  'invoicing_frequency')
     def _compute_timesheet_limit_date(self):
@@ -120,7 +120,7 @@ class SaleOrder(models.Model):
             self.timesheet_limit_date = new_date
 
     def _inverse_timesheet_limit_date(self):
-        pass
+        pass"""
 
     @api.one
     @api.depends('project_id.user_id','partner_id.invoice_admin_id', 'parent_id')

@@ -87,8 +87,10 @@ class ProjectProgram(models.Model):
     product_description = fields.Text()
     
     sale_order_count = fields.Integer(compute='_compute_sale_order_count', string='Sale Order Count')
+    quotation_count = fields.Integer(compute='_compute_quotation_count', string='Quotation Count')
     opportunity_count = fields.Integer(compute='_compute_opportunity_count', string='Opportunity Count')
     project_count = fields.Integer(compute='_compute_project_count', string='Main Project Count')
+    invoice_count = fields.Integer(compute='_compute_invoice_count', string='Invoice Count')
 
     @api.depends('name','product_name','client_id','leader_id','app_country_group_id',
                    'prim_therapeutic_area_id','prim_indication_id','prim_detailed_indication',
@@ -103,22 +105,33 @@ class ProjectProgram(models.Model):
             program.program_info = info
 
     def _compute_sale_order_count(self):
-        order_data = self.env['sale.order'].read_group([('program_id', 'in', self.ids)], ['program_id'], ['program_id'])
-        result = dict((data['program_id'][0], data['program_id_count']) for data in order_data)
         for program in self:
-            program.sale_order_count = result.get(program.id, 0)
+            orders = self.env['sale.order'].search([('program_id','=',program.id),('state','in',['sale','done'])])
+            if orders:
+                program.sale_order_count = len(orders)
     
-    def _compute_opportunity_count(self):
-        lead_data = self.env['crm.lead'].read_group([('program_id', 'in', self.ids)], ['program_id'], ['program_id'])
-        result = dict((data['program_id'][0], data['program_id_count']) for data in lead_data)
+    def _compute_quotation_count(self):
         for program in self:
-            program.opportunity_count = result.get(program.id, 0)
+            quotations = self.env['sale.order'].search([('program_id','=',program.id),('state','in',['draft','sent'])])
+            if quotations:
+                program.quotation_count = len(quotations)
+    
+            
+    def _compute_opportunity_count(self):
+        for program in self:
+            opps = self.env['crm.lead'].search([('program_id','=',program.id)])
+            if opps:
+                program.opportunity_count = len(opps)
             
     def _compute_project_count(self):
-        project_data = self.env['project.project'].read_group([('program_id', 'in', self.ids), ('parent_id', '=', False)], ['program_id'], ['program_id'])
-        result = dict((data['program_id'][0], data['program_id_count']) for data in project_data)
         for program in self:
-            program.project_count = result.get(program.id, 0)
+            projects = self.env['project.project'].search([('program_id','=',program.id),('parent_id','=',False)])
+            if projects:
+                program.opportunity_count = len(projects)
+    
+    def _compute_invoice_count(self):
+        for program in self:
+            program.invoice_count = sum(self.env['project.project'].search([('program_id','=',program.id)]).mapped('invoices_count'))
     
     @api.multi
     def action_projects_followup(self):
@@ -128,6 +141,15 @@ class ProjectProgram(models.Model):
         action['context'] = { 
                 "search_default_project_id": project_ids,
                 }
+        return action
+    
+    @api.multi
+    def action_open_invoices(self):
+        self.ensure_one()
+        action = self.env.ref('vcls-invoicing.action_ia_invoices').read()[0]
+        invoice_ids = self.env['project.project'].search([('program_id','=',self.id)]).mapped('out_invoice_ids.id')
+        action['domain'] = [('id', '=', invoice_ids)]
+        action['context'] = {}
         return action
 
 

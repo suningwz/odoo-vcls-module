@@ -13,7 +13,7 @@
 
     'category': 'Uncategorized',
 
-    'version': '1.3',
+    'version': '1.3.2',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -65,6 +65,7 @@
         'views/lead2opp.xml',
         'views/core_team_views.xml',
         'wizard/lead_quotation_views.xml',
+        'reports/report_order.xml',
         #'views/sale_order_template_views.xml',
 
         # MENUS #

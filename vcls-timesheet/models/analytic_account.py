@@ -433,7 +433,41 @@ class AnalyticLine(models.Model):
             write({'stage_id': 'invoiceable'})
 
     @api.model
-    def _smart_timesheeting_cron(self):
+    def _smart_timesheeting_cron(self,hourly_offset=0):
+        days = hourly_offset//24
+        remainder = hourly_offset%24
+        now = fields.Datetime.now()
+
+        timesheets = self.search([
+            ('project_id', '!=', False),
+            ('unit_amount', '>', 0),
+            ('date', '>', now - timedelta(days=days+7,hours=remainder)),
+            ('date', '<', now - timedelta(days=days,hours=remainder)),
+        ])
+
+        for task in timesheets.mapped('task_id'):
+            if task.project_id.parent_id:
+                parent_project_id = task.project_id.parent_id
+            else:
+                parent_project_id = task.project_id
+
+            task_ts = timesheets.filtered(lambda t: t.task_id.id == task.id)
+            for employee in task_ts.mapped('employee_id'):
+                #_logger.info("SMART TIMESHEETING: {} on {}".format(task.name,employee.name))
+                #we finally create the ts
+                self.create({
+                    'date': now + timedelta(days=1),
+                    'task_id': task.id,
+                    'unit_amount': 0.0,
+                    'company_id': task.company_id.id,
+                    'project_id': task.project_id.id,
+                    'main_project_id': parent_project_id.id,
+                    'employee_id': employee.id,
+                    'name': "Smart Timesheeting",
+                })
+
+
+        """# We look for timesheets of the previous week
         tasks = self.env['project.task'].search([
             ('project_id', '!=', False),
             ('effective_hours', '>', 0),
@@ -447,7 +481,7 @@ class AnalyticLine(models.Model):
                 'amount': 0,
                 'company_id': task.company_id,
                 'project_id': task.project_id.id,
-            })
+            })"""
 
     def _timesheet_preprocess(self, vals):
         vals = super(AnalyticLine, self)._timesheet_preprocess(vals)

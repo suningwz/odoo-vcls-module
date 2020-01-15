@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.7.11',
+    'version': '0.7.17',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -30,12 +30,14 @@
         'project_task_default_stage',
         'project_parent_task_filter',
         'sale_quote_project_forecast',
+        'project_timeline',
         'project_timeline_task_dependency',
         'sale_timesheet',
         'account',
         'hr_timesheet',
         'vcls_security',
         'vcls-risk',
+        'vcls-invoicing',
     ],
 
     # always loaded

@@ -32,7 +32,7 @@
                     <attribute name="invisible">1</attribute>
                 </button>
                 <xpath expr="//header" position="inside">
-                    <button name="quotation_program_print" string="Print all program's quotation" type="object" states="draft" class="btn-primary"/>
+                    <button invisible="1" name="quotation_program_print" string="Print all program's quotation" type="object" states="draft" class="btn-primary"/>
                 </xpath>
                 <field name="opportunity_id" position="after">
                     <field name="program_id" options="{'no_create': True}" domain="[('client_id','=',partner_id)]" />

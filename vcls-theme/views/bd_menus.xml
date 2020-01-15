@@ -114,12 +114,37 @@
             sequence="9"
         />
 
+        <!-- Marketing-->
+        <menuitem
+            id="menu_bd_marketing"
+            name="Marketing Campaigns"
+            parent="menu_bd_root"
+            action=""
+            sequence="11"
+        />
+
+        <menuitem
+            id="menu_bd_marketing_sources"
+            name="Lead Source Projects"
+            parent="menu_bd_marketing"
+            action=""
+            sequence="1"
+        />
+
+        <menuitem
+            id="menu_bd_marketing_campaign"
+            name="Marketing Campaign"
+            parent="menu_bd_marketing"
+            action=""
+            sequence="3"
+        />
+        <!-- Invoices -->
         <menuitem
             id="menu_bd_invoices"
             name="Invoices"
             parent="menu_bd_root"
             action="vcls-invoicing.action_am_invoices"
-            sequence="10"
+            sequence="12"
         />
 
         <menuitem
@@ -309,13 +334,13 @@
             sequence="6"
         />
 
-        <menuitem
+        <!--<menuitem
             id="menu_bd_conf_lead_source"
             name="Lead Sources"
             parent="menu_bd_conf_sales"
             action="utm.utm_source_action"
             sequence="7"
-        />
+        />-->
 
         <menuitem
             id="menu_bd_conf_opp_stage"

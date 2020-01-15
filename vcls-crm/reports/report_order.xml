@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="report_order_detailed_document">
+            <t t-call="web.external_layout">
+                <t t-set="o" t-value="o.with_context(lang=lang)"/>
+                <t t-set="data" t-value="o._get_detailed_order_report_data()"/>
+                <t t-set="services_data" t-value="data['services_data']"/>
+                <t t-set="services_subtotal" t-value="data['services_subtotal']"/>
+
+                <div class="page">
+                    <div class="row mt32 mb32" id="informations">
+                        <div class="col-auto mw-100 mb-2">
+                            <strong>Title: </strong>
+                            <p class="m-0" t-field="o.name"/>
+                        </div>
+                        <div class="col-auto mw-100 mb-2">
+                            <strong>Proposal for: </strong>
+                            <p class="m-0" t-field="o.partner_id"
+                                t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                        </div>
+                        <div t-if="o.user_id" class="col-auto mw-100 mb-2">
+                            <strong>Submitted by: </strong>
+                            <p class="m-0" t-field="o.user_id"/>
+                        </div>
+                        <div t-if="o.user_id" class="col-auto mw-100 mb-2">
+                            <strong>Date: </strong>
+                            <p class="m-0" t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
+                        </div>
+                    </div>
+
+                    <div style="page-break-inside: avoid;" t-if="services_data">
+                    <h5 class="mb8">Consulting Services</h5>
+                    <table class="table table-sm o_main_table" name="order_detailed_table">
+                    <t t-foreach="list(services_data.keys())" t-as="section_service_line">
+                        <t t-set="section_services_data" t-value="services_data[section_service_line]"/>
+                        <t t-if="section_services_data">
+                        <thead>
+                        <tr t-if="not section_service_line">
+                            <!-- an inter table spacing-->
+                            <th colspan="4"></th>
+                        </tr>
+                        <tr><th colspan="4">
+                            <t t-esc="section_service_line.name"/>
+                        </th></tr>
+                        <tr>
+                            <th>Description</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <t t-foreach="list(section_services_data.keys())" t-as="service_sale_line_id">
+                        <tr t-if="not service_sale_line_id.display_type">
+                            <t t-set="service_line_values" t-value="section_services_data[service_sale_line_id]"/>
+                            <t t-set="currency_id" t-value="service_sale_line_id.currency_id"/>
+                            <td><span t-field="service_sale_line_id.name"/></td>
+                            <td class="text-right">
+                                <span t-field="service_sale_line_id.product_uom_qty"/>
+                            </td>
+                            <td class="text-right"><span t-field="service_sale_line_id.price_unit"
+                            t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
+                            <td class="text-right"><span t-field="service_sale_line_id.price_subtotal"
+                            t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
+                        </tr>
+                        <tr t-if="service_sale_line_id.display_type == 'line_note'">
+                            <td colspan="4"><span t-field="service_sale_line_id.name"/></td>
+                        </tr>
+                        </t>
+
+                        <tr class="border-black o_subtotal" >
+                            <td colspan="3" class="text-right"><strong>Subtotal</strong></td>
+                            <td class="text-right">
+                                <t t-esc="sum([line.price_subtotal for line in section_services_data.keys()])"
+                                t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </t>
+                    </t>
+                    </table>
+
+                    <div name="fixed-price-total" class="row mb32 mt0">
+                        <div class="col-6 ml-auto mt0">
+                            <table class="table table-sm">
+                                <tr class="border-black o_subtotal" >
+                                    <td><strong>Consulting Services Subtotal</strong></td>
+                                    <td class="text-right">
+                                        <t t-esc="services_subtotal"
+                                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    </div>
+
+                    <t t-if="o.report_rate">
+                    <t t-set="rate_lines"
+                       t-value="o.order_line.filtered(
+                       lambda l: l.product_id.vcls_type == 'rate'
+                       ).sorted('price_unit', reverse=True)"/>
+                    <div style="page-break-inside: avoid;"
+                         class="mt32"
+                         t-if="rate_lines">
+                    <h5 class="mb8"><t t-esc="rate_lines[0].section_line_id.name or _('Hourly rate')" /></h5>
+                    <table class="table table-sm o_main_table" name="rate_table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Unit</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <t t-foreach="rate_lines" t-as="line">
+                        <tr>
+                            <td><span t-field="line.product_id.name"/></td>
+                            <td><span t-field="line.product_id.uom_id.name"/></td>
+                            <td><span t-field="line.price_unit"/></td>
+                        </tr>
+                    </t>
+                    </tbody>
+                    </table>
+                    </div>
+                    </t>
+
+                    <p class="mt64">
+                        Rates are applicable as of January 1st
+                        <t t-esc="context_timestamp(datetime.datetime.now()).year"/>,
+                        and subject to upwards revision on a yearly basis.
+                    </p>
+                </div>
+            </t>
+        </template>
+
+
+        <template id="report_order_aggregated_document" inherit_id="vcls-crm.report_order_detailed_document" primary="True">
+            <xpath expr="//t[@t-set='data']" position="attributes">
+                <attribute name="t-value">o._get_aggregated_order_report_data()</attribute>
+            </xpath>
+            <table name="order_detailed_table" position="replace">
+                <table class="table table-sm o_main_table" name="order_simple_table">
+                <t t-foreach="list(services_data.keys())" t-as="section_service_line">
+                    <t t-set="section_services_data" t-value="services_data[section_service_line]"/>
+                    <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <t t-set="currency_id" t-value="section_services_data['currency_id']"/>
+                        <td><t t-esc="section_service_line.name"/></td>
+                        <td class="text-right"><t t-esc="section_services_data['subtotal']"
+                        t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
+                    </tr>
+
+                    </tbody>
+                </t>
+                </table>
+
+            </table>
+        </template>
+
+
+        <template id="report_related_order" inherit_id="sale.report_saleorder">
+            <xpath expr="//t[@t-foreach='docs']" position="attributes">
+                <attribute name="t-if">False</attribute>
+            </xpath>
+            <xpath expr="//t[@t-foreach='docs']" position="after">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="lang" t-value="o.partner_id.lang"/>
+                    <t t-if="o.report_details == 'detailed'" t-call="vcls-crm.report_order_detailed_document" t-lang="lang"/>
+                    <t t-else="" t-call="vcls-crm.report_order_aggregated_document" t-lang="lang"/>
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo>
