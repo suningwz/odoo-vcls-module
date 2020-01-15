@@ -117,6 +117,7 @@
             <field name="priority">10</field>
             <field name="arch" type="xml">
                 <tree string="Invoices">
+                    <field name="type"/>
                     <field name="name" invisible="1"/>
                     <field name="number" string="Reference"/>
                     <field name="temp_name" string="Name"/>
@@ -127,7 +128,10 @@
                     <field name="timesheet_limit_date" string="Period End"/>
                     <field name="invoice_sending_date" string="Sending Date"/>
                     <field name="vcls_due_date" string="Due Date" widget="date"/>
-                    <field name="amount_total"/>
+                    <field name="amount_untaxed_invoice_signed"/>
+                    <field name="amount_tax_signed"/>
+                    <field name="amount_total_signed"/>
+                    <field name="residual_signed"/>
                     <field name="fiscal_position_id"/>
                     <field name="state"/>
                     <field name="activity_ids"/>

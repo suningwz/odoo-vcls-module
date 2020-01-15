@@ -126,7 +126,7 @@
                 (0, 0, {'view_mode': 'pivot', 'view_id': ref('sale.view_sale_order_pivot')}),
                 (0, 0, {'view_mode': 'graph', 'view_id': ref('sale.view_sale_order_graph')}),
             ]"/>
-        <field name="domain">[('state','in',['done','sale']),('parent_id','=',False)]</field>
+        <field name="domain">[('state','in',['done','sale']),('parent_id','=',False),('type','in',['out_invoice','out_refund'])]</field>
         <field name="context">{'search_default_ia_orders':1,'search_default_to_be_invoiced':1}</field>
     </record>
 
