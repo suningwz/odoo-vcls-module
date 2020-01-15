@@ -17,6 +17,11 @@ class ProjectTask(models.Model):
         string='Default Seniority'
     )
     date_start = fields.Datetime(default=False)
+    date_deadline = fields.Date(
+        store=True,
+        compute = '_compute_deadline',
+    )
+
     last_updated_timesheet_date = fields.Datetime(
         compute='get_last_updated_timesheet_date',
         compute_sudo=True,
@@ -44,6 +49,11 @@ class ProjectTask(models.Model):
     cf_budget = fields.Float(string="Carry Forward Budget",readonly=True)
     pc_hours = fields.Float(string="PC Review Hours",readonly=True)
     cf_hours = fields.Float(string="Carry Forward Hours",readonly=True)
+
+    @api.depends('date_start')
+    def _compute_deadline(self):
+        for task in self:
+            task.date_deadline = task.date_start.date()
 
     @api.depends(
         'sale_line_id.price_unit',
@@ -196,10 +206,11 @@ class ProjectTask(models.Model):
         action = self.env.ref('vcls-project.project_forecast_action').read()[0]
         action['domain'] = [('task_id', '=', self.id)]
         action['context'] = {
-            'group_by': ['project_id', 'deliverable_id', 'task_id'],
             'default_task_id': self.id,
             'default_project_id': self.project_id.id,
             'default_search_task_id': self.id,
+            'search_default_group_by_project_id': 1,
+            'search_default_group_by_task_id': 1,
         }
         return action
 
