@@ -126,9 +126,10 @@ class Project(models.Model):
     
     def _compute_dates(self):
         for project in self:
-            if project.task_ids:
-                project.date_start = min(project.task_ids.mapped('date_start'))
-                project.date = max(project.task_ids.mapped('date_end'))
+            tasks = project.task_ids.filtered(lambda t: t.date_start and t.date_end)
+            if tasks:
+                project.date_start = min(tasks.mapped('date_start'))
+                project.date = max(tasks.mapped('date_end'))
             elif project.sale_order_id:
                 project.date_start = project.sale_order_id.expected_start_date
                 project.date = project.sale_order_id.expected_end_date
