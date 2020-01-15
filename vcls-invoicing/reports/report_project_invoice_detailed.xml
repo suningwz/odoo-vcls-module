@@ -1,58 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <template id="external_layout_standard">
-            <div class="header" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
-                <t t-set="infos" t-value="o.parent_quotation_informations()"/>
-                <t t-foreach="infos" t-as="info">
-                    <t t-set="key" t-value="info[0]"/>
-                    <t t-set="value" t-value="info[1]"/>
-                    <t t-if="key == 'po_id'">
-                        <div class="col-12">
-                            <h6>
-                                Your reference:
-                                <t t-esc="value"/>
-                            </h6>
-                        </div>
-                    </t>
-                    <t t-elif="key == 'From'">
-                        <span style="margin-left:2%;">
-                            From:
-                            <t t-esc="value"/>
-                        </span>
 
-                    </t>
-                    <t t-elif="key == 'To'">
-                        <span>To: <t t-esc="value"/></span>
-                    </t>
-                    <t t-else="">
-                        <div class="col-12">
-                            <h6>
-                                <t t-esc="value"/>
-                            </h6>
-                        </div>
-                    </t>
-                </t>
-            </div>
-
-            <div class="article o_report_layout_standard" t-att-data-oe-model="o and o._name"
-                 t-att-data-oe-id="o and o.id"
-                 t-att-data-oe-lang="o and o.env.context.get('lang')">
-                <t t-raw="0"/>
-            </div>
-
-            <div class="footer o_standard_footer">
-                <div class="text-center" style="border-top: 1px solid black;">
-                    <div t-if="report_type == 'pdf'" class="text-muted">
-                        Page:
-                        <span class="page"/>
-                        /
-                        <span class="topage"/>
-                    </div>
-                </div>
-            </div>
-        </template>
-        
         <template id="report_invoice_document">
             <t t-call="web.external_layout">
                 <t t-set="o" t-value="o.with_context(lang=lang)"/>
@@ -61,42 +10,67 @@
                 <t t-set="rate_subtotal" t-value="data['rate_subtotal']"/>
                 <t t-set="fixed_price_data" t-value="data['fixed_price_data']"/>
                 <t t-set="expenses_and_communication_data" t-value="data['expenses_and_communication_data']"/>
+                <div t-set="address">
+                    <div>
+                        <strong>Invoice to:</strong>
+                        <address t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
+                    </div>
+                </div>
                 <div class="page">
-                    <h2>
-                        <span t-if="o.type == 'out_invoice' and o.state in ('open', 'in_payment', 'paid')">Invoice</span>
-                        <span t-if="o.type == 'out_invoice' and o.state == 'draft'">Draft Invoice</span>
-                        <span t-if="o.type == 'out_invoice' and o.state == 'cancel'">Cancelled Invoice</span>
-                        <span t-if="o.type == 'out_refund'">Credit Note</span>
-                        <span t-if="o.type == 'in_refund'">Vendor Credit Note</span>
-                        <span t-if="o.type == 'in_invoice'">Vendor Bill</span>
+                    <h2 class="mt0">
+                        <t t-set="invoice_label" t-value="'' if o.number and o.state in ('open', 'in_payment', 'paid')
+                         else 'Invoice' if o.type == 'out_invoice' and o.state in ('open', 'in_payment', 'paid')
+                         else 'Draft Invoice' if o.type == 'out_invoice' and o.state == 'draft'
+                         else 'Cancelled Invoice' if o.type == 'out_invoice' and o.state == 'cancel'
+                         else 'Cancelled Invoice' if o.type == 'out_refund'
+                         else 'Vendor Credit Note' if o.type == 'in_refund'
+                         else 'Vendor Bill' if o.type == 'in_invoice' else ''
+                        "/>
+                        <span t-if="invoice_label">
+                            <t t-esc="invoice_label"/>
+                        </span>
                         <span t-field="o.number"/>
                     </h2>
-
-                    <div id="informations" class="row mt32 mb32">
+                    <div t-if="o.origin" name="origin" class="mt-1">
+                        <span t-field="o.origin"/>
+                        <t t-if="o.period_start and o.timesheet_limit_date">
+                        <span> for the period from </span>
+                        <span t-field="o.period_start"/>
+                        <span> to </span>
+                        <span t-field="o.timesheet_limit_date"/>
+                        </t>
+                    </div>
+                    <div name="informations" class="w-100 pr64 mr64 mt32 mb32 mw-100">
+                    <div class="row">
                         <div class="col-auto mw-100 mb-2" t-if="o.name" name="description">
                             <strong>Description:</strong>
                             <p class="m-0" t-field="o.name"/>
                         </div>
-                        <div class="col-auto mw-100 mb-2" t-if="o.date_invoice" name="invoice_date">
+                        <div class="col-auto mw-100 mb-2 pr4 pl4" t-if="o.timesheet_limit_date" name="invoice_date">
                             <strong>Invoice Date:</strong>
-                            <p class="m-0" t-field="o.date_invoice"/>
+                            <p class="m-0" t-field="o.timesheet_limit_date"/>
                         </div>
-                        <div class="col-auto mw-100 mb-2" t-if="o.date_due and o.type == 'out_invoice' and o.state in ('open', 'in_payment', 'paid')" name="due_date">
+                        <div class="col-auto mw-100 mb-2 pr4 pl4" t-if="o.payment_term_id" name="invoice_date">
+                            <strong>Payment Term:</strong>
+                            <p class="m-0" t-esc="o.payment_term_id.name"/>
+                        </div>
+                        <div class="col-auto mw-100 mb-2 pr4 pl4" t-if="o.date_due and o.type == 'out_invoice' and o.state in ('open', 'in_payment', 'paid')" name="due_date">
                             <strong>Due Date:</strong>
                             <p class="m-0" t-field="o.date_due"/>
                         </div>
-                        <div class="col-auto mw-100 mb-2" t-if="o.origin" name="origin">
-                            <strong>Source:</strong>
-                            <p class="m-0" t-field="o.origin"/>
+                        <div class="col-auto mw-100 mb-2 pr4 pl4" t-if="o.po_id" name="client_ref">
+                            <strong>Client ref:</strong>
+                            <p class="m-0" t-field="o.po_id"/>
                         </div>
-                        <div class="col-auto mw-100 mb-2" t-if="o.partner_id.ref" name="customer_code">
+                        <div class="col-auto mw-100 mb-2 pr4 pl4" t-if="o.partner_id.ref" name="customer_code">
                             <strong>Customer Code:</strong>
                             <p class="m-0" t-field="o.partner_id.ref"/>
                         </div>
-                        <div name="reference" class="col-auto mw-100 mb-2" t-if="o.reference">
-                            <strong>Reference:</strong>
-                            <p class="m-0" t-field="o.reference"/>
-                        </div>
+                    </div>
+                    <div class="mt-1" t-if="o.lc_laius" name="lead_consultant_note">
+                        <span><strong>Lead Consultant Note: </strong></span>
+                        <span class="m-0" t-field="o.lc_laius"/>
+                    </div>
                     </div>
 
                     <div style="page-break-inside: avoid;" t-if="rate_data">
@@ -107,17 +81,17 @@
                         <t t-set="rates_dict" t-value="rate_data[task_id]"/>
                         <thead>
                         <tr t-if="not task_id_first">
-                            <!-- an inter table spacing-->
-                            <th colspan="4"></th>
+                            <!-- an inter table spacing (between a task and another one)-->
+                            <th colspan="4"/>
                         </tr>
                         <tr><th colspan="4">
                             <t t-esc="task_id.name"/>
                         </th></tr>
                         <tr>
                             <th>Description</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Total</th>
+                            <th class="text-right">Quantity</th>
+                            <th class="text-right">Price</th>
+                            <th class="text-right">Total</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -161,7 +135,7 @@
                     <thead>
                         <tr>
                             <th>Description</th>
-                            <th>Amount</th>
+                            <th class="text-right">Amount</th>
                         </tr>
                     </thead>
                     <t t-foreach="list(fixed_price_data.keys())" t-as="so_line_id">
@@ -196,14 +170,14 @@
                         <thead>
                             <tr>
                                 <th>Description</th>
-                                <th>Amount</th>
+                                <th class="text-right">Amount</th>
                             </tr>
                         </thead>
                         <tbody>
                         <t t-foreach="o.invoice_line_ids" t-as="invoice_line_id">
                             <tr t-if="invoice_line_id.product_id.vcls_type == 'subscription' or invoice_line_id.product_id.vcls_type == 'invoice'">
                             <td><t t-esc="invoice_line_id.name"/></td>
-                            <td><t t-esc="invoice_line_id.price_subtotal"
+                            <td class="text-right"><t t-esc="invoice_line_id.price_subtotal"
                             t-options='{"widget": "monetary", "display_currency": invoice_line_id.currency_id}'/></td>
                             </tr>
                         </t>
@@ -231,7 +205,7 @@
                         <thead>
                             <tr>
                                 <th>Description</th>
-                                <th>Amount</th>
+                                <th class="text-right">Amount</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -239,7 +213,7 @@
                             <t t-set="data" t-value="expenses_and_communication_data[category_id]"/>
                             <tr>
                             <td><t t-esc="category_id.name"/></td>
-                            <td><t t-esc="data['subtotal']"
+                            <td class="text-right"><t t-esc="data['subtotal']"
                             t-options='{"widget": "monetary", "display_currency": data["currency_id"]}'/></td>
                             </tr>
                         </t>
@@ -270,8 +244,17 @@
                                         <span t-field="o.amount_untaxed"/>
                                     </td>
                                 </tr>
+                                <t t-if="not o.amount_by_group and not o.amount_tax">
+                                    <tr>
+                                        <td><span>VAT 0.0%</span></td>
+                                        <td class="text-right o_price_total">
+                                            <span t-field="o.amount_tax"
+                                            t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </t>
                                 <t t-foreach="o.amount_by_group" t-as="amount_by_group">
-                                    <tr style="">
+                                    <tr>
                                         <t t-if="len(o.tax_line_ids) == 1 and o.amount_untaxed == amount_by_group[2]">
                                             <td><span t-esc="amount_by_group[0]"/></td>
                                             <td class="text-right o_price_total">
@@ -302,33 +285,63 @@
                     </div>
                     </div>
 
-                    <div t-if='o.payment_term_id' style="margin-top:5%;">
-                        <strong>
-                            <span>Payment Term:</span>
-                            <t t-esc="o.payment_term_id.name"/>
-                        </strong>
+                    <div name="payment_informations"
+                         class="mt32" style="page-break-inside: avoid;"
+                         t-if="o.bank_account_id">
+                        <h6 class="font-weight-bold">Please make payment to:</h6>
+                        <table class="table-borderless" style="border: none;">
+                            <tr t-if="o.bank_account_id.account_name">
+                                <td style="border: none;">Account name:</td>
+                                <td style="border: none;"><span class="ml16" t-field="o.bank_account_id.account_name"/></td>
+                            </tr>
+                            <tr t-if="o.bank_account_id.bank_id.name">
+                                <td style="border: none;">Bank:</td>
+                                <td style="border: none;"><span class="ml16" t-field="o.bank_account_id.bank_id.name"/></td>
+                            </tr>
+                            <tr t-if="o.bank_account_id.acc_number">
+                                <td style="border: none;">Account number:</td>
+                                <td style="border: none;"><span class="ml16" t-field="o.bank_account_id.acc_number"/></td>
+                            </tr>
+                            <tr t-if="o.bank_account_id.iban">
+                                <td style="border: none;">IBAN Code:</td>
+                                <td style="border: none;"><span class="ml16" t-field="o.bank_account_id.iban"/></td>
+                            </tr>
+                            <tr t-if="o.bank_account_id.swift">
+                                <td style="border: none;">Swift Code:</td>
+                                <td style="border: none;"><span class="ml16" t-field="o.bank_account_id.swift"/></td>
+                            </tr>
+                            <tr t-if="o.company_id.vat">
+                                <td style="border: none;">VAT Number:</td>
+                                <td style="border: none;"><span class="ml16" t-field="o.company_id.vat"/></td>
+                            </tr>
+                        </table>
+                        <div t-if="o.fiscal_position_id">
+                        <h6 class="font-weight-bold mt16">Notes</h6>
+                        <p t-field="o.fiscal_position_id.report_note"/>
+                        </div>
                     </div>
                 </div>
             </t>
         </template>
-        <template id="report_related_invoice">
-            <t t-call="web.html_container">
-                <t t-foreach="docs" t-as="o">
-                    <t t-set="lang" t-value="o.partner_id.lang"/>
-                    <t t-call="vcls-invoicing.report_invoice_document" t-lang="lang"/>
-                </t>
-            </t>
+
+        <template id="report_invoice_with_payments" inherit_id="account.report_invoice_with_payments">
+            <xpath expr="//t[@t-call='account.report_invoice_document_with_payments']" position="attributes">
+                <attribute name="t-call">vcls-invoicing.report_invoice_document</attribute>
+            </xpath>
         </template>
-        <report
-                id="project_invoice"
-                model="account.invoice"
-                string="Invoice Detailed"
-                report_type="qweb-pdf"
-                name="vcls-invoicing.report_related_invoice"
-                file="vcls-invoicing.report_related_invoice"
-        />
-        <function model="ir.actions.report" name="unlink_action" eval="[ref('account.account_invoices')]"/>
+        <template id="report_invoice" inherit_id="account.report_invoice">
+            <xpath expr="//t[@t-call='account.report_invoice_document']" position="attributes">
+                <attribute name="t-call">vcls-invoicing.report_invoice_document</attribute>
+            </xpath>
+        </template>
+
         <function model="ir.actions.report" name="unlink_action"
                   eval="[ref('account.account_invoices_without_payment')]"/>
+
+        <record model="ir.actions.report" id="account.account_invoices">
+            <field name="binding_model_id" ref="account.model_account_invoice" />
+        </record>
+
+
     </data>
 </odoo>
