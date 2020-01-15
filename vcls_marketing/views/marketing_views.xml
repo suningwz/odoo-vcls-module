@@ -107,11 +107,10 @@
         <field name="model">project.task</field>
         <field name="priority">5000</field>
         <field name="arch" type="xml">
-            <field name="name" position="after">
-                <field name="organizer_id"/>
-                <field name="business_line_id"/>
-                <field name="country_group_id"/>
-            </field>
+            <field name="name"/>
+            <field name="organizer_id"/>
+            <field name="business_line_id"/>
+            <field name="country_group_id"/>
         </field>
     </record>
 
