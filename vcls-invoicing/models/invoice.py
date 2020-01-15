@@ -158,21 +158,21 @@ class Invoice(models.Model):
                 if not po_id and so.po_id:
                     po_id = so.po_id
             else:
-                po_id = vals.get('po_id',self.po_id)
+                po_id = vals.get('po_id',self.po_id.id)
 
             #Invoice Template
             if not vals.get('invoice_template',self.invoice_template):
                 if not invoice_template and so.invoice_template:
                     invoice_template = so.invoice_template
             else:
-                invoice_template = vals.get('invoice_template',self.invoice_template)
+                invoice_template = vals.get('invoice_template',self.invoice_template.id)
 
             #Activity Report template
             if not vals.get('activity_report_template',self.activity_report_template):
                 if not activity_report_template and so.activity_report_template:
                     activity_report_template = so.activity_report_template
             else:
-                activity_report_template = vals.get('activity_report_template',self.activity_report_template)
+                activity_report_template = vals.get('activity_report_template',self.activity_report_template.id)
             
             #Communication  Rate
             if not vals.get('communication_rate',self.communication_rate):
@@ -189,11 +189,11 @@ class Invoice(models.Model):
                         })
         
         if po_id:
-            vals.update({'po_id': po_id.id})
+            vals.update({'po_id': po_id})
         if invoice_template:
-            vals.update({'invoice_template': invoice_template.id})
+            vals.update({'invoice_template': invoice_template})
         if activity_report_template:
-            vals.update({'activity_report_template': activity_report_template.id})
+            vals.update({'activity_report_template': activity_report_template})
 
         return vals
 
