@@ -21,6 +21,6 @@
     ],
     'data': [
         #'security/ir.model.access.csv',
-        #'views/marketing_views.xml',
+        'views/marketing_views.xml',
     ],
 }

@@ -4,7 +4,8 @@
 
     <record id="project_marketing_tree" model="ir.ui.view">
         <field name="name">project.marketing.tree</field>
-        <field name="model">project.marketing</field>
+        <field name="model">project.project</field>
+        <field name="priority">5000</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
@@ -14,7 +15,8 @@
 
     <record id="task_marketing_tree" model="ir.ui.view">
         <field name="name">task.marketing.tree</field>
-        <field name="model">task.marketing</field>
+        <field name="model">project.task</field>
+        <field name="priority">5000</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
@@ -25,7 +27,8 @@
 
     <record id="project_marketing_form" model="ir.ui.view">
         <field name="name">project.marketing.form</field>
-        <field name="model">project.marketing</field>
+        <field name="model">project.project</field>
+        <field name="priority">5000</field>
         <field name="arch" type="xml">
             <form string="Project" create="false">
                 <sheet string="Project">
@@ -101,7 +104,8 @@
 
     <record id="task_marketing_form" model="ir.ui.view">
         <field name="name">task.marketing.form</field>
-        <field name="model">task.marketing</field>
+        <field name="model">project.task</field>
+        <field name="priority">5000</field>
         <field name="arch" type="xml">
             <field name="name" position="after">
                 <field name="organizer_id"/>
@@ -113,7 +117,7 @@
 
     <record id="action_marketing_project" model="ir.actions.act_window">
         <field name="name">Lead Source</field>
-        <field name="res_model">project.marketing</field>
+        <field name="res_model">project.project</field>
         <field name="view_mode">tree,form</field>
         <field name="view_ids" eval="[(5, 0, 0),
         (0, 0, {'view_mode': 'tree', 'view_id': ref('project_marketing_tree')}),
@@ -122,7 +126,7 @@
 
     <record id="action_marketing_task" model="ir.actions.act_window">
         <field name="name">Marketing Campaign</field>
-        <field name="res_model">task.marketing</field>
+        <field name="res_model">project.task</field>
         <field name="view_mode">tree,form</field>
         <field name="view_ids" eval="[(5, 0, 0),
         (0, 0, {'view_mode': 'tree', 'view_id': ref('task_marketing_tree')}),
