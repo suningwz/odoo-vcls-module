@@ -33,5 +33,7 @@ class Project(models.Model):
                 project.resource_calendar_id = wt
             else:
                 project.resource_calendar_id = False
+        
+        return project
 
 
