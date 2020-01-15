@@ -26,7 +26,6 @@
     <record id="project_marketing_form" model="ir.ui.view">
         <field name="name">project.marketing.form</field>
         <field name="model">project.marketing</field>
-        <field name="mode">primary</field>
         <field name="arch" type="xml">
             <form string="Project" create="false">
                 <sheet string="Project">
