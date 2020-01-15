@@ -136,11 +136,11 @@
             <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('task_marketing_tree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('task_marketing_form')})]"/>
-        </record>
-        <field name="domain">[('task_type','=', 'marketing')]</field>
+            <field name="domain">[('task_type','=', 'marketing')]</field>
             <field name="context">{
                 'default_task_type':'marketing',
             }</field>
+        </record>
 
     </data>
 </odoo>
