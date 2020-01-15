@@ -50,10 +50,11 @@ class ProjectTask(models.Model):
     pc_hours = fields.Float(string="PC Review Hours",readonly=True)
     cf_hours = fields.Float(string="Carry Forward Hours",readonly=True)
 
-    @api.depends('date_start')
+    @api.depends('date_end')
     def _compute_deadline(self):
         for task in self:
-            task.date_deadline = task.date_start.date()
+            if task.date_end:
+                task.date_deadline = task.date_end.date()
 
     @api.depends(
         'sale_line_id.price_unit',
