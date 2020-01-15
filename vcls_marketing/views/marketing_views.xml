@@ -2,6 +2,7 @@
 <odoo>
 <data>
 
+
     <record id="project_marketing_tree" model="ir.ui.view">
         <field name="name">project.marketing.tree</field>
         <field name="model">project.marketing</field>
@@ -110,6 +111,7 @@
             </field>
         </field>
     </record>
+
 
     <record id="action_marketing_project" model="ir.actions.act_window">
         <field name="name">Lead Source</field>

@@ -14,6 +14,7 @@ class ProjectMarketing(models.Model):
         ('other', 'other'),
     ], string='Event Type')
 
+
     project_type = fields.Selection(
         selection_add = [('marketing', 'Marketing')],
         string = 'Project Type',

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 {
+
     'name': "VCLS Marketing",
 
     'summary': """
@@ -9,7 +10,9 @@
     'author': "VCLS",
     'website': "http://www.voisinconsulting.com",
     'category': 'Uncategorized',
+
     'version': '0.0.5',
+
     'depends': [
         'project',
         'contacts',
