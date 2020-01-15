@@ -60,7 +60,7 @@
                     <field name="date_deadline"/>
                 </xpath>
 
-                <field name="tags_ids" position="after">
+                <field name="tag_ids" position="after">
                     <field name="date_start" widget="date"/>
                     <field name="date_end" widget="date"/>
                 </field>
