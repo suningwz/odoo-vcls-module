@@ -9,7 +9,7 @@
     'author': "VCLS",
     'website': "http://www.voisinconsulting.com",
     'category': 'Uncategorized',
-    'version': '0.0.7',
+    'version': '0.0.8',
     'depends': [
         'project',
         'contacts',
