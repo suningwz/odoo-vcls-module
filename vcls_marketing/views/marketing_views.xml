@@ -64,16 +64,17 @@
                             <group>
                                 
                                 <field name="privacy_visibility" widget="radio"/>
-                                <field name="project_type"/>
+                                <field name="project_type" readonly="1"/>
                                 <field name="allow_timesheets"/>
+                                <field name="allow_expense"/>
                             </group>
                             <group name="misc">
                                 <group string="Configuration" groups="base.group_no_one" name="configuration">
                                     <field name="sequence" groups="base.group_no_one"/>
-                                    <field name="company_id" groups="base.group_multi_company"/>
+                                    <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                                 </group>
                                 <group string="Time Scheduling" groups="base.group_no_one">
-                                    <field name="resource_calendar_id" groups="base.group_no_one"/>
+                                    <field name="resource_calendar_id" groups="base.group_no_one" readonly="1"/>
                                 </group>
                             </group>
                         </page>
