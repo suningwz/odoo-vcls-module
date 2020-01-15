@@ -86,8 +86,8 @@
                                 <field name="lead_backup"/>
                             </group>
                             <group string="Operations">
-                                <field name="date_start"/>
-                                <field name="date"/>
+                                <field name="date_start" string="Est. Start Date"/>
+                                <field name="date" string="Est. End Date"/>
                             </group>
                         </group>
                         <group>
