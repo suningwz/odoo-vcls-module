@@ -9,10 +9,11 @@
     'author': "VCLS",
     'website': "http://www.voisinconsulting.com",
     'category': 'Uncategorized',
-    'version': '0.0.6',
+    'version': '0.0.7',
     'depends': [
         'project',
         'contacts',
+        'vcls-contact',
         'vcls-project',
         'vcls-crm',
         'vcls_security',
