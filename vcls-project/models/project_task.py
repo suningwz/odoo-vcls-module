@@ -69,9 +69,6 @@ class ProjectTask(models.Model):
                     task.task_type = 'dev.task'
                 else:
                     task.task_type = 'dev.vers'
-
-            if task.project_id.project_type == 'marketing':
-                task.task_type = 'marketing'
     
     @api.depends('project_id.name')
     def _get_info_string(self):
