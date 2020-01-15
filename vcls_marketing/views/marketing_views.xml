@@ -26,12 +26,74 @@
     <record id="project_marketing_form" model="ir.ui.view">
         <field name="name">project.marketing.form</field>
         <field name="model">project.marketing</field>
-        <field name="inherit_id" ref="project.edit_project"/>
-        <field name="mode">primary</field>
         <field name="arch" type="xml">
-            <field name="name" position="after">
-                <field name="event_type"/>
-            </field>
+            <form string="Project" create="false">
+                <sheet string="Project">
+                    <div class="oe_button_box" name="button_box" groups="base.group_user">
+                        <button class="oe_stat_button" name="tasks_tree_view" type="object" icon="fa-tasks">
+                            <field string="Tasks" name="task_count" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" string="Timesheets" name="timesheets_tree_view"
+                                type="object" icon="fa-clock-o"/>
+                        <button name="toggle_active" type="object" confirm="(Un)archiving a project automatically (un)archives its tasks. Do you want to proceed?"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Project Name"/>
+                        </h1>
+                    </div>
+                    <group invisible="1" string="Hidden Fields">
+                        <field name="active"/>
+                    </group>
+                    <group>
+                        <field name="user_id" string="Project Manager" attrs="{'readonly':[('active','=',False)]}"/>
+                        <field name="scope_of_work" string="Description"/>
+                    </group>
+                    
+
+                    <notebook>
+                    <page name="settings" string="Settings" groups="vcls-hr.vcls_group_superuser_lvl2">
+                        <group>
+                            
+                            <field name="privacy_visibility" widget="radio"/>
+                            <field name="project_type"/>
+                            <field name="allow_timesheets"/>
+                        </group>
+                        <group name="misc">
+                            <group string="Configuration" groups="base.group_no_one" name="configuration">
+                                <field name="sequence" groups="base.group_no_one"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                            <group string="Time Scheduling" groups="base.group_no_one">
+                                <field name="resource_calendar_id" groups="base.group_no_one"/>
+                            </group>
+                        </group>
+                    </page>
+                    <page name="emails" string="Emails" attrs="{'invisible': [('alias_domain', '=', False)]}" groups="vcls-hr.vcls_group_superuser_lvl2">
+                        <group name="group_alias">
+                            <label for="alias_name" string="Email Alias"/>
+                            <div name="alias_def">
+                                <field name="alias_id" class="oe_read_only oe_inline" string="Email Alias" required="0"/>
+                                <div class="oe_edit_only oe_inline" name="edit_alias" style="display: inline;">
+                                    <field name="alias_name" class="oe_inline"/>@<field name="alias_domain" class="oe_inline" readonly="1"/>
+                                </div>
+                            </div>
+                            <field name="alias_contact" class="oe_inline oe_edit_only" string="Accept Emails From"/>
+                        </group>
+                    </page>
+                    </notebook>
+
+
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" help="Follow this project to automatically track the events associated to tasks and issues of this project." groups="base.group_user"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                </div>
+            </form>
         </field>
     </record>
 

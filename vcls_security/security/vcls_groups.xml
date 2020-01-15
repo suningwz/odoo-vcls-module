@@ -45,7 +45,7 @@
     </record>
 
     <record id="vcls_account_manager" model="res.groups">
-        <field name="name">Account manager</field>
+        <field name="name">Account Manager</field>
         <field name="category_id" ref="module_category_vcls"/>
         <field name="implied_ids"
             eval="[

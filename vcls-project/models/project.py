@@ -113,6 +113,31 @@ class Project(models.Model):
 
     subscription_count = fields.Integer(compute='_compute_subscription_count')
 
+    date_start = fields.Date(
+        string='Start Date',
+        compute='_compute_dates',)
+
+    date = fields.Date(
+        string='Expiration Date',
+        compute='_compute_dates',
+        index=True,
+        track_visibility='onchange',
+        ) 
+    
+    def _compute_dates(self):
+        for project in self:
+            tasks = project.task_ids.filtered(lambda t: t.date_start and t.date_end)
+            if tasks:
+                project.date_start = min(tasks.mapped('date_start')).date()
+                project.date = max(tasks.mapped('date_end')).date()
+            elif project.sale_order_id:
+                project.date_start = project.sale_order_id.expected_start_date
+                project.date = project.sale_order_id.expected_end_date
+            else:
+                project.date_start = False
+                project.date = False
+
+
     def _compute_subscription_count(self):
         """Compute the number of distinct subscriptions linked to the orders of the project(s)."""
         for project in self:

@@ -543,6 +543,7 @@ class Leads(models.Model):
         data['client_product_ids'] = [(6, 0, self.client_product_ids.ids)]
         data['linkedin'] = self.linkedIn_url
         data['category_id'] = [(4, self.env.ref('vcls-contact.category_account').id, 0)]
+        data['contact_us_message'] = self.contact_us_message
         if is_company:
             data['altname'] = self.altname
         else:
