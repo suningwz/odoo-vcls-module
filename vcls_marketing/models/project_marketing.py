@@ -28,7 +28,7 @@ class Project(models.Model):
 
         if project.project_type == 'marketing':
             project.company_id = self.env.ref('base.main_company')
-            wt = self.env['resource.calendar'].search([('company_id','=',project.company_id.id),('effective_hours','=',40.0)],limit=1)
+            wt = self.env['resource.calendar'].search([('company_id','=',self.env.ref('base.main_company').id),('effective_hours','=',40.0)],limit=1)
             if wt:
                 project.resource_calendar_id = wt
             else:
