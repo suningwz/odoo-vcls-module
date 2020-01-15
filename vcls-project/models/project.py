@@ -128,8 +128,8 @@ class Project(models.Model):
         for project in self:
             tasks = project.task_ids.filtered(lambda t: t.date_start and t.date_end)
             if tasks:
-                project.date_start = min(tasks.mapped('date_start'))
-                project.date = max(tasks.mapped('date_end'))
+                project.date_start = min(tasks.mapped('date_start')).date()
+                project.date = max(tasks.mapped('date_end')).date()
             elif project.sale_order_id:
                 project.date_start = project.sale_order_id.expected_start_date
                 project.date = project.sale_order_id.expected_end_date
