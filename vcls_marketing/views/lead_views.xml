@@ -34,9 +34,7 @@
                     <field name="gdpr_status"/>
                 </field>
             </field>
-        </record>
-
-        
+        </record>  
     
     </data>
 </odoo>
