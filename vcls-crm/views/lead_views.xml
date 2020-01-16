@@ -148,8 +148,8 @@
                                     <field name = "unsubscribed_campaign_id" />
                                     <field name = "opted_out_date" attrs="{'invisible': [('unsubscribed_campaign_id', '=', False)]}" />
                                     <field name = "gdpr_status" />
-                                    <field name="medium_id"/>
-                                    <field name="source_id"/>-->
+                                    <field name="medium_id"/>-->
+                                    <field name="source_id" invisible="1"/>
                                 </group>
                                 <group string="Misc" name="Misc" groups="vcls-hr.group_category_vcls_support">
                                     <field name="day_open" groups="base.group_no_one"/>
