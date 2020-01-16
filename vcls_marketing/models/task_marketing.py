@@ -47,3 +47,8 @@ class Task(models.Model):
         string='Country group',
     )
 
+    attendee_ids = fields.Many2many(
+        comodel_name = 'res.partner',
+        string="Attendees",
+    )
+

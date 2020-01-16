@@ -239,6 +239,19 @@
                             </group>
                         </group>
                     </page>
+
+                        <page string="Attendees">
+                            
+                            <field name="attendee_ids" mode="tree" >
+                                <tree default_order="parent_id">
+                                    <field name="name"/>
+                                    <field name="email" widget="email"/>
+                                    <field name="parent_id"/>
+                                    <field name="function"/>
+                                </tree>
+                            </field>
+                        </page>
+
                         <page name="extra_info" string="Extra Info">
                             <group>
                                 <group>
