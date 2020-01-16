@@ -106,7 +106,7 @@ class Leads(models.Model):
     manual_probability = fields.Boolean()
 
     # Related fields in order to avoid mismatch & errors
-    opted_in = fields.Boolean(
+    """opted_in = fields.Boolean(
         related = 'partner_id.opted_in',
         string = 'Opted In'
     )
@@ -114,7 +114,7 @@ class Leads(models.Model):
     opted_out = fields.Boolean(
         related = 'partner_id.opted_out',
         string = 'Opted Out'
-    )
+    )"""
 
     
  
