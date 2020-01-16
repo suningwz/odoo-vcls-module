@@ -116,10 +116,7 @@ class Leads(models.Model):
         string = 'Opted Out'
     )
 
-    opted_in_date = fields.Datetime(
-        string = 'Opted In Date',
-        default = lambda self: self._get_default_opted_in_date(),
-    )
+    
  
     lead_stage_id = fields.Many2one(
         'crm.lead.stage',
@@ -296,11 +293,21 @@ class Leads(models.Model):
 
     linkedIn_url = fields.Char(string = 'LinkedIn profile')
 
-    unsubscribed_campaign_id = fields.Many2one('utm.campaign', string = 'Opted Out Campaign')
-
+    
+    """opted_in_date = fields.Datetime(
+        string = 'Opted In Date',
+        default = lambda self: self.create_date,
+    )
     opted_out_date = fields.Datetime(
         string = 'Opted Out Date', 
         related = 'unsubscribed_campaign_id.create_date'
+
+
+
+    
+    unsubscribed_campaign_id = fields.Many2one('utm.campaign', string = 'Opted Out Campaign')
+
+    
     )
 
     gdpr_status = fields.Selection(
@@ -311,7 +318,7 @@ class Leads(models.Model):
         ],
         string = 'GDPR Status',
         compute = '_compute_gdpr'
-    )
+    )"""
 
     contact_us_message = fields.Char()
 
@@ -430,7 +437,7 @@ class Leads(models.Model):
                 lead.age = "{} days old".format(delta.days)
     
 
-    @api.depends('campaign_id', 'unsubscribed_campaign_id')
+    """@api.depends('campaign_id', 'unsubscribed_campaign_id')
     def _compute_gdpr(self):
         for record in self:
             if record.campaign_id and not record.unsubscribed_campaign_id:
@@ -438,7 +445,7 @@ class Leads(models.Model):
             elif record.unsubscribed_campaign_id:
                 record.gdpr_status = 'out'
             else:
-                record.gdpr_status = 'undefined'
+                record.gdpr_status = 'undefined'"""
 
     #if we change the partner_id, then we clean the ref to trigger a new creation at save
     @api.onchange('partner_id')
@@ -452,10 +459,6 @@ class Leads(models.Model):
         for lead in self:
             if lead.type == 'opportunity' and lead.internal_ref:
                 lead.name = lead.build_opp_name(lead.internal_ref,lead.name)
-    
-    def _get_default_opted_in_date(self):
-        for record in self:
-            return record.create_date
 
     
     @api.onchange('partner_id')
