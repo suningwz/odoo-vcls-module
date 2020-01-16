@@ -489,3 +489,21 @@ class AnalyticLine(models.Model):
             project = self.env['project.project'].browse(vals['project_id'])
             vals['main_project_id'] = project.id or project.parent_id.id
         return vals
+
+    @api.multi
+    def unlink(self):
+        for time_sheet in self:
+            if time_sheet.timesheet_invoice_id:
+                raise ValidationError(_('You cannot delete a timesheet linked to an invoice'))
+        return super(AnalyticLine, self).unlink()
+
+    @api.multi
+    def _check_can_write(self, values):
+        super(AnalyticLine, self)._check_can_write(values)
+        if self.filtered(lambda t: t.timesheet_invoice_id):
+            if any([field_name in values for field_name in ['unit_amount_rounded']]):
+                raise UserError(
+                    _('You can not modify already invoiced '
+                      'timesheets (linked to a Sales order '
+                      'items invoiced on Time and material).')
+                )
