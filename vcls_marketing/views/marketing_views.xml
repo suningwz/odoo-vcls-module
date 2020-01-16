@@ -2,6 +2,7 @@
 <odoo>
     <data>
 
+
         <record id="project_marketing_tree" model="ir.ui.view">
             <field name="name">project.marketing.tree</field>
             <field name="model">project.project</field>
@@ -303,6 +304,7 @@
             </field>
         </record>
 
+
         <record id="action_marketing_project" model="ir.actions.act_window">
             <field name="name">Lead Source</field>
             <field name="res_model">project.project</field>
@@ -315,6 +317,7 @@
                 'default_project_type':'marketing',
             }</field>
         </record>
+
 
         <record id="action_marketing_task" model="ir.actions.act_window">
             <field name="name">Marketing Campaign</field>
