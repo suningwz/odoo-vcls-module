@@ -241,8 +241,7 @@
                     </page>
 
                         <page string="Attendees">
-                            
-                            <field name="attendee_ids" mode="tree" >
+                            <field name="attendee_ids" mode="tree" domain="[('is_company','=',False)]">
                                 <tree default_order="parent_id">
                                     <field name="name"/>
                                     <field name="email" widget="email"/>
@@ -250,6 +249,19 @@
                                     <field name="function"/>
                                 </tree>
                             </field>
+                        </page>
+
+                        <page string="KPIs">
+                            <group>
+                                <group>
+                                    <field name="lead_count"/>
+                                    <field name="opp_count"/>
+                                    <field name="convertion_ratio" widget="percentage"/>
+                                </group>
+                                <group>
+                                    <field name="contact_count"/>
+                                </group>
+                            </group>
                         </page>
 
                         <page name="extra_info" string="Extra Info">
