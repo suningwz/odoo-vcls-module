@@ -136,8 +136,10 @@
                     </div>
                     <group>
                         <group>
-                            <field name="project_id" domain="[('active', '=', True)]"/>
+                            <field name="project_id" domain="[('active', '=', True),('project_type','=','marketing')]"/>
                             <field name="user_id" class="o_task_user_field" options="{&quot;no_open&quot;: True}"/>
+                            <field name="organizer_id"/>
+                            <field name="country_group_id"/>
                             <field name="legend_blocked" invisible="1"/>
                             <field name="legend_normal" invisible="1"/>
                             <field name="legend_done" invisible="1"/>
@@ -148,6 +150,7 @@
                             <field name="date_start" widget="date"/>
                             <field name="date_end" widget="date"/>
                             <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
+                            <field name="business_line_id"/>
                         </group>
                     </group>
                     <notebook>
@@ -243,7 +246,7 @@
                                     <field name="partner_id" invisible="1" attrs="{'readonly': [('parent_id', '!=', False)]}"/>
                                     <field name="email_from" attrs="{'readonly': [('parent_id', '!=', False)]}"/>
                                     <field name="email_cc" groups="base.group_no_one"/>
-                                    <field name="parent_id" attrs="{'invisible' : [('subtask_count', '&gt;', 0)]}" groups="project.group_subtask_project"/>
+                                    <field name="parent_id" domain="[('project_id', '=', project_id)]" attrs="{'invisible' : [('subtask_count', '&gt;', 0)]}" groups="project.group_subtask_project"/>
                                     <field name="child_ids" invisible="1"/>
                                     <field name="subtask_project_id" invisible="1"/>
                                     <field name="company_id" invisible="1" groups="base.group_multi_company" options="{'no_create': True}"/>
