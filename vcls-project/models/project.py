@@ -438,7 +438,7 @@ class Project(models.Model):
         if not self.env.user.has_group('vcls_security.group_project_controller'):
             raise ValidationError(_("You need to have the project controller access right."))
         project_ids = self.browse(self._context.get('active_ids'))
-        all_projects = project_ids
+        all_projects = project_ids.filtered(lambda p: p.project_type=='client')
         for project in project_ids:
             all_projects += project.child_id
         timesheet_ids = self.env['account.analytic.line'].search([('main_project_id', 'in', all_projects.ids),

@@ -40,6 +40,9 @@
         'views/sale_views.xml',
         'views/invoice_views.xml',
         'views/contact_views.xml',
+        'views/res_company.xml',
+        'views/res_bank.xml',
+        'views/fiscal_position.xml',
         'wizard/sale_make_invoice_advance_views.xml',
         # reports
         'reports/report_project_invoice_detailed.xml',

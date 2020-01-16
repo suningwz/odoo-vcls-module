@@ -56,7 +56,8 @@
                                 <field name="company_currency_id" invisible="1"/>
                             </div>
                             <field name='po_id'/>
-                            <field name='ready_for_approval' invisible="1"/> 
+                            <field name='bank_account_id'/>
+                            <field name='ready_for_approval' invisible="1"/>
                         </group>
                     </group>
 

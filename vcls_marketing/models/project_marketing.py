@@ -3,11 +3,10 @@
 from odoo import models, fields, api, http, _
 
 
-class ProjectMarketing(models.Model):
-    _name = 'project.marketing'
-    _inherit = 'project.project'
-    _description = 'Project marketing'
+class Project(models.Model):
 
+    _inherit = 'project.project'
+    
     event_type = fields.Selection([
         ('conference', 'conference'),
         ('webinar', 'webinar'),
@@ -18,10 +17,24 @@ class ProjectMarketing(models.Model):
     project_type = fields.Selection(
         selection_add = [('marketing', 'Marketing')],
         string = 'Project Type',
-        default = 'marketing',
-        readonly = True,
     )
 
-    company_id = fields.Many2one(default=lambda self: self.env.ref('base.main_company'))
+    ###############
+    # ORM METHODS #
+    ###############
+    @api.model
+    def create(self, vals):
+
+        project = super(Project, self).create(vals)
+
+        if project.project_type == 'marketing':
+            project.company_id = self.env.ref('base.main_company')
+            wt = self.env['resource.calendar'].search([('company_id','=',self.env.ref('base.main_company').id),('effective_hours','=',40.0)],limit=1)
+            if wt:
+                project.resource_calendar_id = wt
+            else:
+                project.resource_calendar_id = False
+        
+        return project
 
 
