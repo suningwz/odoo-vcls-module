@@ -508,6 +508,71 @@ class Employee(models.Model):
         self.search([('child_ids', '!=', False)]).mapped('user_id').write({'groups_id': [(4, group.id)]}) #if a child is found, then we add the LM group to the related user
         self.search([('child_ids', '=', False)]).mapped('user_id').write({'groups_id': [(3, group.id)]}) #if no child found, then we suppress the LM group from the user
     
+    @api.model
+    def _start_yearly_appraisal(self):
+        """
+            Automated Creation of appraisal
+        """
+        if not self.env.user.has_group('vcls-hr.vcls_group_HR_global'):
+            raise ValidationError(_("Global HR only has the right to perform this action."))
+
+        #We grab the surveys
+        ea_name = 'Employee Appraisal (by employee)'
+        ma_name = 'Employee Appraisal (by manager)'
+        fa_name = 'Final Appraisal'
+        e_appraisal = self.env['survey.survey'].search([('title','=',ea_name)],limit=1)
+        if not e_appraisal:
+            raise ValidationError(_("Survey not found {}").format(ea_name))
+        m_appraisal = self.env['survey.survey'].search([('title','=',ma_name)],limit=1)
+        if not e_appraisal:
+            raise ValidationError(_("Survey not found {}").format(ma_name))
+        f_appraisal = self.env['survey.survey'].search([('title','=',fa_name)],limit=1)
+        if not e_appraisal:
+            raise ValidationError(_("Survey not found {}").format(fa_name))
+
+        #we compute the deadline to the end of the nexr month
+        deadline = fields.Date.today().replace(day=1) + relativedelta(months=2,days=-1)
+
+        employees = self.browse(self._context.get('active_ids'))
+        for employee in employees:
+            lm = employee.parent_id
+            vals = {
+                'employee_id': employee.id,
+                'date_close': deadline,
+                'manager_appraisal':True,
+                'manager_ids':[lm.id],
+                'manager_survey_id':m_appraisal.id,
+                'employee_appraisal':True,
+                'employee_survey_id':e_appraisal.id,
+                'collaborators_appraisal':True,
+                'collaborators_ids':[lm.id],
+                'collaborators_survey_id':f_appraisal.id,                
+            }
+            appraisal = self.env['hr.appraisal'].create(vals)
+            if appraisal:
+                appraisal.button_send_appraisal()
+
+
+        """
+        
+        project_ids = self.browse(self._context.get('active_ids'))
+        all_projects = project_ids.filtered(lambda p: p.project_type=='client')
+        for project in project_ids:
+            all_projects += project.child_id
+        timesheet_ids = self.env['account.analytic.line'].search([('main_project_id', 'in', all_projects.ids),
+                                                                 ('stage_id', '=', 'pc_review')])
+        if timesheet_ids:
+            timesheet_ids.write({'stage_id': 'invoiceable'})
+        
+        #we update the timesheet limit date to the end of the previous month
+        today = fields.Date.today()
+        ts_limit_date =  today.replace(day=1) - relativedelta(days=1)
+        if all_projects:
+            all_projects.mapped('sale_order_id').write({'timesheet_limit_date':ts_limit_date})
+
+
+        #we trigger the computation of KPIs
+        self.env['project.task']._cron_compute_kpi()"""
     
     @api.model #to be called from CRON job
     def _check_employee_status(self):
