@@ -540,12 +540,12 @@ class Employee(models.Model):
                 'employee_id': employee.id,
                 'date_close': deadline,
                 'manager_appraisal':True,
-                'manager_ids':[lm.id],
+                'manager_ids':lm.id,
                 'manager_survey_id':m_appraisal.id,
                 'employee_appraisal':True,
                 'employee_survey_id':e_appraisal.id,
                 'collaborators_appraisal':True,
-                'collaborators_ids':[lm.id],
+                'collaborators_ids':lm.id,
                 'collaborators_survey_id':f_appraisal.id,                
             }
             appraisal = self.env['hr.appraisal'].create(vals)
