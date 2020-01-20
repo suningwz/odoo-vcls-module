@@ -13,8 +13,9 @@
                 </xpath>
 
                 <xpath expr="//field[@name='user_id']" position="after">
-                    <filter name="lead_stage_id" string="Lead Stage"/>
+                    <field name="lead_stage_id" string="Lead Stage"/>
                 </xpath>
+
             </field>
         </record>
 
