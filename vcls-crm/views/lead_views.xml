@@ -2,6 +2,39 @@
 <odoo>
     <data>
 
+        <record model="ir.ui.view" id="crm_case_tree_view_leads">
+            <field name="name">crm.lead.tree.lead</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_tree_view_leads" />
+            <field name="arch" type="xml">
+                
+                <xpath expr="//field[@name='contact_name']" position="replace">
+                    <field name = 'partner_name' />
+                </xpath>
+
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <filter name="lead_stage_id" string="Lead Stage"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_crm_lead_kanban">
+            <field name="name">crm.lead.kanban</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.view_crm_lead_kanban" />
+            <field name="arch" type="xml">
+                
+                <xpath expr="//field[@name='contact_name']" position="after">
+                    <field name = 'partner_name' />
+                    <filter name='lead_stage_id' string="Lead Stage"/>
+                </xpath>
+
+                <xpath expr="/kanban/templates/field[@name='contact_name']" position="replace">
+                    <filter name="partner_name"/>
+                </xpath>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="view_crm_case_leads_filter_inherit">
             <field name="name">crm.lead.search.inherit</field>
             <field name="model">crm.lead</field>
@@ -12,9 +45,6 @@
                     <field name = 'lead_stage_id' />
                 </xpath>
 
-                <xpath expr="//filter[@name='salesperson']" position="after">
-                    <filter name="lead_stage_id" string="Lead Stage" context="{'group_by':'lead_stage_id'}"/>
-                </xpath>
             </field>
         </record>
 
