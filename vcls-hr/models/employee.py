@@ -519,7 +519,7 @@ class Employee(models.Model):
         #We grab the surveys
         ea_name = 'Employee Appraisal (by employee)'
         ma_name = 'Employee Appraisal (by manager)'
-        fa_name = 'Final Appraisal'
+        fa_name = 'Annual Contribution Dialogue'
         e_appraisal = self.env['survey.survey'].search([('title','=',ea_name)],limit=1)
         if not e_appraisal:
             raise ValidationError(_("Survey not found {}").format(ea_name))
