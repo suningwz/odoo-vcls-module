@@ -27,11 +27,11 @@
                 
                 <xpath expr="//field[@name='contact_name']" position="after">
                     <field name = 'partner_name' />
-                    <filter name='lead_stage_id' string="Lead Stage"/>
+                    <field name='lead_stage_id' string="Lead Stage"/>
                 </xpath>
 
                 <xpath expr="/kanban/templates/field[@name='contact_name']" position="replace">
-                    <filter name="partner_name"/>
+                    <field name="partner_name"/>
                 </xpath>
             </field>
         </record>
