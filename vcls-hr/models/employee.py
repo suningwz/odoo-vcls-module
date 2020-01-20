@@ -508,7 +508,51 @@ class Employee(models.Model):
         self.search([('child_ids', '!=', False)]).mapped('user_id').write({'groups_id': [(4, group.id)]}) #if a child is found, then we add the LM group to the related user
         self.search([('child_ids', '=', False)]).mapped('user_id').write({'groups_id': [(3, group.id)]}) #if no child found, then we suppress the LM group from the user
     
-    
+    @api.model
+    def _start_yearly_appraisal(self,deadline_month=2):
+        """
+            Automated Creation of appraisal
+        """
+        if not self.env.user.has_group('vcls-hr.vcls_group_HR_global'):
+            raise ValidationError(_("Global HR only has the right to perform this action."))
+
+        #We grab the surveys
+        ea_name = 'Employee Appraisal (by employee)'
+        ma_name = 'Employee Appraisal (by manager)'
+        fa_name = 'Annual Contribution Dialogue'
+        e_appraisal = self.env['survey.survey'].search([('title','=',ea_name)],limit=1)
+        if not e_appraisal:
+            raise ValidationError(_("Survey not found {}").format(ea_name))
+        m_appraisal = self.env['survey.survey'].search([('title','=',ma_name)],limit=1)
+        if not e_appraisal:
+            raise ValidationError(_("Survey not found {}").format(ma_name))
+        f_appraisal = self.env['survey.survey'].search([('title','=',fa_name)],limit=1)
+        if not e_appraisal:
+            raise ValidationError(_("Survey not found {}").format(fa_name))
+
+        #we compute the deadline to the end of the nexr month
+        deadline = fields.Date.today().replace(day=1) + relativedelta(months=deadline_month,days=-1)
+
+        employees = self.browse(self._context.get('active_ids'))
+        for employee in employees:
+            lm = employee.parent_id
+            vals = {
+                'employee_id': employee.id,
+                'date_close': deadline,
+                'manager_appraisal':True,
+                'manager_ids':[(6, 0, [lm.id])],
+                'manager_survey_id':m_appraisal.id,
+                'employee_appraisal':True,
+                'employee_survey_id':e_appraisal.id,
+                'collaborators_appraisal':True,
+                'collaborators_ids':[(6, 0, [lm.id])],
+                'collaborators_survey_id':f_appraisal.id,                
+            }
+            appraisal = self.env['hr.appraisal'].create(vals)
+            if appraisal:
+                appraisal.button_send_appraisal()
+
+                
     @api.model #to be called from CRON job
     def _check_employee_status(self):
         date_ref = date.today()

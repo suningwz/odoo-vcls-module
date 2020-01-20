@@ -26,6 +26,7 @@
         'hr',
         'hr_contract',
         'hr_holidays',
+        'hr_appraisal',
         'mail',
         'snailmail',
         'vcls-helpdesk',
@@ -76,7 +77,7 @@
         
         'actions/hr_employee_cronjob.xml',
         'actions/hr_leave_cronjob.xml',
-        #'actions/hr_leave_menu_back.xml',
+        'actions/employee_server_action.xml',
         
         #############
         # SEQUENCES #

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="vcls_server_action_employee_yearly_appraisal" model="ir.actions.server">
+            <field name="name">Send Yearly Appraisal</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="model_hr_employee"/>
+            <field name="binding_model_id" ref="model_hr_employee"/>
+            <field name="state">code</field>
+            <field name="code">model._start_yearly_appraisal(3)</field>
+        </record>
+
+    </data>
+</odoo>
