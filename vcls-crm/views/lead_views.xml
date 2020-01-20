@@ -19,7 +19,7 @@
             </field>
         </record>
 
-        <record model="ir.ui.view" id="view_crm_lead_kanban">
+        <!--<record model="ir.ui.view" id="view_crm_lead_kanban">
             <field name="name">crm.lead.kanban</field>
             <field name="model">crm.lead</field>
             <field name="inherit_id" ref="crm.view_crm_lead_kanban" />
@@ -34,7 +34,7 @@
                     <field name="partner_name"/>
                 </xpath>
             </field>
-        </record>
+        </record>-->
 
         <record model="ir.ui.view" id="view_crm_case_leads_filter_inherit">
             <field name="name">crm.lead.search.inherit</field>
