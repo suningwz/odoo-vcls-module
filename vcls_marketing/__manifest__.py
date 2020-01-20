@@ -11,7 +11,7 @@
     'website': "http://www.voisinconsulting.com",
     'category': 'Uncategorized',
 
-    'version': '0.0.8',
+    'version': '0.0.9',
   
     'depends': [
         'project',
@@ -25,5 +25,6 @@
     'data': [
         #'security/ir.model.access.csv',
         'views/marketing_views.xml',
+        'views/lead_views.xml',
     ],
 }

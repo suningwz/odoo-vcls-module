@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '1.12',
+    'version': '1.13',
 
 
     # any module necessary for this one to work correctly
@@ -26,6 +26,7 @@
         'hr',
         'hr_contract',
         'hr_holidays',
+        'hr_appraisal',
         'mail',
         'snailmail',
         'vcls-helpdesk',
@@ -76,7 +77,7 @@
         
         'actions/hr_employee_cronjob.xml',
         'actions/hr_leave_cronjob.xml',
-        #'actions/hr_leave_menu_back.xml',
+        'actions/employee_server_action.xml',
         
         #############
         # SEQUENCES #

@@ -129,9 +129,9 @@ class Invoice(models.Model):
         period_start = False
         delta = 0
         communication_rate = 0.0
-        invoice_template = self.env['ir.actions.report']
-        activity_report_template = self.env['ir.actions.report']
-        po_id = self.env['invoicing.po']
+        invoice_template = None #self.env['ir.actions.report']
+        activity_report_template = None #self.env['ir.actions.report']
+        po_id = None #self.env['invoicing.po']
 
         #loop in projects
         for project in self.project_ids:
@@ -178,21 +178,21 @@ class Invoice(models.Model):
             #PO id
             if not vals.get('po_id',self.po_id):
                 if not po_id and so.po_id:
-                    po_id = so.po_id
+                    po_id = so.po_id.id
             else:
                 po_id = vals.get('po_id',self.po_id.id)
 
             #Invoice Template
             if not vals.get('invoice_template',self.invoice_template):
                 if not invoice_template and so.invoice_template:
-                    invoice_template = so.invoice_template
+                    invoice_template = so.invoice_template.id
             else:
                 invoice_template = vals.get('invoice_template',self.invoice_template.id)
 
             #Activity Report template
             if not vals.get('activity_report_template',self.activity_report_template):
                 if not activity_report_template and so.activity_report_template:
-                    activity_report_template = so.activity_report_template
+                    activity_report_template = so.activity_report_template.id
             else:
                 activity_report_template = vals.get('activity_report_template',self.activity_report_template.id)
             
