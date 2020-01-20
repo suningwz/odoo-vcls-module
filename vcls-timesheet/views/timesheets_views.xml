@@ -344,14 +344,14 @@
                   groups="vcls-hr.vcls_group_lm"
         />
 
-        <menuitem id="menu_lm_timesheet_tree" name="Tree" sequence="1" parent="menu_lm_timesheet" action="action_lm_all_timesheet_tree" />
+        <!--<menuitem id="menu_lm_timesheet_tree" name="Tree" sequence="1" parent="menu_lm_timesheet" action="action_lm_all_timesheet_tree" />
 
         <menuitem id="hr_timesheet.timesheet_menu_adjustment"
                   name="Adjustment Approval" sequence="5"
                   parent="hr_timesheet.timesheet_menu_root"
                   action="action_timesheet_adjustment"
                   groups="base.group_system"
-        />
+        />-->
 
         <record id="hr_timesheet.hr_timesheet_config_settings_menu_action" model="ir.ui.menu">
             <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
