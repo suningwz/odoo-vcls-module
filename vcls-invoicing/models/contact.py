@@ -23,17 +23,17 @@ class Contact(models.Model):
     
     outsourcing_permission = fields.Boolean(default=False)
 
-    def _get_default_invoice_template(self): 
+    """def _get_default_invoice_template(self): 
         template = self.env['ir.action.report'].search([('model', '=', 'account.invoice'),('name', 'ilike', 'invoice simple')],limit=1)
         if template:
             return template[0]
         else:
-            return False
+            return False"""
 
     invoice_template = fields.Many2one(
         'ir.actions.report', 
         domain=[('model', '=', 'account.invoice'),('name', 'ilike', 'invoice')],
-        default = _get_default_invoice_template,
+        #default = _get_default_invoice_template,
         )
 
     activity_report_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice'),('name', 'ilike', 'activity')])
