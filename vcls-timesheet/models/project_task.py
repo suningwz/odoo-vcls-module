@@ -53,7 +53,8 @@ class ProjectTask(models.Model):
     @api.depends('date_start')
     def _compute_deadline(self):
         for task in self:
-            task.date_deadline = task.date_start.date()
+            if task.date_end:
+                task.date_deadline = task.date_end.date()
 
     @api.depends(
         'sale_line_id.price_unit',
