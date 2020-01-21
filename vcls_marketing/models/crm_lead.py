@@ -10,7 +10,7 @@ class Leads(models.Model):
     marketing_project_id = fields.Many2one(
         comodel_name = 'project.project',
         string = "Lead Source",
-        domain = [('project_type','=','marketing')]
+        domain = [('project_type','=','marketing')],
     )
 
     marketing_task_id = fields.Many2one(
@@ -54,4 +54,13 @@ class Leads(models.Model):
                 record.gdpr_status = 'out'
             else:
                 record.gdpr_status = 'undefined'
+    
+    @api.onchange('partner_id')
+    def _get_marketing_info(self):
+        for lead in self:
+            lead.marketing_project_id = lead.partner_id.marketing_project_id
+            lead.marketing_task_id = lead.partner_id.marketing_task_id
+            lead.marketing_task_out_id = lead.partner_id.marketing_task_out_id
+            lead.opted_in_date = lead.partner_id.opted_in_date
+            lead.opted_out_date = lead.partner_id.opted_out_date
 
