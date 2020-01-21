@@ -1,6 +1,10 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
+import logging
+_logger = logging.getLogger(__name__)
+
+
 class SaleOrder(models.Model):
 
     _inherit = 'sale.order'
@@ -64,7 +68,9 @@ class AccountAnalyticLine(models.Model):
             for so_line in so_mapped_seniority:
                 so_product = so_line.product_id
                 for default_rate in list_default_rate:
+                    _logger.info("Product {} {} | Rate {} {}".format(so_product.product_tmpl_id.id,so_product.product_tmpl_id.name,default_rate.id,default_rate.name))
                     if so_product.product_tmpl_id.id == default_rate.id:
+                        _logger.info("FOUND Product {} {} | Rate {} {}".format(so_product.product_tmpl_id.id,so_product.product_tmpl_id.name,default_rate.id,default_rate.name))
                         break
             else:
                 # no line found, Find a line on the sale order with the same seniority level
