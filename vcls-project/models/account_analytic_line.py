@@ -30,7 +30,7 @@ class AccountAnalyticLine(models.Model):
 
     @api.model
     def _update_project_soline_mapping(self, vals):
-        
+        _logger.info("_update_project_soline_mapping {} ".format(vals))
         employee = None
         if 'employee_id' in vals:
             employee = self.env['hr.employee'].browse(vals['employee_id'])
