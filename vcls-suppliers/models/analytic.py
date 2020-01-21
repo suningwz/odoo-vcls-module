@@ -44,7 +44,7 @@ class AnalyticLine(models.Model):
                 raise UserError("No external employee found for {}".format(user_id.name))
 
             # Find the default product for suppliers
-            default_product = self.env['product.product'].search([('product_tmpl_id.name','=','Suppliers Hours')],limit=1)
+            default_product = self.env['product.product'].search([('name','=','Suppliers Hours')],limit=1)
             if not default_product:
                 raise UserError("No default product found for supplier RFQ.")
             
