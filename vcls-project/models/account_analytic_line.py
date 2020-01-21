@@ -51,8 +51,8 @@ class AccountAnalyticLine(models.Model):
                 raise UserError(
                     _('''Employee with no seniority level can not timesheet
                          on project, contact your HR department.
-                      '''
-                      )
+                      ''')
+                      
                 )
             # Check for existing mapping in project configuration
             employee_mapped_line = project.sale_line_employee_ids.filtered(
