@@ -11,7 +11,7 @@
                     <field name="project_id" type="row" />
                     <field name="deliverable_id" type="row" />
                     <field name="task_id" type="row" />
-                    <field name="rate_product" type="row"/>
+                    <field name="rate_product_id" type="row"/>
                     <field name="revenue" type="measure"/>
                 </pivot>
             </field>
@@ -27,7 +27,7 @@
                     <field name="project_id" type="row" />
                     <field name="deliverable_id" type="row" />
                     <field name="task_id" type="row" />
-                    <field name="rate_product" type="row"/>
+                    <field name="rate_product_id" type="row"/>
                     <field name="number_hours" type="measure"/>
                 </pivot>
             </field>
