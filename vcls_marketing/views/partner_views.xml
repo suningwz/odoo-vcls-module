@@ -20,8 +20,13 @@
                             <field name="opted_out_date" widget="date" attrs="{'invisible':['|',('marketing_task_id','=',False),('company_type','=','company')]}"/>
                             <field name="gdpr_status" attrs="{'invisible':[('company_type','=','company')]}"/>
                         </group>
-                        <group>
-                            
+                        <group string = 'All Participated Events' attrs="{'invisible':[('company_type','=','company')]}">
+                            <button name = "all_campaigns_pop_up" 
+                                string = "OPEN" 
+                                type = "object"
+                                icon="fa-bar-chart"
+                                class = 'btn btn-primary'
+                            />
                         </group>
                     </group>
                     </page>

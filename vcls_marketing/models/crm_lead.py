@@ -73,6 +73,7 @@ class Leads(models.Model):
             :returns res.partner record
         """
         data = super()._create_lead_partner_data(name, is_company, parent_id)
+        data['origin_lead_id'] = self.id
         data['marketing_project_id'] = self.marketing_project_id.id
         data['marketing_task_id'] = self.marketing_task_id.id
         
