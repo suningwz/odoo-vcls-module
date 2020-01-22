@@ -23,9 +23,16 @@ class Contact(models.Model):
     
     outsourcing_permission = fields.Boolean(default=False)
 
-    invoice_template = fields.Many2one('ir.actions.report', domain=[('model','=','account.invoice')])
+    invoice_template = fields.Many2one(
+        'ir.actions.report', 
+        domain=[('model', '=', 'account.invoice'), ('name', 'ilike', 'invoice')],
+        default=lambda self: self.env.ref('vcls-invoicing.project_invoice_aggregated', raise_if_not_found=False),
+    )
 
-    activity_report_template = fields.Many2one('ir.actions.report', domain=[('model','=','account.analytic.line'), ('report_name','=','activity_report')])
+    activity_report_template = fields.Many2one(
+        'ir.actions.report',
+        domain=[('model', '=', 'account.invoice'), ('name', 'ilike', 'activity')]
+    )
 
     def action_risk(self):
         view_ids = [self.env.ref('vcls-risk.view_risk_tree').id,

@@ -151,7 +151,7 @@
                             <field name="date_start" widget="date"/>
                             <field name="date_end" widget="date"/>
                             <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
-                            <field name="business_line_id"/>
+                            <field name="business_line_id" widget="many2many_tags"/>
                         </group>
                     </group>
                     <notebook>
@@ -241,13 +241,13 @@
                         </group>
                     </page>
 
-                        <page string="Attendees">
-                            <field name="attendee_ids" mode="tree" domain="[('is_company','=',False)]">
-                                <tree default_order="parent_id">
-                                    <field name="name"/>
-                                    <field name="email" widget="email"/>
-                                    <field name="parent_id"/>
-                                    <field name="function"/>
+                        <page string="Related Events">
+                            <field name="related_events_ids" mode="tree" readonly="1">
+                                <tree default_order="create_date desc">
+                                    <field name="create_date" widget="date"/>
+                                    <field name="name" string="Event Name"/>
+                                    <field name="state"/>
+                                    <field name="participant_ids"/>
                                 </tree>
                             </field>
                         </page>
@@ -258,9 +258,11 @@
                                     <field name="lead_count"/>
                                     <field name="opp_count"/>
                                     <field name="convertion_ratio" widget="percentage"/>
+                                    <field name="lead_lost"/>
                                 </group>
                                 <group>
                                     <field name="contact_count"/>
+                                    <field name="contact_lost"/>
                                 </group>
                             </group>
                         </page>
@@ -304,6 +306,31 @@
             </field>
         </record>
 
+        <record id="act_marketing_project_2_marketing_task_all" model="ir.actions.act_window">
+            <field name="name">Marketing Campaigns</field>
+            <field name="res_model">project.task</field>
+            <field name="view_mode">kanban,tree,form,calendar</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('project.view_task_kanban')}),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('project.view_task_tree2')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('task_marketing_form')}),
+            (0, 0, {'view_mode': 'calendar', 'view_id': ref('project.view_task_calendar')}),
+            ]"/>
+            <field name="context">{
+                'search_default_project_id': [active_id],
+                'default_project_id': active_id,
+            }</field>
+            <field name="search_view_id" ref="project.view_task_search_form"/>
+            <field name="domain">[('task_type','=', 'marketing')]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Click <i>Create</i> to start a new task.
+                </p><p>
+                    To get things done, use activities and status on tasks.<br/>
+                    Chat in real time or by email to collaborate efficiently.
+                </p>
+            </field>
+        </record>
 
         <record id="action_marketing_project" model="ir.actions.act_window">
             <field name="name">Lead Source</field>

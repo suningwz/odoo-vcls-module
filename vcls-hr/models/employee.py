@@ -509,7 +509,7 @@ class Employee(models.Model):
         self.search([('child_ids', '=', False)]).mapped('user_id').write({'groups_id': [(3, group.id)]}) #if no child found, then we suppress the LM group from the user
     
     @api.model
-    def _start_yearly_appraisal(self):
+    def _start_yearly_appraisal(self,deadline_month=2):
         """
             Automated Creation of appraisal
         """
@@ -519,7 +519,7 @@ class Employee(models.Model):
         #We grab the surveys
         ea_name = 'Employee Appraisal (by employee)'
         ma_name = 'Employee Appraisal (by manager)'
-        fa_name = 'Final Appraisal'
+        fa_name = 'Annual Contribution Dialogue'
         e_appraisal = self.env['survey.survey'].search([('title','=',ea_name)],limit=1)
         if not e_appraisal:
             raise ValidationError(_("Survey not found {}").format(ea_name))
@@ -531,7 +531,7 @@ class Employee(models.Model):
             raise ValidationError(_("Survey not found {}").format(fa_name))
 
         #we compute the deadline to the end of the nexr month
-        deadline = fields.Date.today().replace(day=1) + relativedelta(months=2,days=-1)
+        deadline = fields.Date.today().replace(day=1) + relativedelta(months=deadline_month,days=-1)
 
         employees = self.browse(self._context.get('active_ids'))
         for employee in employees:

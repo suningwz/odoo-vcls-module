@@ -82,7 +82,7 @@ class Invoice(models.Model):
         company = self.env['res.company']._company_default_get()
         bank_accounts = company.bank_ids.filtered(lambda b: not b.currency_id or b.currency_id == company.currency_id)
         if bank_accounts:
-            result['bank_account_id'] = bank_accounts[0]
+            result['bank_account_id'] = bank_accounts[0].id
         return result
 
     @api.onchange('company_id', 'currency_id')

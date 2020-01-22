@@ -37,7 +37,7 @@ class Task(models.Model):
         'res.partner',
         string='Organizer'
     )
-    business_line_id = fields.Many2one(
+    business_line_id = fields.Many2many(
         'product.category',
         string='Business line',
         domain='[("is_business_line", "=", True)]'
@@ -47,15 +47,27 @@ class Task(models.Model):
         string='Country group',
     )
 
-    attendee_ids = fields.Many2many(
+    related_events_ids = fields.One2many(
+        comodel_name = 'marketing.campaign',
+        inverse_name = 'marketing_task_id',
+        #compute = '_compute_related_events_ids',
+    )
+
+    """attendee_ids = fields.Many2many(
         comodel_name = 'res.partner',
         string="Attendees",
-    )
+    )"""
+
+    def _compute_related_events_ids(self):
+        for task in self.filtered(lambda t: t.task_type == 'marketing'):
+            task.related_events_ids = self.env['marketing.campaign'].search([('marketing_task_id.id','=',task.id)])
 
     lead_count = fields.Integer(compute="_compute_lead_count")
     opp_count = fields.Integer(compute="_compute_opp_count")
     contact_count = fields.Integer(compute="_compute_contact_count")
     convertion_ratio = fields.Float(compute="_compute_convertion_ratio")
+    lead_lost = fields.Integer(compute="_compute_lead_lost")
+    contact_lost = fields.Integer(compute="_compute_contact_lost")
 
     def _compute_lead_count(self):
         for task in self.filtered(lambda t: t.task_type == 'marketing'):
@@ -87,4 +99,20 @@ class Task(models.Model):
                 task.convertion_ratio = 100*(task.opp_count/(task.opp_count+task.lead_count))
             else:
                 task.convertion_ratio = 0.0
+    
+    def _compute_lead_lost(self):
+        for task in self.filtered(lambda t: t.task_type == 'marketing'):
+            leads = self.env['crm.lead'].search([('marketing_task_out_id.id','=',task.id),('type','=','lead')])
+            if leads:
+                task.lead_lost = len(leads)
+            else:
+                task.lead_lost = 0
+        
+    def _compute_contact_lost(self):
+        for task in self.filtered(lambda t: t.task_type == 'marketing'):
+            partners = self.env['res.partner'].search([('marketing_task_out_id.id','=',task.id)])
+            if partners:
+                task.contact_lost = len(partners)
+            else:
+                task.contact_lost = 0
 

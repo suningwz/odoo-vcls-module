@@ -7,6 +7,10 @@ class Contacts(models.Model):
 
     _inherit = 'res.partner'
 
+    origin_lead_id = fields.Many2one(
+        comodel_name="crm.lead",
+    )
+
     marketing_project_id = fields.Many2one(
         comodel_name = 'project.project',
         string = "Lead Source",
@@ -54,4 +58,19 @@ class Contacts(models.Model):
                 record.gdpr_status = 'out'
             else:
                 record.gdpr_status = 'undefined'
+
+    def all_campaigns_pop_up(self):
+        #we gather the participants related to the source lead and the current contact
+        partner_model = self.env['ir.model'].search([('model','=','res.partner')], limit = 1)
+        lead_model = self.env['ir.model'].search([('model','=','crm.lead')], limit = 1)
+        domain = "['|','&',('model_id','=', {}),('res_id','=',{}),'&',('model_id','=', {}),('res_id','=',{})]".format(partner_model.id,self.id,lead_model.id,self.origin_lead_id.id)
+        
+        return {
+            'name': 'All participated events',
+            'view_mode': 'tree',
+            'target': 'new',
+            'res_model': 'marketing.participant',
+            'type': 'ir.actions.act_window',
+            'domain': domain,
+        }
 

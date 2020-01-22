@@ -1,6 +1,10 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
+import logging
+_logger = logging.getLogger(__name__)
+
+
 class SaleOrder(models.Model):
 
     _inherit = 'sale.order'
@@ -26,7 +30,7 @@ class AccountAnalyticLine(models.Model):
 
     @api.model
     def _update_project_soline_mapping(self, vals):
-        
+        #_logger.info("_update_project_soline_mapping {} ".format(vals))
         employee = None
         if 'employee_id' in vals:
             employee = self.env['hr.employee'].browse(vals['employee_id'])
@@ -47,8 +51,8 @@ class AccountAnalyticLine(models.Model):
                 raise UserError(
                     _('''Employee with no seniority level can not timesheet
                          on project, contact your HR department.
-                      '''
-                      )
+                      ''')
+                      
                 )
             # Check for existing mapping in project configuration
             employee_mapped_line = project.sale_line_employee_ids.filtered(
@@ -57,18 +61,26 @@ class AccountAnalyticLine(models.Model):
             if employee_mapped_line:
                 # already mapped -> nothing to do
                 return
+
             so_mapped_seniority = so.order_line.filtered(
                 lambda r: r.product_id.seniority_level_id != False
             )
             # Find a line on the default rate list
+            matched = False
             for so_line in so_mapped_seniority:
                 so_product = so_line.product_id
                 for default_rate in list_default_rate:
-                    if so_product.product_tmpl_id.id == default_rate.id:
+                    #_logger.info("Product {} {} | Rate {} {}".format(so_product.product_tmpl_id.id,so_product.product_tmpl_id.name,default_rate.id,default_rate.name))
+                    if so_product.product_tmpl_id.name == default_rate.name: #we match on names to cover the case of multiproducts with the same name
+                        matched = True 
+                        #_logger.info("FOUND Product {} {} | Rate {} {}".format(so_product.product_tmpl_id.id,so_product.product_tmpl_id.name,default_rate.id,default_rate.name))
                         break
+                if matched:
+                    break
+
             else:
                 # no line found, Find a line on the sale order with the same seniority level
-                for so_line in so.order_line:
+                for so_line in so_mapped_seniority:
                     line_seniority = so_line.product_id.seniority_level_id
                     if line_seniority == employee.seniority_level_id:
                         break
