@@ -11,7 +11,7 @@
                 <xpath expr="//div[@class='o_ma_hierarchy']" position="before">
                     <group>
                         <field name="marketing_project_id"/>
-                        <field name="marketing_task_id" domain="[('project_id','=','marketing_project_id')]"/>
+                        <field name="marketing_task_id" domain="[('project_id','=',marketing_project_id)]"/>
                     </group>
                 </xpath>
 

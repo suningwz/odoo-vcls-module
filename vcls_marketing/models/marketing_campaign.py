@@ -9,7 +9,7 @@ class MarketingCampaign(models.Model):
 
     marketing_project_id = fields.Many2one(
         comodel_name = 'project.project',
-        string = "Related Markeing Project",
+        string = "Related Marketing Project",
         domain = [('project_type','=','marketing')],
     )
 
