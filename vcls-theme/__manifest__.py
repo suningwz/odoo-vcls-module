@@ -46,7 +46,7 @@
         'views/ia_menus.xml',
         'views/backend.xml',
         'views/todo_menu.xml',
-
+        'views/marketing_menu.xml',
         'data/translation.sql',
     ],
     # only loaded in demonstration mode
