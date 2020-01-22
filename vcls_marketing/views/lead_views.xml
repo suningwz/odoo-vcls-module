@@ -15,6 +15,14 @@
                     <field name="marketing_task_out_id" options="{'no_create': True, 'no_create_edit' : True}" attrs="{'readonly':[('partner_id','!=',False)]}"/>
                     <field name="opted_out_date" widget="date" attrs="{'invisible':[('marketing_task_out_id','=',False)],'readonly':[('partner_id','!=',False)]}"/>
                     <field name="gdpr_status" readonly="1"/>
+                    <group string = 'All Participated Events'>
+                        <button name = "all_campaigns_pop_up" 
+                            string = "OPEN" 
+                            type = "object"
+                            icon="fa-bar-chart"
+                            class = 'btn btn-primary'
+                        />
+                    </group>
                 </field>
             </field>
         </record>
