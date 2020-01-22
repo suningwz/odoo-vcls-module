@@ -241,13 +241,13 @@
                         </group>
                     </page>
 
-                        <page string="Attendees">
-                            <field name="attendee_ids" mode="tree" domain="[('is_company','=',False)]">
-                                <tree default_order="parent_id">
+                        <page string="Related Events">
+                            <field name="related_events_ids" mode="tree">
+                                <tree default_order="create_date desc">
+                                    <field name="create_date" widget="date"/>
                                     <field name="name"/>
-                                    <field name="email" widget="email"/>
-                                    <field name="parent_id"/>
-                                    <field name="function"/>
+                                    <field name="state"/>
+                                    <field name="participant_ids"/>
                                 </tree>
                             </field>
                         </page>

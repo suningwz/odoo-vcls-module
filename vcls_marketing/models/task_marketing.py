@@ -47,10 +47,20 @@ class Task(models.Model):
         string='Country group',
     )
 
-    attendee_ids = fields.Many2many(
+    related_events_ids = fields.One2many(
+        comodel_name = 'marketing.campaign',
+        inverse_name = 'marketing_task_id',
+        #compute = '_compute_related_events_ids',
+    )
+
+    """attendee_ids = fields.Many2many(
         comodel_name = 'res.partner',
         string="Attendees",
-    )
+    )"""
+
+    def _compute_related_events_ids(self):
+        for task in self.filtered(lambda t: t.task_type == 'marketing'):
+            task.related_events_ids = self.env['marketing.campaign'].search([('marketing_task_id.id','=',task.id)])
 
     lead_count = fields.Integer(compute="_compute_lead_count")
     opp_count = fields.Integer(compute="_compute_opp_count")
