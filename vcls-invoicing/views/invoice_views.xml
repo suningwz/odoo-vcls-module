@@ -32,7 +32,7 @@
                             <field name="cash_rounding_id" groups="account.group_cash_rounding" invisible="1"/>
                             <field name="user_id" groups="base.group_user" string="IA"/>
                             <field name="invoice_template" required="1"/>
-                            <field name="activity_report_template" required="1"/>
+                            <field name="activity_report_template" required="0"/>
                         </group>
                         <group string="Project">
                             <field name='scope_of_work'/>  
@@ -56,7 +56,8 @@
                                 <field name="company_currency_id" invisible="1"/>
                             </div>
                             <field name='po_id'/>
-                            <field name='ready_for_approval' invisible="1"/> 
+                            <field name='bank_account_id'/>
+                            <field name='ready_for_approval' invisible="1"/>
                         </group>
                     </group>
 

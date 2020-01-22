@@ -71,10 +71,32 @@ class Invoice(models.Model):
 
     communication_rate = fields.Float()
 
-    @api.depends('timesheet_limit_date','period_start')
+    bank_account_id = fields.Many2one(
+        'res.partner.bank', string='Bank Account',
+        help='Company Bank Account Number to which the invoice will be paid.',
+    )
+
+    @api.model
+    def default_get(self, fields_list):
+        result = super(Invoice, self).default_get(fields_list)
+        company = self.env['res.company']._company_default_get()
+        bank_accounts = company.bank_ids.filtered(lambda b: not b.currency_id or b.currency_id == company.currency_id)
+        if bank_accounts:
+            result['bank_account_id'] = bank_accounts[0].id
+        return result
+
+    @api.onchange('company_id', 'currency_id')
+    def _on_change_currency(self):
+        if not self.bank_account_id:
+            bank_accounts = self.company_id.bank_ids.filtered(
+                lambda b: not b.currency_id or b.currency_id == self.currency_id
+            )
+            self.bank_account_id = bank_accounts and bank_accounts[0] or False
+
+    @api.depends('timesheet_limit_date', 'period_start')
     def compute_temp_name(self):
         for invoice in self:
-            project_string=""
+            project_string = ""
             for project in invoice.project_ids:
                 if not project.parent_id and project.sale_order_id:
                     project_string += project.sale_order_id.internal_ref + ' | ' 
@@ -107,9 +129,9 @@ class Invoice(models.Model):
         period_start = False
         delta = 0
         communication_rate = 0.0
-        invoice_template = self.env['ir.actions.report']
-        activity_report_template = self.env['ir.actions.report']
-        po_id = self.env['invoicing.po']
+        invoice_template = None #self.env['ir.actions.report']
+        activity_report_template = None #self.env['ir.actions.report']
+        po_id = None #self.env['invoicing.po']
 
         #loop in projects
         for project in self.project_ids:
@@ -156,21 +178,21 @@ class Invoice(models.Model):
             #PO id
             if not vals.get('po_id',self.po_id):
                 if not po_id and so.po_id:
-                    po_id = so.po_id
+                    po_id = so.po_id.id
             else:
                 po_id = vals.get('po_id',self.po_id.id)
 
             #Invoice Template
             if not vals.get('invoice_template',self.invoice_template):
                 if not invoice_template and so.invoice_template:
-                    invoice_template = so.invoice_template
+                    invoice_template = so.invoice_template.id
             else:
                 invoice_template = vals.get('invoice_template',self.invoice_template.id)
 
             #Activity Report template
             if not vals.get('activity_report_template',self.activity_report_template):
                 if not activity_report_template and so.activity_report_template:
-                    activity_report_template = so.activity_report_template
+                    activity_report_template = so.activity_report_template.id
             else:
                 activity_report_template = vals.get('activity_report_template',self.activity_report_template.id)
             
@@ -296,7 +318,7 @@ class Invoice(models.Model):
         data = OrderedDict()
         total_not_taxed = 0.
         for timesheet_id in self.timesheet_ids.filtered(lambda t: t.so_line.qty_invoiced)\
-                .sorted(lambda t: t.so_line.price_unit):
+                .sorted(lambda t: t.so_line.price_unit, reverse=True):
             rate_sale_line_id = timesheet_id.so_line
             service_sale_line_id = timesheet_id.task_id.sale_line_id
             service_section_line_id = service_sale_line_id.section_line_id
@@ -337,7 +359,7 @@ class Invoice(models.Model):
         data = OrderedDict()
         total_not_taxed = 0.
         for timesheet_id in self.timesheet_ids.filtered(lambda t: t.so_line.qty_invoiced)\
-                .sorted(lambda t: t.so_line.price_unit):
+                .sorted(lambda t: t.so_line.price_unit, reverse=True):
             rate_sale_line_id = timesheet_id.so_line
             task_id = timesheet_id.task_id
             rates_dict = data.setdefault(task_id, OrderedDict())

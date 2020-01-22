@@ -92,11 +92,26 @@ class SaleOrder(models.Model):
         """
         for so in self:
             so.forecasted_amount = sum(so.order_line.mapped('forecasted_amount'))
-            #_logger.info("FORECASTED AMOUNT {}".format(so.forecasted_amount))
+            # _logger.info("FORECASTED AMOUNT {}".format(so.forecasted_amount))
     
-    #we override action_confirm in order to 
     @api.multi
     def _action_confirm(self):
         self.action_sync()
-        res = super(SaleOrder, self)._action_confirm()
-
+        result = super(SaleOrder, self)._action_confirm()
+        for order in self:
+            project_id = order.project_id
+            if project_id.scope_of_work:
+                order.scope_of_work = project_id.scope_of_work
+            if project_id.company_id:
+                order.company_id = project_id.company_id
+                order.order_line.write({'company_id': project_id.company_id.id})
+            tasks_values = {}
+            if order.expected_start_date or order.expected_end_date:
+                tasks = project_id.tasks | project_id.tasks.mapped('child_ids')
+                if order.expected_start_date:
+                    tasks_values.update({'date_start': order.expected_start_date})
+                if order.expected_end_date:
+                    tasks_values.update({'date_end': order.expected_end_date})
+                if tasks_values:
+                    tasks.write(tasks_values)
+        return result

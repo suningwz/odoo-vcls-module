@@ -20,7 +20,10 @@ class TimesheetForecastReport(models.Model):
 
     revenue = fields.Float('Revenue', readonly=True)
 
-    rate_product = fields.Char('Rate Product', readonly=True)
+    rate_product_id = fields.Many2one(
+        'product.template',
+        'Rate Product', readonly=True
+    )
 
     deliverable_id = fields.Many2one(
         'product.deliverable', string='Deliverable',
@@ -34,9 +37,6 @@ class TimesheetForecastReport(models.Model):
     )
 
     # EDIT SQL REQUEST IN ORDER TO GET STAGE & REVENUE
-    #F.resource_hours / NULLIF(F.working_days_count, 0) AS number_hours,
-    #(SELECT min(id)::char from product_template Z where Z.forecast_employee_id = F.employee_id) AS rate_product,
-    #(SELECT deliverable_id from product_template Z where Z.id = F.order_line_id limit 1) AS deliverable_id,
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -60,9 +60,9 @@ class TimesheetForecastReport(models.Model):
                         'forecast' AS type,
                         'forecast' AS stage_id,
                         F.resource_hours*F.hourly_rate AS revenue,
-                        (SELECT name from product_template Z 
+                        (SELECT id from product_template Z 
                         where Z.forecast_employee_id = F.employee_id limit 1
-                        ) AS rate_product,
+                        ) AS rate_product_id,
                         F.id AS id,
                         (select deliverable.id 
                             from product_deliverable deliverable
@@ -99,7 +99,7 @@ class TimesheetForecastReport(models.Model):
                         'timesheet' AS type,
                         A.stage_id AS stage_id,
                         (-A.so_line_unit_price * A.unit_amount_rounded) AS revenue,
-                        P.name AS rate_product,
+                        P.id AS rate_product_id,
                         -A.id AS id,
                         (select deliverable.id 
                             from product_deliverable deliverable

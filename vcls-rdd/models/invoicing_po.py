@@ -15,8 +15,11 @@ class InvoicingPo(models.Model):
 
     @api.multi
     def _compute_invoiced_amount(self):
-        for record in self:
-            invoiced_amount = record.migrated_invoiced_amount
-            if not invoiced_amount:
-                invoiced_amount = sum([invoice.amount_untaxed for invoice in record.invoice_ids])
-            record.invoiced_amount = invoiced_amount
+        if self.env.user.context_data_integration:
+            for record in self:
+                invoiced_amount = record.migrated_invoiced_amount
+                if not invoiced_amount:
+                    invoiced_amount = sum([invoice.amount_untaxed for invoice in record.invoice_ids])
+                record.invoiced_amount = invoiced_amount
+        else:
+            super(InvoicingPo,self)._compute_invoiced_amount()

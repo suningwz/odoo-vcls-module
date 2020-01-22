@@ -1,136 +1,364 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data>
+    <data>
 
 
-    <record id="project_marketing_tree" model="ir.ui.view">
-        <field name="name">project.marketing.tree</field>
-        <field name="model">project.marketing</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="name"/>
-            </tree>
-        </field>
-    </record>
+        <record id="project_marketing_tree" model="ir.ui.view">
+            <field name="name">project.marketing.tree</field>
+            <field name="model">project.project</field>
+            <field name="priority">5000</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
 
-    <record id="task_marketing_tree" model="ir.ui.view">
-        <field name="name">task.marketing.tree</field>
-        <field name="model">task.marketing</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="name"/>
-                <field name="project_id"/>
-            </tree>
-        </field>
-    </record>
+        <record id="task_marketing_tree" model="ir.ui.view">
+            <field name="name">task.marketing.tree</field>
+            <field name="model">project.task</field>
+            <field name="priority">5000</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="project_id"/>
+                </tree>
+            </field>
+        </record>
 
-    <record id="project_marketing_form" model="ir.ui.view">
-        <field name="name">project.marketing.form</field>
-        <field name="model">project.marketing</field>
-        <field name="arch" type="xml">
-            <form string="Project" create="false">
-                <sheet string="Project">
-                    <div class="oe_button_box" name="button_box" groups="base.group_user">
-                        <button class="oe_stat_button" name="tasks_tree_view" type="object" icon="fa-tasks">
-                            <field string="Tasks" name="task_count" widget="statinfo"/>
+        <record id="project_marketing_form" model="ir.ui.view">
+            <field name="name">project.marketing.form</field>
+            <field name="model">project.project</field>
+            <field name="priority">5000</field>
+            <field name="arch" type="xml">
+                <form string="Project">
+                    <sheet string="Project">
+                        <div class="oe_button_box" name="button_box" groups="base.group_user">
+                            <button class="oe_stat_button" name="tasks_tree_view" type="object" icon="fa-tasks">
+                                <field string="Tasks" name="task_count" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" string="Timesheets" name="timesheets_tree_view"
+                                    type="object" icon="fa-clock-o"/>
+                            <button name="toggle_active" type="object" confirm="(Un)archiving a project automatically (un)archives its tasks. Do you want to proceed?"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Project Name"/>
+                            </h1>
+                        </div>
+                        <group invisible="1" string="Hidden Fields">
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="event_type" string="Type of Events"/>
+                            <field name="user_id" string="Project Manager" attrs="{'readonly':[('active','=',False)]}"/>
+                            <field name="scope_of_work" string="Description"/>
+                            <field name="label_tasks"/>
+                        </group>
+                        
+
+                        <notebook>
+                        <page name="settings" string="Settings" groups="vcls-hr.vcls_group_superuser_lvl2">
+                            <group>
+                                
+                                <field name="privacy_visibility" widget="radio"/>
+                                <field name="project_type" readonly="1"/>
+                                <field name="allow_timesheets"/>
+                                <field name="allow_expense"/>
+                            </group>
+                            <group name="misc">
+                                <group string="Configuration" groups="base.group_no_one" name="configuration">
+                                    <field name="sequence" groups="base.group_no_one"/>
+                                    <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                                </group>
+                                <group string="Time Scheduling" groups="base.group_no_one">
+                                    <field name="resource_calendar_id" groups="base.group_no_one" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page name="emails" string="Emails" attrs="{'invisible': [('alias_domain', '=', False)]}" groups="vcls-hr.vcls_group_superuser_lvl2">
+                            <group name="group_alias">
+                                <label for="alias_name" string="Email Alias"/>
+                                <div name="alias_def">
+                                    <field name="alias_id" class="oe_read_only oe_inline" string="Email Alias" required="0"/>
+                                    <div class="oe_edit_only oe_inline" name="edit_alias" style="display: inline;">
+                                        <field name="alias_name" class="oe_inline"/>@<field name="alias_domain" class="oe_inline" readonly="1"/>
+                                    </div>
+                                </div>
+                                <field name="alias_contact" class="oe_inline oe_edit_only" string="Accept Emails From"/>
+                            </group>
+                        </page>
+                        </notebook>
+
+
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" help="Follow this project to automatically track the events associated to tasks and issues of this project." groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="task_marketing_form" model="ir.ui.view">
+            <field name="name">task.marketing.form</field>
+            <field name="model">project.task</field>
+            <field name="priority">5000</field>
+            <field name="arch" type="xml">
+                <form string="Task" class="o_form_project_tasks">
+                    <header>
+                        <button name="action_assign_to_me" invisible="1" string="Assign to Me" type="object" class="oe_highlight" attrs="{'invisible' : [('user_id', '!=', False)]}"/>
+                        <button name="163" string="Share" type="action" class="oe_highlight oe_read_only"/>
+                        <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}"/>
+                    </header>
+                    <sheet string="Task">
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" icon="fa-tasks" type="object" name="action_open_parent_task" string="Parent Task" attrs="{'invisible' : [('parent_id', '=', False)]}" groups="project.group_subtask_project"/>
+                        <button name="action_subtask" type="object" class="oe_stat_button" icon="fa-tasks" attrs="{'invisible' : [('parent_id', '!=', False)]}" context="{'project_id': subtask_project_id, 'name': name, 'partner_id': partner_id}" groups="project.group_subtask_project">
+                            <field string="Sub-tasks" name="subtask_count" widget="statinfo"/>
                         </button>
-                        <button class="oe_stat_button" string="Timesheets" name="timesheets_tree_view"
-                                type="object" icon="fa-clock-o"/>
-                        <button name="toggle_active" type="object" confirm="(Un)archiving a project automatically (un)archives its tasks. Do you want to proceed?"
-                                class="oe_stat_button" icon="fa-archive">
+                        <button name="298" type="action" attrs="{'invisible': [('rating_count', '=', 0)]}" class="oe_stat_button" icon="fa-smile-o" groups="project.group_project_rating">
+                            <field name="rating_count" string="Rating" widget="statinfo"/>
+                        </button>
+                        <button name="toggle_active" type="object" groups="base.group_user" class="oe_stat_button" icon="fa-archive">
                             <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
                         </button>
                     </div>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="name" placeholder="Project Name"/>
+                    <div class="oe_title pr-0">
+                        <h1 class="d-flex flex-row justify-content-between">
+                            <field name="priority" widget="priority" class="mr-3"/>
+                            <field name="name" class="o_task_name text-truncate" placeholder="Task Title..."/>
+                            <field name="kanban_state" widget="state_selection" class="ml-auto"/>
                         </h1>
                     </div>
-                    <group invisible="1" string="Hidden Fields">
-                        <field name="active"/>
-                    </group>
                     <group>
-                        <field name="user_id" string="Project Manager" attrs="{'readonly':[('active','=',False)]}"/>
-                        <field name="scope_of_work" string="Description"/>
-                    </group>
-                    
-
-                    <notebook>
-                    <page name="settings" string="Settings" groups="vcls-hr.vcls_group_superuser_lvl2">
                         <group>
-                            
-                            <field name="privacy_visibility" widget="radio"/>
-                            <field name="project_type"/>
-                            <field name="allow_timesheets"/>
+                            <field name="project_id" domain="[('active', '=', True),('project_type','=','marketing')]"/>
+                            <field name="user_id" class="o_task_user_field" options="{&quot;no_open&quot;: True}"/>
+                            <field name="organizer_id"/>
+                            <field name="country_group_id"/>
+                            <field name="legend_blocked" invisible="1"/>
+                            <field name="legend_normal" invisible="1"/>
+                            <field name="legend_done" invisible="1"/>
+                            <field name="analytic_account_active" invisible="1"/>
+                            <field name="allow_timesheets" invisible="1"/>
                         </group>
-                        <group name="misc">
-                            <group string="Configuration" groups="base.group_no_one" name="configuration">
-                                <field name="sequence" groups="base.group_no_one"/>
-                                <field name="company_id" groups="base.group_multi_company"/>
-                            </group>
-                            <group string="Time Scheduling" groups="base.group_no_one">
-                                <field name="resource_calendar_id" groups="base.group_no_one"/>
-                            </group>
+                        <group>
+                            <field name="date_start" widget="date"/>
+                            <field name="date_end" widget="date"/>
+                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
+                            <field name="business_line_id" widget="many2many_tags"/>
                         </group>
-                    </page>
-                    <page name="emails" string="Emails" attrs="{'invisible': [('alias_domain', '=', False)]}" groups="vcls-hr.vcls_group_superuser_lvl2">
-                        <group name="group_alias">
-                            <label for="alias_name" string="Email Alias"/>
-                            <div name="alias_def">
-                                <field name="alias_id" class="oe_read_only oe_inline" string="Email Alias" required="0"/>
-                                <div class="oe_edit_only oe_inline" name="edit_alias" style="display: inline;">
-                                    <field name="alias_name" class="oe_inline"/>@<field name="alias_domain" class="oe_inline" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page name="description_page" string="Description">
+                            <field name="description" type="html"/>
+                            <div class="oe_clear"/>
+                        </page>
+                        <page string="Timesheets" attrs="{'invisible': [('allow_timesheets', '=', False)]}">
+                            <group>
+                                <group>
+                                    <field name="planned_hours" widget="float_time"/>
+                                        <label for="subtask_planned_hours" groups="project.group_subtask_project" attrs="{'invisible': [('subtask_count', '=', 0)]}"/>
+                                        <div class="o_row" groups="project.group_subtask_project" attrs="{'invisible': [('subtask_count', '=', 0)]}">
+                                            <field name="subtask_planned_hours" widget="float_time"/><span> planned hours</span>
+                                        </div>
+                                </group>
+                                <group>
+                                    <field name="progress" widget="progressbar"/>
+                                </group>
+                            </group>
+                            <group name="timesheet_error" attrs="{'invisible': [('analytic_account_active', '!=', False)]}">
+                                <div class="alert alert-warning" role="alert">
+                                    You can not log timesheets on this project since is linked to an inactive analytic account. Please change it, or reactivate the current one to timesheet on the project.
                                 </div>
-                            </div>
-                            <field name="alias_contact" class="oe_inline oe_edit_only" string="Accept Emails From"/>
+                            </group>
+                        <field name="timesheet_ids" mode="tree,kanban" attrs="{'invisible': [('analytic_account_active', '=', False)]}" context="{'default_project_id': project_id, 'default_name':''}">
+                            <tree editable="bottom" string="Timesheet Activities" default_order="date">
+                                <field name="date"/>
+                                <field name="user_id" invisible="1"/>
+                                <field name="employee_id" required="1"/>
+                                <field name="name"/>
+                                <field name="unit_amount" widget="timesheet_uom"/>
+                                <field name="project_id" invisible="1"/>
+                            </tree>
+                            <kanban class="o_kanban_mobile">
+                                <field name="date"/>
+                                <field name="user_id"/>
+                                <field name="employee_id"/>
+                                <field name="name"/>
+                                <field name="unit_amount"/>
+                                <field name="project_id"/>
+                                <templates>
+                                    <t t-name="kanban-box">
+                                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <strong><span><t t-esc="record.employee_id.value"/></span></strong>
+                                                </div>
+                                                <div class="col-6 pull-right text-right">
+                                                    <strong><t t-esc="record.date.value"/></strong>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-muted">
+                                                    <span><t t-esc="record.name.value"/></span>
+                                                </div>
+                                                <div class="col-6">
+                                                    <span class="pull-right text-right">
+                                                        <field name="unit_amount" widget="float_time"/>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </templates>
+                            </kanban>
+                            <form string="Timesheet Activities">
+                                <sheet>
+                                    <group>
+                                        <field name="date"/>
+                                        <field name="user_id" invisible="1"/>
+                                        <field name="employee_id" required="1"/>
+                                        <field name="name"/>
+                                        <field name="unit_amount" string="Duration" widget="float_time"/>
+                                        <field name="project_id" invisible="1"/>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                        <group attrs="{'invisible': [('analytic_account_active', '=', False)]}">
+                            <group class="oe_subtotal_footer oe_right" name="project_hours">
+                                <field name="effective_hours" widget="float_time"/>
+                                <field name="subtask_effective_hours" widget="float_time" attrs="{'invisible' : [('subtask_effective_hours', '=', 0.0)]}"/>
+                                <field name="total_hours_spent" widget="float_time" class="oe_subtotal_footer_separator" attrs="{'invisible' : [('subtask_effective_hours', '=', 0.0)]}"/>
+                                <field name="remaining_hours" widget="float_time" class="oe_subtotal_footer_separator"/>
+                            </group>
                         </group>
                     </page>
+
+                        <page string="Related Events">
+                            <field name="related_events_ids" mode="tree" readonly="1">
+                                <tree default_order="create_date desc">
+                                    <field name="create_date" widget="date"/>
+                                    <field name="name" string="Event Name"/>
+                                    <field name="state"/>
+                                    <field name="participant_ids"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="KPIs">
+                            <group>
+                                <group>
+                                    <field name="lead_count"/>
+                                    <field name="opp_count"/>
+                                    <field name="convertion_ratio" widget="percentage"/>
+                                    <field name="lead_lost"/>
+                                </group>
+                                <group>
+                                    <field name="contact_count"/>
+                                    <field name="contact_lost"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page name="extra_info" string="Extra Info">
+                            <group>
+                                <group>
+                                    <field name="sequence" groups="base.group_no_one"/>
+                                    <field name="partner_id" invisible="1" attrs="{'readonly': [('parent_id', '!=', False)]}"/>
+                                    <field name="email_from" attrs="{'readonly': [('parent_id', '!=', False)]}"/>
+                                    <field name="email_cc" groups="base.group_no_one"/>
+                                    <field name="parent_id" domain="[('project_id', '=', project_id)]" attrs="{'invisible' : [('subtask_count', '&gt;', 0)]}" groups="project.group_subtask_project"/>
+                                    <field name="child_ids" invisible="1"/>
+                                    <field name="subtask_project_id" invisible="1"/>
+                                    <field name="company_id" invisible="1" groups="base.group_multi_company" options="{'no_create': True}"/>
+                                    <field name="displayed_image_id" groups="base.group_no_one"/>
+                                </group>
+                                <group>
+                                    <field name="date_deadline"/>
+                                    <field name="date_assign" groups="base.group_no_one"/>
+                                    <field name="date_last_stage_update" groups="base.group_no_one"/>
+                                </group>
+                                <group string="Working Time to Assign" attrs="{'invisible': [('working_hours_open', '=', 0.0)]}">
+                                    <field name="working_hours_open" string="Hours"/>
+                                    <field name="working_days_open" string="Days"/>
+                                </group>
+                                <group string="Working Time to Close" attrs="{'invisible': [('working_hours_close', '=', 0.0)]}">
+                                    <field name="working_hours_close" string="Hours"/>
+                                    <field name="working_days_close" string="Days"/>
+                                </group>
+                            </group>
+                        </page>
                     </notebook>
-
-
-                </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers" help="Follow this project to automatically track the events associated to tasks and issues of this project." groups="base.group_user"/>
-                    <field name="message_ids" widget="mail_thread"/>
-                    <field name="activity_ids" widget="mail_activity"/>
-                </div>
-            </form>
-        </field>
-    </record>
-
-    <record id="task_marketing_form" model="ir.ui.view">
-        <field name="name">task.marketing.form</field>
-        <field name="model">task.marketing</field>
-        <field name="inherit_id" ref="project.view_task_form2"/>
-        <field name="mode">primary</field>
-        <field name="arch" type="xml">
-            <field name="name" position="after">
-                <field name="organizer_id"/>
-                <field name="business_line_id"/>
-                <field name="country_group_id"/>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
             </field>
-        </field>
-    </record>
+        </record>
+
+        <record id="act_marketing_project_2_marketing_task_all" model="ir.actions.act_window">
+            <field name="name">Marketing Campaigns</field>
+            <field name="res_model">project.task</field>
+            <field name="view_mode">kanban,tree,form,calendar</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('project.view_task_kanban')}),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('project.view_task_tree2')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('task_marketing_form')}),
+            (0, 0, {'view_mode': 'calendar', 'view_id': ref('project.view_task_calendar')}),
+            ]"/>
+            <field name="context">{
+                'search_default_project_id': [active_id],
+                'default_project_id': active_id,
+            }</field>
+            <field name="search_view_id" ref="project.view_task_search_form"/>
+            <field name="domain">[('task_type','=', 'marketing')]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Click <i>Create</i> to start a new task.
+                </p><p>
+                    To get things done, use activities and status on tasks.<br/>
+                    Chat in real time or by email to collaborate efficiently.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_marketing_project" model="ir.actions.act_window">
+            <field name="name">Lead Source</field>
+            <field name="res_model">project.project</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('project_marketing_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('project_marketing_form')})]"/>
+            <field name="domain">[('project_type','=', 'marketing')]</field>
+            <field name="context">{
+                'default_project_type':'marketing',
+            }</field>
+        </record>
 
 
-    <record id="action_marketing_project" model="ir.actions.act_window">
-        <field name="name">Lead Source</field>
-        <field name="res_model">project.marketing</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_ids" eval="[(5, 0, 0),
-        (0, 0, {'view_mode': 'tree', 'view_id': ref('project_marketing_tree')}),
-        (0, 0, {'view_mode': 'form', 'view_id': ref('project_marketing_form')})]"/>
-    </record>
+        <record id="action_marketing_task" model="ir.actions.act_window">
+            <field name="name">Marketing Campaign</field>
+            <field name="res_model">project.task</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('task_marketing_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('task_marketing_form')})]"/>
+            <field name="domain">[('task_type','=', 'marketing')]</field>
+            <field name="context">{
+                'default_task_type':'marketing',
+            }</field>
+        </record>
 
-    <record id="action_marketing_task" model="ir.actions.act_window">
-        <field name="name">Marketing Campaign</field>
-        <field name="res_model">task.marketing</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_ids" eval="[(5, 0, 0),
-        (0, 0, {'view_mode': 'tree', 'view_id': ref('task_marketing_tree')}),
-        (0, 0, {'view_mode': 'form', 'view_id': ref('task_marketing_form')})]"/>
-    </record>
-
-</data>
+    </data>
 </odoo>
 

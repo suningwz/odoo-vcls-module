@@ -6,7 +6,7 @@ from odoo import models, fields, api
 class ProjectTask(models.Model):
     _inherit = 'project.task'
     
-    business_value = fields.Selection([
+    """business_value = fields.Selection([
         ('1', 'Minor'),
         ('2', 'Moderate'),
         ('3', 'Strong'),
@@ -20,12 +20,13 @@ class ProjectTask(models.Model):
         ('3', 'Large'),
         ('4', 'Xtra Large')],
         string='Effort Assumption',
-    )
+    )"""
 
     task_type = fields.Selection([
         ('gen', 'Generic'),
         ('dev.vers', 'Development Version'),
-        ('dev.task', 'Development Task')],
+        ('dev.task', 'Development Task'),
+        ('marketing','Marketing Campaign')],
         default='gen',
         string='Task Type',
         compute='_compute_task_type',

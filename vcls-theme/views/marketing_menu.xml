@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- 
+        MENUS 
+        ##### -->
+
+        <!-- Original Menus/Action Renaming -->
+        <record id="marketing_automation.marketing_campaign_menu" model="ir.ui.menu">
+            <field name="name">Events</field>
+        </record>
+
+        <record id="marketing_automation.marketing_campaign_action" model="ir.actions.act_window">
+            <field name="name">Events</field>
+        </record>
+        
+    </data>
+</odoo>
+        

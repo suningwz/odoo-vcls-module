@@ -127,7 +127,7 @@
             id="menu_bd_marketing_sources"
             name="Lead Source Projects"
             parent="menu_bd_marketing"
-            action=""
+            action="vcls_marketing.action_marketing_project"
             sequence="1"
         />
 
@@ -135,7 +135,7 @@
             id="menu_bd_marketing_campaign"
             name="Marketing Campaign"
             parent="menu_bd_marketing"
-            action=""
+            action="vcls_marketing.action_marketing_task"
             sequence="3"
         />
         <!-- Invoices -->

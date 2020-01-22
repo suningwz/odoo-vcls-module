@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>   
+
+        <!-- For the leads -->
+        <record id="marketing_campaign_view_form" model="ir.ui.view">
+            <field name="name">marketing.campaign.view.form</field>
+            <field name="model">marketing.campaign</field>
+            <field name="inherit_id" ref="marketing_automation.marketing_campaign_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@class='o_ma_hierarchy']" position="before">
+                    <group>
+                        <field name="marketing_project_id"/>
+                        <field name="marketing_task_id" domain="[('project_id','=',marketing_project_id)]"/>
+                    </group>
+                </xpath>
+
+                
+            </field>
+        </record>
+    
+    </data>
+</odoo>

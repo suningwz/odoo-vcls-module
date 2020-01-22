@@ -352,7 +352,16 @@ class ResPartner(models.Model):
         if new_contact.type != 'contact':
             type_contact = new_contact.type
             new_contact.write({'display_name' : new_contact.display_name + ' (' + type_contact + ')' })
+
+        #we grab the parent tags
+        new_contact.grab_parent_categ()
+
         return new_contact
+    
+    def grab_parent_categ(self):
+        for contact in self:
+            if contact.parent_id:
+                contact.category_id |= contact.parent_id.category_id
             
     def add_new_adress(self):
         view_id = self.env.ref('vcls-contact.view_form_contact_address').id

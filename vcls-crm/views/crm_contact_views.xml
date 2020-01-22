@@ -41,8 +41,8 @@
                 </field>
                 -->
 
-                <xpath expr="/form/sheet/notebook/page[5]" position="after">
-                    <page name="marketing" string="Marketing Info" attrs="{'invisible': [('see_segmentation', '=', False)]}">
+                <!--<xpath expr="/form/sheet/notebook/page[5]" position="after">
+                    <page name="marketing" string="Marketing Info">
                     <field name="see_segmentation" invisible="1"/>
                     <group>
                         <group>
@@ -54,7 +54,7 @@
                         </group>
                     </group>
                     </page>
-                </xpath>
+                </xpath>-->
             </field>
         </record>
 

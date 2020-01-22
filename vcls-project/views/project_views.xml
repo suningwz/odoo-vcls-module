@@ -397,7 +397,10 @@
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>
-            <field name="domain">['|',('project_type','!=', 'client'),('project_type','=',False)]</field>
+            <field name="domain">[('project_type','=', 'internal')]</field>
+            <field name="context">{
+                'default_project_type':'internal',
+            }</field>
         </record>
 
     </data>

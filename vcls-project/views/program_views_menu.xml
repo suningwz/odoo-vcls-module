@@ -199,7 +199,7 @@
 
         <menuitem
             id="menu_program"
-            name="Project Programs"
+            name="Client Programs"
             parent="project.menu_main_pm"
             sequence="2"
             action="vcls-project.action_program"
