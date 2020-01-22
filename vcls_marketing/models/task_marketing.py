@@ -37,7 +37,7 @@ class Task(models.Model):
         'res.partner',
         string='Organizer'
     )
-    business_line_id = fields.Many2one(
+    business_line_id = fields.Many2many(
         'product.category',
         string='Business line',
         domain='[("is_business_line", "=", True)]'
