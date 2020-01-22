@@ -618,7 +618,7 @@ class Leads(models.Model):
                     else:
                         lead.name = lead.contact_name + " " + lead.contact_lastname
 
-    def all_campaigns_pop_up(self):
+    """def all_campaigns_pop_up(self):
         model_id = self.env['ir.model'].search([('model','=','crm.lead')], limit = 1)
         return {
             'name': 'All participated campaigns',
@@ -627,7 +627,7 @@ class Leads(models.Model):
             'res_model': 'marketing.participant',
             'type': 'ir.actions.act_window',
             'domain': "[('model_id','=', {}),('res_id','=',{})]".format(model_id.id, self.id)
-        }
+        }"""
     
     def create_contact_pop_up(self):
         result = self.env['crm.lead'].browse(self.id).handle_partner_assignation('create', False)

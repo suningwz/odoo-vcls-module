@@ -468,6 +468,7 @@
                                     <field name="date_closed"/>
                                     <field name="probability"/>
                                 </group>
+                                <!--
                                 <group string = 'All Participated Events'>
                                     <button name = "all_campaigns_pop_up" 
                                         string = "OPEN" 
@@ -476,6 +477,7 @@
                                         class = 'btn btn-primary'
                                     />
                                 </group>
+                                -->
                             </group>
                         </page>
                         <page name="sales_info" string="Sales Info">
