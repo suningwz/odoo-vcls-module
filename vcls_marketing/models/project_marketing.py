@@ -40,16 +40,16 @@ class Project(models.Model):
         
         return project
 
-    """@api.multi
+    @api.multi
     def tasks_tree_view(self):
         action = self.env.ref('project.act_project_project_2_project_task_all').read()[0]
-        _logger.info("TASK: {}".format(action))
+        #_logger.info("TASK: {}".format(action))
         for project in self:
             if project.project_type == 'marketing':
                 action = self.env.ref('vcls_marketing.act_marketing_project_2_marketing_task_all').read()[0]
-                _logger.info("TASKM: {}".format(action))
+                #_logger.info("TASKM: {}".format(action))
             else:
                 pass
-        return action"""
+        return action
 
 
