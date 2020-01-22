@@ -40,7 +40,7 @@ class Project(models.Model):
         
         return project
 
-    @api.multi
+    """@api.multi
     def tasks_tree_view(self):
         action = self.env.ref('project.act_project_project_2_project_task_all').read()[0]
         _logger.info("TASK: {}".format(action))
@@ -50,6 +50,6 @@ class Project(models.Model):
                 _logger.info("TASKM: {}".format(action))
             else:
                 pass
-        return action
+        return action"""
 
 
