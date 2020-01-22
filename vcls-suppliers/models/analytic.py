@@ -13,7 +13,12 @@ class AnalyticLine(models.Model):
 
     @api.model
     def _link_portal_analytic_line_purchase(self, user_id):
+        """
+        :param user_id:
+        :return: error: list of texts
+        """
         self.ensure_one()
+        error = []
         if self.sudo().env.user != self.env.user:
             logger.log(_('This method is only meant to be called with sud privileges'))
         task = self.task_id
@@ -26,7 +31,7 @@ class AnalyticLine(models.Model):
         purchase_line_obj = self.env['purchase.order.line']
         purchase_obj = self.env['purchase.order']
         purchase_line = purchase_line_obj.search([
-            #('is_rebilled', '=', False),
+            # ('is_rebilled', '=', False),
             ('sale_line_id', '=', sale_line_id.id),
             ('partner_id', '=', user_id.partner_id.id),
             ('state', 'not in', ['cancel']),
@@ -38,16 +43,11 @@ class AnalyticLine(models.Model):
                 'partner_id': user_id.partner_id.id,
             })
 
-            # Find the related external employee to get his price
-            employee = self.env['hr.employee'].search([('user_id','=',user_id.id)])
-            if not employee:
-                raise UserError("No external employee found for {}".format(user_id.name))
-
             # Find the default product for suppliers
-            default_product = self.env['product.product'].search([('name','=','Suppliers Hours')],limit=1)
+            default_product = self.env.ref('vcls-suppliers.suppliers_hours_product', raise_if_not_found=False)
             if not default_product:
-                raise UserError("No default product found for supplier RFQ.")
-            
+                error += [_("No default product found for supplier RFQ.")]
+                return error
             values = purchase_line_obj.default_get(
                 list(purchase_line_obj.fields_get()))
             values.update({
@@ -56,8 +56,8 @@ class AnalyticLine(models.Model):
                 'name': sale_line_id.name,
                 'order_id': purchase_order.id,
                 'account_analytic_id': task.project_id.analytic_account_id.id,
-                #'price_unit':employee.timesheet_cost,
-                'product_qty':self.unit_amount,
+                # 'price_unit':employee.timesheet_cost,
+                'product_qty': self.unit_amount,
             })
             purchase_line_cache = purchase_line_obj.new(values)
             purchase_line_cache.onchange_product_id()
