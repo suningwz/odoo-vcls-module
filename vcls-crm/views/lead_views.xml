@@ -468,7 +468,7 @@
                                     <field name="date_closed"/>
                                     <field name="probability"/>
                                 </group>
-                                <group string = 'All Participated Campaigns'>
+                                <group string = 'All Participated Events'>
                                     <button name = "all_campaigns_pop_up" 
                                         string = "OPEN" 
                                         type = "object"

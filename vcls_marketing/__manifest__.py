@@ -21,11 +21,13 @@
         'vcls-crm',
         'vcls_security',
         'vcls-expenses',
+        'marketing_automation',
     ],
     'data': [
         #'security/ir.model.access.csv',
         'views/marketing_views.xml',
         'views/lead_views.xml',
         'views/partner_views.xml',
+        'views/marketing_campaign_views.xml',
     ],
 }
