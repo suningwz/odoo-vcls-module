@@ -461,7 +461,7 @@
                                     
                                     <field name="medium_id" invisible="1"/>
                                     
-                                    <field name="referent_id" options='"no_create_edit": True}'/>
+                                    
                                 </group>
                                 <group string="Analysis" groups="base.group_no_one">
                                     <field name="date_open"/>
@@ -547,6 +547,11 @@
                         <field name="contact_us_message"/>
                     </page>
                 </xpath>
+
+                <xpath expr="//field[@name='medium_id']" position="after">
+                    <field name="referent_id" options='"no_create_edit": True}'/>
+                </xpath>
+                
 
             </field>
         </record>
