@@ -53,10 +53,10 @@ class Task(models.Model):
         #compute = '_compute_related_events_ids',
     )
 
-    """attendee_ids = fields.Many2many(
-        comodel_name = 'res.partner',
+    attendee_ids = fields.Many2many(
+        comodel_name = 'hr.employee',
         string="Attendees",
-    )"""
+    )
 
     def _compute_related_events_ids(self):
         for task in self.filtered(lambda t: t.task_type == 'marketing'):
