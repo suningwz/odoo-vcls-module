@@ -551,28 +551,6 @@ class Employee(models.Model):
             appraisal = self.env['hr.appraisal'].create(vals)
             if appraisal:
                 appraisal.button_send_appraisal()
-
-
-        """
-        
-        project_ids = self.browse(self._context.get('active_ids'))
-        all_projects = project_ids.filtered(lambda p: p.project_type=='client')
-        for project in project_ids:
-            all_projects += project.child_id
-        timesheet_ids = self.env['account.analytic.line'].search([('main_project_id', 'in', all_projects.ids),
-                                                                 ('stage_id', '=', 'pc_review')])
-        if timesheet_ids:
-            timesheet_ids.write({'stage_id': 'invoiceable'})
-        
-        #we update the timesheet limit date to the end of the previous month
-        today = fields.Date.today()
-        ts_limit_date =  today.replace(day=1) - relativedelta(days=1)
-        if all_projects:
-            all_projects.mapped('sale_order_id').write({'timesheet_limit_date':ts_limit_date})
-
-
-        #we trigger the computation of KPIs
-        self.env['project.task']._cron_compute_kpi()"""
     
     @api.model #to be called from CRON job
     def _check_employee_status(self):
