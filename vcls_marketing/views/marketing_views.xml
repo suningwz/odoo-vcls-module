@@ -252,6 +252,15 @@
                             </field>
                         </page>
 
+                        <page string="VCLS Attendees">
+                            <field name="attendee_ids" mode="tree">
+                                <tree default_order="name">
+                                    <field name="name"/>
+                                    <field name="job_id"/>
+                                </tree>
+                            </field>
+                        </page>
+
                         <page string="KPIs">
                             <group>
                                 <group>
