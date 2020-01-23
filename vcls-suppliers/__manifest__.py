@@ -36,7 +36,6 @@
         'data/expertise.area.csv',
         'data/project.supplier.type.csv',
         'data/hr_data.xml',
-        'data/product_data.sql',
         'data/product_data.xml',
 
         ### SECURITY
