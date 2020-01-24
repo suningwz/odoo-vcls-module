@@ -4,8 +4,7 @@ from odoo import models, fields, api, _
 import lxml
 import base64
 from itertools import groupby
-from datetime import date, datetime, time
-from datetime import timedelta
+from datetime import date
 from dateutil.relativedelta import relativedelta
 
 from odoo.tools import email_re, email_split, email_escape_char, float_is_zero, float_compare, \
@@ -285,6 +284,7 @@ class Invoice(models.Model):
             'fixed_price_data': fixed_price_data,
             'expenses_and_communication_data': expenses_and_communication_data,
             'rate_subtotal': rate_subtotal,
+            '_t': _,
         }
 
     @api.multi
@@ -297,6 +297,7 @@ class Invoice(models.Model):
             'fixed_price_data': fixed_price_data,
             'expenses_and_communication_data': expenses_and_communication_data,
             'rate_subtotal': rate_subtotal,
+            '_t': _,
         }
 
     @api.multi

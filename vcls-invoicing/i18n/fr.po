@@ -315,7 +315,7 @@ msgstr "Nbre de brouillon"
 #. module: vcls-invoicing
 #: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_invoice_form
 msgid "Draft Invoice"
-msgstr "Facture en brouillon"
+msgstr "Facture brouillon"
 
 #. module: vcls-invoicing
 #: model_terms:ir.ui.view,arch_db:vcls-invoicing.ia_invoices_view_tree
@@ -356,12 +356,12 @@ msgstr "GÉNÉRER UN RAPPORT D'ACTIVITÉ"
 #. module: vcls-invoicing
 #: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_invoice_form
 msgid "GENERATE DRAFT INVOICE"
-msgstr ""
+msgstr "Générer une facture brouillant"
 
 #. module: vcls-invoicing
 #: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_activity_simple_document
 msgid "Grand Total"
-msgstr ""
+msgstr "Grand Total"
 
 #. module: vcls-invoicing
 #: model:ir.model.fields,field_description:vcls-invoicing.field_sale_advance_payment_inv__group_invoice_method
@@ -432,7 +432,7 @@ msgstr "Groupe Administrateur de factures"
 #. module: vcls-invoicing
 #: model:ir.model.fields,field_description:vcls-invoicing.field_sale_order__invoiceable_amount
 msgid "Invoiceable Amount"
-msgstr ""
+msgstr "Montant facturable"
 
 #. module: vcls-invoicing
 #: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po__invoiced_amount
@@ -677,7 +677,7 @@ msgstr "Analyse de risque"
 #: model:ir.model.fields,field_description:vcls-invoicing.field_sale_order__risk_score
 #: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_order_form
 msgid "Risk Score"
-msgstr ""
+msgstr "Score de risque"
 
 #. module: vcls-invoicing
 #: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_sale_order_kanban
@@ -752,7 +752,7 @@ msgstr ""
 #: selection:res.partner,invoicing_frequency:0
 #: selection:sale.order,invoicing_frequency:0
 msgid "Trimester"
-msgstr ""
+msgstr "Trimestre"
 
 #. module: vcls-invoicing
 #: model:product.product,uom_name:vcls-invoicing.product_communication_rate
@@ -763,25 +763,25 @@ msgstr "Unité(s)"
 #. module: vcls-invoicing
 #: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
 msgid "VAT Number:"
-msgstr ""
+msgstr "Numéro de TVA"
 
 #. module: vcls-invoicing
 #: code:addons/vcls-invoicing/models/invoice.py:492
 #, python-format
 msgid "You cannot validate an invoice with a negative total amount. You should create a credit note instead."
-msgstr ""
+msgstr "Vous ne pouvez pas valider une facture avec un montant total négatif. Vous devez plutôt créer une note de crédit"
 
 #. module: vcls-invoicing
 #: code:addons/vcls-invoicing/models/invoice.py:727
 #, python-format
 msgid "You need to select an activity report template"
-msgstr ""
+msgstr "Vous devez sélectionner un modèle de rapport d'activité"
 
 #. module: vcls-invoicing
 #: code:addons/vcls-invoicing/models/invoice.py:721
 #, python-format
 msgid "You need to select an invoice template"
-msgstr ""
+msgstr "Vous devez sélectionner un modèle de facture"
 
 #. module: vcls-invoicing
 #: model:ir.model,name:vcls-invoicing.model_activity_report_groupment
@@ -797,5 +797,5 @@ msgstr ""
 #: model:product.product,weight_uom_name:vcls-invoicing.product_communication_rate
 #: model:product.template,weight_uom_name:vcls-invoicing.product_communication_rate_product_template
 msgid "kg"
-msgstr ""
+msgstr "kg"
 
