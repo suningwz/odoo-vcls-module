@@ -455,3 +455,11 @@ class Project(models.Model):
 
         #we trigger the computation of KPIs
         self.env['project.task']._cron_compute_kpi()
+
+    @api.multi
+    def write(self, values):
+        if values.get('active', None) is False:
+            tasks = self.mapped('tasks')
+            tasks |= tasks.mapped('child_ids')
+            tasks.write({'active': False})
+        return super(Project, self).write(values)

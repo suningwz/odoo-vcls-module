@@ -115,3 +115,10 @@ class SaleOrder(models.Model):
                 if tasks_values:
                     tasks.write(tasks_values)
         return result
+
+    @api.multi
+    def write(self, values):
+        if values.get('active', None) is False:
+            project_ids = self.mapped('project_id')
+            project_ids.write({'active': False})
+        return super(SaleOrder, self).write(values)
