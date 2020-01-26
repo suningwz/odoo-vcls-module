@@ -20,3 +20,4 @@ from . import multiselections
 from . import trial_period
 from . import user_group_history
 from . import working_times
+from . import appraisal
