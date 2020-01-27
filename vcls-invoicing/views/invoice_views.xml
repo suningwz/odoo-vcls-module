@@ -135,6 +135,7 @@
                     <field name="residual_signed"/>
                     <field name="fiscal_position_id"/>
                     <field name="state"/>
+                    <field name="ready_for_approval" readonly="1" widget="toggle_button"/>
                     <field name="activity_ids"/>
                     <field name="activity_state"/>
                 </tree>
