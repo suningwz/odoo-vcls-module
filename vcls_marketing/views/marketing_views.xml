@@ -117,6 +117,20 @@
                     </header>
                     <sheet string="Task">
                     <div class="oe_button_box" name="button_box">
+
+                        <button class="oe_stat_button" type="object"
+                            name="action_open_leads" icon="fa-road">
+                            <field string="Leads" name="lead_count" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                            name="action_open_opps" icon="fa-signal">
+                            <field string="Opportunities" name="opp_count" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                            name="action_open_contacts" icon="fa-smile-o">
+                            <field string="Contacts" name="contact_count" widget="statinfo"/>
+                        </button>
+
                         <button class="oe_stat_button" icon="fa-tasks" type="object" name="action_open_parent_task" string="Parent Task" attrs="{'invisible' : [('parent_id', '=', False)]}" groups="project.group_subtask_project"/>
                         <button name="action_subtask" type="object" class="oe_stat_button" icon="fa-tasks" attrs="{'invisible' : [('parent_id', '!=', False)]}" context="{'project_id': subtask_project_id, 'name': name, 'partner_id': partner_id}" groups="project.group_subtask_project">
                             <field string="Sub-tasks" name="subtask_count" widget="statinfo"/>

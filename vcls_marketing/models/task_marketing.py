@@ -118,7 +118,7 @@ class Task(models.Model):
     def _compute_convertion_ratio(self):
         for task in self.filtered(lambda t: t.task_type == 'marketing'):
             if task.opp_count > 0 or task.lead_count > 0:
-                task.convertion_ratio = 100*(task.opp_count/(task.opp_count+task.lead_count))
+                task.convertion_ratio = (task.opp_count/(task.opp_count+task.lead_count))
             else:
                 task.convertion_ratio = 0.0
     
@@ -137,4 +137,31 @@ class Task(models.Model):
                 task.contact_lost = len(partners)
             else:
                 task.contact_lost = 0
+
+    @api.multi
+    def action_open_leads(self):
+        self.ensure_one()
+        action = self.env.ref('crm.crm_lead_all_leads').read()[0]
+        lead_ids = self.env['crm.lead'].search([('type','=','lead'),('marketing_task_id','=',self.id)]).ids
+        action['domain'] = [('id', '=', lead_ids)]
+        #action['context'] = {}
+        return action
+
+    @api.multi
+    def action_open_opps(self):
+        self.ensure_one()
+        action = self.env.ref('crm.crm_lead_opportunities_tree_view').read()[0]
+        lead_ids = self.env['crm.lead'].search([('type','=','opportunity'),('marketing_task_id','=',self.id)]).ids
+        action['domain'] = [('id', '=', lead_ids)]
+        #action['context'] = {}
+        return action
+    
+    @api.multi
+    def action_open_contacts(self):
+        self.ensure_one()
+        action = self.env.ref('vcls-contact.action_contact_all_externals').read()[0]
+        lead_ids = self.env['res.partner'].search([('marketing_task_id','=',self.id)]).ids
+        action['domain'] = [('id', '=', lead_ids)]
+        #action['context'] = {}
+        return action
 
