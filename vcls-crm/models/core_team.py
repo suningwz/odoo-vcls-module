@@ -26,7 +26,7 @@ class CoreTeam(models.Model):
     
     assistant_id = fields.Many2one(
         comodel_name='hr.employee',
-        string = 'project.assistant',
+        string = 'Project Assistant',
         compute = '_compute_assistant_id',
         store = True,
     )

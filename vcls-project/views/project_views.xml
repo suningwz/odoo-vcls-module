@@ -5,7 +5,7 @@
         <record id="vcls_specific_project_form" model="ir.ui.view">
             <field name="name">vcls.specific.project.form</field>
             <field name="model">project.project</field>
-            <field name="priority">500</field>
+            <field name="priority">1</field>
             <field name="mode">primary</field>
             <field name="arch" type="xml">
                 <form string="Project" create="false">
