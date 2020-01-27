@@ -22,6 +22,7 @@
         'vcls_security',
         'vcls-expenses',
         'marketing_automation',
+        'mass_mailing',
     ],
     'data': [
         #'security/ir.model.access.csv',

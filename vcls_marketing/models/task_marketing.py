@@ -53,6 +53,11 @@ class Task(models.Model):
         #compute = '_compute_related_events_ids',
     )
 
+    related_mailing_campaigns_ids = fields.One2many(
+        comodel_name = 'mail.mass_mailing.campaign',
+        inverse_name = 'marketing_task_id',
+    )
+
     attendee_ids = fields.Many2many(
         comodel_name = 'hr.employee',
         string="Attendees",

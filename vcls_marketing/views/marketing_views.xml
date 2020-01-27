@@ -252,6 +252,23 @@
                             </field>
                         </page>
 
+                        <page string="Mailing Campaigns">
+                            <field name="related_mailing_campaigns_ids" mode="tree" readonly="1">
+                                <tree default_order="create_date desc">
+                                    <field name="create_date" widget="date"/>
+                                    <field name="name" string="Name"/>
+                                    <field name="user_id" string="Responsible"/>
+                                    <field name="mass_mailing_ids" string="Related Mailings"/>
+                                    <field name="sent"/>
+                                    <field name="bounced_ratio"/>
+                                    <field name="clicks_ratio"/>
+                                    <field name="received_ratio"/>
+                                    <field name="opened_ratio"/>
+                                    <field name="replied_ratio"/>
+                                </tree>
+                            </field>
+                        </page>
+
                         <page string="VCLS Attendees">
                             <field name="attendee_ids" mode="tree">
                                 <tree default_order="name">
