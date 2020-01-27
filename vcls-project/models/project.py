@@ -463,3 +463,10 @@ class Project(models.Model):
             tasks |= tasks.mapped('child_ids')
             tasks.write({'active': False})
         return super(Project, self).write(values)
+
+    @api.multi
+    def _get_family_project_ids(self):
+        self.ensure_one()
+        parent_project_id = self.parent_id or self
+        family_project_ids = parent_project_id | parent_project_id.child_id
+        return family_project_ids
