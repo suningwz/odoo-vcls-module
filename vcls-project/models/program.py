@@ -139,9 +139,7 @@ class ProjectProgram(models.Model):
         action = self.env.ref('vcls-timesheet.project_timesheet_forecast_report_action').read()[0]
         project_ids = self.env['project.project'].search([('program_id','=',self.id)]).mapped('id')
         action['domain'] = [('project_id','in',project_ids)]
-        action['context'] = { 
-        #      "search_default_project_id": project_ids[0],
-            }
+        action['context'] = {}
         return action
     
     @api.multi
