@@ -65,7 +65,7 @@ class CoreTeam(models.Model):
     def _compute_assistant_id(self):
         for team in self:
             if team.project_ids:
-                if team.project_ids.partner_id:
+                if team.project_ids[0].partner_id:
                     team.assistant_id = team.project_ids[0].partner_id.assistant_id
 
     
