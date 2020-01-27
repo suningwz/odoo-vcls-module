@@ -28,6 +28,7 @@ class CoreTeam(models.Model):
         comodel_name='hr.employee',
         string = 'project.assistant',
         compute = '_compute_assistant_id',
+        store = True,
     )
 
     consultant_ids = fields.Many2many(
@@ -66,7 +67,10 @@ class CoreTeam(models.Model):
         for team in self:
             if team.project_ids:
                 if team.project_ids[0].partner_id:
-                    team.assistant_id = team.project_ids[0].partner_id.assistant_id
+                    if team.project_ids[0].partner_id.assistant_id:
+                        assistant = self.env['hr.employee'].search(['user_id','=',team.project_ids[0].partner_id.assistant_id],limit=1)
+                        if assistant:
+                            team.assistant_id = assistant
 
     
     @api.depends('lead_consultant', 'lead_backup', 'ta_ids', 'consultant_ids','assistant_id')
