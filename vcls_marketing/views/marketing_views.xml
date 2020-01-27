@@ -241,6 +241,20 @@
                         </group>
                     </page>
 
+                        <page string="Costs Overview">
+                            <group>
+                                <field name="travel_cost"/>
+                                <field name="sponsorship_cost"/>
+                                <field name="registration_cost"/>
+                                
+                            </group>
+                            <group>
+                                <field name="saved_cost"/>
+                                <field name="total_cost"/>
+                                
+                            </group>
+                        </page>
+
                         <page string="Related Events">
                             <field name="related_events_ids" mode="tree" readonly="1">
                                 <tree default_order="create_date desc">

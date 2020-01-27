@@ -50,7 +50,6 @@ class Task(models.Model):
     related_events_ids = fields.One2many(
         comodel_name = 'marketing.campaign',
         inverse_name = 'marketing_task_id',
-        #compute = '_compute_related_events_ids',
     )
 
     related_mailing_campaigns_ids = fields.One2many(
@@ -63,9 +62,27 @@ class Task(models.Model):
         string="Attendees",
     )
 
-    def _compute_related_events_ids(self):
+    ### COSTS related fields
+    currency_id = fields.Many2one(
+        comodel_name = 'res.currency',
+        related = 'project_id.currency_id',
+    )
+
+    travel_cost = fields.Monetary(default=0.0)
+    sponsorship_cost = fields.Monetary(default=0.0)
+    registration_cost = fields.Monetary(default=0.0)
+    saved_cost = fields.Monetary(string = 'Savings Negociated',default=0.0)
+    total_cost = fields.Monetary(
+        compute='_compute_total_cost',
+        store = True,
+    )
+    
+    @api.depends('travel_cost','sponsorship_cost','registration_cost','saved_cost')
+    def _compute_total_cost(self):
         for task in self.filtered(lambda t: t.task_type == 'marketing'):
-            task.related_events_ids = self.env['marketing.campaign'].search([('marketing_task_id.id','=',task.id)])
+            task.total_cost = (task.travel_cost + task.sponsorship_cost + task.registration_cost - task.saved_cost)
+
+    
 
     lead_count = fields.Integer(compute="_compute_lead_count")
     opp_count = fields.Integer(compute="_compute_opp_count")
