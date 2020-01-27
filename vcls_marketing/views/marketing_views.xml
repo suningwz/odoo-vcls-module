@@ -123,7 +123,7 @@
                             <field name="lead_count" widget="statinfo"/>
                         </button>
                         <button class="oe_stat_button" type="object"
-                            name="action_open_opps" icon="fa-signal" string="Opportunities">
+                            name="action_open_opps" icon="fa-signal" string="Opps">
                             <field  name="opp_count" widget="statinfo"/>
                         </button>
                         <button class="oe_stat_button" type="object"
