@@ -23,6 +23,12 @@ class CoreTeam(models.Model):
         'hr.employee',
         string='Lead Consultant Backup',
        )
+    
+    assistant_id = fields.Many2one(
+        comodel_name='hr.employee',
+        string = 'project.assistant',
+        compute = '_compute_assistant_id',
+    )
 
     consultant_ids = fields.Many2many(
         comodel_name='hr.employee',
@@ -55,12 +61,20 @@ class CoreTeam(models.Model):
 
         return super(CoreTeam, self).write(vals)
 
-    @api.one
-    @api.depends('lead_consultant', 'lead_backup', 'ta_ids', 'consultant_ids')
+    @api.depends('project_ids.partner_id.assistant_id')
+    def _compute_assistant_id(self):
+        for team in self:
+            if team.project_ids:
+                if team.project_ids.partner_id:
+                    team.assistant_id = team.project_ids[0].partner_id.assistant_id
+
+    
+    @api.depends('lead_consultant', 'lead_backup', 'ta_ids', 'consultant_ids','assistant_id')
     def compute_core_team_related_users_list(self):
-        self.user_ids = (self.consultant_ids | self.ta_ids |
-                         self.lead_backup |
-                         self.lead_consultant).mapped('user_id')
+        for team in self:
+            team.user_ids = (team.consultant_ids | team.ta_ids |
+                            team.lead_backup | team.assistant_id |
+                            team.lead_consultant).mapped('user_id')
 
 
 class SaleOrder(models.Model):
