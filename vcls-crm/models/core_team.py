@@ -68,7 +68,7 @@ class CoreTeam(models.Model):
             if team.project_ids:
                 if team.project_ids[0].partner_id:
                     if team.project_ids[0].partner_id.assistant_id:
-                        assistant = self.env['hr.employee'].search([('user_id','=',team.project_ids[0].partner_id.assistant_id)],limit=1)
+                        assistant = self.env['hr.employee'].search([('user_id','=',team.project_ids[0].partner_id.assistant_id.id)],limit=1)
                         if assistant:
                             team.assistant_id = assistant
 
