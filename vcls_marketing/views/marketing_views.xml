@@ -243,15 +243,17 @@
 
                         <page string="Costs Overview">
                             <group>
-                                <field name="travel_cost"/>
-                                <field name="sponsorship_cost"/>
-                                <field name="registration_cost"/>
-                                
-                            </group>
-                            <group>
-                                <field name="saved_cost"/>
-                                <field name="total_cost"/>
-                                
+                                <group>
+                                    <field name="travel_cost"/>
+                                    <field name="sponsorship_cost"/>
+                                    <field name="registration_cost"/>
+                                    
+                                </group>
+                                <group>
+                                    <field name="saved_cost"/>
+                                    <field name="total_cost"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </group>
                             </group>
                         </page>
 
