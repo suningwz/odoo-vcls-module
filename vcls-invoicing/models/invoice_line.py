@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-
+from odoo.osv import expression
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -35,3 +35,14 @@ class InvoiceLine(models.Model):
         if result.purchase_line_id and not result.purchase_line_id.is_rebilled:
             result.account_analytic_id = False
         return result
+    
+    @api.model
+    def _timesheet_domain_get_invoiced_lines(self, sale_line_delivery):
+        """
+         We extend the domain to take in account the timesheet_limit date 
+         as well as the vcls status of the timesheets.
+         Take care to be aligned with the domain used to compute timesheet_ids at the sale.order model.
+        """
+        domain = super(InvoiceLine, self)._timesheet_domain_get_invoiced_lines(sale_line_delivery)
+        domain = expression.AND([domain, [('stage_id', '=', 'invoiceable')]])
+        return domain
