@@ -52,7 +52,7 @@ class InvoiceLine(models.Model):
                 limit_date = line.order_id.timesheet_limit_date
                 break
         if limit_date:
-            domain = expression.AND([domain, [('date', '>', limit_date)]])
+            domain = expression.AND([domain, [('date', '<', limit_date)]])
         domain = expression.AND([domain, [('stage_id', '=', 'invoiceable')]])
         _logger.info("TS DOMAIN {}".format(domain))
         return domain
