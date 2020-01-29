@@ -45,12 +45,6 @@
                     </tbody>
                 </t>
                 </table>
-                <div t-if='o.payment_term_id' style="margin-top:5%;">
-                    <strong>
-                        <span>Payment Term:</span>
-                        <t t-esc="o.payment_term_id.name"/>
-                    </strong>
-                </div>
             </table>
         </template>
         <template id="report_aggregated_invoice">
