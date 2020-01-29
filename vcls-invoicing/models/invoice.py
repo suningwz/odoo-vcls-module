@@ -546,6 +546,9 @@ class Invoice(models.Model):
             #call parent
             ret = super(Invoice, inv).write(vals)
 
+            #force partner_id change to ensure proper account to be used
+            inv._onchange_partner_id()
+
             #release timesheets if any
             if inv.state == 'cancel':
                 if inv.timesheet_ids:

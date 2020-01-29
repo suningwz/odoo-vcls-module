@@ -54,7 +54,6 @@
         </field>
     </record>
 
-
     <record id="view_ia_client_filter" model="ir.ui.view">
         <field name="name">view_ia_client_filter</field>
         <field name="model">res.partner</field>
