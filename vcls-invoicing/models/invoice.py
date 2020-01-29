@@ -752,12 +752,5 @@ class Invoice(models.Model):
     @api.multi
     def action_generate_draft_invoice_attachments(self):
         action = self.env.ref('vcls-invoicing.action_invoice_attachment').read()[0]
-        action['domain'] = [('res_id', '=', self.id),('name', 'like', DRAFTINVOICE)]
-        #action['domain'] = [('res_id', '=', self.id)]
+        action['domain'] = [('res_id', '=', self.id), ('name', 'like', DRAFTINVOICE)]
         return action
-
-    @api.multi
-    def _create_invoice(self, order, so_line, amount):
-        invoice = super(Invoice, self)._create_invoice(order, so_line, amount)
-        invoice._onchange_partner_id()
-        return invoice
