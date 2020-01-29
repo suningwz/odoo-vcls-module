@@ -38,10 +38,11 @@ class Invoice(models.Model):
         )
 
     invoice_sending_date = fields.Datetime()
-    parent_quotation_timesheet_limite_date = fields.Date(
+    
+    """parent_quotation_timesheet_limite_date = fields.Date(
         string='Parent Timesheet Limit Date',
         compute='compute_parent_quotation_timesheet_limite_date'
-    )
+    )"""
 
     temp_name = fields.Char(
         compute = 'compute_temp_name',
@@ -572,13 +573,13 @@ class Invoice(models.Model):
         
         return ret
 
-    @api.depends('invoice_line_ids')
+    """@api.depends('invoice_line_ids')
     def compute_parent_quotation_timesheet_limite_date(self):
         for invoice in self:
             so_with_timesheet_limit_date = invoice._get_parents_quotations().filtered(
                 lambda so: so.timesheet_limit_date)
             if so_with_timesheet_limit_date:
-                invoice.parent_quotation_timesheet_limite_date = so_with_timesheet_limit_date[0].timesheet_limit_date
+                invoice.parent_quotation_timesheet_limite_date = so_with_timesheet_limit_date[0].timesheet_limit_date"""
 
     def _get_parents_quotations(self):
         return self.mapped('invoice_line_ids.sale_line_ids.order_id')
