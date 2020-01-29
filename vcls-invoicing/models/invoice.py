@@ -470,15 +470,15 @@ class Invoice(models.Model):
     def get_communication_amount(self):
         total_amount = 0
         lines = self.invoice_line_ids
-        _logger.info("Invoice Lines {}".format(len(lines)))
+        #_logger.info("Invoice Lines {}".format(len(lines)))
         for line in lines:
             product = line.product_id
-            _logger.info("Product {} elligible {}".format(product.name, product.communication_elligible))
+            #_logger.info("Product {} elligible {}".format(product.name, product.communication_elligible))
             if product:
                 if product.id != self.env.ref('vcls-invoicing.product_communication_rate').id:
                     if product.communication_elligible:
                         total_amount += line.price_subtotal
-                        _logger.info("Communication Elligible {}".format(product.name))
+                        #_logger.info("Communication Elligible {}".format(product.name))
                 else:
                     # We suppress the communication rate line if already existingin order to replace and recompute it
                     line.unlink()
@@ -564,7 +564,7 @@ class Invoice(models.Model):
                     line._onchange_product_id()
                     line.price_unit = total_amount * inv.communication_rate
                     line.name = "Communication ({}%)".format(100*inv.communication_rate)
-                    #_logger.info("COM RATE PRICE {}".format(line.price_unit))
+                    _logger.info("COM RATE PRICE {}".format(line.price_unit))
                     line.quantity = 1
                     super(Invoice, inv.with_context(communication_rate=True)).write({
                         'invoice_line_ids': [(4, line.id)]
