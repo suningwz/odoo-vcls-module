@@ -68,13 +68,27 @@ class Task(models.Model):
         related = 'project_id.currency_id',
     )
 
-    travel_cost = fields.Monetary(default=0.0)
-    sponsorship_cost = fields.Monetary(default=0.0)
-    registration_cost = fields.Monetary(default=0.0)
-    saved_cost = fields.Monetary(string = 'Savings Negociated',default=0.0)
+    travel_cost = fields.Monetary(
+        default=0.0,
+        group_operator="sum",
+        )
+    sponsorship_cost = fields.Monetary(
+        default=0.0,
+        group_operator="sum",
+        )
+    registration_cost = fields.Monetary(
+        default=0.0,
+        group_operator="sum",
+        )
+    saved_cost = fields.Monetary(
+        string = 'Savings Negociated',
+        default=0.0,
+        group_operator="sum",
+        )
     total_cost = fields.Monetary(
         compute='_compute_total_cost',
         store = True,
+        group_operator="sum",
     )
     
     @api.depends('travel_cost','sponsorship_cost','registration_cost','saved_cost')
@@ -84,12 +98,30 @@ class Task(models.Model):
 
     
 
-    lead_count = fields.Integer(compute="_compute_lead_count")
-    opp_count = fields.Integer(compute="_compute_opp_count")
-    contact_count = fields.Integer(compute="_compute_contact_count")
-    convertion_ratio = fields.Float(compute="_compute_convertion_ratio")
-    lead_lost = fields.Integer(compute="_compute_lead_lost")
-    contact_lost = fields.Integer(compute="_compute_contact_lost")
+    lead_count = fields.Integer(
+        compute="_compute_lead_count",
+        group_operator="sum",
+        )
+    opp_count = fields.Integer(
+        compute="_compute_opp_count",
+        group_operator="sum",
+        )
+    contact_count = fields.Integer(
+        compute="_compute_contact_count",
+        group_operator="sum",
+        )
+    convertion_ratio = fields.Float(
+        compute="_compute_convertion_ratio",
+        group_operator="avg",
+        )
+    lead_lost = fields.Integer(
+        compute="_compute_lead_lost",
+        group_operator="sum",
+        )
+    contact_lost = fields.Integer(
+        compute="_compute_contact_lost",
+        group_operator="sum",
+        )
 
     def _compute_lead_count(self):
         for task in self.filtered(lambda t: t.task_type == 'marketing'):
