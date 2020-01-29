@@ -520,12 +520,12 @@ class Invoice(models.Model):
                         invoice.name),
                     })
 
-    """@api.model
+    @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
         ret._onchange_partner_id()
         #_logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals, ret.partner_id))
-        return ret"""
+        return ret
 
     @api.multi
     def write(self, vals):
@@ -549,13 +549,13 @@ class Invoice(models.Model):
                         timesheet.stage_id = 'invoiceable'
             
             #communication rate
-            #_logger.info("COM RATE {} {}".format(inv.communication_rate,self.env.context.get('communication_rate')))
-            if inv.communication_rate > 0 and not self.env.context.get('communication_rate'):
+            _logger.info("COM RATE {} {}".format(inv.communication_rate,self.env.context.get('communication_rate')))
+            """if inv.communication_rate > 0 and not self.env.context.get('communication_rate'):
                 total_amount = inv.get_communication_amount()
-                """try:
-                    total_amount = inv.get_communication_amount()
-                except:
-                    total_amount = False"""
+                #try:
+                #    total_amount = inv.get_communication_amount()
+                #except:
+                #    total_amount = False
                     #_logger.info("COM RATE ERROR")
                 if total_amount:
                     line = self.env['account.invoice.line'].new()
@@ -569,6 +569,7 @@ class Invoice(models.Model):
                         'invoice_line_ids': [(4, line.id)]
                     })
                     _logger.info("COM RATE PRICE {} write {} context {}".format(line.price_unit,ret,self.env.context.get('communication_rate')))
+                   """ 
         return ret
 
     """@api.depends('invoice_line_ids')
