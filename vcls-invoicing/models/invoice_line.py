@@ -44,5 +44,15 @@ class InvoiceLine(models.Model):
          Take care to be aligned with the domain used to compute timesheet_ids at the sale.order model.
         """
         domain = super(InvoiceLine, self)._timesheet_domain_get_invoiced_lines(sale_line_delivery)
+        #we get any of the timesheet limit dates of the so (all have to be the same)
+        limit_date = None
+
+        for line in sale_line_delivery:
+            if line.order_id.timesheet_limit_date:
+                limit_date = line.order_id.timesheet_limit_date
+                break
+        if limit_date:
+            domain = expression.AND([domain, [('date', '>', limit_date)]])
         domain = expression.AND([domain, [('stage_id', '=', 'invoiceable')]])
+        _logger.info("TS DOMAIN {}".format(domain))
         return domain
