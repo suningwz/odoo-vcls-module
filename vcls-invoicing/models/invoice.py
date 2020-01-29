@@ -551,10 +551,11 @@ class Invoice(models.Model):
             #communication rate
             #_logger.info("COM RATE {} {}".format(inv.communication_rate,self.env.context.get('communication_rate')))
             if inv.communication_rate > 0 and not self.env.context.get('communication_rate'):
-                try:
+                total_amount = inv.get_communication_amount()
+                """try:
                     total_amount = inv.get_communication_amount()
                 except:
-                    total_amount = False
+                    total_amount = False"""
                     #_logger.info("COM RATE ERROR")
                 if total_amount:
                     line = self.env['account.invoice.line'].new()
