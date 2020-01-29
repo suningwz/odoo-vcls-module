@@ -8,6 +8,7 @@
             <xpath expr="//page[@name='financials']" position="inside">
                 <group>
                     <group>
+                        <field name="lang"/>
                         <field name="communication_rate"/>
                         <field name="invoicing_frequency"/>
                     </group>
