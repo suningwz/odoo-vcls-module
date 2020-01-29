@@ -34,6 +34,7 @@ class Invoice(models.Model):
     user_id = fields.Many2one(
         'res.users',
         string='Invoicing Administrator',
+        related='commercial_partner_id.invoice_admin_id',
         )
 
     invoice_sending_date = fields.Datetime()
@@ -500,7 +501,7 @@ class Invoice(models.Model):
             activity_type = self.env['mail.activity.type'].search([('name','=','Invoice Review')],limit=1)
             if activity_type:
                 users_to_notify = self.env['res.users']
-                users_to_notify |= invoice.partner_id.user_id
+                users_to_notify |= invoice.commercial_partner_id.user_id
                 #we also notify the LM of the invoice admin
                 connected_employee = self.env['hr.employee'].search([('user_id','=',invoice.user_id.id)],limit=1)
                 if connected_employee:
@@ -518,7 +519,7 @@ class Invoice(models.Model):
                         invoice.name),
                     })
 
-    @api.model
+    """@api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
 
@@ -527,7 +528,7 @@ class Invoice(models.Model):
             ret.user_id = ret.partner_id.invoice_admin_id
 
         #_logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals.get('timesheet_limit_date'),ret.timesheet_limit_date))
-        return ret
+        return ret"""
 
     @api.multi
     def write(self, vals):
