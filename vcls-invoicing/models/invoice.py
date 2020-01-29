@@ -520,16 +520,12 @@ class Invoice(models.Model):
                         invoice.name),
                     })
 
-    """@api.model
+    @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
 
-        #Invoice Administrator becomes the user
-        if ret.partner_id.invoice_admin_id:
-            ret.user_id = ret.partner_id.invoice_admin_id
-
-        #_logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals.get('timesheet_limit_date'),ret.timesheet_limit_date))
-        return ret"""
+        _logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals, ret.parter_id))
+        return ret
 
     @api.multi
     def write(self, vals):
@@ -543,11 +539,13 @@ class Invoice(models.Model):
             if not self.env.context.get('source_data'):
                 vals = inv.with_context(source_data=True)._get_source_data(vals)
 
+            #we force the account to be related with the company of the invoice
+            #if vals.get('company_id',inv.company_id.id):
+
+            #inv._onchange_partner_id()
+
             #call parent
             ret = super(Invoice, inv).write(vals)
-
-            #force partner_id change to ensure proper account to be used
-            inv._onchange_partner_id()
 
             #release timesheets if any
             if inv.state == 'cancel':
