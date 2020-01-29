@@ -97,7 +97,17 @@ class SaleOrder(models.Model):
     @api.multi
     def _action_confirm(self):
         self.action_sync()
-        result = super(SaleOrder, self)._action_confirm()
+        return super(SaleOrder, self)._action_confirm()
+
+    @api.multi
+    def write(self, values):
+        if values.get('active', None) is False:
+            project_ids = self.mapped('project_id')
+            project_ids.write({'active': False})
+        return super(SaleOrder, self).write(values)
+
+    def action_sync(self):
+        super(SaleOrder, self).action_sync()
         for order in self:
             project_id = order.project_id
             if project_id.scope_of_work:
@@ -114,11 +124,6 @@ class SaleOrder(models.Model):
                     tasks_values.update({'date_end': order.expected_end_date})
                 if tasks_values:
                     tasks.write(tasks_values)
-        return result
-
-    @api.multi
-    def write(self, values):
-        if values.get('active', None) is False:
-            project_ids = self.mapped('project_id')
-            project_ids.write({'active': False})
-        return super(SaleOrder, self).write(values)
+            project_id.name = order.name
+            for task_id in project_id.tasks:
+                task_id.name = task_id.sale_line_id.name
