@@ -481,6 +481,7 @@ class Invoice(models.Model):
                         #_logger.info("Communication Elligible {}".format(product.name))
                 else:
                     # We suppress the communication rate line if already existingin order to replace and recompute it
+                    _logger.info("COM UNLINK")
                     line.unlink()
             else:
                 total_amount += line.price_subtotal
@@ -536,8 +537,8 @@ class Invoice(models.Model):
             if vals.get('sent'):
                 vals.update({'invoice_sending_date': fields.Datetime.now()})
 
-            if not self.env.context.get('source_data'):
-                vals = inv.with_context(source_data=True)._get_source_data(vals)
+            #if not self.env.context.get('source_data'):
+                #vals = inv.with_context(source_data=True)._get_source_data(vals)
 
             #call parent
             ret = super(Invoice, inv).write(vals)
@@ -550,7 +551,7 @@ class Invoice(models.Model):
             
             #communication rate
             _logger.info("COM RATE {} {}".format(inv.communication_rate,self.env.context.get('communication_rate')))
-            """if inv.communication_rate > 0 and not self.env.context.get('communication_rate'):
+            if inv.communication_rate > 0 and not self.env.context.get('communication_rate'):
                 total_amount = inv.get_communication_amount()
                 #try:
                 #    total_amount = inv.get_communication_amount()
@@ -568,8 +569,8 @@ class Invoice(models.Model):
                     ret = super(Invoice, inv.with_context(communication_rate=True)).write({
                         'invoice_line_ids': [(4, line.id)]
                     })
-                    _logger.info("COM RATE PRICE {} write {} context {}".format(line.price_unit,ret,self.env.context.get('communication_rate')))
-                   """ 
+                    #_logger.info("COM RATE PRICE {} write {} context {}".format(line.price_unit,ret,self.env.context.get('communication_rate')))
+                   
         return ret
 
     """@api.depends('invoice_line_ids')
