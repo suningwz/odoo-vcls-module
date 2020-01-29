@@ -564,11 +564,11 @@ class Invoice(models.Model):
                     line._onchange_product_id()
                     line.price_unit = total_amount * inv.communication_rate
                     line.name = "Communication ({}%)".format(100*inv.communication_rate)
-                    _logger.info("COM RATE PRICE {}".format(line.price_unit))
                     line.quantity = 1
-                    super(Invoice, inv.with_context(communication_rate=True)).write({
+                    ret = super(Invoice, inv.with_context(communication_rate=True)).write({
                         'invoice_line_ids': [(4, line.id)]
                     })
+                    _logger.info("COM RATE PRICE {} write {} context {}".format(line.price_unit,ret,self.env.context.get('communication_rate')))
         return ret
 
     """@api.depends('invoice_line_ids')
