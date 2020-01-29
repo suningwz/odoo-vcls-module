@@ -523,8 +523,8 @@ class Invoice(models.Model):
     @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
-
-        _logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals, ret.partner_id))
+        ret._onchange_partner_id()
+        #_logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals, ret.partner_id))
         return ret
 
     @api.multi
@@ -538,11 +538,6 @@ class Invoice(models.Model):
 
             if not self.env.context.get('source_data'):
                 vals = inv.with_context(source_data=True)._get_source_data(vals)
-
-            #we force the account to be related with the company of the invoice
-            #if vals.get('company_id',inv.company_id.id):
-
-            #inv._onchange_partner_id()
 
             #call parent
             ret = super(Invoice, inv).write(vals)
