@@ -542,7 +542,7 @@ class Invoice(models.Model):
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
         ret._onchange_partner_id()
-        #_logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals, ret.partner_id))
+        _logger.info("INVOICE CREATE ID {} VALS {}".format(ret.id,vals))
         return ret
 
     @api.multi
