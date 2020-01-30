@@ -35,11 +35,6 @@ class SaleOrder(models.Model):
         default =lambda self: self.partner_id.invoicing_frequency,
     )
     
-    """timesheet_limit_date = fields.Date(
-        compute='_compute_timesheet_limit_date',
-        inverse='_inverse_timesheet_limit_date',
-        store=True,
-    )"""
     
     invoice_template = fields.Many2one('ir.actions.report', domain=[('model', '=', 'account.invoice')])
     activity_report_template = fields.Many2one(
@@ -95,32 +90,6 @@ class SaleOrder(models.Model):
             risk_ids |= self.env['risk'].search([('resource', '=', resourcePrtn)])
         if risk_ids:
             self.risk_ids |= risk_ids
-
-    """@api.one
-    @api.depends('partner_id.invoice_ids', 'partner_id.invoice_ids.state',
-                 'invoicing_frequency')
-    def _compute_timesheet_limit_date(self):
-        customer_last_invoice = sorted(
-            self.invoice_ids.filtered(
-                lambda inv: inv.invoice_sending_date and inv.state != 'cancel'
-            ), key=lambda inv: inv.invoice_sending_date, reverse=True
-        )
-        customer_last_invoice = customer_last_invoice and customer_last_invoice[0] or None
-        if customer_last_invoice and customer_last_invoice.timesheet_limit_date and \
-                self.invoicing_frequency and self.invoicing_frequency != 'milestone':
-            if self.invoicing_frequency == 'month':
-                #end of the next months
-                new_date = customer_last_invoice.timesheet_limit_date +\
-                           relativedelta(day=1, months=1) -\
-                           relativedelta(day=1)
-            if self.invoicing_frequency == 'trimester':
-                new_date = customer_last_invoice.timesheet_limit_date +\
-                           relativedelta(day=1, months=3) -\
-                           relativedelta(day=1)
-            self.timesheet_limit_date = new_date
-
-    def _inverse_timesheet_limit_date(self):
-        pass"""
 
     @api.one
     @api.depends('project_id.user_id','partner_id.invoice_admin_id', 'parent_id')
@@ -182,6 +151,9 @@ class SaleOrder(models.Model):
 
     @api.multi
     def write(self, vals):
+        """
+        Some fields have to be forced down to childs for the coherence of the invoicing
+        """
         for rec in self:
             childs = vals.get('child_ids', False) or rec.child_ids
             if childs:
@@ -204,6 +176,40 @@ class SaleOrder(models.Model):
         result = super(SaleOrder, self).create(vals)
         result.check_risk()
         return result
+    
+    @api.multi
+    def _prepare_invoice(self):
+        """
+        We Extend the dictionnary for the invoice creation with VCLS customs.
+        """
+        invoice_vals = super(SaleOrder, self)._prepare_invoice()
+
+        #invoice period
+        if self.timesheet_limit_date:
+            invoice_vals['timesheet_limit_date'] = self.timesheet_limit_date
+            if self.invoicing_frequency == 'month':
+                invoice_vals['period_start'] = self.timesheet_limit_date + relativedelta(months=-1,days=1)
+            elif self.invoicing_frequency == 'trimester':
+                invoice_vals['period_start'] = self.timesheet_limit_date + relativedelta(months=-3,days=1)
+            else:
+                pass
+        else:
+            pass
+
+        #related models
+        if self.po_id:
+            invoice_vals['po_id'] = self.po_id.id
+        
+        if self.invoice_template:
+            invoice_vals['invoice_template'] = self.invoice_template.id
+        
+        if self.activity_report_template:
+            invoice_vals['activity_report_template'] = self.activity_report_template.id
+
+        #other values
+        invoice_vals['communication_rate'] = float(self.communication_rate)
+
+        return invoice_vals
 
     @api.onchange('partner_id')
     def get_partner_financial_config(self):

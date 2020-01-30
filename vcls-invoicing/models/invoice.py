@@ -141,13 +141,13 @@ class Invoice(models.Model):
         #we initiate variables
         laius = ""
         sow = ""
-        timesheet_limit_date = False
+        """timesheet_limit_date = False
         period_start = False
         delta = 0
         communication_rate = 0.0
         invoice_template = None #self.env['ir.actions.report']
         activity_report_template = None #self.env['ir.actions.report']
-        po_id = None #self.env['invoicing.po']
+        po_id = None #self.env['invoicing.po']"""
 
         #loop in projects
         for project in self.project_ids:
@@ -174,7 +174,7 @@ class Invoice(models.Model):
             so = project.sale_order_id
             #Timesheet limit date
             
-            if not vals.get('timesheet_limit_date', self.timesheet_limit_date):
+            """if not vals.get('timesheet_limit_date', self.timesheet_limit_date):
                 if so.timesheet_limit_date:
                     if timesheet_limit_date:
                         if so.timesheet_limit_date < timesheet_limit_date:
@@ -182,18 +182,18 @@ class Invoice(models.Model):
                     else:
                         timesheet_limit_date = so.timesheet_limit_date
             else:
-                timesheet_limit_date = vals.get('timesheet_limit_date',self.timesheet_limit_date)
+                timesheet_limit_date = vals.get('timesheet_limit_date',self.timesheet_limit_date)"""
             
-            if not vals.get('period_start',self.period_start) and timesheet_limit_date:
+            """if not vals.get('period_start',self.period_start) and timesheet_limit_date:
                 if so.invoicing_frequency == 'month' and delta < 1:
                     delta = 1
                 if so.invoicing_frequency == 'trimester' and delta < 3:
                     delta = 3
                 period_start = timesheet_limit_date + relativedelta(months=-1*delta,days=1)
             else:
-                period_start = vals.get('period_start',self.period_start)
+                period_start = vals.get('period_start',self.period_start)"""
 
-            #_logger.info("SO DATA {} rate {}".format(so.name,so.communication_rate))
+            """#_logger.info("SO DATA {} rate {}".format(so.name,so.communication_rate))
             #PO id
             if not vals.get('po_id',self.po_id):
                 if not po_id and so.po_id:
@@ -213,28 +213,28 @@ class Invoice(models.Model):
                 if not activity_report_template and so.activity_report_template:
                     activity_report_template = so.activity_report_template.id
             else:
-                activity_report_template = vals.get('activity_report_template',self.activity_report_template.id)
+                activity_report_template = vals.get('activity_report_template',self.activity_report_template.id)"""
             
-            #Communication  Rate
+            """#Communication  Rate
             if not vals.get('communication_rate',self.communication_rate):
                 if communication_rate < float(so.communication_rate):
                     communication_rate = float(so.communication_rate) 
             else:
-                communication_rate = vals.get('communication_rate',self.communication_rate) 
+                communication_rate = vals.get('communication_rate',self.communication_rate)""" 
 
         vals.update({   'lc_laius': laius,
                         'scope_of_work': sow,
-                        'timesheet_limit_date': timesheet_limit_date,
-                        'period_start': period_start,
-                        'communication_rate': communication_rate,
+                        #'timesheet_limit_date': timesheet_limit_date,
+                        #'period_start': period_start,
+                        #'communication_rate': communication_rate,
                         })
         
-        if po_id:
+        """if po_id:
             vals.update({'po_id': po_id})
         if invoice_template:
             vals.update({'invoice_template': invoice_template})
         if activity_report_template:
-            vals.update({'activity_report_template': activity_report_template})
+            vals.update({'activity_report_template': activity_report_template})"""
 
         return vals
 
