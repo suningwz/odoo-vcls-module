@@ -551,7 +551,8 @@ class Employee(models.Model):
             appraisal = self.env['hr.appraisal'].create(vals)
             if appraisal:
                 appraisal.button_send_appraisal()
-    
+
+                
     @api.model #to be called from CRON job
     def _check_employee_status(self):
         date_ref = date.today()
