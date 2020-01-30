@@ -547,6 +547,8 @@ class Invoice(models.Model):
 
     @api.multi
     def write(self, vals):
+        if self._context.get('create_communication'):
+            return super(Invoice, self).write(vals)
         ret = False
         _logger.info("INVOICE WRITE IDS {} VALS {}".format(self.ids,vals))
         for inv in self:
@@ -588,7 +590,8 @@ class Invoice(models.Model):
                         name: line_cache[name]
                         for name in line_cache._cache
                     })
-                    invoice_line_obj.create(line_values)
+                    invoice_line_obj.with_context(create_communication=True)\
+                        .create(line_values)
         return ret
 
     """@api.depends('invoice_line_ids')
