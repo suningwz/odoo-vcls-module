@@ -4,8 +4,7 @@ from odoo import models, fields, api, _
 import lxml
 import base64
 from itertools import groupby
-from datetime import date, datetime, time
-from datetime import timedelta
+from datetime import date
 from dateutil.relativedelta import relativedelta
 
 from odoo.tools import email_re, email_split, email_escape_char, float_is_zero, float_compare, \
@@ -35,13 +34,15 @@ class Invoice(models.Model):
     user_id = fields.Many2one(
         'res.users',
         string='Invoicing Administrator',
+        related='commercial_partner_id.invoice_admin_id',
         )
 
     invoice_sending_date = fields.Datetime()
-    parent_quotation_timesheet_limite_date = fields.Date(
+    
+    """parent_quotation_timesheet_limite_date = fields.Date(
         string='Parent Timesheet Limit Date',
         compute='compute_parent_quotation_timesheet_limite_date'
-    )
+    )"""
 
     temp_name = fields.Char(
         compute = 'compute_temp_name',
@@ -285,6 +286,7 @@ class Invoice(models.Model):
             'fixed_price_data': fixed_price_data,
             'expenses_and_communication_data': expenses_and_communication_data,
             'rate_subtotal': rate_subtotal,
+            '_t': _,
         }
 
     @api.multi
@@ -297,6 +299,7 @@ class Invoice(models.Model):
             'fixed_price_data': fixed_price_data,
             'expenses_and_communication_data': expenses_and_communication_data,
             'rate_subtotal': rate_subtotal,
+            '_t': _,
         }
 
     @api.multi
@@ -467,17 +470,18 @@ class Invoice(models.Model):
     def get_communication_amount(self):
         total_amount = 0
         lines = self.invoice_line_ids
-        _logger.info("Invoice Lines {}".format(len(lines)))
+        #_logger.info("Invoice Lines {}".format(len(lines)))
         for line in lines:
             product = line.product_id
-            _logger.info("Product {} elligible {}".format(product.name, product.communication_elligible))
+            #_logger.info("Product {} elligible {}".format(product.name, product.communication_elligible))
             if product:
                 if product.id != self.env.ref('vcls-invoicing.product_communication_rate').id:
                     if product.communication_elligible:
                         total_amount += line.price_subtotal
-                        _logger.info("Communication Elligible {}".format(product.name))
+                        #_logger.info("Communication Elligible {}".format(product.name))
                 else:
                     # We suppress the communication rate line if already existingin order to replace and recompute it
+                    _logger.info("COM UNLINK")
                     line.unlink()
             else:
                 total_amount += line.price_subtotal
@@ -499,7 +503,7 @@ class Invoice(models.Model):
             activity_type = self.env['mail.activity.type'].search([('name','=','Invoice Review')],limit=1)
             if activity_type:
                 users_to_notify = self.env['res.users']
-                users_to_notify |= invoice.partner_id.user_id
+                users_to_notify |= invoice.commercial_partner_id.user_id
                 #we also notify the LM of the invoice admin
                 connected_employee = self.env['hr.employee'].search([('user_id','=',invoice.user_id.id)],limit=1)
                 if connected_employee:
@@ -520,12 +524,8 @@ class Invoice(models.Model):
     @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
-
-        #Invoice Administrator becomes the user
-        if ret.partner_id.invoice_admin_id:
-            ret.user_id = ret.partner_id.invoice_admin_id
-
-        #_logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals.get('timesheet_limit_date'),ret.timesheet_limit_date))
+        ret._onchange_partner_id()
+        #_logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals, ret.partner_id))
         return ret
 
     @api.multi
@@ -550,12 +550,13 @@ class Invoice(models.Model):
                         timesheet.stage_id = 'invoiceable'
             
             #communication rate
-            #_logger.info("COM RATE {} {}".format(inv.communication_rate,self.env.context.get('communication_rate')))
+            _logger.info("COM RATE {} {}".format(inv.communication_rate,self.env.context.get('communication_rate')))
             if inv.communication_rate > 0 and not self.env.context.get('communication_rate'):
-                try:
-                    total_amount = inv.get_communication_amount()
-                except:
-                    total_amount = False
+                total_amount = inv.get_communication_amount()
+                #try:
+                #    total_amount = inv.get_communication_amount()
+                #except:
+                #    total_amount = False
                     #_logger.info("COM RATE ERROR")
                 if total_amount:
                     line = self.env['account.invoice.line'].new()
@@ -564,19 +565,21 @@ class Invoice(models.Model):
                     line._onchange_product_id()
                     line.price_unit = total_amount * inv.communication_rate
                     line.name = "Communication ({}%)".format(100*inv.communication_rate)
-                    #_logger.info("COM RATE PRICE {}".format(line.price_unit))
                     line.quantity = 1
-                    inv.with_context(communication_rate=True).invoice_line_ids += line
-        
+                    ret = super(Invoice, inv.with_context(communication_rate=True)).write({
+                        'invoice_line_ids': [(4, line.id)]
+                    })
+                    #_logger.info("COM RATE PRICE {} write {} context {}".format(line.price_unit,ret,self.env.context.get('communication_rate')))
+                   
         return ret
 
-    @api.depends('invoice_line_ids')
+    """@api.depends('invoice_line_ids')
     def compute_parent_quotation_timesheet_limite_date(self):
         for invoice in self:
             so_with_timesheet_limit_date = invoice._get_parents_quotations().filtered(
                 lambda so: so.timesheet_limit_date)
             if so_with_timesheet_limit_date:
-                invoice.parent_quotation_timesheet_limite_date = so_with_timesheet_limit_date[0].timesheet_limit_date
+                invoice.parent_quotation_timesheet_limite_date = so_with_timesheet_limit_date[0].timesheet_limit_date"""
 
     def _get_parents_quotations(self):
         return self.mapped('invoice_line_ids.sale_line_ids.order_id')
@@ -613,7 +616,7 @@ class Invoice(models.Model):
         self.ensure_one()
         return lxml.html.document_fromstring(html_format).text_content()
 
-    def parent_quotation_informations(self):
+    """def parent_quotation_informations(self):
 
         if not self.origin:
             return []
@@ -635,6 +638,7 @@ class Invoice(models.Model):
             ('From', self.timesheet_limit_date and self.timesheet_limit_date.strftime("%d/%m/%Y") or ''),
             ('To', self.timesheet_limit_date and self.timesheet_limit_date.strftime("%d/%m/%Y") or '')
         ]
+    """
 
     def get_analytic_accounts_lines(self):
         so_names = self.origin.split(', ')
@@ -748,6 +752,5 @@ class Invoice(models.Model):
     @api.multi
     def action_generate_draft_invoice_attachments(self):
         action = self.env.ref('vcls-invoicing.action_invoice_attachment').read()[0]
-        action['domain'] = [('res_id', '=', self.id),('name', 'like', DRAFTINVOICE)]
-        #action['domain'] = [('res_id', '=', self.id)]
+        action['domain'] = [('res_id', '=', self.id), ('name', 'like', DRAFTINVOICE)]
         return action

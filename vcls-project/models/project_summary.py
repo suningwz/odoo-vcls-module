@@ -24,7 +24,7 @@ class ProjectSummary(models.Model):
     )
     completion_ratio = fields.Float('Task Complete')
     consumed_value = fields.Float('Budget Consumed')
-    consumed_completed_ratio = fields.Float('Budget Consumed/Task Complete')
+    consumed_completed_ratio = fields.Float('BC/TC')
 
     @api.multi
     def name_get(self):

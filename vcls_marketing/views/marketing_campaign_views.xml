@@ -2,7 +2,7 @@
 <odoo>
     <data>   
 
-        <!-- For the leads -->
+        <!-- Marketing Campaign -->
         <record id="marketing_campaign_view_form" model="ir.ui.view">
             <field name="name">marketing.campaign.view.form</field>
             <field name="model">marketing.campaign</field>
@@ -12,6 +12,29 @@
                     <group>
                         <field name="marketing_project_id"/>
                         <field name="marketing_task_id" domain="[('project_id','=',marketing_project_id)]"/>
+                    </group>
+                </xpath>
+
+                
+            </field>
+        </record>
+
+        <!-- Mailing Campaign -->
+        <record id="view_mail_mass_mailing_campaign_form" model="ir.ui.view">
+            <field name="name">mail.mass_mailing.campaign.form</field>
+            <field name="model">mail.mass_mailing.campaign</field>
+            <field name="inherit_id" ref="mass_mailing.view_mail_mass_mailing_campaign_form"/>
+            <field name="arch" type="xml">
+                <field name="medium_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="source_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <xpath expr="//field[@name='source_id']" position="after">
+                    <group>
+                        <field name="marketing_project_id" required="1"/>
+                        <field name="marketing_task_id" domain="[('project_id','=',marketing_project_id)]" required="1"/>
                     </group>
                 </xpath>
 

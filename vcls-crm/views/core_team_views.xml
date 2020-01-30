@@ -15,7 +15,7 @@
                                 <field name='lead_backup'/>
                             </group>
                             <group>
-                                
+                                <field name='assistant_id'/>
                             </group>
                         </group>
                         <group>

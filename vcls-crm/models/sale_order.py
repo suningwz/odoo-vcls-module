@@ -433,7 +433,15 @@ class SaleOrder(models.Model):
                 for line in rate_lines.sorted(lambda s: s.price_unit, reverse=True):
                     line.sequence = min_seq
                     min_seq += 1
-            
-                #_logger.info("REMAP {} - {} | {}".format(line.sequence,line.name,line.section_line_id))
 
-
+    @api.multi
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        # keep partner_shipping_id as the original one, don't change it
+        # unless it was not set
+        partner_shipping_id = self.partner_shipping_id
+        super(SaleOrder, self).onchange_partner_id()
+        if partner_shipping_id:
+            self.update({
+               'partner_shipping_id': partner_shipping_id,
+            })

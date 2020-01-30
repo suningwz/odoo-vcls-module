@@ -50,24 +50,78 @@ class Task(models.Model):
     related_events_ids = fields.One2many(
         comodel_name = 'marketing.campaign',
         inverse_name = 'marketing_task_id',
-        #compute = '_compute_related_events_ids',
     )
 
-    """attendee_ids = fields.Many2many(
-        comodel_name = 'res.partner',
+    related_mailing_campaigns_ids = fields.One2many(
+        comodel_name = 'mail.mass_mailing.campaign',
+        inverse_name = 'marketing_task_id',
+    )
+
+    attendee_ids = fields.Many2many(
+        comodel_name = 'hr.employee',
         string="Attendees",
-    )"""
+    )
 
-    def _compute_related_events_ids(self):
+    ### COSTS related fields
+    currency_id = fields.Many2one(
+        comodel_name = 'res.currency',
+        related = 'project_id.currency_id',
+    )
+
+    travel_cost = fields.Monetary(
+        default=0.0,
+        group_operator="sum",
+        )
+    sponsorship_cost = fields.Monetary(
+        default=0.0,
+        group_operator="sum",
+        )
+    registration_cost = fields.Monetary(
+        default=0.0,
+        group_operator="sum",
+        )
+    saved_cost = fields.Monetary(
+        string = 'Savings Negociated',
+        default=0.0,
+        group_operator="sum",
+        )
+    total_cost = fields.Monetary(
+        compute='_compute_total_cost',
+        store = True,
+        group_operator="sum",
+    )
+    
+    @api.depends('travel_cost','sponsorship_cost','registration_cost','saved_cost')
+    def _compute_total_cost(self):
         for task in self.filtered(lambda t: t.task_type == 'marketing'):
-            task.related_events_ids = self.env['marketing.campaign'].search([('marketing_task_id.id','=',task.id)])
+            task.total_cost = (task.travel_cost + task.sponsorship_cost + task.registration_cost - task.saved_cost)
 
-    lead_count = fields.Integer(compute="_compute_lead_count")
-    opp_count = fields.Integer(compute="_compute_opp_count")
-    contact_count = fields.Integer(compute="_compute_contact_count")
-    convertion_ratio = fields.Float(compute="_compute_convertion_ratio")
-    lead_lost = fields.Integer(compute="_compute_lead_lost")
-    contact_lost = fields.Integer(compute="_compute_contact_lost")
+    
+
+    lead_count = fields.Integer(
+        compute="_compute_lead_count",
+        group_operator="sum",
+        )
+    opp_count = fields.Integer(
+        compute="_compute_opp_count",
+        group_operator="sum",
+        )
+    contact_count = fields.Integer(
+        compute="_compute_contact_count",
+        group_operator="sum",
+        )
+    convertion_ratio = fields.Float(
+        compute="_compute_convertion_ratio",
+        group_operator="avg",
+        )
+    lead_lost = fields.Integer(
+        compute="_compute_lead_lost",
+        group_operator="sum",
+        )
+    contact_lost = fields.Integer(
+        compute="_compute_contact_lost",
+        group_operator="sum",
+        )
 
     def _compute_lead_count(self):
         for task in self.filtered(lambda t: t.task_type == 'marketing'):
@@ -96,7 +150,7 @@ class Task(models.Model):
     def _compute_convertion_ratio(self):
         for task in self.filtered(lambda t: t.task_type == 'marketing'):
             if task.opp_count > 0 or task.lead_count > 0:
-                task.convertion_ratio = 100*(task.opp_count/(task.opp_count+task.lead_count))
+                task.convertion_ratio = (task.opp_count/(task.opp_count+task.lead_count))
             else:
                 task.convertion_ratio = 0.0
     
@@ -115,4 +169,31 @@ class Task(models.Model):
                 task.contact_lost = len(partners)
             else:
                 task.contact_lost = 0
+
+    @api.multi
+    def action_open_leads(self):
+        self.ensure_one()
+        action = self.env.ref('crm.crm_lead_all_leads').read()[0]
+        lead_ids = self.env['crm.lead'].search([('type','=','lead'),('marketing_task_id','=',self.id)]).ids
+        action['domain'] = [('id', '=', lead_ids)]
+        #action['context'] = {}
+        return action
+
+    @api.multi
+    def action_open_opps(self):
+        self.ensure_one()
+        action = self.env.ref('crm.crm_lead_opportunities_tree_view').read()[0]
+        lead_ids = self.env['crm.lead'].search([('type','=','opportunity'),('marketing_task_id','=',self.id)]).ids
+        action['domain'] = [('id', '=', lead_ids)]
+        #action['context'] = {}
+        return action
+    
+    @api.multi
+    def action_open_contacts(self):
+        self.ensure_one()
+        action = self.env.ref('vcls-contact.action_contact_all_externals').read()[0]
+        lead_ids = self.env['res.partner'].search([('marketing_task_id','=',self.id)]).ids
+        action['domain'] = [('id', '=', lead_ids)]
+        #action['context'] = {}
+        return action
 

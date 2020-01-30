@@ -40,29 +40,6 @@ class SaleAdvancePaymentInv(models.TransientModel):
 
         return super(SaleAdvancePaymentInv, self.with_context(context)).create_invoices()
 
-        """if self.group_invoice_method == 'project':
-            projects = self.env['sale.order'].browse(self._context.get('active_ids', [])).mapped('project_ids')
-            for project in projects:
-                projects_to_invoice_ids = [p.id for p in self.get_projects(project)]
-            sale_orders = self.env['sale.order.line'].search([('project_id', 'in', projects_to_invoice_ids)]).mapped('order_id')
-            sale_orders = sale_orders.filtered(lambda t: t.po_id)
-            for po_id, same_po_orders in groupby(sale_orders, key=lambda so: so.po_id):
-                same_po_orders_ids = list(same_po_orders)
-                po_orders_to_invoice_ids = [p.id for p in same_po_orders_ids]
-                context['active_ids'] = po_orders_to_invoice_ids
-                return super(SaleAdvancePaymentInv, self.with_context(context)).create_invoices()
-        elif self.group_invoice_method == 'program':
-            programs = self.env['sale.order'].browse(self._context.get('active_ids', [])).mapped('program_id')
-            sale_orders = self.env['sale.order'].search([('program_id', 'in', programs.ids)])
-            context['active_ids'] = sale_orders.ids
-        elif self.group_invoice_method == 'agreement':
-            agreements = self.env['sale.order'].browse(self._context.get('active_ids', [])).mapped('agreement_id')
-            sale_orders = self.env['sale.order'].search([('agreement_id', 'in', agreements.ids)])
-            context['active_ids'] = sale_orders.ids
-
-        return super(SaleAdvancePaymentInv, self.with_context(context)).create_invoices()
-        """
-
     @api.model
     def _get_children(self, project, children=[]):
         children += project

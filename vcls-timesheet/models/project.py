@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from datetime import datetime
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -26,7 +25,6 @@ class Project(models.Model):
     pc_hours = fields.Float(string="PC Review Hours",readonly=True)
     cf_hours = fields.Float(string="Carry Forward Hours",readonly=True)
 
-
     @api.multi
     def _get_kpi(self):
         for project in self:
@@ -48,7 +46,14 @@ class Project(models.Model):
 
             project.valuation_ratio = 100.0*(project.valued_hours / project.realized_hours) if project.realized_hours else False
 
-            #we recompute the invoiceable amount
+            # we recompute the invoiceable amount
             project.sale_order_id.order_line._compute_qty_delivered()
-            #_logger.info("COMPUTE UNTAXED AMOUNT {}-{}".format(project.name,project.sale_order_id.order_line.mapped('name')))
 
+    @api.multi
+    def action_projects_followup(self):
+        self.ensure_one()
+        family_project_ids = self._get_family_project_ids()
+        action = self.env.ref('vcls-timesheet.project_timesheet_forecast_report_action').read()[0]
+        action['domain'] = [('project_id', 'in', family_project_ids.ids)]
+        action['context'] = {}
+        return action

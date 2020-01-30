@@ -65,15 +65,14 @@
                 
                 <!--
                 attrs="{'invisible': ['|',('ready_for_approval', '=', False),('state','!=','draft')]}"-->
-
                 <xpath expr="//button[@name='action_invoice_open']" position="before">
-                    <button string="Ready for Approval" type="object" class="btn-primary" name="action_ready_for_approval" attrs="{'invisible': [('ready_for_approval', '=', True)]}"/>
+                    <button string="GENERATE DRAFT INVOICE" type="object" class="btn-primary" name="action_generate_draft_invoice" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                 </xpath>
-                <xpath expr="//button[@name='preview_invoice']" position="after">
+                <xpath expr="//button[@name='action_invoice_open']" position="before">
                     <button string="GENERATE ACTIVITY REPORT" type="object" class="btn-primary" name="action_generate_activity_report"/>
                 </xpath>
-                <xpath expr="//button[@name='preview_invoice']" position="after">
-                    <button string="GENERATE DRAFT INVOICE" type="object" class="btn-primary" name="action_generate_draft_invoice"/>
+                <xpath expr="//button[@name='action_invoice_open']" position="before">
+                    <button string="Ready for Approval" type="object" class="btn-primary" name="action_ready_for_approval" attrs="{'invisible': [('ready_for_approval', '=', True)]}"/>
                 </xpath>
 
                 <div class="oe_button_box" name="button_box">
@@ -135,6 +134,7 @@
                     <field name="residual_signed"/>
                     <field name="fiscal_position_id"/>
                     <field name="state"/>
+                    <field name="ready_for_approval" readonly="1"/>
                     <field name="activity_ids"/>
                     <field name="activity_state"/>
                 </tree>

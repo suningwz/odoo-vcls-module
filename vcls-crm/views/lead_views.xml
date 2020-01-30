@@ -461,7 +461,7 @@
                                     
                                     <field name="medium_id" invisible="1"/>
                                     
-                                    <field name="referent_id" options='"no_create_edit": True}'/>
+                                    
                                 </group>
                                 <group string="Analysis" groups="base.group_no_one">
                                     <field name="date_open"/>
@@ -547,6 +547,11 @@
                         <field name="contact_us_message"/>
                     </page>
                 </xpath>
+
+                <xpath expr="//field[@name='medium_id']" position="after">
+                    <field name="referent_id" options='"no_create_edit": True}'/>
+                </xpath>
+                
 
             </field>
         </record>
@@ -718,29 +723,6 @@
         </field>
         </record>
 
-        <!-- we override the pipeline action -->
-        <record model="ir.actions.act_window" id="crm.crm_lead_opportunities_tree_view">
-            <field name="name">Pipeline</field>
-            <field name="res_model">crm.lead</field>
-            <field name="view_mode">kanban,tree,graph,pivot,form,calendar,activity</field>
-            <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'kanban', 'view_id': ref('crm.crm_case_kanban_view_leads')}),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('crm.crm_case_tree_view_oppor')}),
-                (0, 0, {'view_mode': 'calendar', 'view_id': ref('crm.crm_case_calendar_view_leads')}),
-                (0, 0, {'view_mode': 'pivot', 'view_id': ref('crm.crm_lead_view_pivot')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('crm.crm_case_form_view_oppor')}),
-                (0, 0, {'view_mode': 'graph', 'view_id': ref('crm.crm_lead_view_graph')}),
-                (0, 0, {'view_mode': 'cohort', 'view_id': ref('crm_enterprise.crm_lead_view_cohort')}),
-                (0, 0, {'view_mode': 'dashboard', 'view_id': ref('crm_enterprise.crm_opportunity_view_dashboard')}),
-            ]"/>
-            <field name="context">{
-                    'default_type': 'opportunity',
-                    'search_default_assigned_to_me': 1,
-                    'search_default_open': 1,
-                    }
-            </field>
-        </record>
-
         <!-- used for the NEW CI menu in the contact app-->
         <record model="ir.actions.act_window" id="action_new_CI">
             <field name="name">New CI</field>
@@ -749,21 +731,31 @@
             <field name="view_id" ref="view_lead_new_ci_form"/>
         </record>
 
+        <!-- we override the pipeline action -->
+        <record model="ir.actions.act_window" id="crm.crm_lead_opportunities_tree_view">
+            <field name="name">Pipeline</field>
+            <field name="res_model">crm.lead</field>
+            <field name="view_mode">kanban,tree,graph,pivot,form,calendar,activity</field>
+            <field name="context">{
+                    'default_type': 'opportunity',
+                    'search_default_assigned_to_me': 1,
+                    'search_default_open': 1,
+                    }
+            </field>
+        </record>
+
         <!-- we override the all lead action to replace some views -->
         <record model="ir.actions.act_window" id="crm.crm_lead_all_leads">
             <field name="name">Leads</field>
             <field name="res_model">crm.lead</field>
             <field name="view_mode">tree,kanban,graph,pivot,calendar,form,activity</field>
-            <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('crm.crm_case_tree_view_leads')}),
-                (0, 0, {'view_mode': 'kanban', 'view_id': ref('crm.view_crm_lead_kanban')}),
-                (0, 0, {'view_mode': 'calendar', 'view_id': ref('crm.crm_case_calendar_view_leads')}),
-                (0, 0, {'view_mode': 'pivot', 'view_id': ref('crm.crm_lead_view_pivot')}),
-                (0, 0, {'view_mode': 'graph', 'view_id': ref('crm.crm_lead_view_graph')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('crm.crm_case_form_view_leads')}),
-            ]"/>
         </record>
-                
+
+        <record id="crm_lead_all_leads_view_form" model="ir.actions.act_window.view">
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="crm.crm_case_form_view_leads"/>
+            <field name="act_window_id" ref="crm.crm_lead_all_leads"/>
+        </record>
 
     </data>
 </odoo>

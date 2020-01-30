@@ -11,9 +11,10 @@
     'website': "http://www.voisinconsulting.com",
     'category': 'Uncategorized',
 
-    'version': '0.1.1',
+    'version': '0.1.4',
   
     'depends': [
+        'crm',
         'project',
         'contacts',
         'vcls-contact',
@@ -22,6 +23,7 @@
         'vcls_security',
         'vcls-expenses',
         'marketing_automation',
+        'mass_mailing',
     ],
     'data': [
         #'security/ir.model.access.csv',

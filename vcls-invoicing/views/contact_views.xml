@@ -8,6 +8,7 @@
             <xpath expr="//page[@name='financials']" position="inside">
                 <group>
                     <group>
+                        <field name="lang"/>
                         <field name="communication_rate"/>
                         <field name="invoicing_frequency"/>
                     </group>
@@ -52,7 +53,6 @@
             </xpath>
         </field>
     </record>
-
 
     <record id="view_ia_client_filter" model="ir.ui.view">
         <field name="name">view_ia_client_filter</field>

@@ -1,0 +1,801 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* vcls-invoicing
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 12.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-01-23 16:32+0000\n"
+"PO-Revision-Date: 2020-01-23 16:32+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_aggregated_document
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "&amp;nbsp;"
+msgstr ""
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "&amp;nbsp;<span>on</span>"
+msgstr "&amp;nbsp;<span>sur</span>"
+
+#. module: vcls-invoicing
+#: selection:res.partner,communication_rate:0
+#: selection:sale.order,communication_rate:0
+msgid "0.5%"
+msgstr ""
+
+#. module: vcls-invoicing
+#: selection:res.partner,communication_rate:0
+#: selection:sale.order,communication_rate:0
+msgid "1.5%"
+msgstr ""
+
+#. module: vcls-invoicing
+#: selection:res.partner,communication_rate:0
+#: selection:sale.order,communication_rate:0
+msgid "2.5%"
+msgstr ""
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "<span> for the period from </span>"
+msgstr "<span> pour la période de </span>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "<span> to </span>"
+msgstr "<span> à </span>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "<span><strong>Lead Consultant Note: </strong></span>"
+msgstr "<span><strong>Note du consultant principal: </strong></span>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_activity_simple_document
+msgid "<span>Activity report for</span>"
+msgstr "<span>Rapport d'activité pour</span>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_activity_simple_document
+msgid "<span>Invoice Period: </span>"
+msgstr "<span>Période de facturation: </span>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_aggregated_document
+msgid "<span>Payment Term:</span>"
+msgstr "<span>Conditions de paiement:</span>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "<span>VAT 0.0%</span>"
+msgstr "<span>T.V.A 0.0%</span>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "<strong>Client ref:</strong>"
+msgstr "<strong>Réf client:</strong>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "<strong>Customer Code:</strong>"
+msgstr "<strong>Numéro de client :</strong>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "<strong>Description:</strong>"
+msgstr "<strong>Description :</strong>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "<strong>Due Date:</strong>"
+msgstr "<strong>Date d'échéance :</strong>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "<strong>Invoice Date:</strong>"
+msgstr "<strong>Date de la facture :</strong>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "<strong>Invoice to:</strong>"
+msgstr "<strong>Facture à:</strong>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "<strong>Payment Term:</strong>"
+msgstr "<strong>Conditions de paiement:</strong>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "<strong>Subtotal</strong>"
+msgstr "<strong>Sous-total</strong>"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "<strong>Total</strong>"
+msgstr "<strong>Total</strong>"
+
+#. module: vcls-invoicing
+#: model:ir.model,name:vcls-invoicing.model_account_invoice_send
+msgid "Account Invoice Send"
+msgstr "Envoie de la facture"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_setup_bank_manual_config__account_name
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_partner_bank__account_name
+msgid "Account name"
+msgstr "Nom du compte"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Account name:"
+msgstr "Nom du compte"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Account number:"
+msgstr "Numéro de compte"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po__active
+msgid "Active"
+msgstr "Actif"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_invoice_form
+msgid "Activity Report"
+msgstr "Rapport d'activité"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__activity_report_template
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_partner__activity_report_template
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_users__activity_report_template
+#: model:ir.model.fields,field_description:vcls-invoicing.field_sale_order__activity_report_template
+msgid "Activity Report Template"
+msgstr "Modèle de rapport d'activité"
+
+#. module: vcls-invoicing
+#: model:ir.actions.report,name:vcls-invoicing.invoice_activity_detailed_report
+msgid "Activity report (detailed)"
+msgstr "Rapport d'activité (détaillé)"
+
+#. module: vcls-invoicing
+#: model:ir.actions.report,name:vcls-invoicing.invoice_activity_simple_report
+msgid "Activity report (simple)"
+msgstr "Rapport d'activité (simple)"
+
+#. module: vcls-invoicing
+#: model_terms:ir.actions.act_window,help:vcls-invoicing.action_invoice_attachment
+msgid "Also you will find here all the related documents and download it by clicking on any individual document."
+msgstr "Vous trouverez également ici tous les documents associés et pourrez les télécharger en cliquant sur chacun d'eux."
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po__amount
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Amount"
+msgstr "Montant"
+
+#. module: vcls-invoicing
+#: model:ir.actions.act_window,name:vcls-invoicing.action_invoice_attachment
+msgid "Attachments"
+msgstr "Pièces jointes"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__bank_account_id
+msgid "Bank Account"
+msgstr "Compte bancaire"
+
+#. module: vcls-invoicing
+#: model:ir.model,name:vcls-invoicing.model_res_partner_bank
+msgid "Bank Accounts"
+msgstr "Comptes bancaires"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Bank:"
+msgstr "Banque"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_invoice_form
+msgid "Client"
+msgstr "Client"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__po_id
+msgid "Client PO ref."
+msgstr ""
+
+#. module: vcls-invoicing
+#: model:ir.actions.act_window,name:vcls-invoicing.action_po
+#: model:ir.model,name:vcls-invoicing.model_invoicing_po
+msgid "Client Purchase Order"
+msgstr "Bon de commande client"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po__client_ref
+msgid "Client Ref"
+msgstr "Réf client"
+
+#. module: vcls-invoicing
+#: model:ir.actions.act_window,name:vcls-invoicing.action_ia_clients
+msgid "Clients"
+msgstr "Clients"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_product_product__communication_elligible
+#: model:ir.model.fields,field_description:vcls-invoicing.field_product_template__communication_elligible
+msgid "Communication Elligible"
+msgstr "Communication éligible"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__communication_rate
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_partner__communication_rate
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_users__communication_rate
+#: model:ir.model.fields,field_description:vcls-invoicing.field_sale_order__communication_rate
+msgid "Communication Rate"
+msgstr "Taux de communication"
+
+#. module: vcls-invoicing
+#: model:product.product,name:vcls-invoicing.product_communication_rate
+#: model:product.template,name:vcls-invoicing.product_communication_rate_product_template
+msgid "Communication rate"
+msgstr "Taux de communication"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,help:vcls-invoicing.field_account_invoice__bank_account_id
+msgid "Company Bank Account Number to which the invoice will be paid."
+msgstr "Numéro de compte bancaire de la société auquel la facture sera payée"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Consulting Services | Fixed Price"
+msgstr "Services de consultation | Prix ​​fixe"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Consulting Services | Time &amp; Material"
+msgstr "Services de consultation | Heure et &amp; Matériel"
+
+#. module: vcls-invoicing
+#: model:ir.model,name:vcls-invoicing.model_res_partner
+msgid "Contact"
+msgstr "Contact"
+
+#. module: vcls-invoicing
+#: model_terms:ir.actions.act_window,help:vcls-invoicing.action_ia_invoices
+#: model_terms:ir.actions.act_window,help:vcls-invoicing.action_invoice_attachment
+msgid "Create a new document"
+msgstr "Créer un nouveau document"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po__create_uid
+msgid "Created by"
+msgstr "Créé par"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po__create_date
+msgid "Created on"
+msgstr "Créé le"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__vcls_due_date
+msgid "Custom Due Date"
+msgstr "Date d'échéance personnalisée"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po__currency_id
+msgid "Default Currency"
+msgstr "Devise par défaut"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_aggregated_document
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Description"
+msgstr "Description"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po__display_name
+msgid "Display Name"
+msgstr "Nom affiché"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__draft_count
+msgid "Draft Count"
+msgstr "Nbre de brouillon"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_invoice_form
+msgid "Draft Invoice"
+msgstr "Facture brouillon"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.ia_invoices_view_tree
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_invoice_form
+msgid "Due Date"
+msgstr "Date d'échéance"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Expense"
+msgstr "Dépense"
+
+#. module: vcls-invoicing
+#: model:res.groups,name:vcls-invoicing.finance_risk_group
+msgid "Finance Risk Group"
+msgstr "Groupe des risques financiers"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_sale_order__financial_config_readonly
+msgid "Financial Config Readonly"
+msgstr "Configuration financière en lecture seule"
+
+#. module: vcls-invoicing
+#: model:ir.model,name:vcls-invoicing.model_account_fiscal_position
+msgid "Fiscal Position"
+msgstr "Position fiscale"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Fixed Fees"
+msgstr "Frais fixes"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_invoice_form
+msgid "GENERATE ACTIVITY REPORT"
+msgstr "GÉNÉRER UN RAPPORT D'ACTIVITÉ"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_invoice_form
+msgid "GENERATE DRAFT INVOICE"
+msgstr "Générer une facture brouillant"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_activity_simple_document
+msgid "Grand Total"
+msgstr "Grand Total"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_sale_advance_payment_inv__group_invoice_method
+msgid "Grouping Invoice by"
+msgstr "GÉNÉRER UN PROJET DE FACTURE"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_invoice_form
+msgid "IA"
+msgstr "IA"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "IBAN Code:"
+msgstr "Le code IBAN"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po__id
+msgid "ID"
+msgstr "ID"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_setup_bank_manual_config__iban
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_partner_bank__iban
+msgid "Iban"
+msgstr "Iban"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,help:vcls-invoicing.field_product_product__communication_elligible
+#: model:ir.model.fields,help:vcls-invoicing.field_product_template__communication_elligible
+msgid "Indicate if product is elligible to the communication rate or not"
+msgstr "Indiquez si le produit est éligible au débit de communication ou non"
+
+#. module: vcls-invoicing
+#: model:ir.model,name:vcls-invoicing.model_account_invoice
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_invoice_form
+msgid "Invoice"
+msgstr "Facture"
+
+#. module: vcls-invoicing
+#: model:ir.model,name:vcls-invoicing.model_account_invoice_line
+msgid "Invoice Line"
+msgstr "Ligne de facture"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__invoice_sending_date
+msgid "Invoice Sending Date"
+msgstr "Date d'envoi de la facture"
+
+#. module: vcls-invoicing
+#: model:ir.actions.report,name:vcls-invoicing.project_invoice_aggregated
+msgid "Invoice Simple"
+msgstr "Facture simple"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__invoice_template
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_partner__invoice_template
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_users__invoice_template
+#: model:ir.model.fields,field_description:vcls-invoicing.field_sale_order__invoice_template
+msgid "Invoice Template"
+msgstr "Modèle de facture"
+
+#. module: vcls-invoicing
+#: model:res.groups,name:vcls-invoicing.finance_ia_group
+msgid "Invoice administrator Group"
+msgstr "Groupe Administrateur de factures"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_sale_order__invoiceable_amount
+msgid "Invoiceable Amount"
+msgstr "Montant facturable"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po__invoiced_amount
+msgid "Invoiced Amount"
+msgstr "Montant facturé"
+
+#. module: vcls-invoicing
+#: model:ir.actions.act_window,name:vcls-invoicing.action_am_invoices
+#: model:ir.actions.act_window,name:vcls-invoicing.action_ia_invoices
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.ia_invoices_view_tree
+msgid "Invoices"
+msgstr "Factures"
+
+#. module: vcls-invoicing
+#: model:product.category,name:vcls-invoicing.product_category_invoice
+msgid "Invoicing"
+msgstr "Facturation"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__user_id
+msgid "Invoicing Administrator"
+msgstr "Administrateur de facturation"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_partner__invoicing_frequency
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_users__invoicing_frequency
+#: model:ir.model.fields,field_description:vcls-invoicing.field_sale_order__invoicing_frequency
+msgid "Invoicing Frequency"
+msgstr "Fréquence de facturation"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_sale_order__lc_id
+msgid "LC"
+msgstr "LC"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po____last_update
+msgid "Last Modified on"
+msgstr "Dernière Modification le"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po__write_uid
+msgid "Last Updated by"
+msgstr "Dernière mise à jour par"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po__write_date
+msgid "Last Updated on"
+msgstr "Dernière mise à jour le"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__lc_laius
+msgid "Lc Laius"
+msgstr ""
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice_line__section_line_id
+msgid "Line section"
+msgstr "Section de ligne"
+
+#. module: vcls-invoicing
+#: selection:res.partner,invoicing_frequency:0
+#: selection:sale.order,invoicing_frequency:0
+msgid "Milestone"
+msgstr "Étape"
+
+#. module: vcls-invoicing
+#: selection:res.partner,invoicing_frequency:0
+#: selection:sale.order,invoicing_frequency:0
+msgid "Month"
+msgstr "Mois"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_ia_client_filter
+msgid "My IA Clients"
+msgstr "Mes clients IA"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_ia_sale_orders_filter
+msgid "My IA orders"
+msgstr "Mes commandes IA"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po__name
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.ia_invoices_view_tree
+msgid "Name"
+msgstr "Nom"
+
+#. module: vcls-invoicing
+#: code:addons/vcls-invoicing/models/invoice.py:494
+#, python-format
+msgid "No account was found to create the invoice, be sure you have installed a chart of account."
+msgstr "Aucun compte n'a été trouvé pour créer la facture, assurez-vous d'avoir installé un plan de compte"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Notes"
+msgstr "Notes"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__origin_sale_orders
+msgid "Origin"
+msgstr "Origine"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_partner__outsourcing_permission
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_users__outsourcing_permission
+msgid "Outsourcing Permission"
+msgstr "Autorisation d'impartition"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_sale_order__pc_id
+msgid "PC"
+msgstr "PC"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__parent_quotation_timesheet_limite_date
+msgid "Parent Timesheet Limit Date"
+msgstr "Date limite de la feuille de temps parent"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_invoicing_po__partner_id
+msgid "Partner"
+msgstr "Partenaire"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.ia_invoices_view_tree
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_invoice_form
+msgid "Period End"
+msgstr "Fin de période"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__period_start
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.ia_invoices_view_tree
+msgid "Period Start"
+msgstr "Début de la période"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Please make payment to:"
+msgstr "Veuillez effectuer le paiement à"
+
+#. module: vcls-invoicing
+#: code:addons/vcls-invoicing/models/invoice.py:516
+#, python-format
+msgid "Please review the invoice PDF for {}."
+msgstr "Veuillez consulter la facture PDF pour {}."
+
+#. module: vcls-invoicing
+#: code:addons/vcls-invoicing/models/invoice.py:735
+#, python-format
+msgid "Please set an Invoice Template before"
+msgstr "Veuillez définir un modèle de facture avant"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_aggregated_document
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Price"
+msgstr "Prix"
+
+#. module: vcls-invoicing
+#: model:ir.model,name:vcls-invoicing.model_product_template
+msgid "Product Template"
+msgstr "Modèle d'article"
+
+#. module: vcls-invoicing
+#: selection:sale.advance.payment.inv,group_invoice_method:0
+msgid "Program"
+msgstr "Programme"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_invoice_form
+msgid "Project"
+msgstr "Projet"
+
+#. module: vcls-invoicing
+#: selection:sale.advance.payment.inv,group_invoice_method:0
+msgid "Project and Extensions"
+msgstr "Projet et extensions"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_sale_order__po_id
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.po_view_tree
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_contact_form_po
+msgid "Purchase Order"
+msgstr "Commande fournisseur"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_aggregated_document
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Quantity"
+msgstr "Quantité"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_sale_order_tree
+msgid "Quotation"
+msgstr "Devis"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_sale_order_tree
+msgid "Quotation Number"
+msgstr "N° de devis"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__ready_for_approval
+msgid "Ready For Approval"
+msgstr "Prêt pour approbation"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_invoice_form
+msgid "Ready for Approval"
+msgstr "Prêt pour approbation"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.ia_invoices_view_tree
+msgid "Reference"
+msgstr "Référence"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__report_count
+msgid "Report Count"
+msgstr "Nombre de rapports"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_fiscal_position__report_note
+msgid "Report note"
+msgstr "Note de rapport"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_partner__risk_ids
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_users__risk_ids
+#: model:ir.model.fields,field_description:vcls-invoicing.field_sale_order__risk_ids
+msgid "Risk"
+msgstr "Risque"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_contact_form_risk
+msgid "Risk Analysis"
+msgstr "Analyse de risque"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_sale_order__risk_score
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_order_form
+msgid "Risk Score"
+msgstr "Score de risque"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_sale_order_kanban
+msgid "Risk Score :"
+msgstr "Score de risque :"
+
+#. module: vcls-invoicing
+#: model:ir.model,name:vcls-invoicing.model_sale_order
+msgid "Sale Order"
+msgstr "Bon de commande"
+
+#. module: vcls-invoicing
+#: model:ir.actions.act_window,name:vcls-invoicing.ia_action_sale_orders
+msgid "Sale Orders"
+msgstr "Bons de commandes"
+
+#. module: vcls-invoicing
+#: model:ir.model,name:vcls-invoicing.model_sale_advance_payment_inv
+msgid "Sales Advance Payment Invoice"
+msgstr "Facture de paiement d'avance"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__scope_of_work
+msgid "Scope Of Work"
+msgstr "Étendue des travaux"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.ia_invoices_view_tree
+msgid "Sending Date"
+msgstr "Date d'envoi"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_setup_bank_manual_config__swift
+#: model:ir.model.fields,field_description:vcls-invoicing.field_res_partner_bank__swift
+msgid "Swift"
+msgstr "Swift"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Swift Code:"
+msgstr "Code swift:"
+
+#. module: vcls-invoicing
+#: model:ir.model.fields,field_description:vcls-invoicing.field_account_invoice__temp_name
+msgid "Temp Name"
+msgstr "Nom temporaire"
+
+#. module: vcls-invoicing
+#: code:addons/vcls-invoicing/models/invoice.py:490
+#, python-format
+msgid "The field Vendor is required, please complete it to validate the Vendor Bill."
+msgstr "Le champ Fournisseur est obligatoire, veuillez le compléter pour valider la facture fournisseur."
+
+#. module: vcls-invoicing
+#: code:addons/vcls-invoicing/models/invoice.py:710
+#, python-format
+msgid "There is no timesheet associated with the invoice: %s"
+msgstr "Aucune feuille de temps n'est associée à la facture:%s"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.view_ia_sale_orders_filter
+msgid "To Be Invoiced"
+msgstr " facturer"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_aggregated_document
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "Total"
+msgstr ""
+
+#. module: vcls-invoicing
+#: selection:res.partner,invoicing_frequency:0
+#: selection:sale.order,invoicing_frequency:0
+msgid "Trimester"
+msgstr "Trimestre"
+
+#. module: vcls-invoicing
+#: model:product.product,uom_name:vcls-invoicing.product_communication_rate
+#: model:product.template,uom_name:vcls-invoicing.product_communication_rate_product_template
+msgid "Unit(s)"
+msgstr "Unité(s)"
+
+#. module: vcls-invoicing
+#: model_terms:ir.ui.view,arch_db:vcls-invoicing.report_invoice_document
+msgid "VAT Number:"
+msgstr "Numéro de TVA"
+
+#. module: vcls-invoicing
+#: code:addons/vcls-invoicing/models/invoice.py:492
+#, python-format
+msgid "You cannot validate an invoice with a negative total amount. You should create a credit note instead."
+msgstr "Vous ne pouvez pas valider une facture avec un montant total négatif. Vous devez plutôt créer une note de crédit"
+
+#. module: vcls-invoicing
+#: code:addons/vcls-invoicing/models/invoice.py:727
+#, python-format
+msgid "You need to select an activity report template"
+msgstr "Vous devez sélectionner un modèle de rapport d'activité"
+
+#. module: vcls-invoicing
+#: code:addons/vcls-invoicing/models/invoice.py:721
+#, python-format
+msgid "You need to select an invoice template"
+msgstr "Vous devez sélectionner un modèle de facture"
+
+#. module: vcls-invoicing
+#: model:ir.model,name:vcls-invoicing.model_activity_report_groupment
+msgid "activity.report.groupment"
+msgstr ""
+
+#. module: vcls-invoicing
+#: model:ir.model,name:vcls-invoicing.model_activity_report_wizard
+msgid "activity.report.wizard"
+msgstr ""
+
+#. module: vcls-invoicing
+#: model:product.product,weight_uom_name:vcls-invoicing.product_communication_rate
+#: model:product.template,weight_uom_name:vcls-invoicing.product_communication_rate_product_template
+msgid "kg"
+msgstr "kg"
+
