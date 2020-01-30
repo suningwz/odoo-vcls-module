@@ -548,7 +548,7 @@ class Invoice(models.Model):
     @api.multi
     def write(self, vals):
         ret = False
-        _logger.info("INVOICE WRITE {} ".format(vals))
+        _logger.info("INVOICE WRITE IDS {} VALS {}".format(self.ids,vals))
         for inv in self:
 
             if vals.get('sent'):
