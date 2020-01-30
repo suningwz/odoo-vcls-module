@@ -38,14 +38,9 @@ class Invoice(models.Model):
         )
 
     invoice_sending_date = fields.Datetime()
-    
-    """parent_quotation_timesheet_limite_date = fields.Date(
-        string='Parent Timesheet Limit Date',
-        compute='compute_parent_quotation_timesheet_limite_date'
-    )"""
 
     temp_name = fields.Char(
-        compute = 'compute_temp_name',
+        compute='compute_temp_name',
     )
 
     period_start = fields.Date()
@@ -67,7 +62,7 @@ class Invoice(models.Model):
 
     draft_count = fields.Integer(
         compute='_compute_attachment_count',
-        default = 0,
+        default=0,
     )
 
     communication_rate = fields.Float()
@@ -76,6 +71,27 @@ class Invoice(models.Model):
         'res.partner.bank', string='Bank Account',
         help='Company Bank Account Number to which the invoice will be paid.',
     )
+
+    @api.multi
+    def get_last_report(self):
+        self.ensure_one()
+        last_report_id = self.env['ir.attachment'].sudo().search([
+            ('res_id', '=', self.id),
+            ('name', 'like', DRAFTINVOICE)],
+            limit=1, order='create_date desc'
+        )
+        if last_report_id:
+            return {
+                'type': 'ir.actions.act_url',
+                'target': 'new',
+                'url': '/web/content/%s/%s?download=true' % (last_report_id.id, last_report_id.name)
+            }
+
+    @api.multi
+    def action_invoice_open(self):
+        result = super(Invoice, self).action_invoice_open()
+        self.action_generate_draft_invoice()
+        return result
 
     @api.model
     def default_get(self, fields_list):
@@ -99,9 +115,8 @@ class Invoice(models.Model):
         for invoice in self:
             project_string = ""
             for project in invoice.project_ids:
-                if not project.parent_id and project.sale_order_id:
+                if not project.parent_id and project.sale_order_id and project.sale_order_id.internal_ref:
                     project_string += project.sale_order_id.internal_ref + ' | ' 
-            #project_string = invoice.project_ids.filtered(lambda p: not p.parent_id).mapped('sale_order_id.internal_ref')
             invoice.temp_name = "{} from {} to {}".format(project_string,invoice.period_start,invoice.timesheet_limit_date)
 
     @api.multi
@@ -140,23 +155,26 @@ class Invoice(models.Model):
             #get last  as laius if non exists
             if not vals.get('lc_laius',self.lc_laius):
                 if project.summary_ids:
-                    #_logger.info("SUMMARIES {}".format(project.summary_ids.mapped('project_id')))
                     last_summary = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0]
-                    laius += "Project Status on {}:\n{}\n\n".format(last_summary.create_date.date(),self.html_to_string(last_summary.external_summary))
+                    external_summary = self.html_to_string(last_summary.external_summary) \
+                        if last_summary.external_summary else ''
+                    if last_summary.create_date and external_summary:
+                        laius += "Project Status on {}:\n{}\n\n".format(last_summary.create_date.date(), external_summary)
             else:
                 laius = vals.get('lc_laius',self.lc_laius)
 
-            #get sow if non exists
+            # get sow if non exists
             if not vals.get('scope_of_work',self.scope_of_work):
-                sow += "{}\n".format(self.html_to_string(project.scope_of_work))
+                if project.scope_of_work:
+                    sow += "{}\n".format(self.html_to_string(project.scope_of_work))
             else:
-                sow = vals.get('scope_of_work',self.scope_of_work)
+                sow = vals.get('scope_of_work', self.scope_of_work)
 
             #sales.order info
             so = project.sale_order_id
             #Timesheet limit date
             
-            if not vals.get('timesheet_limit_date',self.timesheet_limit_date):
+            if not vals.get('timesheet_limit_date', self.timesheet_limit_date):
                 if so.timesheet_limit_date:
                     if timesheet_limit_date:
                         if so.timesheet_limit_date < timesheet_limit_date:
@@ -219,7 +237,6 @@ class Invoice(models.Model):
             vals.update({'activity_report_template': activity_report_template})
 
         return vals
-
 
     @api.multi
     def _get_activity_report_data(self, detailed=True):

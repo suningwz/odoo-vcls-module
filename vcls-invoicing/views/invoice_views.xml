@@ -35,8 +35,8 @@
                             <field name="activity_report_template" required="0"/>
                         </group>
                         <group string="Project">
-                            <field name='scope_of_work'/>  
-                            <field name='lc_laius'/> 
+                            <field name='scope_of_work'/>
+                            <field name='lc_laius'/>
                         </group>
                     </group>
 
@@ -58,6 +58,10 @@
                             <field name='po_id'/>
                             <field name='bank_account_id'/>
                             <field name='ready_for_approval' invisible="1"/>
+                            <button name='get_last_report' type="object"
+                                string="Last report" class="btn-primary"
+                                attrs="{'invisible': [('draft_count','=', 0)]}"/>
+
                         </group>
                     </group>
 
