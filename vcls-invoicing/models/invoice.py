@@ -521,12 +521,12 @@ class Invoice(models.Model):
                         invoice.name),
                     })
 
-    """@api.model
+    @api.model
     def create(self, vals):
         ret = super(Invoice, self).create(vals)
         ret._onchange_partner_id()
         #_logger.info("INVOICE CREATED {} vals {} create {}".format(ret.temp_name, vals, ret.partner_id))
-        return ret"""
+        return ret
 
     @api.multi
     def write(self, vals):
@@ -537,8 +537,8 @@ class Invoice(models.Model):
             if vals.get('sent'):
                 vals.update({'invoice_sending_date': fields.Datetime.now()})
 
-            #if not self.env.context.get('source_data'):
-                #vals = inv.with_context(source_data=True)._get_source_data(vals)
+            if not self.env.context.get('source_data'):
+                vals = inv.with_context(source_data=True)._get_source_data(vals)
 
             #call parent
             ret = super(Invoice, inv).write(vals)
@@ -616,7 +616,7 @@ class Invoice(models.Model):
         self.ensure_one()
         return lxml.html.document_fromstring(html_format).text_content()
 
-    def parent_quotation_informations(self):
+    """def parent_quotation_informations(self):
 
         if not self.origin:
             return []
@@ -638,6 +638,7 @@ class Invoice(models.Model):
             ('From', self.timesheet_limit_date and self.timesheet_limit_date.strftime("%d/%m/%Y") or ''),
             ('To', self.timesheet_limit_date and self.timesheet_limit_date.strftime("%d/%m/%Y") or '')
         ]
+    """
 
     def get_analytic_accounts_lines(self):
         so_names = self.origin.split(', ')
