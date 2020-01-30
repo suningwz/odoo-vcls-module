@@ -127,7 +127,7 @@
                     <field name="temp_name" string="Name"/>
                     <field name="company_id"/>
                     <field name="partner_id"/>
-                    <field name="origin_sale_orders"/>
+                    <!--<field name="origin_sale_orders"/>-->
                     <field name="period_start" string="Period Start"/>
                     <field name="timesheet_limit_date" string="Period End"/>
                     <field name="invoice_sending_date" string="Sending Date"/>

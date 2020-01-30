@@ -48,7 +48,7 @@ class Invoice(models.Model):
     scope_of_work = fields.Text()
 
     vcls_due_date = fields.Date(string='Custom Due Date', compute='_compute_vcls_due_date')
-    origin_sale_orders = fields.Char(compute='compute_origin_sale_orders',string='Origin')
+    #origin_sale_orders = fields.Char(compute='compute_origin_sale_orders',string='Origin')
 
     ready_for_approval = fields.Boolean(default=False)
 
@@ -548,7 +548,7 @@ class Invoice(models.Model):
     @api.multi
     def write(self, vals):
         ret = False
-        
+        _logger.info("INVOICE WRITE {} ".format(vals))
         for inv in self:
 
             if vals.get('sent'):
@@ -567,7 +567,7 @@ class Invoice(models.Model):
                         timesheet.stage_id = 'invoiceable'
             
             #communication rate
-            _logger.info("COM RATE {} {}".format(inv.communication_rate,self.env.context.get('communication_rate')))
+            
             if inv.communication_rate > 0 and not self.env.context.get('communication_rate'):
                 total_amount = inv.get_communication_amount()
                 #try:
@@ -598,8 +598,8 @@ class Invoice(models.Model):
             if so_with_timesheet_limit_date:
                 invoice.parent_quotation_timesheet_limite_date = so_with_timesheet_limit_date[0].timesheet_limit_date"""
 
-    def _get_parents_quotations(self):
-        return self.mapped('invoice_line_ids.sale_line_ids.order_id')
+    """def _get_parents_quotations(self):
+        return self.mapped('invoice_line_ids.sale_line_ids.order_id')"""
 
     @api.depends('payment_term_id', 'invoice_sending_date')
     def _compute_vcls_due_date(self):
@@ -611,11 +611,11 @@ class Invoice(models.Model):
                                                                                           date_ref=date.today())[0]
                 rec.vcls_due_date = max(line[0] for line in pterm_list)
 
-    @api.depends('invoice_line_ids')
+    """@api.depends('invoice_line_ids')
     def compute_origin_sale_orders(self):
         for rec in self:
             sale_orders = rec._get_parents_quotations()
-            rec.origin_sale_orders = ','.join(sale_orders.mapped('name'))
+            rec.origin_sale_orders = ','.join(sale_orders.mapped('name'))"""
 
     @api.multi
     def unlink(self):
