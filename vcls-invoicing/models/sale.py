@@ -199,16 +199,17 @@ class SaleOrder(models.Model):
         #related models
         if self.po_id:
             invoice_vals['po_id'] = self.po_id.id
-        
         if self.invoice_template:
             invoice_vals['invoice_template'] = self.invoice_template.id
-        
         if self.activity_report_template:
             invoice_vals['activity_report_template'] = self.activity_report_template.id
+        if self.payment_term_id:
+            invoice_vals['payment_term_id'] = self.payment_term_id.id
+        if self.fiscal_position_id:
+            invoice_vals['fiscal_position_id'] = self.fiscal_position_id.id
 
         #other values
         invoice_vals['communication_rate'] = float(self.communication_rate)
-
         return invoice_vals
 
     @api.onchange('partner_id')

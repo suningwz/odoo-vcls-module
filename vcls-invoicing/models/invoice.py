@@ -170,9 +170,9 @@ class Invoice(models.Model):
             else:
                 sow = vals.get('scope_of_work', self.scope_of_work)
 
-            #sales.order info
+            """#sales.order info
             so = project.sale_order_id
-            #Timesheet limit date
+            #Timesheet limit date"""
             
             """if not vals.get('timesheet_limit_date', self.timesheet_limit_date):
                 if so.timesheet_limit_date:
@@ -567,7 +567,6 @@ class Invoice(models.Model):
                         timesheet.stage_id = 'invoiceable'
             
             #communication rate
-            
             if inv.communication_rate > 0 and not self.env.context.get('communication_rate'):
                 total_amount = inv.get_communication_amount()
                 #try:

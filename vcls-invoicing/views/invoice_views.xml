@@ -59,7 +59,7 @@
                             <field name='bank_account_id'/>
                             <field name='ready_for_approval' invisible="1"/>
                             <button name='get_last_report' type="object"
-                                string="Last report" class="btn-primary"
+                                string="PDF" class="btn-primary"
                                 attrs="{'invisible': [('draft_count','=', 0)]}"/>
 
                         </group>
