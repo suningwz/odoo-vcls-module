@@ -90,7 +90,8 @@ class Invoice(models.Model):
     @api.multi
     def action_invoice_open(self):
         result = super(Invoice, self).action_invoice_open()
-        self.action_generate_draft_invoice()
+        if self.invoice_template:
+            self.action_generate_draft_invoice()
         return result
 
     @api.model
