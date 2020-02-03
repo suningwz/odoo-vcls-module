@@ -183,6 +183,7 @@ class SaleOrder(models.Model):
         We Extend the dictionnary for the invoice creation with VCLS customs.
         """
         invoice_vals = super(SaleOrder, self)._prepare_invoice()
+        #project_info
 
         #invoice period
         if self.timesheet_limit_date:

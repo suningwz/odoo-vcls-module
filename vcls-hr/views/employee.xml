@@ -39,8 +39,9 @@
                             <button name="%(hr_appraisal.open_view_hr_appraisal_tree2)d"
                                 class="oe_stat_button"
                                 icon="fa-sitemap"
+                                attrs="{'invisible': [('appraisal_count', '=', 0)]}"
                                 type="action">
-                                <field name="appraisal_count" string="Test" widget="statinfo"/>
+                                <field name="appraisal_count" string="Appraisal" widget="statinfo"/>
                             </button>
 
                             <button name="toggle_active" type="object" groups="hr.group_hr_user" class="oe_stat_button" icon="fa-archive">
