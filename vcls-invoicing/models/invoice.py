@@ -547,6 +547,8 @@ class Invoice(models.Model):
 
     @api.multi
     def write(self, vals):
+        if self._context.get('create_communication'):
+            return super(Invoice, self).write(vals)
         ret = False
         _logger.info("INVOICE WRITE IDS {} VALS {}".format(self.ids,vals))
         for inv in self:
@@ -575,18 +577,20 @@ class Invoice(models.Model):
                 #    total_amount = False
                     #_logger.info("COM RATE ERROR")
                 if total_amount:
-                    line = self.env['account.invoice.line'].new()
-                    line.invoice_id = inv.id
-                    line.product_id = self.env.ref('vcls-invoicing.product_communication_rate').id
-                    line._onchange_product_id()
-                    line.price_unit = total_amount * inv.communication_rate
-                    line.name = "Communication ({}%)".format(100*inv.communication_rate)
-                    line.quantity = 1
-                    ret = super(Invoice, inv.with_context(communication_rate=True)).write({
-                        'invoice_line_ids': [(4, line.id)]
+                    invoice_line_obj = self.env['account.invoice.line']
+                    line_cache = invoice_line_obj.new()
+                    line_cache.invoice_id = inv.id
+                    line_cache.product_id = self.env.ref('vcls-invoicing.product_communication_rate').id
+                    line_cache._onchange_product_id()
+                    line_cache.price_unit = total_amount * inv.communication_rate
+                    line_cache.name = "Communication ({}%)".format(100 * inv.communication_rate)
+                    line_cache.quantity = 1
+                    line_values = line_cache._convert_to_write({
+                        name: line_cache[name]
+                        for name in line_cache._cache
                     })
-                    #_logger.info("COM RATE PRICE {} write {} context {}".format(line.price_unit,ret,self.env.context.get('communication_rate')))
-                   
+                    invoice_line_obj.with_context(create_communication=True)\
+                        .create(line_values)
         return ret
 
     """@api.depends('invoice_line_ids')

@@ -16,6 +16,8 @@
             <field name="name">account.invoice.form</field>
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="sale_timesheet_limit_date.invoice_form"/>
+            <field name="mode">primary</field>
+            <field name="priority" eval="5000" />
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='number']" position="after">
                     <field name="temp_name" readonly="1" class="oe_inline" attrs="{'invisible': [('state','not in',('draft',))]}"/>
@@ -97,6 +99,10 @@
                 </xpath>
 
             </field>
+        </record>
+
+        <record id="account.action_invoice_tree1_view2" model="ir.actions.act_window.view">
+            <field name="view_id" ref="view_invoice_form"/>
         </record>
 
         <record id='po_view_tree' model='ir.ui.view'>
