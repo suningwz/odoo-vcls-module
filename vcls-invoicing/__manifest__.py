@@ -34,6 +34,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/data.xml',
+        'data/partner_data.xml',
         'views/product_views.xml',
         'security/security_groups.xml',
         'data/risk_type.xml',

@@ -541,18 +541,46 @@ class Invoice(models.Model):
 
     @api.model
     def create(self, vals):
-        ret = super(Invoice, self).create(vals)
-        ret._onchange_partner_id()
-        _logger.info("INVOICE CREATE ID {} VALS {}".format(ret.id,vals))
-        return ret
+        invoice = super(Invoice, self).create(vals)
+        invoice._onchange_partner_id()
+        _logger.info("INVOICE CREATE ID {} VALS {}".format(invoice.id, vals))
+        invoice._message_subscribe_account_payable()
+        return invoice
+
+    def _message_subscribe_account_payable(self):
+        # subscribe accountant contact contact
+        account_payable_partner = self.env.ref(
+            'vcls-invoicing.res_partner_vcls_account_payable',
+            raise_if_not_found=False
+        )
+        if account_payable_partner:
+            for invoice in self:
+                invoice._message_subscribe(partner_ids=[account_payable_partner.id])
+
+    def _message_subscribe(self, partner_ids=None, channel_ids=None, subtype_ids=None, customer_ids=None):
+        # Add accountant contact to subscribed partners, in order to keep them up to date
+        account_payable_partner = self.env.ref(
+            'vcls-invoicing.res_partner_vcls_account_payable',
+            raise_if_not_found=False
+        )
+        if account_payable_partner and account_payable_partner.id not in partner_ids:
+            if not partner_ids:
+                partner_ids = []
+            partner_ids += [account_payable_partner.id]
+        return super(Invoice, self)._message_subscribe(
+            partner_ids, channel_ids,
+            subtype_ids, customer_ids
+        )
 
     @api.multi
     def write(self, vals):
         if self._context.get('create_communication'):
+            self._message_subscribe_account_payable()
             return super(Invoice, self).write(vals)
         ret = False
         _logger.info("INVOICE WRITE IDS {} VALS {}".format(self.ids,vals))
         for inv in self:
+            inv._message_subscribe_account_payable()
 
             if vals.get('sent'):
                 vals.update({'invoice_sending_date': fields.Datetime.now()})
