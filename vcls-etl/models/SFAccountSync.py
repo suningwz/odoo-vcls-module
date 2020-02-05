@@ -21,7 +21,7 @@ class SFAccountSync(models.Model):
         return TranslatorSFAccount.TranslatorSFAccount(sfInstance.getConnection())
 
     def getSQLForKeys(self):
-        sql = 'SELECT Id, LastModifiedDate FROM Account ' + self.env.ref('vcls-etl.etl_sf_account_filter').value
+        sql = 'SELECT Id, LastModifiedDate FROM Account as A ' + self.env.ref('vcls-etl.etl_sf_account_filter').value
         _logger.info(sql)
         return sql
     
