@@ -20,9 +20,10 @@ class bonus(models.Model):
         required=True,)
     
     currency_id = fields.Many2one(
-        related = 'employee_id.company_id.currency_id',
+        comodel_name='res.currency',
+        related=False,
         string="Currency",
-        readonly=True,)
+    )
     
     amount = fields.Monetary(
         string="Amount",
@@ -44,3 +45,8 @@ class bonus(models.Model):
             ('other','Other Bonus'),
         ]
     )
+
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        if not self.currency_id:
+            self.currency_id = self.employee_id.company_id.currency_id
