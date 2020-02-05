@@ -54,3 +54,11 @@ class SaleAdvancePaymentInv(models.TransientModel):
             parent_project = parent_project.parent_id
         projects = list(set(self._get_children(parent_project)))
         return projects
+
+    def _create_invoice(self, order, so_line, amount):
+        invoice = super(SaleAdvancePaymentInv, self)._create_invoice(order, so_line, amount)
+        # Add the same followers to from the order to the invoice
+        order_follower_ids = order.message_follower_ids
+        if order_follower_ids:
+            invoice._message_subscribe(partner_ids=order_follower_ids.ids)
+        return invoice

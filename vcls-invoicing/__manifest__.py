@@ -44,6 +44,7 @@
         'views/res_company.xml',
         'views/res_bank.xml',
         'views/fiscal_position.xml',
+        'views/account_mail_template.sql',
         'wizard/sale_make_invoice_advance_views.xml',
         # reports
         'reports/report_project_invoice_detailed.xml',

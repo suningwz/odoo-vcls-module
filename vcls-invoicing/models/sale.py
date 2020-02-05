@@ -220,3 +220,13 @@ class SaleOrder(models.Model):
         self.activity_report_template = self.partner_id.activity_report_template
         self.communication_rate = self.partner_id.communication_rate
         self.pricelist_id = self.partner_id.property_product_pricelist
+
+    @api.multi
+    def action_invoice_create(self, grouped=False, final=False):
+        invoices = super(SaleOrder, self).action_invoice_create(grouped, final)
+        invoice_ids = self.env['account.invoice'].browse(invoices)
+        orders_follower_ids = self.mapped('message_follower_ids.partner_id')
+        if orders_follower_ids:
+            for invoice in invoice_ids:
+                invoice._message_subscribe(partner_ids=orders_follower_ids.ids)
+        return invoices
