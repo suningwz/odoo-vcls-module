@@ -3,6 +3,7 @@
 from odoo import models, fields, api
 
 import datetime, pytz
+from datetime import datetime
 
 from abc import ABC,abstractmethod
 
@@ -81,6 +82,17 @@ class ETLMap(models.Model):
                     'state':'needCreateOdoo',
                     'priority':params['priority'],
                 })
+            elif not params['is_full_update']: #if we don't want a full update, we need to compare dates
+                key = keys_exist.filtered(lambda k: k.externalId and k.odooId).search(['externalId','=',rec['Id']],limit=1)
+                if key:
+                    od_date = self.env[params['odooModelName']].browse(key.odooId).write_date
+                    ext_date = datetime.strptime(rec['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")
+                    status = 'needUpdateOdoo' if ext_date > od_date else 'needUpdateExternal'
+                    key.write({
+                        'lastModifiedOdoo': od_date,
+                        'lastModifiedExternal': ext_date,
+                        'state':status,
+                    })
         
         if rec_ext:
             _logger.info("QUERY |\n{}\nreturned {} records".format(params['sql'],len(rec_ext)))
@@ -90,9 +102,6 @@ class ETLMap(models.Model):
             _logger.info("KEYS | {} Keys to create".format(len(keys_create)))
         
 
-        
-
-    
     def accounts_and_contacts(self, is_full_update=True):
         """
         We 1st process the keys and priorities, starting from contacts.
