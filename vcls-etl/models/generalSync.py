@@ -66,10 +66,10 @@ class ETLMap(models.Model):
         keys_create = []
 
         # Mass Status Update
-        keys_exist.filtered(lambda k: k.externalId and not k.odooId).write({'state':'needCreateOdoo'})
-        keys_exist.filtered(lambda k: not k.externalId and k.odooId).write({'state':'needCreateExternal'})
+        keys_exist.filtered(lambda k: k.externalId and not k.odooId).write({'state':'needCreateOdoo','priority':params['priority']})
+        keys_exist.filtered(lambda k: not k.externalId and k.odooId).write({'state':'needCreateExternal','priority':params['priority']})
         if params['is_full_update']:
-            keys_exist.filtered(lambda k: k.externalId and k.odooId).write({'state':'needUpdateOdoo'})
+            keys_exist.filtered(lambda k: k.externalId and k.odooId).write({'state':'needUpdateOdoo','priority':params['priority']})
 
         #We look for non exisitng keys
         for rec in rec_ext:
