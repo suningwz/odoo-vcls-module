@@ -26,6 +26,7 @@ class ETLMap(models.Model):
     externalObjName = fields.Char(readonly = True)
     lastModifiedExternal = fields.Datetime(readonly = True)
     lastModifiedOdoo = fields.Datetime(readonly = True)
+    priority = fields.Integer(default=0)
     
     state = fields.Selection([
         ('upToDate', 'Up To Date'),
@@ -42,14 +43,44 @@ class ETLMap(models.Model):
     def setState(self, state):
         self.state = state
     
-    def run(self):
+    """def run(self):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
         sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
         self.updateAccountKey(sfInstance)
         self.updateContactKey(sfInstance)
-        self.updateOpportunityKey(sfInstance)
+        self.updateOpportunityKey(sfInstance)"""
+    
+    def open_con(self):
+        userSF = self.env.ref('vcls-etl.SF_mail').value
+        passwordSF = self.env.ref('vcls-etl.SF_password').value
+        token = self.env.ref('vcls-etl.SF_token').value
+        return ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
+    
+    def accounts_and_contacts(self, is_full_update=True):
+        """
+        We 1st process the keys and priorities, starting from contacts.
+        But then the queue must be executed in revert order of priorities to ensure parent accounts to be created 1st, etc.
+        """
+        ### PREPARATION
+        #Update the context to execute vcls-rdd override
+        self.env.user.context_data_integration = True
+        #Clean the keys table of corrupted entries
+        to_clean = self.env.search([('odooModelName','=',False)])
+        for key in to_clean:
+            key.unlink()
+
+        #get instance
+        #sfInstance = self.open_con()
+
+        ### CONTACT KEYS PROCESSING
+        # We get records from SF satisfying the 
+
+
+        ###CLOSING
+        self.env.user.context_data_integration = False
+
         
     def updateAccountKey(self, externalInstance):
         sql = 'Select Id From Account'
@@ -63,7 +94,7 @@ class ETLMap(models.Model):
                 #_logger.info("Update Key Account externalId :{}".format(item['Id']))
 
 
-    def updateContactKey(self, externalInstance):
+    """def updateContactKey(self, externalInstance):
         sql =  'SELECT Id FROM Contact'
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
         _logger.info("ETL | updateContactKey | \n {} \n  Found {} records".format(sql,len(modifiedRecordsExt)))
@@ -85,7 +116,7 @@ class ETLMap(models.Model):
             if odooOpportunity:
                 odooOpportunity.write({'odooModelName':'crm.lead','externalObjName':'Opportunity'})
                 #print("Update Key Opportunity externalId :{}".format(item['Id']))
-                #_logger.info("Update Key Opportunity externalId :{}".format(item['Id']))
+                #_logger.info("Update Key Opportunity externalId :{}".format(item['Id']))"""
 
 class GeneralSync(models.AbstractModel):
     _name = 'etl.sync.mixin'
