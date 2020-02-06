@@ -90,8 +90,8 @@ class ETLMap(models.Model):
                     #_logger.info("OD {} EXT {} TYPES {} and {}".format(od_date,ext_date,type(od_date),type(ext_date)))
                     status = 'needUpdateOdoo' if ext_date > od_date else 'needUpdateExternal'
                     key[0].write({
-                        'lastModifiedOdoo': od_date,
-                        'lastModifiedExternal': ext_date,
+                        'lastModifiedOdoo': od_date.strftime("%Y-%m-%d %H:%M:%S.00+0000"),
+                        'lastModifiedExternal': ext_date.strftime("%Y-%m-%d %H:%M:%S.00+0000"),
                         'state':status,
                     })
         
