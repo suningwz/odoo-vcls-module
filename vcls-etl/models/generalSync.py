@@ -64,29 +64,30 @@ class ETLMap(models.Model):
         rec_ext = params['sfInstance'].getConnection().query_all(params['sql'])['records']
         keys_exist = self.search([('externalObjName','=',params['externalObjName']),('odooModelName','=',params['odooModelName'])])
         keys_exist_sfid = keys_exist.mapped('externalId')
-        keys_create = []
-        keys_update = self.env['etl.sync.keys']
+        keys_create = keys_exist.filtered(lambda k: k.externalId and not k.odooId)
+        keys_update = keys_exist.filtered(lambda k: k.externalId and k.odooId)
         keys_ok = self.env['etl.sync.keys']
 
-        # Mass Status Update
+        """# Mass Status Update
         keys_exist.filtered(lambda k: k.externalId and not k.odooId).write({'state':'needCreateOdoo','priority':params['priority']})
         keys_exist.filtered(lambda k: not k.externalId and k.odooId).write({'state':'needCreateExternal','priority':params['priority']})
         if params['is_full_update']:
             keys_exist.filtered(lambda k: k.externalId and k.odooId).write({'state':'needUpdateOdoo','priority':params['priority']})
-
+        """
         #We look for non exisitng keys
         for rec in rec_ext:
             if rec['Id'] not in keys_exist_sfid: #if the rec does not exists
-                keys_create.append({
+                keys_create |= self.create({
                     'externalObjName':params['externalObjName'],
                     'external_id': rec['Id'],
+                    'lastModifiedExternal': rec['lastModifiedExternal'],
                     'odooModelName': params['odooModelName'],
                     'state':'needCreateOdoo',
                     'priority':params['priority'],
                 })
 
             elif not params['is_full_update']: #if we don't want a full update, we need to compare dates
-                key = keys_exist.filtered(lambda k: k.externalId==rec['Id'] and k.odooId)
+                key = keys_update.filtered(lambda k: k.externalId==rec['Id'])
                 if key:
                     if key[0].lastModifiedOdoo:
                         ext_date = datetime.strptime(rec['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000")
@@ -97,22 +98,15 @@ class ETLMap(models.Model):
                     else:
                         keys_update |= key
                         
-                    """#od_date = self.env[params['odooModelName']].browse(int(key[0].odooId)).write_date
-                    #_logger.info("OD {} EXT {} TYPES {} and {}".format(od_date,ext_date,type(od_date),type(ext_date)))
-                    status = 'needUpdateOdoo' if ext_date > key[0].lastModifiedOdoo else 'needUpdateExternal'
-                    key[0].write({
-                        'lastModifiedOdoo': od_date.strftime("%Y-%m-%d %H:%M:%S.00+0000"),
-                        'lastModifiedExternal': ext_date.strftime("%Y-%m-%d %H:%M:%S.00+0000"),
-                        'state':status,
-                    })"""
     
         if rec_ext:
-            _logger.info("QUERY |\n{}\nreturned {} records".format(params['sql'],len(rec_ext)))
+            _logger.info("QUERY |\n{}\nreturned {} {} records".format(params['sql'],len(rec_ext),params['externalObjName']))
         if keys_exist:
             _logger.info("KEYS | Found {} existing keys".format(len(keys_exist)))
-        if keys_create:
-            _logger.info("KEYS | {} Keys to create".format(len(keys_create)))
 
+        if keys_create:
+            keys_create.write({'state':'needCreateOdoo','priority':params['priority']})
+            _logger.info("KEYS | {} Keys to create".format(len(keys_create)))
         if keys_update:
             keys_update.write({'state':'needUpdateOdoo','priority':params['priority']})
             _logger.info("KEYS | {} Keys to update".format(len(keys_update)))
