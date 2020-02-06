@@ -77,14 +77,17 @@ class ETLMap(models.Model):
         #We look for non exisitng keys
         for rec in rec_ext:
             if rec['Id'] not in keys_exist_sfid: #if the rec does not exists
-                keys_create |= self.create({
+                vals = {
                     'externalObjName':params['externalObjName'],
                     'external_id': rec['Id'],
-                    'lastModifiedExternal': rec['lastModifiedExternal'],
+                    'lastModifiedExternal': datetime.strptime(rec['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000"),
                     'odooModelName': params['odooModelName'],
                     'state':'needCreateOdoo',
                     'priority':params['priority'],
-                })
+                }
+                keys_create |= self.create(vals)
+                _logger.info("KEYS | New creation {}".format(vals))
+
 
             elif not params['is_full_update']: #if we don't want a full update, we need to compare dates
                 key = keys_update.filtered(lambda k: k.externalId==rec['Id'])
