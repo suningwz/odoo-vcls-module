@@ -84,6 +84,7 @@ class ETLMap(models.Model):
                 })
             elif not params['is_full_update']: #if we don't want a full update, we need to compare dates
                 key = keys_exist.filtered(lambda k: k.externalId==rec['Id'] and k.odooId)
+                _logger.info("NOT FULL {}".format(key))
                 if key:
                     od_date = self.env[params['odooModelName']].browse(int(key[0].odooId)).write_date
                     ext_date = datetime.strptime(rec['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000")
