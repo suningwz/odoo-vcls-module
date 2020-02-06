@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<odoo>
+    <data noupdate="1">
+        <record id="default_documentation_url" model="ir.config_parameter">
+            <field name="key">web.documentation.url</field>
+            <field name="value">#</field>
+        </record>
+    </data>
+</odoo>
