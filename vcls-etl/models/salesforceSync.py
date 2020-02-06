@@ -74,25 +74,27 @@ class salesforceSync(models.Model):
 
         #boolean for batch
         SF.updateKeyTable(sfInstance, isFullUpdate)
-
+        _logger.info('Updated key table done')
         #if isFinished :
    
-        print('Updated key table done')
-        _logger.info('Updated key table done')
+        #print('Updated key table done')
+        
         
         if createInOdoo or updateInOdoo:
             SF.updateOdooInstance(translator,sfInstance, createInOdoo, updateInOdoo,nbMaxRecords)
+            _logger.info('Updated odoo instance done')
         
-        print('Updated odoo instance done')
-        _logger.info('Updated odoo instance done')
+        #print('Updated odoo instance done')
+        
         
         if createRevert or updateRevert:
             SF.updateExternalInstance(translator,sfInstance, createRevert, updateRevert, nbMaxRecords)
+            _logger.info('Updated sf instance done')
         
-        print('Updated sf instance done')
-        _logger.info('Updated sf instance done')
+        #print('Updated sf instance done')
+        
 
-        print('ETL IS FINISHED')
+        #print('ETL IS FINISHED')
         _logger.info('ETL IS FINISHED')
 
         #Update the context back
@@ -204,8 +206,8 @@ class salesforceSync(models.Model):
         sql = self.getSQLForRecord()
         sql += ' ORDER BY Name'
         Modifiedrecords = externalInstance.getConnection().query_all(sql)['records'] #All records
-        for rec in Modifiedrecords:
-            _logger.info(" FOUND RECORD {} \n\n".format(rec))
+        """for rec in Modifiedrecords:
+            _logger.info(" FOUND RECORD {} \n\n".format(rec))"""
         keys = self.getKeysToUpdateOdoo()
         if not nbMaxRecords:
             nbMaxRecords = len(keys)
