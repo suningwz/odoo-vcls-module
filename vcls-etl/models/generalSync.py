@@ -67,7 +67,7 @@ class ETLMap(models.Model):
         #Update the context to execute vcls-rdd override
         self.env.user.context_data_integration = True
         #Clean the keys table of corrupted entries
-        to_clean = self.env.search([('odooModelName','=',False)])
+        to_clean = self.search([('odooModelName','=',False)])
         for key in to_clean:
             key.unlink()
 
