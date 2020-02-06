@@ -107,7 +107,6 @@ class salesforceSync(models.Model):
 
         sql = str(self.getSQLForKeys())
         allRecordExt = externalInstance.getConnection().query_all(sql)['records']
-        _logger.info('EXTERNALE RECORDS :{}'.format(allRecordExt))
         allRecordOdoo = self.getAllRecordsOdoo()
         if not isFullUpdate:
             if 'WHERE' in sql: 
@@ -118,7 +117,7 @@ class salesforceSync(models.Model):
         
         sql += ' ORDER BY Name'
         
-        print('Execute QUERY: {}'.format(sql))
+        #print('Execute QUERY: {}'.format(sql))
         _logger.info('Execute QUERY: {}'.format(sql))
         
         #working on keys that were not created
@@ -135,13 +134,13 @@ class salesforceSync(models.Model):
                         if key.externalId == item['Id']:
                             key.lastModifiedExternal = datetime.strptime(item['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")
                             
-                            print('Update Key Table Set Date, ExternalId :{}'.format(key.externalId))
-                            _logger.info('Update Key Table Set Date, ExternalId :{}'.format(key.externalId))
+                            #print('Update Key Table Set Date, ExternalId :{}'.format(key.externalId))
+                            #_logger.info('Update Key Table Set Date, ExternalId :{}'.format(key.externalId))
                     for item in allRecordOdoo:
                         if key.odooId == str(item.id):
                             key.lastModifiedOdoo = self.getLastUpdate(str(item.id))
-                            print('Update Key Table Set Date, OdooId :{}'.format(key.odooId))
-                            _logger.info('Update Key Table Set Date, OdooId :{}'.format(key.odooId))
+                            #print('Update Key Table Set Date, OdooId :{}'.format(key.odooId))
+                            #_logger.info('Update Key Table Set Date, OdooId :{}'.format(key.odooId))
                     if not key.lastModifiedExternal:
                         key.lastModifiedExternal = lastRun
                     if not key.lastModifiedOdoo:
@@ -159,23 +158,23 @@ class salesforceSync(models.Model):
                         # External is more recent
                         if key.odooId:
                             key.setState('needUpdateOdoo')
-                            print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(key.externalId))
-                            _logger.info('Update Key Table needUpdateOdoo, ExternalId :{}'.format(key.externalId))
+                            #print('Update Key Table needUpdateOdoo, ExternalId :{}'.format(key.externalId))
+                            #_logger.info('Update Key Table needUpdateOdoo, ExternalId :{}'.format(key.externalId))
                         else:
                             key.setState('needCreateOdoo')
-                            print('Update Key Table needCreateOdoo, ExternalId :{}'.format(key.externalId))
-                            _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(key.externalId))
+                            #print('Update Key Table needCreateOdoo, ExternalId :{}'.format(key.externalId))
+                            #_logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(key.externalId))
                     else:
                         # Exist in Odoo & External
                         # Odoo is more recent
                         if key.externalId:
                             key.setState('needUpdateExternal')
-                            print('Update Key Table needUpdateExternal, ExternalId :{}'.format(key.externalId))
-                            _logger.info('Update Key Table needUpdateExternal, ExternalId :{}'.format(key.externalId))
+                            #print('Update Key Table needUpdateExternal, ExternalId :{}'.format(key.externalId))
+                            #_logger.info('Update Key Table needUpdateExternal, ExternalId :{}'.format(key.externalId))
                         else:
                             key.setState('needCreateExternal')
-                            print('Update Key Table needCreateExternal, ExternalId :{}'.format(key.odooId))
-                            _logger.info('Update Key Table needCreateExternal, ExternalId :{}'.format(key.odooId))
+                            #print('Update Key Table needCreateExternal, ExternalId :{}'.format(key.odooId))
+                            #_logger.info('Update Key Table needCreateExternal, ExternalId :{}'.format(key.odooId))
         
         idsListFromExt = []
         for record in modifiedRecordsExt:
@@ -186,8 +185,8 @@ class salesforceSync(models.Model):
         
         for key in keysToCreate:
             self.createKey(None,key)
-            print('Update Key Table needCreateOdoo, ExternalId :{}'.format(key))
-            _logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(key))
+            #print('Update Key Table needCreateOdoo, ExternalId :{}'.format(key))
+            #_logger.info('Update Key Table needCreateOdoo, ExternalId :{}'.format(key))
         
         idsListFromOdoo = []
         for record in modifiedRecordsOdoo:
@@ -197,14 +196,15 @@ class salesforceSync(models.Model):
         
         for key in keysToCreate:
             self.createKey(key,None)
-            print('Update Key Table needCreateExternal, OdooId : {}'.format(key))
-            _logger.info('Update Key Table needCreateExternal, OdooId : {}'.format(key))    
+            #print('Update Key Table needCreateExternal, OdooId : {}'.format(key))
+            #_logger.info('Update Key Table needCreateExternal, OdooId : {}'.format(key))    
 
 
     def updateOdooInstance(self, translator,externalInstance, createInOdoo, updateInOdoo, nbMaxRecords):
         sql = self.getSQLForRecord()
         sql += ' ORDER BY Name'
         Modifiedrecords = externalInstance.getConnection().query_all(sql)['records'] #All records
+        _logger.info(" FOUND RECORDS {}".format(Modifiedrecords))
         keys = self.getKeysToUpdateOdoo()
         if not nbMaxRecords:
             nbMaxRecords = len(keys)
