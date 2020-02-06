@@ -79,7 +79,7 @@ class ETLMap(models.Model):
             if rec['Id'] not in keys_exist_sfid: #if the rec does not exists
                 vals = {
                     'externalObjName':params['externalObjName'],
-                    'external_id': rec['Id'],
+                    'externalId': rec['Id'],
                     'lastModifiedExternal': datetime.strptime(rec['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000"),
                     'odooModelName': params['odooModelName'],
                     'state':'needCreateOdoo',
