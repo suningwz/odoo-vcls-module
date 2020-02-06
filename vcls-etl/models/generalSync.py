@@ -86,8 +86,8 @@ class ETLMap(models.Model):
                 key = keys_exist.filtered(lambda k: k.externalId==rec['Id'] and k.odooId)
                 if key:
                     od_date = self.env[params['odooModelName']].browse(int(key[0].odooId)).write_date
-                    ext_date = datetime.strptime(rec['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")
-                    _logger.info("OD {} EXT {} TYPES {} and {}".format(od_date,ext_date,type(od_date),type(ext_date)))
+                    ext_date = datetime.strptime(rec['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000")
+                    #_logger.info("OD {} EXT {} TYPES {} and {}".format(od_date,ext_date,type(od_date),type(ext_date)))
                     status = 'needUpdateOdoo' if ext_date > od_date else 'needUpdateExternal'
                     key[0].write({
                         'lastModifiedOdoo': od_date,
