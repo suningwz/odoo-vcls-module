@@ -58,6 +58,38 @@ class ETLMap(models.Model):
         token = self.env.ref('vcls-etl.SF_token').value
         return ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
     
+    def update_keys(self,params={}):
+        _logger.info("ETL | UPDATE KEYS {}".format(params))
+        rec_ext = params['sfInstance'].getConnection().query_all(params['sql'])['records']
+        keys_exist = self.search([('externalObjName','=',params['externalObjName']),('odooModelName','=',params['odooModelName'])])
+        keys_exist_sfid = keys_exist.mapped('externalId')
+        keys_create = []
+
+        # In case of full_update, we force the status to 'needUpdateOdoo'
+        if params['is_full_update']:
+            keys_exist.write({'state':'needUpdateOdoo'})
+
+        for rec in rec_ext:
+            if rec['Id'] not in keys_exist_sfid: #if the rec does not exists
+                keys_create.append({
+                    'externalObjName':params['externalObjName'],
+                    'external_id': rec['Id'],
+                    'odooModelName': params['odooModelName'],
+                    'state':'needCreateOdoo',
+                    'priority':params['priority'],
+                })
+        
+        if rec_ext:
+            _logger.info("QUERY |\n{}\nreturned {} records".format(params['sql'],len(rec_ext)))
+        if keys_exist:
+            _logger.info("KEYS | Found {} existing keys".format(len(keys_exist)))
+        if keys_create:
+            _logger.info("KEYS | {} Keys to create".format(len(keys_create)))
+        
+
+        
+
+    
     def accounts_and_contacts(self, is_full_update=True):
         """
         We 1st process the keys and priorities, starting from contacts.
@@ -70,19 +102,40 @@ class ETLMap(models.Model):
         to_clean = self.search([('odooModelName','=',False)])
         for key in to_clean:
             key.unlink()
-
+        
         #get instance
-        #sfInstance = self.open_con()
+        sfInstance = self.open_con()
 
         ### CONTACT KEYS PROCESSING
-        # We get records from SF satisfying the 
+        # We get records from SF satisfying the filter in system parameter
+        params = {
+            'sfInstance':sfInstance,
+            'priority':1,
+            'externalObjName':'Contact',
+            'sql':'SELECT Id, LastModifiedDate ' + self.env.ref('vcls-etl.etl_sf_contact_filter').value,
+            'odooModelName':'res.partner',
+            'is_full_update':is_full_update,
+        }
+
+        self.update_keys(params)
+
+        
+        
+
+        #all_odoo = self.search([('externalObjName','in',['Contact','Account'])])
+
+
+
+        """if to_reset and is_full_update:
+            to_reset.write({'state':'upToDate'})
+            _logger.info("ETL | {} keys reset".format(len(to_reset)))"""
 
 
         ###CLOSING
         self.env.user.context_data_integration = False
 
         
-    def updateAccountKey(self, externalInstance):
+    """def updateAccountKey(self, externalInstance):
         sql = 'Select Id From Account'
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
 
@@ -94,7 +147,7 @@ class ETLMap(models.Model):
                 #_logger.info("Update Key Account externalId :{}".format(item['Id']))
 
 
-    """def updateContactKey(self, externalInstance):
+    def updateContactKey(self, externalInstance):
         sql =  'SELECT Id FROM Contact'
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
         _logger.info("ETL | updateContactKey | \n {} \n  Found {} records".format(sql,len(modifiedRecordsExt)))
