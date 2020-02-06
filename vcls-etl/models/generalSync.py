@@ -59,8 +59,8 @@ class ETLMap(models.Model):
             odooAccount = self.env['etl.sync.keys'].search([('externalId','=',item['Id'])], limit=1)
             if odooAccount:
                 odooAccount.write({'odooModelName':'res.partner','externalObjName':'Account'})
-                print("Update Key Account externalId :{}".format(item['Id']))
-                _logger.info("Update Key Account externalId :{}".format(item['Id']))
+                #print("Update Key Account externalId :{}".format(item['Id']))
+                #_logger.info("Update Key Account externalId :{}".format(item['Id']))
 
 
     def updateContactKey(self, externalInstance):
@@ -72,8 +72,8 @@ class ETLMap(models.Model):
             odooContact = self.env['etl.sync.keys'].search([('externalId','=',item['Id'])], limit=1)
             if odooContact:
                 odooContact.write({'odooModelName':'res.partner','externalObjName':'Contact'})
-                print("Update Key Contact externalId :{}".format(item['Id']))
-                _logger.info("Update Key Contact externalId :{}".format(item['Id']))
+                #print("Update Key Contact externalId :{}".format(item['Id']))
+                #_logger.info("Update Key Contact externalId :{}".format(item['Id']))
 
     def updateOpportunityKey(self, externalInstance):
         sql =  'SELECT Id '
@@ -84,8 +84,8 @@ class ETLMap(models.Model):
             odooOpportunity = self.env['etl.sync.keys'].search([('externalId','=',item['Id'])], limit=1)
             if odooOpportunity:
                 odooOpportunity.write({'odooModelName':'crm.lead','externalObjName':'Opportunity'})
-                print("Update Key Opportunity externalId :{}".format(item['Id']))
-                _logger.info("Update Key Opportunity externalId :{}".format(item['Id']))
+                #print("Update Key Opportunity externalId :{}".format(item['Id']))
+                #_logger.info("Update Key Opportunity externalId :{}".format(item['Id']))
 
 class GeneralSync(models.AbstractModel):
     _name = 'etl.sync.mixin'

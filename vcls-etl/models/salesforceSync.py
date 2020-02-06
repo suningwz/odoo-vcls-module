@@ -107,6 +107,7 @@ class salesforceSync(models.Model):
 
         sql = str(self.getSQLForKeys())
         allRecordExt = externalInstance.getConnection().query_all(sql)['records']
+        _logger.info('EXTERNALE RECORDS :{}'.format(allRecordExt))
         allRecordOdoo = self.getAllRecordsOdoo()
         if not isFullUpdate:
             if 'WHERE' in sql: 
