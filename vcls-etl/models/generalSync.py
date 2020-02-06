@@ -65,10 +65,13 @@ class ETLMap(models.Model):
         keys_exist_sfid = keys_exist.mapped('externalId')
         keys_create = []
 
-        # In case of full_update, we force the status to 'needUpdateOdoo'
+        # Mass Status Update
+        keys_exist.filtered(lambda k: k.externalId and not k.odooId).write({'state':'needCreateOdoo'})
+        keys_exist.filtered(lambda k: not k.externalId and k.odooId).write({'state':'needCreateExternal'})
         if params['is_full_update']:
-            keys_exist.write({'state':'needUpdateOdoo'})
+            keys_exist.filtered(lambda k: k.externalId and k.odooId).write({'state':'needUpdateOdoo'})
 
+        #We look for non exisitng keys
         for rec in rec_ext:
             if rec['Id'] not in keys_exist_sfid: #if the rec does not exists
                 keys_create.append({
