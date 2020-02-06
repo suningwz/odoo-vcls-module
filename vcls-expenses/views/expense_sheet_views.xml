@@ -108,6 +108,9 @@
                 <field name="user_id" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </field>
+                <field name="user_id" position="after">
+                    <field name="country_id"/>
+                </field>
 
                 <field name="employee_id" position="attributes">
                     <attribute name="options">{"no_open": True,"no_create": 1, "no_create_edit": 1}</attribute>
