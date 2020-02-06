@@ -83,13 +83,13 @@ class ETLMap(models.Model):
                     'priority':params['priority'],
                 })
             elif not params['is_full_update']: #if we don't want a full update, we need to compare dates
-                key = keys_exist.filtered(lambda k: k.externalId and k.odooId).search([('externalId','=',rec['Id'])],limit=1)
+                key = keys_exist.filtered(lambda k: k.externalId==rec['Id'] and k.odooId)
                 if key:
-                    od_date = self.env[params['odooModelName']].browse(key.odooId).write_date
+                    od_date = self.env[params['odooModelName']].browse(key[0].odooId).write_date
                     ext_date = datetime.strptime(rec['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000").strftime("%Y-%m-%d %H:%M:%S.00+0000")
-                    _logger.info("OD {} EXT {} for KEY {}".format(od_date,ext_date,key))
+                    _logger.info("OD {} EXT {} for KEY {}".format(od_date,ext_date,key[0]))
                     status = 'needUpdateOdoo' if ext_date > od_date else 'needUpdateExternal'
-                    key.write({
+                    key[0].write({
                         'lastModifiedOdoo': od_date,
                         'lastModifiedExternal': ext_date,
                         'state':status,
