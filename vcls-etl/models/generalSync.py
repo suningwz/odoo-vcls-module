@@ -65,6 +65,8 @@ class ETLMap(models.Model):
         keys_exist = self.search([('externalObjName','=',params['externalObjName']),('odooModelName','=',params['odooModelName'])])
         keys_exist_sfid = keys_exist.mapped('externalId')
         keys_create = []
+        keys_update = self.env['etl.sync.keys']
+        keys_ok = self.env['etl.sync.keys']
 
         # Mass Status Update
         keys_exist.filtered(lambda k: k.externalId and not k.odooId).write({'state':'needCreateOdoo','priority':params['priority']})
@@ -82,26 +84,41 @@ class ETLMap(models.Model):
                     'state':'needCreateOdoo',
                     'priority':params['priority'],
                 })
+
             elif not params['is_full_update']: #if we don't want a full update, we need to compare dates
                 key = keys_exist.filtered(lambda k: k.externalId==rec['Id'] and k.odooId)
-                _logger.info("NOT FULL {}".format(key))
                 if key:
-                    od_date = self.env[params['odooModelName']].browse(int(key[0].odooId)).write_date
-                    ext_date = datetime.strptime(rec['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000")
+                    if key[0].lastModifiedOdoo:
+                        ext_date = datetime.strptime(rec['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000")
+                        if ext_date > key[0].lastModifiedOdoo:
+                            keys_update |= key
+                        else:
+                            keys_ok |= key
+                    else:
+                        keys_update |= key
+                        
+                    """#od_date = self.env[params['odooModelName']].browse(int(key[0].odooId)).write_date
                     #_logger.info("OD {} EXT {} TYPES {} and {}".format(od_date,ext_date,type(od_date),type(ext_date)))
-                    status = 'needUpdateOdoo' if ext_date > od_date else 'needUpdateExternal'
+                    status = 'needUpdateOdoo' if ext_date > key[0].lastModifiedOdoo else 'needUpdateExternal'
                     key[0].write({
                         'lastModifiedOdoo': od_date.strftime("%Y-%m-%d %H:%M:%S.00+0000"),
                         'lastModifiedExternal': ext_date.strftime("%Y-%m-%d %H:%M:%S.00+0000"),
                         'state':status,
-                    })
-        
+                    })"""
+    
         if rec_ext:
             _logger.info("QUERY |\n{}\nreturned {} records".format(params['sql'],len(rec_ext)))
         if keys_exist:
             _logger.info("KEYS | Found {} existing keys".format(len(keys_exist)))
         if keys_create:
             _logger.info("KEYS | {} Keys to create".format(len(keys_create)))
+
+        if keys_update:
+            keys_update.write({'state':'needUpdateOdoo','priority':params['priority']})
+            _logger.info("KEYS | {} Keys to update".format(len(keys_update)))
+        if keys_ok:
+            keys_ok.write({'state':'upToDate','priority':params['priority']})
+            _logger.info("KEYS | {} Keys are OK".format(len(keys_ok)))
         
 
     def accounts_and_contacts(self, is_full_update=True):
