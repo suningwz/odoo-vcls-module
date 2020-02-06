@@ -204,7 +204,8 @@ class salesforceSync(models.Model):
         sql = self.getSQLForRecord()
         sql += ' ORDER BY Name'
         Modifiedrecords = externalInstance.getConnection().query_all(sql)['records'] #All records
-        _logger.info(" FOUND RECORDS {}".format(Modifiedrecords))
+        for rec in Modifiedrecords:
+            _logger.info(" FOUND RECORD {} \n\n".format(rec))
         keys = self.getKeysToUpdateOdoo()
         if not nbMaxRecords:
             nbMaxRecords = len(keys)
