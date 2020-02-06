@@ -59,9 +59,9 @@ class salesforceSync(models.Model):
     def run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
         # run the ETL
         sfInstance = self.getSFInstance()
-        _logger.info(" SF Instance {}".format(sfInstance))
+        #_logger.info("ETL | SF Instance {}".format(sfInstance))
         translator = self.getSFTranslator(sfInstance)
-        _logger.info(" TRANSLATOR {}".format(translator))
+        #_logger.info("ETL | TRANSLATOR {}".format(translator))
         #cronId = self.getCronId(isFullUpdate)
 
         #initialised the SfSync Object
@@ -110,6 +110,8 @@ class salesforceSync(models.Model):
         sql = str(self.getSQLForKeys())
         allRecordExt = externalInstance.getConnection().query_all(sql)['records']
         allRecordOdoo = self.getAllRecordsOdoo()
+        _logger.info("ETL | updateKeyTable ALL | \n {} \n  Found {} external records and {} internal records".format(sql,len(allRecordExt),len(allRecordOdoo)))
+
         if not isFullUpdate:
             if 'WHERE' in sql: 
                 sql += 'AND '
@@ -118,15 +120,11 @@ class salesforceSync(models.Model):
             sql += 'LastModifiedDate > ' + self.getStrLastRun().astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000") 
         
         sql += ' ORDER BY Name'
-        
-        #print('Execute QUERY: {}'.format(sql))
-        _logger.info('Execute QUERY: {}'.format(sql))
-        
         #working on keys that were not created
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
         modifiedRecordsOdoo = self.getModifiedRecordsOdoo()
+        _logger.info("ETL | updateKeyTable MODIFIED | \n {} \n  Found {} external records and {} internal records".format(sql,len(modifiedRecordsExt),len(modifiedRecordsOdoo)))
         lastRun = self.getStrLastRun()
-
 
         if keys:
             if not isFullUpdate:

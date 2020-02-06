@@ -64,11 +64,10 @@ class ETLMap(models.Model):
 
 
     def updateContactKey(self, externalInstance):
-        sql =  'SELECT Id '
-        sql += 'FROM Contact'
+        sql =  'SELECT Id FROM Contact'
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
-        _logger.info("ETL | updateContactKey | Found {} records".format(len(modifiedRecordsExt)))
-        
+        _logger.info("ETL | updateContactKey | \n {} \n  Found {} records".format(sql,len(modifiedRecordsExt)))
+
         for item in modifiedRecordsExt:
             odooContact = self.env['etl.sync.keys'].search([('externalId','=',item['Id'])], limit=1)
             if odooContact:

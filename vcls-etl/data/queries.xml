@@ -45,9 +45,7 @@
             <field name="key">etl_sf_contact_filter</field>
             <field name="value">
                 FROM Contact as C
-                WHERE C.Opted_In__c = True 
-                OR C.AccountId.VCLS_Alt_Name__c != null 
-                OR (C.AccountId.Supplier__c = True or C.AccountId.Is_supplier__c = True)
+                WHERE C.Automated_Migration__c = True
             </field>
         </record>
 
