@@ -9,6 +9,7 @@ from abc import ABC,abstractmethod
 
 from simple_salesforce import Salesforce
 from simple_salesforce.exceptions import SalesforceMalformedRequest
+
 from . import ETL_SF
 
 import logging
@@ -44,15 +45,6 @@ class ETLMap(models.Model):
     def setState(self, state):
         self.state = state
     
-    """def run(self):
-        userSF = self.env.ref('vcls-etl.SF_mail').value
-        passwordSF = self.env.ref('vcls-etl.SF_password').value
-        token = self.env.ref('vcls-etl.SF_token').value
-        sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
-        self.updateAccountKey(sfInstance)
-        self.updateContactKey(sfInstance)
-        self.updateOpportunityKey(sfInstance)"""
-    
     def open_con(self):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
@@ -68,12 +60,6 @@ class ETLMap(models.Model):
         keys_update = keys_exist.filtered(lambda k: k.externalId and k.odooId)
         keys_ok = self.env['etl.sync.keys']
 
-        """# Mass Status Update
-        keys_exist.filtered(lambda k: k.externalId and not k.odooId).write({'state':'needCreateOdoo','priority':params['priority']})
-        keys_exist.filtered(lambda k: not k.externalId and k.odooId).write({'state':'needCreateExternal','priority':params['priority']})
-        if params['is_full_update']:
-            keys_exist.filtered(lambda k: k.externalId and k.odooId).write({'state':'needUpdateOdoo','priority':params['priority']})
-        """
         #We look for non exisitng keys
         for rec in rec_ext:
             if rec['Id'] not in keys_exist_sfid: #if the rec does not exists
@@ -83,7 +69,6 @@ class ETLMap(models.Model):
                     'lastModifiedExternal': datetime.strptime(rec['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000"),
                     'odooModelName': params['odooModelName'],
                     'state':'needCreateOdoo',
-                    'priority':params['priority'],
                 }
                 keys_create |= self.create(vals)
                 _logger.info("KEYS | New creation {}".format(vals))
@@ -108,7 +93,7 @@ class ETLMap(models.Model):
             _logger.info("KEYS | Found {} existing keys".format(len(keys_exist)))
 
         if keys_create:
-            keys_create.write({'state':'needCreateOdoo','priority':params['priority']})
+            keys_create.write({'state':'needCreateOdoo','priority':params['priority']+1})
             _logger.info("KEYS | {} Keys to create".format(len(keys_create)))
         if keys_update:
             keys_update.write({'state':'needUpdateOdoo','priority':params['priority']})
@@ -134,32 +119,28 @@ class ETLMap(models.Model):
         #get instance
         sfInstance = self.open_con()
 
+        #make time filter if required
+        new_run = datetime.datetime.now(pytz.timezone("GMT"))
+        if not is_full_update:
+            last_run = self.env.ref('vcls-etl.last_run').value
+            time_sql = " AND LastModifiedDate > {}".format(last_run)
+        else:
+            time_sql = ""
+            
+
         ### CONTACT KEYS PROCESSING
-        # We get records from SF satisfying the filter in system parameter
         params = {
             'sfInstance':sfInstance,
-            'priority':1,
+            'priority':10,
             'externalObjName':'Contact',
-            'sql':'SELECT Id, LastModifiedDate ' + self.env.ref('vcls-etl.etl_sf_contact_filter').value,
+            'sql':'SELECT Id, LastModifiedDate ' + self.env.ref('vcls-etl.etl_sf_contact_filter').value + time_sql,
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
-
         self.update_keys(params)
 
-        
-        
-
-        #all_odoo = self.search([('externalObjName','in',['Contact','Account'])])
-
-
-
-        """if to_reset and is_full_update:
-            to_reset.write({'state':'upToDate'})
-            _logger.info("ETL | {} keys reset".format(len(to_reset)))"""
-
-
         ###CLOSING
+        self.env.ref('vcls-etl.last_run').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
         self.env.user.context_data_integration = False
 
         
