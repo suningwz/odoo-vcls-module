@@ -115,7 +115,7 @@ class ETLMap(models.Model):
         sfInstance = self.open_con()
 
         #make time filter if required
-        new_run = datetime.datetime.now(pytz.timezone("GMT"))
+        new_run = datetime.now(pytz.timezone("GMT"))
         if not is_full_update:
             last_run = self.env.ref('vcls-etl.last_run').value
             time_sql = " AND LastModifiedDate > {}".format(last_run)
@@ -182,7 +182,7 @@ class GeneralSync(models.AbstractModel):
     lastRun = fields.Datetime(readonly = True)
 
     def setNextRun(self):
-        self.lastRun = fields.Datetime.from_string(datetime.datetime.now(pytz.timezone("GMT")).strftime("%Y-%m-%d %H:%M:%S.00+0000"))
+        self.lastRun = fields.Datetime.from_string(datetime.now(pytz.timezone("GMT")).strftime("%Y-%m-%d %H:%M:%S.00+0000"))
         print(self.lastRun)
     
     def getStrLastRun(self):
