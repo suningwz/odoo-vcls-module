@@ -57,8 +57,15 @@ class ETLMap(models.Model):
         keys_exist = self.search([('externalObjName','=',params['externalObjName']),('odooModelName','=',params['odooModelName'])])
         keys_exist_sfid = keys_exist.mapped('externalId')
         keys_create = keys_exist.filtered(lambda k: k.externalId and not k.odooId)
-        keys_update = keys_exist.filtered(lambda k: k.externalId and k.odooId)
-        keys_ok = self.env['etl.sync.keys']
+
+        if params['is_full_update']:
+            keys_update = keys_exist.filtered(lambda k: k.externalId and k.odooId)
+            keys_to_test = self.env['etl.sync.keys']
+        else:
+            keys_update = self.env['etl.sync.keys']
+            #we fix those ones as ok by default
+            keys_to_test=keys_exist.filtered(lambda k: k.externalId and k.odooId)
+            keys_to_test.write({'state':'upToDate','priority':params['priority']})
 
         #We look for non exisitng keys
         for rec in rec_ext:
@@ -73,18 +80,10 @@ class ETLMap(models.Model):
                 keys_create |= self.create(vals)
                 _logger.info("KEYS | New creation {}".format(vals))
 
-
-            elif not params['is_full_update']: #if we don't want a full update, we need to compare dates
-                key = keys_update.filtered(lambda k: k.externalId==rec['Id'])
+            elif not params['is_full_update']: #if we don't want a full update, we need to find exact ones to update based on records
+                key = keys_to_test.filtered(lambda k: k.externalId==rec['Id'])
                 if key:
-                    if key[0].lastModifiedOdoo:
-                        ext_date = datetime.strptime(rec['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000")
-                        if ext_date > key[0].lastModifiedOdoo:
-                            keys_update |= key
-                        else:
-                            keys_ok |= key
-                    else:
-                        keys_update |= key
+                    keys_update |= key         
                         
     
         if rec_ext:
@@ -97,13 +96,9 @@ class ETLMap(models.Model):
             _logger.info("KEYS | {} Keys to create".format(len(keys_create)))
         if keys_update:
             keys_update.write({'state':'needUpdateOdoo','priority':params['priority']})
-            _logger.info("KEYS | {} Keys to update".format(len(keys_update)))
-        if keys_ok:
-            keys_ok.write({'state':'upToDate','priority':params['priority']})
-            _logger.info("KEYS | {} Keys are OK".format(len(keys_ok)))
-        
+            _logger.info("KEYS | {} Keys to update".format(len(keys_update)))   
 
-    def accounts_and_contacts(self, is_full_update=True):
+    def sf_update(self, is_full_update=True):
         """
         We 1st process the keys and priorities, starting from contacts.
         But then the queue must be executed in revert order of priorities to ensure parent accounts to be created 1st, etc.
