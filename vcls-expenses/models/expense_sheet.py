@@ -50,7 +50,7 @@ class ExpenseSheet(models.Model):
 
     country_id = fields.Many2one(
         'res.country', 'Country',
-        required=True
+        #required=True
     )
 
     ######################

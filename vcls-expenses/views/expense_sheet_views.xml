@@ -109,7 +109,7 @@
                     <attribute name="readonly">1</attribute>
                 </field>
                 <field name="user_id" position="after">
-                    <field name="country_id"/>
+                    <field name="country_id" required="1" string="Country of Expense"/>
                 </field>
 
                 <field name="employee_id" position="attributes">
