@@ -26,7 +26,7 @@ class Benefit(models.Model):
         comodel_name='res.currency',
         related=False,
         string="Currency",
-        default=lambda self: self.employee_id.company_id.currency_id,
+        default=lambda self: self.env.user.company_id.currency_id,
     )
 
     car_info = fields.Char(
