@@ -28,17 +28,12 @@ class SFContactSync(models.Model):
             return self.env.ref('vcls-etl.cron_etl_contact').id
     """
     def getSQLForKeys(self):
-        sql =  'SELECT C.Id, C.LastModifiedDate '
-        sql += 'FROM Contact as C '
-        sql += 'Where C.AccountId In ('
-        sql +=  'SELECT A.Id '
-        sql +=  'FROM Account as A '
-        sql +=  'WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)'
-        sql += ') '
+        sql =  'SELECT C.Id, C.LastModifiedDate ' + self.env.ref('vcls-etl.etl_sf_contact_filter').value
+        _logger.info(sql)
         return sql
     
     def getSQLForRecord(self):
-        sql = self.env.ref('vcls-etl.etl_sf_contact_query').value
+        sql = self.env.ref('vcls-etl.etl_sf_contact_query').value + ' ' + self.env.ref('vcls-etl.etl_sf_contact_filter').value
         _logger.info(sql)
         return sql
 

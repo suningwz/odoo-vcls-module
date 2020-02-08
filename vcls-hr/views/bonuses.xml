@@ -9,8 +9,8 @@
             
             <field name="arch" type="xml">
                 <tree string="Bonuses" create="true" delete="true" edit="true">
-                    <field name="currency_id" invisible="1"/>
                     <field name="employee_id"/>
+                    <field name="currency_id"/>
                     <field name="bonus_type"/>
                     <field name="date"/>
                     <field name="amount"/>

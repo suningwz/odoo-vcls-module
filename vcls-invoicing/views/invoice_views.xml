@@ -12,10 +12,24 @@
             </field>
         </record>
 
+        <record model="ir.ui.view" id="view_invoice_form_inherit">
+            <field name="name">account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree//field[@name='product_id']" position="attributes">
+                    <attribute name="domain">[('sale_ok','=',True), ('vcls_type', '!=', 'other')]</attribute>
+                    <attribute name="options">{'no_create': True, "no_open": True}</attribute>
+                </xpath>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="view_invoice_form">
             <field name="name">account.invoice.form</field>
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="sale_timesheet_limit_date.invoice_form"/>
+            <field name="mode">primary</field>
+            <field name="priority" eval="5000" />
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='number']" position="after">
                     <field name="temp_name" readonly="1" class="oe_inline" attrs="{'invisible': [('state','not in',('draft',))]}"/>
@@ -35,8 +49,8 @@
                             <field name="activity_report_template" required="0"/>
                         </group>
                         <group string="Project">
-                            <field name='scope_of_work'/>  
-                            <field name='lc_laius'/> 
+                            <field name='scope_of_work'/>
+                            <field name='lc_laius'/>
                         </group>
                     </group>
 
@@ -58,6 +72,10 @@
                             <field name='po_id'/>
                             <field name='bank_account_id'/>
                             <field name='ready_for_approval' invisible="1"/>
+                            <button name='get_last_report' type="object"
+                                string="PDF" class="btn-primary"
+                                attrs="{'invisible': [('draft_count','=', 0)]}"/>
+
                         </group>
                     </group>
 
@@ -95,6 +113,10 @@
             </field>
         </record>
 
+        <record id="account.action_invoice_tree1_view2" model="ir.actions.act_window.view">
+            <field name="view_id" ref="view_invoice_form"/>
+        </record>
+
         <record id='po_view_tree' model='ir.ui.view'>
             <field name="name">po.view.tree</field>
             <field name="model">invoicing.po</field>
@@ -123,7 +145,7 @@
                     <field name="temp_name" string="Name"/>
                     <field name="company_id"/>
                     <field name="partner_id"/>
-                    <field name="origin_sale_orders"/>
+                    <!--<field name="origin_sale_orders"/>-->
                     <field name="period_start" string="Period Start"/>
                     <field name="timesheet_limit_date" string="Period End"/>
                     <field name="invoice_sending_date" string="Sending Date"/>

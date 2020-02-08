@@ -3,11 +3,13 @@
 from odoo import models, fields, api
 
 import datetime, pytz
+from datetime import datetime
 
 from abc import ABC,abstractmethod
 
 from simple_salesforce import Salesforce
 from simple_salesforce.exceptions import SalesforceMalformedRequest
+
 from . import ETL_SF
 
 import logging
@@ -26,6 +28,7 @@ class ETLMap(models.Model):
     externalObjName = fields.Char(readonly = True)
     lastModifiedExternal = fields.Datetime(readonly = True)
     lastModifiedOdoo = fields.Datetime(readonly = True)
+    priority = fields.Integer(default=0)
     
     state = fields.Selection([
         ('upToDate', 'Up To Date'),
@@ -42,16 +45,101 @@ class ETLMap(models.Model):
     def setState(self, state):
         self.state = state
     
-    def run(self):
+    def open_con(self):
         userSF = self.env.ref('vcls-etl.SF_mail').value
         passwordSF = self.env.ref('vcls-etl.SF_password').value
         token = self.env.ref('vcls-etl.SF_token').value
-        sfInstance = ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
-        self.updateAccountKey(sfInstance)
-        self.updateContactKey(sfInstance)
-        self.updateOpportunityKey(sfInstance)
+        return ETL_SF.ETL_SF.getInstance(userSF, passwordSF, token)
+    
+    def update_keys(self,params={}):
+        _logger.info("ETL | UPDATE KEYS {}".format(params))
+        rec_ext = params['sfInstance'].getConnection().query_all(params['sql'])['records']
+        keys_exist = self.search([('externalObjName','=',params['externalObjName']),('odooModelName','=',params['odooModelName'])])
+        keys_exist_sfid = keys_exist.mapped('externalId')
+        keys_create = keys_exist.filtered(lambda k: k.externalId and not k.odooId)
+
+        if params['is_full_update']:
+            keys_update = keys_exist.filtered(lambda k: k.externalId and k.odooId)
+            keys_to_test = self.env['etl.sync.keys']
+        else:
+            keys_update = self.env['etl.sync.keys']
+            #we fix those ones as ok by default
+            keys_to_test=keys_exist.filtered(lambda k: k.externalId and k.odooId)
+            keys_to_test.write({'state':'upToDate','priority':params['priority']})
+
+        #We look for non exisitng keys
+        for rec in rec_ext:
+            if rec['Id'] not in keys_exist_sfid: #if the rec does not exists
+                vals = {
+                    'externalObjName':params['externalObjName'],
+                    'externalId': rec['Id'],
+                    'lastModifiedExternal': datetime.strptime(rec['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000"),
+                    'odooModelName': params['odooModelName'],
+                    'state':'needCreateOdoo',
+                }
+                keys_create |= self.create(vals)
+                _logger.info("KEYS | New creation {}".format(vals))
+
+            elif not params['is_full_update']: #if we don't want a full update, we need to find exact ones to update based on records
+                key = keys_to_test.filtered(lambda k: k.externalId==rec['Id'])
+                if key:
+                    keys_update |= key         
+                        
+    
+        if rec_ext:
+            _logger.info("QUERY |\n{}\nreturned {} {} records".format(params['sql'],len(rec_ext),params['externalObjName']))
+        if keys_exist:
+            _logger.info("KEYS | Found {} existing keys".format(len(keys_exist)))
+
+        if keys_create:
+            keys_create.write({'state':'needCreateOdoo','priority':params['priority']+1})
+            _logger.info("KEYS | {} Keys to create".format(len(keys_create)))
+        if keys_update:
+            keys_update.write({'state':'needUpdateOdoo','priority':params['priority']})
+            _logger.info("KEYS | {} Keys to update".format(len(keys_update)))   
+
+    def sf_update(self, is_full_update=True):
+        """
+        We 1st process the keys and priorities, starting from contacts.
+        But then the queue must be executed in revert order of priorities to ensure parent accounts to be created 1st, etc.
+        """
+        ### PREPARATION
+        #Update the context to execute vcls-rdd override
+        self.env.user.context_data_integration = True
+        #Clean the keys table of corrupted entries
+        to_clean = self.search([('odooModelName','=',False)])
+        for key in to_clean:
+            key.unlink()
         
-    def updateAccountKey(self, externalInstance):
+        #get instance
+        sfInstance = self.open_con()
+
+        #make time filter if required
+        new_run = datetime.now(pytz.timezone("GMT"))
+        if not is_full_update:
+            last_run = self.env.ref('vcls-etl.ETL_LastRun').value
+            time_sql = " AND LastModifiedDate > {}".format(last_run)
+        else:
+            time_sql = ""
+            
+
+        ### CONTACT KEYS PROCESSING
+        params = {
+            'sfInstance':sfInstance,
+            'priority':10,
+            'externalObjName':'Contact',
+            'sql':'SELECT Id, LastModifiedDate ' + self.env.ref('vcls-etl.etl_sf_contact_filter').value + time_sql,
+            'odooModelName':'res.partner',
+            'is_full_update':is_full_update,
+        }
+        self.update_keys(params)
+
+        ###CLOSING
+        self.env.ref('vcls-etl.last_run').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
+        self.env.user.context_data_integration = False
+
+        
+    """def updateAccountKey(self, externalInstance):
         sql = 'Select Id From Account'
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
 
@@ -59,21 +147,21 @@ class ETLMap(models.Model):
             odooAccount = self.env['etl.sync.keys'].search([('externalId','=',item['Id'])], limit=1)
             if odooAccount:
                 odooAccount.write({'odooModelName':'res.partner','externalObjName':'Account'})
-                print("Update Key Account externalId :{}".format(item['Id']))
-                _logger.info("Update Key Account externalId :{}".format(item['Id']))
+                #print("Update Key Account externalId :{}".format(item['Id']))
+                #_logger.info("Update Key Account externalId :{}".format(item['Id']))
 
 
     def updateContactKey(self, externalInstance):
-        sql =  'SELECT Id '
-        sql += 'FROM Contact'
+        sql =  'SELECT Id FROM Contact'
         modifiedRecordsExt = externalInstance.getConnection().query_all(sql)['records']
+        _logger.info("ETL | updateContactKey | \n {} \n  Found {} records".format(sql,len(modifiedRecordsExt)))
 
         for item in modifiedRecordsExt:
             odooContact = self.env['etl.sync.keys'].search([('externalId','=',item['Id'])], limit=1)
             if odooContact:
                 odooContact.write({'odooModelName':'res.partner','externalObjName':'Contact'})
-                print("Update Key Contact externalId :{}".format(item['Id']))
-                _logger.info("Update Key Contact externalId :{}".format(item['Id']))
+                #print("Update Key Contact externalId :{}".format(item['Id']))
+                #_logger.info("Update Key Contact externalId :{}".format(item['Id']))
 
     def updateOpportunityKey(self, externalInstance):
         sql =  'SELECT Id '
@@ -84,8 +172,8 @@ class ETLMap(models.Model):
             odooOpportunity = self.env['etl.sync.keys'].search([('externalId','=',item['Id'])], limit=1)
             if odooOpportunity:
                 odooOpportunity.write({'odooModelName':'crm.lead','externalObjName':'Opportunity'})
-                print("Update Key Opportunity externalId :{}".format(item['Id']))
-                _logger.info("Update Key Opportunity externalId :{}".format(item['Id']))
+                #print("Update Key Opportunity externalId :{}".format(item['Id']))
+                #_logger.info("Update Key Opportunity externalId :{}".format(item['Id']))"""
 
 class GeneralSync(models.AbstractModel):
     _name = 'etl.sync.mixin'
@@ -94,7 +182,7 @@ class GeneralSync(models.AbstractModel):
     lastRun = fields.Datetime(readonly = True)
 
     def setNextRun(self):
-        self.lastRun = fields.Datetime.from_string(datetime.datetime.now(pytz.timezone("GMT")).strftime("%Y-%m-%d %H:%M:%S.00+0000"))
+        self.lastRun = fields.Datetime.from_string(datetime.now(pytz.timezone("GMT")).strftime("%Y-%m-%d %H:%M:%S.00+0000"))
         print(self.lastRun)
     
     def getStrLastRun(self):

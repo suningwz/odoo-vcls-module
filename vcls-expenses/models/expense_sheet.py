@@ -48,6 +48,11 @@ class ExpenseSheet(models.Model):
         related='employee_id.company_id'
     )
 
+    country_id = fields.Many2one(
+        'res.country', 'Country',
+        required=True
+    )
+
     ######################
     # OVERWRITTEN FIELDS #
     ######################
@@ -149,7 +154,7 @@ class ExpenseSheet(models.Model):
 
                 else:
                     rec.sale_order_id = False
-                    #rec.analytic_account_id = False          
+                    #rec.analytic_account_id = False
 
     @api.multi
     def open_pop_up_add_expense(self):
@@ -176,5 +181,14 @@ class ExpenseSheet(models.Model):
         self.journal_id = self.env['account.journal'].search([('type', '=', 'purchase'),('name', '=', 'Expenses'),('company_id', '=', self.employee_id.company_id.id)], limit=1)
         self.bank_journal_id = self.env['account.journal'].search([('type', 'in', ['cash', 'bank']),('company_id', '=', self.employee_id.company_id.id)], limit=1)
 
-    
+    @api.multi
+    def action_submit_sheet(self):
+        for expense_sheet in self:
+            if expense_sheet.country_id != expense_sheet.employee_id.company_id.country_id:
+                if expense_sheet.expense_line_ids:
+                    expense_sheet.expense_line_ids.write({
+                        'tax_ids': False,
+                    })
+        return super(ExpenseSheet, self).action_submit_sheet()
+
 
