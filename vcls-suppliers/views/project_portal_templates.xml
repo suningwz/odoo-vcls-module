@@ -43,7 +43,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <t t-foreach="task.timesheet_ids" t-as="timesheet">
+                        <t t-foreach="task.timesheet_ids.filtered(lambda l: l.employee_id.user_id == request.env.user)" t-as="timesheet">
                             <t t-if="timesheet.validated == False">
                                 <tr data-toggle="modal" t-attf-data-target="#editTimesheetModal#{ timesheet.id }" style="cursor: pointer;">
                                     <td><t t-esc="timesheet.date"/></td>

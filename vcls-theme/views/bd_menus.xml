@@ -89,38 +89,107 @@
         />
         
         <!-- Main Objects -->
+        <!-- Pipeline Menu -->
+        <menuitem
+            id="menu_bd_pipeline_main"
+            name="Pipeline"
+            parent="menu_bd_root"
+            action=""
+            sequence="3"
+            groups="vcls-hr.vcls_group_superuser_lvl1,vcls_security.vcls_account_manager"
+        />
+
         <menuitem
             id="menu_bd_opp_main"
             name="Opportunities"
-            parent="menu_bd_root"
+            parent="menu_bd_pipeline_main"
             action="crm.crm_lead_opportunities_tree_view"
             sequence="3"
             groups="vcls-hr.vcls_group_superuser_lvl1,vcls_security.vcls_account_manager"
         />
 
         <menuitem
-            id="menu_bd_lead_main"
-            name="Leads"
-            parent="menu_bd_root"
-            action="crm.crm_lead_all_leads"
+            id="menu_bd_sales_main"
+            name="Quotations"
+            parent="menu_bd_pipeline_main"
+            action="sale.action_quotations"
             sequence="6"
         />
 
         <menuitem
-            id="menu_bd_sales_main"
-            name="Quotations"
+            id="menu_bd_supplier"
+            name="Request for Suppliers"
+            parent="menu_bd_pipeline_main"
+            action="action_my_rfq"
+            sequence="9"
+        />
+
+        <!-- Client Menu -->
+
+        <menuitem
+            id="menu_bd_client_main"
+            name="Clients"
             parent="menu_bd_root"
-            action="sale.action_quotations"
+            action=""
+            sequence="6"
+        />
+
+        <menuitem
+            id="menu_bd_client_contact"
+            name="Accounts and Contacts"
+            parent="menu_bd_client_main"
+            action="action_bd_clients"
+            sequence="3"
+        />
+        <menuitem
+            id="menu_bd_program_main"
+            name="Client Programs"
+            parent="menu_bd_client_main"
+            action="vcls-project.action_program"
+            sequence="6"
+        />
+
+        <menuitem
+            id="menu_bd_invoices"
+            name="Invoices"
+            parent="menu_bd_root"
+            action="vcls-invoicing.action_am_invoices"
             sequence="9"
         />
 
         <!-- Marketing-->
+
+        <menuitem
+            id="menu_bd_marketing_main"
+            name="Marketing"
+            parent="menu_bd_root"
+            action=""
+            sequence="12"
+        />
+
+        <menuitem
+            id="menu_bd_lead_main"
+            name="Leads"
+            parent="menu_bd_marketing_main"
+            action="crm.crm_lead_all_leads"
+            sequence="3"
+        />
+
+        <menuitem
+                id="scores_menu"
+                name="Scoring Rules"
+                parent="menu_bd_marketing_main"
+                action="website_crm_score.score_action"
+                sequence="4"
+                groups="sales_team.group_sale_manager"
+        />
+
         <menuitem
             id="menu_bd_marketing"
             name="Marketing Campaigns"
-            parent="menu_bd_root"
+            parent="menu_bd_marketing_main"
             action=""
-            sequence="11"
+            sequence="6"
         />
 
         <menuitem
@@ -138,31 +207,11 @@
             action="vcls_marketing.action_marketing_task"
             sequence="3"
         />
-        <!-- Invoices -->
-        <menuitem
-            id="menu_bd_invoices"
-            name="Invoices"
-            parent="menu_bd_root"
-            action="vcls-invoicing.action_am_invoices"
-            sequence="12"
-        />
+        
 
-        <menuitem
-            id="menu_bd_product_main"
-            name="Product Catalog"
-            parent="menu_bd_root"
-            action="sale.product_template_action"
-            sequence="13"
-        />
+        
 
-        <!-- RFQ -->
-        <menuitem
-            id="menu_bd_supplier"
-            name="Request for Suppliers"
-            parent="menu_bd_root"
-            action="action_my_rfq"
-            sequence="14"
-        />
+        
 
         <!-- Reporting -->
         <menuitem
@@ -369,9 +418,17 @@
         <!-- Product Catalog -->
         <menuitem
             id="menu_bd_conf_product"
-            name="Product Catalog"
+            name="Product Configuration"
             parent="menu_bd_conf_main"
             sequence="12"
+        />
+
+        <menuitem
+            id="menu_bd_product_main"
+            name="Product Catalog"
+            parent="menu_bd_conf_product"
+            action="sale.product_template_action"
+            sequence="1"
         />
 
         <menuitem
@@ -390,22 +447,7 @@
             sequence="6"
         />
 
-        <menuitem
-            id="menu_bd_client_main"
-            name="Clients"
-            parent="menu_bd_root"
-            action="action_bd_clients"
-            sequence="12"
-        />
-
-
-        <menuitem
-            id="menu_bd_program_main"
-            name="Client Programs"
-            parent="menu_bd_root"
-            action="vcls-project.action_program"
-            sequence="13"
-        />
+        
 
         
         

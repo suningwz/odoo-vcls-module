@@ -83,30 +83,38 @@ class SaleOrder(models.Model):
     def set_travel_invoicing_ratio(self):
         self.travel_invoicing_ratio = self.partner_id.travel_invoicing_ratio
 
+    @api.multi
+    def action_projects_followup(self):
+        self.ensure_one()
+        if not self.project_id:
+            return
+        family_project_ids = self.project_id._get_family_project_ids()
+        action = self.env.ref('vcls-timesheet.project_timesheet_forecast_report_action').read()[0]
+        action['domain'] = [('project_id', 'in', family_project_ids.ids)]
+        action['context'] = {}
+        return action
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     def _timesheet_compute_delivered_quantity_domain(self):
         domain = super()._timesheet_compute_delivered_quantity_domain()
-        #We add the condition on the timesheet stage_id
+        # We add the condition on the timesheet stage_id
         domain = expression.AND([
                 domain,
                 [('stage_id', 'in', ['invoiceable','invoiced'])]]
             )
-        #_logger.info("TS PATH | vcls-timesheet | sale.order.line | _timesheet_compute_delivered_quantity_domain | {}".format(domain))
 
         return domain
 
     def _get_timesheet_for_amount_calculation(self, only_invoiced=False):
-        #_logger.info("TS PATH | vcls-timesheet | sale.order.line | _get_timesheet_for_amount_calculation")
 
         timesheets = super()._get_timesheet_for_amount_calculation(only_invoiced=only_invoiced)
         
         if not timesheets:
             return timesheets
 
-        #_logger.info('Amount before filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
         timesheets = timesheets.filtered(
                 lambda r: r.stage_id in ['invoiceable', 'invoiced']
             )
@@ -121,7 +129,6 @@ class SaleOrderLine(models.Model):
             )
         timesheets = timesheets.filtered(ts_filter)
 
-        #_logger.info('Amount after filter {} | {} | {}'.format(timesheets.mapped('name'),timesheets.mapped('validated'),timesheets.mapped('stage_id')))
         return timesheets
 
     @api.multi
@@ -134,10 +141,9 @@ class SaleOrderLine(models.Model):
     def _compute_qty_delivered(self):
         """Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type"""
 
-        #_logger.info("QTY DELIVERED: {}".format(len(self)))
         super()._compute_qty_delivered()
         for line in self:
-            #In Time & Material, we invoice the rate product lines and set the other services to 0
+            # In Time & Material, we invoice the rate product lines and set the other services to 0
             if line.order_id.invoicing_mode == 'tm':
                 if line.product_id.vcls_type == 'vcls_service':
                     line.qty_delivered = 0.
@@ -155,8 +161,7 @@ class SaleOrderLine(models.Model):
             else:
                 pass
 
-            _logger.info("QTY DELIVERED: {} {} {} {}".format(line.order_id.invoicing_mode,line.product_id.vcls_type,line.name,line.qty_delivered))
-    
+
     """@api.multi
     @api.depends(
         'product_uom_qty',
@@ -229,5 +234,5 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     name = fields.Char(
-        store = True
+        store=True
     )

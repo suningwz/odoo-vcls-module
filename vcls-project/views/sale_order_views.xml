@@ -45,6 +45,9 @@
                 <xpath expr="//tree//field[@name='discount']" position="after">
                     <field name="forecasted_amount"/>
                 </xpath>
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="project_id" context="{'form_view_ref':'vcls-project.vcls_specific_project_form'}"/>
+                </xpath>
             </field>
         </record>
 

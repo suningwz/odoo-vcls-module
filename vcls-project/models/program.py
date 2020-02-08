@@ -138,9 +138,8 @@ class ProjectProgram(models.Model):
         self.ensure_one()
         action = self.env.ref('vcls-timesheet.project_timesheet_forecast_report_action').read()[0]
         project_ids = self.env['project.project'].search([('program_id','=',self.id)]).mapped('id')
-        action['context'] = { 
-                "search_default_project_id": project_ids,
-                }
+        action['domain'] = [('project_id','in',project_ids)]
+        action['context'] = {}
         return action
     
     @api.multi
@@ -175,56 +174,6 @@ class Client(models.Model):
         for client in self:
             client.program_count = len(client.program_ids)
 
-class Lead(models.Model):
-
-    _inherit = 'crm.lead'
-
-    program_id = fields.Many2one(
-        comodel_name = 'project.program',
-        string = 'Related Program',
-    )
-
-    app_country_group_id = fields.Many2one(
-        'res.country.group',
-        string = "Application Geographic Area",
-        related = 'program_id.app_country_group_id',
-        readonly = True
-    )
-
-    """client_product_ids = fields.Many2many(
-        'client.product',
-        string = 'Client Product',
-        related = 'program_id.client_product_ids',
-        readonly = True
-    )"""
-
-    program_stage_id = fields.Selection([
-        ('pre', 'Preclinical'),
-        ('exploratory', 'Exploratory Clinical'),
-        ('confirmatory', 'Confirmatory Clinical'),
-        ('post', 'Post Marketing')],
-        string='Program Stage',
-        #related='program_id.stage_id',
-        #readonly=True,
-        )
-    
-    product_name = fields.Char(
-        string = "Product Name",
-        help = 'The client product name',
-        related='program_id.product_name',
-    )
-
-    product_description = fields.Text(
-        related="program_id.product_description",
-    )
-
-    program_info = fields.Text(
-        related = 'program_id.program_info'
-    )
-
-    @api.onchange('program_id')
-    def _onchange_program_id(self):
-        self.program_stage_id = self.program_id.stage_id
 
 class SaleOrder(models.Model):
 

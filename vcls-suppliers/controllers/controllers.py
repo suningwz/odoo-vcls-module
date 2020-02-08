@@ -205,6 +205,8 @@ class CustomerPortal(CustomerPortal):
             try:
                 if float(post['unit_amount']) < 0:
                     error += [_('Duration cannot be negative.')]
+                else:
+                    post['unit_amount'] = float(post['unit_amount'])
             except:
                 error += [_('Invalid duration format.')]
         try:
@@ -226,7 +228,7 @@ class CustomerPortal(CustomerPortal):
         values['errors'] = error
 
         # GET ALL TIME_CATEGORY
-        values['time_categories'] = request.env['project.time_category'].sudo().search([])
+        values['time_categories'] = task_sudo.time_category_ids
 
         return request.render("project.portal_my_task", values)
     
@@ -262,7 +264,7 @@ class CustomerPortal(CustomerPortal):
                         'employee_id': employee.id,
                         'unit_amount': float(post['unit_amount']),
                         'name': post['name'],
-                        'time_category_id':post['time_category_id'],
+                        'time_category_id': post['time_category_id'],
                     }
                     analytic_line = request.env['account.analytic.line'].sudo().create(values)
                     analytic_line._link_portal_analytic_line_purchase(request.env.user)
@@ -288,7 +290,6 @@ class CustomerPortal(CustomerPortal):
                 timesheet = request.env['account.analytic.line'].sudo().search([('id', '=', timesheet_id)])
                 if timesheet and not timesheet.validated:
                     timesheet.write(values)
-            task_url = '/my/task/{}'.format(task_id)
-            return request.redirect(task_url)
+            return self.portal_my_task(task_id, error=error)
         else:
             return request.render("website.403")

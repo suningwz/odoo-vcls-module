@@ -16,7 +16,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.15',
+    'version': '0.2.0',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -36,7 +36,6 @@
         'data/expertise.area.csv',
         'data/project.supplier.type.csv',
         'data/hr_data.xml',
-        'data/product_data.sql',
         'data/product_data.xml',
 
         ### SECURITY
@@ -50,6 +49,7 @@
         'views/project_portal_templates.xml',
         'views/skill_views.xml',
         'views/sale_report_rm_views.xml',
+        'views/portal_templates.xml',
 
         ### MENUS
         'views/supplier_menu.xml', 

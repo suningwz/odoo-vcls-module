@@ -12,27 +12,40 @@
                 Create_Sharepoint_Folder__c, OwnerId, Is_supplier__c, VCLS_Main_Contact__c,
                 Supplier__c, Type, Project_Controller__c, VCLS_Alt_Name__c,
                 Supplier_Project__c, Activity__c, Product_Type__c, Industry, KimbleOne__InvoicingCurrencyIsoCode__c, Invoice_Administrator__c 
-                FROM Account
-                WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null))
+                FROM Account as A
+            </field>
+        </record>
+
+        <record id="etl_sf_account_filter" model="ir.config_parameter">
+            <field name="key">etl_sf_account_filter</field>
+            <field name="value">
+                WHERE (((A.Supplier__c = True or A.Is_supplier__c = True) or (A.VCLS_Alt_Name__c != null))
+                    or A.Id IN (
+                        SELECT C.AccountId
+                        FROM Contact as C
+                        WHERE C.Opted_In__c = True
+                    ))
             </field>
         </record>
 
         <record id="etl_sf_contact_query" model="ir.config_parameter">
             <field name="key">etl_sf_contact_query</field>
             <field name="value">
-                SELECT C.Id, C.Name, C.AccountId, C.Phone, C.Fax,
-                C.OwnerId, C.LastModifiedDate, C.LinkedIn_Profile__c, 
-                C.Category__c, C.Supplier__c, Salutation, C.Email, 
-                C.Title, C.MobilePhone, C.MailingAddress, C.AccountWebsite__c, 
-                C.Description, C.MailingCountry, C.Inactive_Contact__c, C.CurrencyIsoCode, 
-                C.Opted_In__c, C.VCLS_Main_Contact__c, C.Unsubscribed_from_Marketing_Comms__c, 
-                C.VCLS_Initial_Contact__c 
-                FROM Contact as C 
-                WHERE C.AccountId In (
-                    SELECT A.Id 
-                    FROM Account as A 
-                    WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)
-                ) 
+                SELECT Id, Name, AccountId, Phone, Fax,
+                OwnerId, LastModifiedDate, LinkedIn_Profile__c, 
+                Category__c, Supplier__c, Salutation, Email, 
+                Title, MobilePhone, MailingAddress, AccountWebsite__c, 
+                Description, MailingCountry, Inactive_Contact__c, CurrencyIsoCode, 
+                Opted_In__c, VCLS_Main_Contact__c, Unsubscribed_from_Marketing_Comms__c, 
+                VCLS_Initial_Contact__c 
+            </field>
+        </record>
+
+        <record id="etl_sf_contact_filter" model="ir.config_parameter">
+            <field name="key">etl_sf_contact_filter</field>
+            <field name="value">
+                FROM Contact
+                WHERE Automated_Migration__c = True
             </field>
         </record>
 

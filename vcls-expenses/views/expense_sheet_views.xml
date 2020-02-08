@@ -108,6 +108,9 @@
                 <field name="user_id" position="attributes">
                     <attribute name="readonly">1</attribute>
                 </field>
+                <field name="user_id" position="after">
+                    <field name="country_id" required="1" string="Country of Expense"/>
+                </field>
 
                 <field name="employee_id" position="attributes">
                     <attribute name="options">{"no_open": True,"no_create": 1, "no_create_edit": 1}</attribute>
@@ -141,9 +144,10 @@
                             <field name="name"/>
                             <field name="payment_mode"/>
                             <field name="state" invisible="1"/>
-                            <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                            <field name="product_id"/>
+                            <field name="analytic_account_id" groups="account.group_account_user"/>
                             <field name="analytic_tag_ids" widget="many2many_tags"
-                                   groups="analytic.group_analytic_tags"/>
+                                   groups="account.group_account_user"/>
                             <field name="message_unread" invisible="1"/>
                             <field name="attachment_number" string=" "/>
                             <button name="action_get_attachment_view" string="View Attachments" type="object"

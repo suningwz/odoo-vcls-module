@@ -240,8 +240,7 @@ class ResPartner(models.Model):
     def _compute_visibility(self):
         for contact in self:
             contact.see_segmentation = False
-            if self.env.ref('vcls-contact.category_account', raise_if_not_found=False) \
-                    in contact.category_id and contact.is_company:
+            if self.env.ref('vcls-contact.category_account', raise_if_not_found=False) in contact.category_id and contact.is_company:
                 contact.see_segmentation = True
             contact.see_supplier = False
             if self.env.ref('vcls-contact.category_PS', raise_if_not_found=False) in contact.category_id:

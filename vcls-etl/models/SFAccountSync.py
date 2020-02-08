@@ -21,11 +21,12 @@ class SFAccountSync(models.Model):
         return TranslatorSFAccount.TranslatorSFAccount(sfInstance.getConnection())
 
     def getSQLForKeys(self):
-        sql = 'SELECT Id, LastModifiedDate FROM Account WHERE ((Supplier__c = True or Is_supplier__c = True) or (Project_Controller__c != null and VCLS_Alt_Name__c != null))'
+        sql = 'SELECT Id, LastModifiedDate FROM Account as A ' + self.env.ref('vcls-etl.etl_sf_account_filter').value
+        _logger.info(sql)
         return sql
     
     def getSQLForRecord(self):
-        sql = self.env.ref('vcls-etl.etl_sf_account_query').value
+        sql = self.env.ref('vcls-etl.etl_sf_account_query').value + ' ' + self.env.ref('vcls-etl.etl_sf_account_filter').value
         _logger.info(sql)
         return sql 
 

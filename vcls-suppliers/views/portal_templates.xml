@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="portal_contact" inherit_id="portal.portal_contact">
+
+        <xpath expr="//h4[1]" position="replace">
+            <h4>Resource Manager</h4>
+        </xpath>
+
+    </template>
+
+
+</odoo>

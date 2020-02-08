@@ -117,6 +117,20 @@
                     </header>
                     <sheet string="Task">
                     <div class="oe_button_box" name="button_box">
+
+                        <button class="oe_stat_button" type="object"
+                            name="action_open_leads" icon="fa-road" string="Leads">
+                            <field name="lead_count" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                            name="action_open_opps" icon="fa-signal" string="Opps">
+                            <field  name="opp_count" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                            name="action_open_contacts" icon="fa-smile-o" string="Contacts">
+                            <field name="contact_count" widget="statinfo"/>
+                        </button>
+
                         <button class="oe_stat_button" icon="fa-tasks" type="object" name="action_open_parent_task" string="Parent Task" attrs="{'invisible' : [('parent_id', '=', False)]}" groups="project.group_subtask_project"/>
                         <button name="action_subtask" type="object" class="oe_stat_button" icon="fa-tasks" attrs="{'invisible' : [('parent_id', '!=', False)]}" context="{'project_id': subtask_project_id, 'name': name, 'partner_id': partner_id}" groups="project.group_subtask_project">
                             <field string="Sub-tasks" name="subtask_count" widget="statinfo"/>
@@ -241,6 +255,22 @@
                         </group>
                     </page>
 
+                        <page string="Costs Overview">
+                            <group>
+                                <group>
+                                    <field name="travel_cost"/>
+                                    <field name="sponsorship_cost"/>
+                                    <field name="registration_cost"/>
+                                    
+                                </group>
+                                <group>
+                                    <field name="saved_cost"/>
+                                    <field name="total_cost"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </group>
+                            </group>
+                        </page>
+
                         <page string="Related Events">
                             <field name="related_events_ids" mode="tree" readonly="1">
                                 <tree default_order="create_date desc">
@@ -248,6 +278,32 @@
                                     <field name="name" string="Event Name"/>
                                     <field name="state"/>
                                     <field name="participant_ids"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="Mailing Campaigns">
+                            <field name="related_mailing_campaigns_ids" mode="tree" readonly="1">
+                                <tree default_order="create_date desc">
+                                    <field name="create_date" widget="date"/>
+                                    <field name="name" string="Name"/>
+                                    <field name="user_id" string="Responsible"/>
+                                    <field name="mass_mailing_ids" string="Related Mailings"/>
+                                    <field name="sent"/>
+                                    <field name="bounced_ratio"/>
+                                    <field name="clicks_ratio"/>
+                                    <field name="received_ratio"/>
+                                    <field name="opened_ratio"/>
+                                    <field name="replied_ratio"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="VCLS Attendees">
+                            <field name="attendee_ids" mode="tree">
+                                <tree default_order="name">
+                                    <field name="name"/>
+                                    <field name="job_id"/>
                                 </tree>
                             </field>
                         </page>

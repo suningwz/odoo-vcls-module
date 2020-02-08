@@ -11,8 +11,8 @@
                 <form string="Benefits">
                     <sheet>
                         <group>
-                            <field name="currency_id" invisible='1'/>
                             <field name="employee_id"/>
+                            <field name="currency_id"/>
                             <field name="date"/>
                             <field name="car_info"/>
                             <field name="car_allowance"/>
