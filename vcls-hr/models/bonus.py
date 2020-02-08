@@ -23,6 +23,7 @@ class bonus(models.Model):
         comodel_name='res.currency',
         related=False,
         string="Currency",
+        default=lambda self: self.employee_id.company_id.currency_id,
     )
     
     amount = fields.Monetary(

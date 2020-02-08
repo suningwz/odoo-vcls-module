@@ -25,7 +25,8 @@ class Benefit(models.Model):
     currency_id = fields.Many2one(
         comodel_name='res.currency',
         related=False,
-        string="Currency"
+        string="Currency",
+        default=lambda self: self.employee_id.company_id.currency_id,
     )
 
     car_info = fields.Char(
