@@ -138,7 +138,7 @@ class ETLMap(models.Model):
         ### ACCOUNT KEYS PROCESSING
         #1st catch the ID's of contacts in order to retreive their account_id
         contact_ids = self.search([('externalObjName','=','Contact'),('odooModelName','=','res.partner')]).mapped('externalId')
-        _logger.info("ETL | Contact_ids {} found {}".format(len(contact_ids),contact_ids))
+        _logger.info("ETL | Contact_ids {} found".format(len(contact_ids)))
         # We do accounts with parents 1st 
         sql = """
             SELECT Id, LastModifiedDate
@@ -149,7 +149,7 @@ class ETLMap(models.Model):
                             WHERE Id IN {}
                 )
                 AND Parent != False
-            """.format(contact_ids)
+            """.format(contact_ids[0])
 
         params = {
             'sfInstance':sfInstance,
