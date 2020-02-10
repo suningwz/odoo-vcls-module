@@ -4,6 +4,7 @@ from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare
 from datetime import timedelta
+from odoo.osv import expression
 
 import logging
 import datetime
