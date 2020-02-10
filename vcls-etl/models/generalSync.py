@@ -270,7 +270,7 @@ class ETLMap(models.Model):
 
     @api.model
     def sf_process_keys(self,batch_size=30):
-        priorities = self.search([('state','!=','upToDate')]).mapped('priority')
+        priorities = list(set(self.search([('state','!=','upToDate')]).mapped('priority')))
 
         #to_process = self.search([],limit=batch_size)
         _logger.info("CRON EXECUTE {} - {}".format(len(priorities),priorities))
