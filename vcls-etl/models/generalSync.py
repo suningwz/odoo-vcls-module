@@ -150,7 +150,7 @@ class ETLMap(models.Model):
                         FROM Contact
                             WHERE Automated_Migration__c = True
                 )
-                AND Parent != null
+                AND ParentId != null
                 """
         params = {
             'sfInstance':sfInstance,
@@ -171,7 +171,7 @@ class ETLMap(models.Model):
                         FROM Contact
                             WHERE Automated_Migration__c = True
                 )
-                AND Parent = null
+                AND ParentId = null
                 """
         params = {
             'sfInstance':sfInstance,
@@ -195,7 +195,7 @@ class ETLMap(models.Model):
                 """
         params = {
             'sfInstance':sfInstance,
-            'priority':0,
+            'priority':5,
             'externalObjName':'Opportunity',
             'sql': sql + time_sql,
             'odooModelName':'crm.lead',
