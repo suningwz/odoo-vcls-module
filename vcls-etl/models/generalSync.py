@@ -270,9 +270,10 @@ class ETLMap(models.Model):
 
     @api.model
     def sf_process_keys(self,batch_size=30):
+        priorities = self.search([('state','!=','upToDate')]).mapped('priority')
 
-        to_process = self.search([],limit=batch_size)
-        _logger.info("CRON EXECUTE")
+        #to_process = self.search([],limit=batch_size)
+        _logger.info("CRON EXECUTE {}".format(len(priorities),priorities))
         #cron = self.env.ref('vcls-etl.cron_process')
         #cron.nextcall = datetime.now() + timedelta(seconds=30)
 
