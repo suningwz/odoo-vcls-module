@@ -273,7 +273,7 @@ class ETLMap(models.Model):
         priorities = self.search([('state','!=','upToDate')]).mapped('priority')
 
         #to_process = self.search([],limit=batch_size)
-        _logger.info("CRON EXECUTE {}".format(len(priorities),priorities))
+        _logger.info("CRON EXECUTE {} - {}".format(len(priorities),priorities))
         #cron = self.env.ref('vcls-etl.cron_process')
         #cron.nextcall = datetime.now() + timedelta(seconds=30)
 
