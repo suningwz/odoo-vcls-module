@@ -11,7 +11,7 @@
                 <xpath expr="//div[@class='o_ma_hierarchy']" position="before">
                     <group>
                         <field name="marketing_project_id" readonly="1"/>
-                        <field name="marketing_task_id" domain="[('stage_id','in',['Planned','In Progress'])]"/>
+                        <field name="marketing_task_id" domain="[('stage_id','in',['Planned','In Progress']),('task_type','=','marketing')]"/>
                     </group>
                 </xpath>
 
@@ -34,7 +34,7 @@
                 <xpath expr="//field[@name='source_id']" position="after">
                     <group>
                         <field name="marketing_project_id" readonly="1"/>
-                        <field name="marketing_task_id" domain="[('stage_id','in',['Planned','In Progress'])]"/>
+                        <field name="marketing_task_id" domain="[('stage_id','in',['Planned','In Progress']),('task_type','=','marketing')]"/>
                     </group>
                 </xpath>
 
