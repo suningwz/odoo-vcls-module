@@ -16,6 +16,7 @@
             </field>
         </record>
 
+        <!--
         <record id="etl_sf_account_filter" model="ir.config_parameter">
             <field name="key">etl_sf_account_filter</field>
             <field name="value">
@@ -27,6 +28,7 @@
                     ))
             </field>
         </record>
+        -->
 
         <record id="etl_sf_contact_query" model="ir.config_parameter">
             <field name="key">etl_sf_contact_query</field>
@@ -41,6 +43,7 @@
             </field>
         </record>
 
+        <!--
         <record id="etl_sf_contact_filter" model="ir.config_parameter">
             <field name="key">etl_sf_contact_filter</field>
             <field name="value">
@@ -48,6 +51,7 @@
                 WHERE Automated_Migration__c = True
             </field>
         </record>
+        -->
 
         <record id="etl_sf_opportunity_query" model="ir.config_parameter">
             <field name="key">etl_sf_opportunity_query</field>

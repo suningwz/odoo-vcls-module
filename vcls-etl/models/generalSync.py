@@ -125,21 +125,23 @@ class ETLMap(models.Model):
             
 
         ### CONTACT KEYS PROCESSING
+        sql = """
+            SELECT Id, LastModifiedDate
+            FROM Contact
+                WHERE Automated_Migration__c = True
+            """
         params = {
             'sfInstance':sfInstance,
             'priority':10,
             'externalObjName':'Contact',
-            'sql':'SELECT Id, LastModifiedDate ' + self.env.ref('vcls-etl.etl_sf_contact_filter').value + time_sql,
+            'sql':sql + time_sql,
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
         #self.update_keys(params)
 
         ### ACCOUNT KEYS PROCESSING
-        #1st catch the ID's of contacts in order to retreive their account_id
-        """contact_ids = self.search([('externalObjName','=','Contact'),('odooModelName','=','res.partner')]).mapped('externalId')
-        _logger.info("ETL | Contact_ids {} found".format(len(contact_ids)))"""
-        # We do accounts with parents 1st 
+        # We do accounts with parents 1st, because of their lower priority 
         sql = """
             SELECT Id, LastModifiedDate
             FROM Account
@@ -147,16 +149,56 @@ class ETLMap(models.Model):
                     SELECT AccountId
                         FROM Contact
                             WHERE Automated_Migration__c = True
-                )"""
-                #AND Parent != False
-            #.format(contact_ids[0])
-
+                )
+                AND Parent != null
+                """
         params = {
             'sfInstance':sfInstance,
             'priority':20,
             'externalObjName':'Account',
             'sql': sql + time_sql,
             'odooModelName':'res.partner',
+            'is_full_update':is_full_update,
+        }
+        self.update_keys(params)
+
+        # then accounts without parents 
+        sql = """
+            SELECT Id, LastModifiedDate
+            FROM Account
+                WHERE Id IN (
+                    SELECT AccountId
+                        FROM Contact
+                            WHERE Automated_Migration__c = True
+                )
+                AND Parent = null
+                """
+        params = {
+            'sfInstance':sfInstance,
+            'priority':30,
+            'externalObjName':'Account',
+            'sql': sql + time_sql,
+            'odooModelName':'res.partner',
+            'is_full_update':is_full_update,
+        }
+        self.update_keys(params)
+
+        ### OPPORTUNITY KEYS PROCESSING
+        sql = """
+            SELECT Id, LastModifiedDate
+            FROM Opportunity
+                WHERE AccountId IN (
+                    SELECT AccountId
+                        FROM Contact
+                            WHERE Automated_Migration__c = True
+                )
+                """
+        params = {
+            'sfInstance':sfInstance,
+            'priority':0,
+            'externalObjName':'Opportunity',
+            'sql': sql + time_sql,
+            'odooModelName':'crm.lead',
             'is_full_update':is_full_update,
         }
         self.update_keys(params)
