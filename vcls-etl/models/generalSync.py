@@ -269,11 +269,29 @@ class ETLMap(models.Model):
         self.env.user.context_data_integration = False
 
     @api.model
-    def sf_process_keys(self,batch_size=30):
-        priorities = list(set(self.search([('state','!=','upToDate')]).mapped('priority')))
+    def sf_process_keys(self,batch_size=100):
+
+        priorities = list(set(self.search([('state','!=','upToDate')]).mapped('priority'))).sort(reverse=True)
+        if priorities:
+            #Init
+            self.env.user.context_data_integration = True
+            sfInstance = self.open_con()
+
+            to_process = self.search([('state','!=','upToDate'),('priority','=',priorities[0])],limit=batch_size)
+            if to_process:
+                template = to_process[0]
+                _logger.info("ETL | Found {} {} keys {}".format(len(to_process),template.externalObjName,template.state))
+
+                ext_id = "vcls-etl.etl_sf_{}_query".format(template.externalObjName.lower())
+                sql = "{} FROM {} WHERE Id IN {}".format(self.env.ref(ext_id).value,template.externalObjName,to_process.mapped('externalId'))
+                _logger.info("ETL |  {} {}".format(ext_id,sql))
+                records = sfInstance.getConnection().query_all(sql)['records']
+            
+            #Close
+            self.env.user.context_data_integration = False
 
         #to_process = self.search([],limit=batch_size)
-        _logger.info("CRON EXECUTE {} - {}".format(len(priorities),priorities))
+        #_logger.info("CRON EXECUTE {} - {}".format(len(priorities),priorities))
         #cron = self.env.ref('vcls-etl.cron_process')
         #cron.nextcall = datetime.now() + timedelta(seconds=30)
 

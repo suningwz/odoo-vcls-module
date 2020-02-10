@@ -16,20 +16,6 @@
             </field>
         </record>
 
-        <!--
-        <record id="etl_sf_account_filter" model="ir.config_parameter">
-            <field name="key">etl_sf_account_filter</field>
-            <field name="value">
-                WHERE (((A.Supplier__c = True or A.Is_supplier__c = True) or (A.VCLS_Alt_Name__c != null))
-                    or A.Id IN (
-                        SELECT C.AccountId
-                        FROM Contact as C
-                        WHERE C.Opted_In__c = True
-                    ))
-            </field>
-        </record>
-        -->
-
         <record id="etl_sf_contact_query" model="ir.config_parameter">
             <field name="key">etl_sf_contact_query</field>
             <field name="value">
@@ -56,15 +42,9 @@
         <record id="etl_sf_opportunity_query" model="ir.config_parameter">
             <field name="key">etl_sf_opportunity_query</field>
             <field name="value">
-                SELECT O.Id, O.Name, O.AccountId, O.StageName, O.Therapeutic_Area__c, 
-                O.OwnerId, O.LastModifiedDate, O.ExpectedRevenue, O.Reasons_Lost_Comments__c, O.Probability, O.CloseDate, O.Deadline_for_Sending_Proposal__c, O.LeadSource, 
-                O.Description, O.Client_Product_Description__c, O.CurrencyIsoCode, O.Product_Category__c, O.Amount, O.Geographic_Area__c, O.VCLS_Activities__c,Project_start_date__c 
-                FROM Opportunity as O 
-                WHERE O.AccountId In (
-                    SELECT A.Id 
-                    FROM Account as A 
-                    WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)
-                ) 
+                SELECT Id, Name, AccountId, StageName, Therapeutic_Area__c, 
+                OwnerId, LastModifiedDate, ExpectedRevenue, Reasons_Lost_Comments__c, Probability, CloseDate, Deadline_for_Sending_Proposal__c, LeadSource, 
+                Description, Client_Product_Description__c, CurrencyIsoCode, Product_Category__c, Amount, Geographic_Area__c, VCLS_Activities__c,Project_start_date__c
             </field>
 
         </record>
