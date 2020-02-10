@@ -98,7 +98,7 @@ class ETLMap(models.Model):
             keys_update.write({'state':'needUpdateOdoo','priority':params['priority']})
             _logger.info("KEYS | {} Keys to update".format(len(keys_update)))   
 
-    def sf_update(self, is_full_update=True):
+    def sf_update_keys(self, is_full_update=True):
         """
         We 1st process the keys and priorities, starting from contacts.
         But then the queue must be executed in revert order of priorities to ensure parent accounts to be created 1st, etc.
@@ -108,6 +108,8 @@ class ETLMap(models.Model):
         self.env.user.context_data_integration = True
         #Clean the keys table of corrupted entries
         to_clean = self.search([('odooModelName','=',False)])
+        #we also clean the ones to create in externals because we don't manage anymore this usecase
+        to_clean |= self.search([('externalId','=',False)])
         for key in to_clean:
             key.unlink()
         
@@ -138,7 +140,7 @@ class ETLMap(models.Model):
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
-        #self.update_keys(params)
+        self.update_keys(params)
 
         ### ACCOUNT KEYS PROCESSING
         # We do accounts with parents 1st, because of their lower priority 
@@ -240,7 +242,7 @@ class ETLMap(models.Model):
             'is_full_update':is_full_update,
         }
         self.update_keys(params)
-        #The one without parent contracts
+        #The one with parent contracts
         sql = """
             SELECT Id, LastModifiedDate
             FROM Contract
@@ -262,7 +264,7 @@ class ETLMap(models.Model):
         self.update_keys(params)
 
         ###CLOSING
-        #self.env.ref('vcls-etl.ETL_LastRun').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
+        self.env.ref('vcls-etl.ETL_LastRun').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
         self.env.user.context_data_integration = False
 
         
