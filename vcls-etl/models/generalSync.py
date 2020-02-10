@@ -271,9 +271,9 @@ class ETLMap(models.Model):
     @api.model
     def sf_process_keys(self,batch_size=100):
 
-        priorities = list(set(self.search([('state','!=','upToDate')]).mapped('priority'))).sort(reverse=True)
+        priorities = list(set(self.search([('state','!=','upToDate')]).sorted(key=lambda p:p.priority,reverse=True).mapped('priority')))
         _logger.info("ETL |  {} ".format(priorities))
-        
+
         if priorities:
             #Init
             self.env.user.context_data_integration = True
