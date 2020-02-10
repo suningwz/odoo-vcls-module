@@ -272,9 +272,9 @@ class ETLMap(models.Model):
     def sf_process_keys(self,batch_size=30):
 
         to_process = self.search([],limit=batch_size)
-
-        cron = self.env.ref('vcls-etl.cron_process')
-        cron.nextcall = datetime.now() + timedelta(seconds=30)
+        _logger.info("CRON EXECUTE")
+        #cron = self.env.ref('vcls-etl.cron_process')
+        #cron.nextcall = datetime.now() + timedelta(seconds=30)
 
         
     """def updateAccountKey(self, externalInstance):
