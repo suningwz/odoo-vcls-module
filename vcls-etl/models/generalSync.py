@@ -135,6 +135,31 @@ class ETLMap(models.Model):
         }
         self.update_keys(params)
 
+        ### ACCOUNT KEYS PROCESSING
+        #1st catch the ID's of contacts in order to retreive their account_id
+        contact_ids = self.search([('externalObjName','=','Contact'),('odooModelName','=','res.partner')]).mapped('externalId')
+        # We do accounts with parents 1st 
+        sql = """
+            SELECT Id, LastModifiedDate
+            FROM Account
+                WHERE Id IN (
+                    SELECT Account
+                        FROM Contact
+                            WHERE Id IN {}
+                )
+                AND Parent != False
+            """.format(contact_ids)
+
+        params = {
+            'sfInstance':sfInstance,
+            'priority':20,
+            'externalObjName':'Account',
+            'sql': sql,
+            'odooModelName':'res.partner',
+            'is_full_update':is_full_update,
+        }
+        self.update_keys(params)
+
         ###CLOSING
         self.env.ref('vcls-etl.ETL_LastRun').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
         self.env.user.context_data_integration = False
