@@ -2,6 +2,7 @@
 <odoo>
     <data>
     
+        <!--
         <record id="cron_etl_account" model="ir.cron">
             <field name="name">ETL Salesforce Account</field>
             <field name="active" eval="False" />
@@ -106,17 +107,7 @@
         </record>
 
         
-        <record id="cron_Update" model="ir.cron">
-            <field name="name">ETL Update Object</field>
-            <field name="active" eval="False" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="numbercall">-1</field>
-            <field name="doall">False</field>
-            <field name="model_id" ref="model_etl_sync_keys" />
-            <field name="state">code</field>
-            <field name="code">model.run()
-            </field>
-        </record>
+        
 
         <record id="cron_etl_contract" model="ir.cron">
             <field name="name">ETL Salesforce Contract</field>
@@ -142,8 +133,19 @@
             <field name="state">code</field>
             <field name="code">model.run(True, True, True, True, False, None)
 #run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords) </field>
-        </record>
+        </record>-->
 
+        <record id="cron_Update" model="ir.cron">
+            <field name="name">ETL Update Object</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="doall">False</field>
+            <field name="model_id" ref="model_etl_sync_keys" />
+            <field name="state">code</field>
+            <field name="code">model.sf_update()
+            </field>
+        </record>
         
     </data>
 </odoo>
