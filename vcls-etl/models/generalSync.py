@@ -118,7 +118,7 @@ class ETLMap(models.Model):
         new_run = datetime.now(pytz.timezone("GMT"))
         if not is_full_update:
             last_run = self.env.ref('vcls-etl.ETL_LastRun').value
-            time_sql = " AND LastModifiedDate > {}".format(last_run)
+            time_sql = " AND LastModifiedDate > '{}'".format(last_run)
         else:
             time_sql = ""
             
@@ -135,7 +135,7 @@ class ETLMap(models.Model):
         self.update_keys(params)
 
         ###CLOSING
-        self.env.ref('vcls-etl.last_run').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
+        self.env.ref('vcls-etl.ETL_LastRun').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
         self.env.user.context_data_integration = False
 
         
