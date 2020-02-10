@@ -274,7 +274,7 @@ class ETLMap(models.Model):
         to_process = self.search([],limit=batch_size)
 
         cron = self.env.ref('vcls-etl.cron_process')
-        cron.nextcall = datetime.now() + timedelta(days=1)
+        cron.nextcall = datetime.now() + timedelta(seconds=30)
 
         
     """def updateAccountKey(self, externalInstance):
