@@ -3,7 +3,7 @@
 from odoo import models, fields, api
 
 import datetime, pytz
-from datetime import datetime
+from datetime import datetime,timedelta
 
 from abc import ABC,abstractmethod
 
@@ -98,6 +98,7 @@ class ETLMap(models.Model):
             keys_update.write({'state':'needUpdateOdoo','priority':params['priority']})
             _logger.info("KEYS | {} Keys to update".format(len(keys_update)))   
 
+    @api.model
     def sf_update_keys(self, is_full_update=True):
         """
         We 1st process the keys and priorities, starting from contacts.
@@ -266,6 +267,14 @@ class ETLMap(models.Model):
         ###CLOSING
         self.env.ref('vcls-etl.ETL_LastRun').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
         self.env.user.context_data_integration = False
+
+    @api.model
+    def sf_process_keys(self,batch_size=30):
+
+        to_process = self.search([],limit=batch_size)
+
+        cron = self.env.ref('vcls-etl.cron_process')
+        cron.nextcall = datetime.now() + timedelta(days=1)
 
         
     """def updateAccountKey(self, externalInstance):
