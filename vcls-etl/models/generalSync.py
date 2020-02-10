@@ -207,7 +207,7 @@ class ETLMap(models.Model):
         sql = """
             SELECT Id, LastModifiedDate
             FROM Lead
-            WHERE 1=1  
+            WHERE Status != null  
             """
         params = {
             'sfInstance':sfInstance,
