@@ -89,7 +89,7 @@ class ETLMap(models.Model):
         if rec_ext:
             _logger.info("QUERY |\n{}\nreturned {} {} records".format(params['sql'],len(rec_ext),params['externalObjName']))
         if keys_exist:
-            _logger.info("KEYS | Found {} existing keys".format(len(keys_exist)))
+            _logger.info("KEYS | Found {} existing keys of {}".format(len(keys_exist),params['externalObjName']))
 
         if keys_create:
             keys_create.write({'state':'needCreateOdoo','priority':params['priority']+1})
@@ -150,7 +150,6 @@ class ETLMap(models.Model):
                         FROM Contact
                             WHERE Automated_Migration__c = True
                 )
-                AND ParentId != null
                 """
         params = {
             'sfInstance':sfInstance,
@@ -187,6 +186,26 @@ class ETLMap(models.Model):
         sql = """
             SELECT Id, LastModifiedDate
             FROM Opportunity
+                WHERE AccountId IN (
+                    SELECT AccountId
+                        FROM Contact
+                            WHERE Automated_Migration__c = True
+                )
+                """
+        params = {
+            'sfInstance':sfInstance,
+            'priority':5,
+            'externalObjName':'Opportunity',
+            'sql': sql + time_sql,
+            'odooModelName':'crm.lead',
+            'is_full_update':is_full_update,
+        }
+        self.update_keys(params)
+
+        ### CONTRACT KEYS PROCESSING
+        sql = """
+            SELECT Id, LastModifiedDate
+            FROM Contract
                 WHERE AccountId IN (
                     SELECT AccountId
                         FROM Contact
