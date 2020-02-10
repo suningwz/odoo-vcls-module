@@ -144,7 +144,7 @@ class ETLMap(models.Model):
             SELECT Id, LastModifiedDate
             FROM Account
                 WHERE Id IN (
-                    SELECT Account
+                    SELECT AccountId
                         FROM Contact
                             WHERE Automated_Migration__c = True
                 )"""
