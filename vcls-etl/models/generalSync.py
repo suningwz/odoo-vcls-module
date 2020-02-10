@@ -132,7 +132,7 @@ class ETLMap(models.Model):
             """
         params = {
             'sfInstance':sfInstance,
-            'priority':10,
+            'priority':100,
             'externalObjName':'Contact',
             'sql':sql + time_sql,
             'odooModelName':'res.partner',
@@ -150,10 +150,11 @@ class ETLMap(models.Model):
                         FROM Contact
                             WHERE Automated_Migration__c = True
                 )
+                AND ParentId != null
                 """
         params = {
             'sfInstance':sfInstance,
-            'priority':20,
+            'priority':200,
             'externalObjName':'Account',
             'sql': sql + time_sql,
             'odooModelName':'res.partner',
@@ -174,7 +175,7 @@ class ETLMap(models.Model):
                 """
         params = {
             'sfInstance':sfInstance,
-            'priority':30,
+            'priority':300,
             'externalObjName':'Account',
             'sql': sql + time_sql,
             'odooModelName':'res.partner',
@@ -194,7 +195,7 @@ class ETLMap(models.Model):
                 """
         params = {
             'sfInstance':sfInstance,
-            'priority':5,
+            'priority':80,
             'externalObjName':'Opportunity',
             'sql': sql + time_sql,
             'odooModelName':'crm.lead',
@@ -202,7 +203,23 @@ class ETLMap(models.Model):
         }
         self.update_keys(params)
 
+        ### LEAD KEYS PROCESSING
+        sql = """
+            SELECT Id, LastModifiedDate
+            FROM Lead
+            """
+        params = {
+            'sfInstance':sfInstance,
+            'priority':60,
+            'externalObjName':'Lead',
+            'sql': sql + time_sql,
+            'odooModelName':'crm.lead',
+            'is_full_update':is_full_update,
+        }
+        self.update_keys(params)
+
         ### CONTRACT KEYS PROCESSING
+        #The one without parent contracts
         sql = """
             SELECT Id, LastModifiedDate
             FROM Contract
@@ -211,19 +228,40 @@ class ETLMap(models.Model):
                         FROM Contact
                             WHERE Automated_Migration__c = True
                 )
+                AND Link_to_Parent_Contract__c = null
                 """
         params = {
             'sfInstance':sfInstance,
-            'priority':5,
-            'externalObjName':'Opportunity',
+            'priority':50,
+            'externalObjName':'Contract',
             'sql': sql + time_sql,
-            'odooModelName':'crm.lead',
+            'odooModelName':'agreement',
+            'is_full_update':is_full_update,
+        }
+        self.update_keys(params)
+        #The one without parent contracts
+        sql = """
+            SELECT Id, LastModifiedDate
+            FROM Contract
+                WHERE AccountId IN (
+                    SELECT AccountId
+                        FROM Contact
+                            WHERE Automated_Migration__c = True
+                )
+                AND Link_to_Parent_Contract__c != null
+                """
+        params = {
+            'sfInstance':sfInstance,
+            'priority':40,
+            'externalObjName':'Contract',
+            'sql': sql + time_sql,
+            'odooModelName':'agreement',
             'is_full_update':is_full_update,
         }
         self.update_keys(params)
 
         ###CLOSING
-        self.env.ref('vcls-etl.ETL_LastRun').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
+        #self.env.ref('vcls-etl.ETL_LastRun').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
         self.env.user.context_data_integration = False
 
         
