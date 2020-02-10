@@ -134,6 +134,42 @@ class AnalyticLine(models.Model):
             'context': {},
         }
 
+    @api.multi
+    def adjust_grid(self, row_domain, column_field, column_value, cell_field, change):
+        """
+        We override this to avoit the default naming 'Timesheet Adjustment' when using the grid view
+        """
+        if column_field != 'date' or cell_field != 'unit_amount':
+            raise ValueError(
+                "{} can only adjust unit_amount (got {}) by date (got {})".format(
+                    self._name,
+                    cell_field,
+                    column_field,
+                ))
+
+        additionnal_domain = self._get_adjust_grid_domain(column_value)
+        domain = expression.AND([row_domain, additionnal_domain])
+        line = self.search(domain)
+
+        day = column_value.split('/')[0]
+        if len(line) > 1:  # copy the last line as adjustment
+            line[0].copy({
+                #'name': _('Timesheet Adjustment'),
+                column_field: day,
+                cell_field: change
+            })
+        elif len(line) == 1:  # update existing line
+            line.write({
+                cell_field: line[cell_field] + change
+            })
+        else:  # create new one
+            self.search(row_domain, limit=1).copy({
+                #'name': _('Timesheet Adjustment'),
+                column_field: day,
+                cell_field: change
+            })
+        return False
+
     @api.model
     def _get_at_risk_values(self, project_id, employee_id):
         project = self.env['project.project'].browse(project_id)
