@@ -59,11 +59,7 @@
             <field name="key">etl_sf_opportunity_filter</field>
             <field name="value">
                 FROM Opportunity
-                WHERE Id IN (
-                    SELECT AccountId
-                        FROM Contact
-                            WHERE Automated_Migration__c = True
-                )
+                
             </field>
         </record>
 
@@ -80,7 +76,7 @@
             <field name="key">etl_sf_lead_filter</field>
             <field name="value">
                 FROM Lead
-                    WHERE Status != null
+                    
             </field>
         </record>
 
@@ -99,11 +95,7 @@
             <field name="key">etl_sf_contract_filter</field>
             <field name="value">
                 FROM Contract
-                WHERE Id IN (
-                    SELECT AccountId
-                        FROM Contact
-                            WHERE Automated_Migration__c = True
-                )
+                
             </field>
         </record>
         <record id="etl_sf_time_filter" model="ir.config_parameter">

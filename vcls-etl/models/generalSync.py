@@ -122,7 +122,7 @@ class ETLMap(models.Model):
         if not is_full_update:
             last_run = self.env.ref('vcls-etl.ETL_LastRun').value
             formated_last_run = fields.Datetime.from_string(last_run).astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000")
-            time_sql = " AND LastModifiedDate > {}".format(formated_last_run)
+            time_sql = " LastModifiedDate > {}".format(formated_last_run)
         else:
             time_sql = ""
 
@@ -137,7 +137,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':100,
             'externalObjName':'Contact',
-            'sql':sql + self.env.ref('vcls-etl.etl_sf_contact_filter').value + time_sql,
+            'sql':self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_contact_filter').value,time_sql),
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
@@ -152,7 +152,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':200,
             'externalObjName':'Account',
-            'sql': sql + self.env.ref('vcls-etl.etl_sf_account_filter').value + time_sql + ' AND ParentId != null',
+            'sql': self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_account_filter').value,time_sql) + ' AND ParentId != null',
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
@@ -166,7 +166,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':300,
             'externalObjName':'Account',
-            'sql': sql + self.env.ref('vcls-etl.etl_sf_account_filter').value + time_sql + ' AND ParentId = null',
+            'sql': self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_account_filter').value,time_sql) + ' AND ParentId = null',
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
@@ -180,7 +180,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':80,
             'externalObjName':'Opportunity',
-            'sql': sql + self.env.ref('vcls-etl.etl_sf_opportunity_filter').value + time_sql,
+            'sql': self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_opportunity_filter').value,time_sql),
             'odooModelName':'crm.lead',
             'is_full_update':is_full_update,
         }
@@ -195,7 +195,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':60,
             'externalObjName':'Lead',
-            'sql': sql + self.env.ref('vcls-etl.etl_sf_lead_filter').value + time_sql,
+            'sql': self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_lead_filter').value,time_sql) + time_sql,
             'odooModelName':'crm.lead',
             'is_full_update':is_full_update,
         }
@@ -210,7 +210,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':50,
             'externalObjName':'Contract',
-            'sql': sql + self.env.ref('vcls-etl.etl_sf_contract_filter').value + time_sql + ' AND Link_to_Parent_Contract__c = null',
+            'sql': sql + self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_contract_filter').value,time_sql) + ' AND Link_to_Parent_Contract__c = null',
             'odooModelName':'agreement',
             'is_full_update':is_full_update,
         }
@@ -223,7 +223,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':40,
             'externalObjName':'Contract',
-            'sql': sql + self.env.ref('vcls-etl.etl_sf_contract_filter').value + time_sql + ' AND Link_to_Parent_Contract__c != null',
+            'sql': self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_contract_filter').value,time_sql) + ' AND Link_to_Parent_Contract__c != null',
             'odooModelName':'agreement',
             'is_full_update':is_full_update,
         }
@@ -232,6 +232,13 @@ class ETLMap(models.Model):
         ###CLOSING
         self.env.ref('vcls-etl.ETL_LastRun').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
         self.env.user.context_data_integration = False
+    
+    def build_sql(self,core,mainf,timef):
+        if 'WHERE' in mainf:
+            return "{} {} AND {}".format(core,mainf,timef)
+        else:
+            return "{} {} WHERE {}".format(core,mainf,timef)
+
 
     @api.model
     def sf_process_keys(self,batch_size=100):
