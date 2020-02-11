@@ -325,14 +325,27 @@ class ETLMap(models.Model):
 
             #Close
             if loop_cron:
-                cron = self.env.ref('vcls-etl.cron_process')
+                cron = self.env.ref('vcls-etl.cron_relaunch')
                 cron.write({
                     'active': True,
                     'nextcall': datetime.now() + timedelta(seconds=30),
-                    'numbercall': 2,
+                    'numbercall': 1,
                 })
                 _logger.info("ETL | CRON renewed")
             self.env.user.context_data_integration = False
+    
+    @api.model
+    def relaunch_cron(self,external_id=None,numbercall=0):
+        if external_id:
+            cron = self.env.ref(external_id)
+            if cron:
+                cron.write({
+                    'active': True,
+                    'nextcall': datetime.now() + timedelta(seconds=10),
+                    'numbercall': numbercall,
+                })
+                _logger.info("ETL | CRON relaunched")
+
 
 
         

@@ -160,6 +160,20 @@
             <field name="code">model.sf_process_keys()
             </field>
         </record>
+
+        <record id="cron_relaunch" model="ir.cron">
+            <field name="name">ETL Relaunch Process Keys</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="doall">False</field>
+            <field name="model_id" ref="model_etl_sync_keys" />
+            <field name="state">code</field>
+            <field name="code">model.relaunch_cron('vcls-etl.cron_process',2)
+            </field>
+        </record>
         
     </data>
 </odoo>
