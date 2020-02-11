@@ -12,7 +12,17 @@
                 Create_Sharepoint_Folder__c, OwnerId, Is_supplier__c, VCLS_Main_Contact__c,
                 Supplier__c, Type, Project_Controller__c, VCLS_Alt_Name__c,
                 Supplier_Project__c, Activity__c, Product_Type__c, Industry, KimbleOne__InvoicingCurrencyIsoCode__c, Invoice_Administrator__c 
-                
+            </field>
+        </record>
+        <record id="etl_sf_account_filter" model="ir.config_parameter">
+            <field name="key">etl_sf_account_filter</field>
+            <field name="value">
+                FROM Account
+                WHERE Id IN (
+                    SELECT AccountId
+                        FROM Contact
+                            WHERE Automated_Migration__c = True
+                )
             </field>
         </record>
 
@@ -28,8 +38,6 @@
                 VCLS_Initial_Contact__c 
             </field>
         </record>
-
-        <!--
         <record id="etl_sf_contact_filter" model="ir.config_parameter">
             <field name="key">etl_sf_contact_filter</field>
             <field name="value">
@@ -37,7 +45,7 @@
                 WHERE Automated_Migration__c = True
             </field>
         </record>
-        -->
+        
 
         <record id="etl_sf_opportunity_query" model="ir.config_parameter">
             <field name="key">etl_sf_opportunity_query</field>
@@ -46,7 +54,17 @@
                 OwnerId, LastModifiedDate, ExpectedRevenue, Reasons_Lost_Comments__c, Probability, CloseDate, Deadline_for_Sending_Proposal__c, LeadSource, 
                 Description, Client_Product_Description__c, CurrencyIsoCode, Product_Category__c, Amount, Geographic_Area__c, VCLS_Activities__c,Project_start_date__c
             </field>
-
+        </record>
+        <record id="etl_sf_opportunity_filter" model="ir.config_parameter">
+            <field name="key">etl_sf_opportunity_filter</field>
+            <field name="value">
+                FROM Opportunity
+                WHERE Id IN (
+                    SELECT AccountId
+                        FROM Contact
+                            WHERE Automated_Migration__c = True
+                )
+            </field>
         </record>
 
         <record id="etl_sf_lead_query" model="ir.config_parameter">
@@ -56,7 +74,13 @@
                 CurrencyIsoCode, Email,First_VCLS_Contact_Point__c, 
                 External_Referee__c, Fax, Functional_Focus__c, Inactive_Lead__c, Industry, Contact_us_Message__c, Initial_Product_Interest__c, 
                 LastModifiedDate, Title, Seniority__c, Phone, Website, Description, LeadSource 
-                
+            </field>
+        </record>
+        <record id="etl_sf_lead_filter" model="ir.config_parameter">
+            <field name="key">etl_sf_lead_filter</field>
+            <field name="value">
+                FROM Lead
+                    WHERE Status != null
             </field>
         </record>
 
@@ -69,6 +93,22 @@
                 CustomerSignedId, CustomerSignedTitle, EndDate,Link_to_Parent_Contract__c, 
                 OwnerId, Parent_Contract_Name__c, Parent_Contract_Type__c, 
                 Replaces_Supersedes__c, Type_of_Contract__c, VCLS_Status__c 
+            </field>
+        </record>
+        <record id="etl_sf_contract_filter" model="ir.config_parameter">
+            <field name="key">etl_sf_contract_filter</field>
+            <field name="value">
+                FROM Contract
+                WHERE Id IN (
+                    SELECT AccountId
+                        FROM Contact
+                            WHERE Automated_Migration__c = True
+                )
+            </field>
+        </record>
+        <record id="etl_sf_time_filter" model="ir.config_parameter">
+            <field name="key">etl_sf_time_filter</field>
+            <field name="value">
                 
             </field>
         </record>

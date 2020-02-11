@@ -22,8 +22,8 @@ class ETLMap(models.Model):
     _name = 'etl.sync.keys'
     _description = 'Mapping table to link Odoo ID with external ID'
 
-    odooId = fields.Char(readonly = True)
-    externalId = fields.Char(readonly = True)
+    odooId = fields.Char(readonly = True,index=True)
+    externalId = fields.Char(readonly = True,index=True)
     odooModelName = fields.Char(readonly = True)
     externalObjName = fields.Char(readonly = True)
     lastModifiedExternal = fields.Datetime(readonly = True)
@@ -125,19 +125,19 @@ class ETLMap(models.Model):
             time_sql = " AND LastModifiedDate > {}".format(formated_last_run)
         else:
             time_sql = ""
+
+        self.env.ref('vcls-etl.etl_sf_time_filter').value = time_sql
             
 
         ### CONTACT KEYS PROCESSING
         sql = """
             SELECT Id, LastModifiedDate
-            FROM Contact
-                WHERE Automated_Migration__c = True
             """
         params = {
             'sfInstance':sfInstance,
             'priority':100,
             'externalObjName':'Contact',
-            'sql':sql + time_sql,
+            'sql':sql + self.env.ref('vcls-etl.etl_sf_contact_query').value + time_sql,
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
@@ -147,19 +147,12 @@ class ETLMap(models.Model):
         # We do accounts with parents 1st, because of their lower priority 
         sql = """
             SELECT Id, LastModifiedDate
-            FROM Account
-                WHERE Id IN (
-                    SELECT AccountId
-                        FROM Contact
-                            WHERE Automated_Migration__c = True
-                )
-                AND ParentId != null
                 """
         params = {
             'sfInstance':sfInstance,
             'priority':200,
             'externalObjName':'Account',
-            'sql': sql + time_sql,
+            'sql': sql + self.env.ref('vcls-etl.etl_sf_account_query').value + time_sql + ' AND ParentId != null',
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
@@ -168,19 +161,12 @@ class ETLMap(models.Model):
         # then accounts without parents 
         sql = """
             SELECT Id, LastModifiedDate
-            FROM Account
-                WHERE Id IN (
-                    SELECT AccountId
-                        FROM Contact
-                            WHERE Automated_Migration__c = True
-                )
-                AND ParentId = null
-                """
+            """
         params = {
             'sfInstance':sfInstance,
             'priority':300,
             'externalObjName':'Account',
-            'sql': sql + time_sql,
+            'sql': sql + self.env.ref('vcls-etl.etl_sf_account_query').value + time_sql + ' AND ParentId = null',
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
@@ -189,18 +175,12 @@ class ETLMap(models.Model):
         ### OPPORTUNITY KEYS PROCESSING
         sql = """
             SELECT Id, LastModifiedDate
-            FROM Opportunity
-                WHERE AccountId IN (
-                    SELECT AccountId
-                        FROM Contact
-                            WHERE Automated_Migration__c = True
-                )
                 """
         params = {
             'sfInstance':sfInstance,
             'priority':80,
             'externalObjName':'Opportunity',
-            'sql': sql + time_sql,
+            'sql': sql + self.env.ref('vcls-etl.etl_sf_opportunity_query').value + time_sql,
             'odooModelName':'crm.lead',
             'is_full_update':is_full_update,
         }
@@ -209,14 +189,13 @@ class ETLMap(models.Model):
         ### LEAD KEYS PROCESSING
         sql = """
             SELECT Id, LastModifiedDate
-            FROM Lead
-            WHERE Status != null  
+              
             """
         params = {
             'sfInstance':sfInstance,
             'priority':60,
             'externalObjName':'Lead',
-            'sql': sql + time_sql,
+            'sql': sql + self.env.ref('vcls-etl.etl_sf_lead_query').value + time_sql,
             'odooModelName':'crm.lead',
             'is_full_update':is_full_update,
         }
@@ -226,19 +205,12 @@ class ETLMap(models.Model):
         #The one without parent contracts
         sql = """
             SELECT Id, LastModifiedDate
-            FROM Contract
-                WHERE AccountId IN (
-                    SELECT AccountId
-                        FROM Contact
-                            WHERE Automated_Migration__c = True
-                )
-                AND Link_to_Parent_Contract__c = null
                 """
         params = {
             'sfInstance':sfInstance,
             'priority':50,
             'externalObjName':'Contract',
-            'sql': sql + time_sql,
+            'sql': sql + self.env.ref('vcls-etl.etl_sf_contract_query').value + time_sql + ' AND Link_to_Parent_Contract__c = null',
             'odooModelName':'agreement',
             'is_full_update':is_full_update,
         }
@@ -246,19 +218,12 @@ class ETLMap(models.Model):
         #The one with parent contracts
         sql = """
             SELECT Id, LastModifiedDate
-            FROM Contract
-                WHERE AccountId IN (
-                    SELECT AccountId
-                        FROM Contact
-                            WHERE Automated_Migration__c = True
-                )
-                AND Link_to_Parent_Contract__c != null
                 """
         params = {
             'sfInstance':sfInstance,
             'priority':40,
             'externalObjName':'Contract',
-            'sql': sql + time_sql,
+            'sql': sql + self.env.ref('vcls-etl.etl_sf_contract_query').value + time_sql + ' AND Link_to_Parent_Contract__c != null',
             'odooModelName':'agreement',
             'is_full_update':is_full_update,
         }
@@ -271,23 +236,33 @@ class ETLMap(models.Model):
     @api.model
     def sf_process_keys(self,batch_size=100):
 
-        priorities = list(set(self.search([('state','!=','upToDate')]).sorted(key=lambda p:p.priority,reverse=True).mapped('priority')))
-        _logger.info("ETL |  {} ".format(priorities))
+        top_priority = max(self.search([('state','!=','upToDate')]).mapped('priority'))
+        #priorities = list(set())
+        #_logger.info("ETL |  {} ".format(priorities))
 
-        if priorities:
+        if top_priority:
             #Init
             self.env.user.context_data_integration = True
+
+            timestamp_start = datetime.now()
+            timestamp_end = datetime.now() + timedelta(minutes=9)
+
             sfInstance = self.open_con()
 
-            to_process = self.search([('state','!=','upToDate'),('priority','=',priorities[0])],limit=batch_size)
+            to_process = self.search([('state','!=','upToDate'),('priority','=',top_priority)])
+            
             if to_process:
                 template = to_process[0]
                 _logger.info("ETL | Found {} {} keys {}".format(len(to_process),template.externalObjName,template.state))
 
-                ext_id = "vcls-etl.etl_sf_{}_query".format(template.externalObjName.lower())
-                sql = "{} FROM {} WHERE Id IN {}".format(self.env.ref(ext_id).value,template.externalObjName,to_process.mapped('externalId'))
-                _logger.info("ETL |  {} {}".format(ext_id,sql))
+                query_id = "vcls-etl.etl_sf_{}_query".format(template.externalObjName.lower())
+                filter_id = "vcls-etl.etl_sf_{}_filter".format(template.externalObjName.lower())
+                
+                sql = "{} {} {}".format(self.env.ref(query_id).value,self.env.ref(filter_id).value,self.env.ref("vcls-etl.etl_sf_time_filter").value)
+
                 records = sfInstance.getConnection().query_all(sql)['records']
+                if records:
+                    _logger.info("ETL |  {} returned {} records from SF".format(sql,len(records)))
             
             #Close
             self.env.user.context_data_integration = False
