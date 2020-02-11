@@ -210,7 +210,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':50,
             'externalObjName':'Contract',
-            'sql': sql + self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_contract_filter').value,time_sql) + ' AND Link_to_Parent_Contract__c = null',
+            'sql': self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_contract_filter').value,time_sql) + ' AND Link_to_Parent_Contract__c = null',
             'odooModelName':'agreement',
             'is_full_update':is_full_update,
         }
