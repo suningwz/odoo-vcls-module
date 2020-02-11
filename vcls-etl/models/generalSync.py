@@ -282,7 +282,8 @@ class ETLMap(models.Model):
                 template = to_process[0]
                 _logger.info("ETL | Found {} {} keys {} with priority {}".format(len(to_process),template.externalObjName,template.state,template.priority))
                 #we initiate a sync object
-                sync = self.env['etl.salesforce.{}'.format(template.externalObjName.lower())]
+                sync = self.env['etl.salesforce.account']
+                #sync = self.env['etl.salesforce.{}'.format(template.externalObjName.lower())]
                 translator = sync.getSFTranslator(sfInstance)
                 counter = 0
 
