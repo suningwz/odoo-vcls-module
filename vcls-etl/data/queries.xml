@@ -58,10 +58,7 @@
         </record>
         <record id="etl_sf_opportunity_filter" model="ir.config_parameter">
             <field name="key">etl_sf_opportunity_filter</field>
-            <field name="value">
-                
-                
-            </field>
+            <field name="value"></field> 
         </record>
 
         <record id="etl_sf_lead_query" model="ir.config_parameter">
@@ -76,10 +73,7 @@
         </record>
         <record id="etl_sf_lead_filter" model="ir.config_parameter">
             <field name="key">etl_sf_lead_filter</field>
-            <field name="value">
-                
-                    
-            </field>
+            <field name="value"></field>   
         </record>
 
         <record id="etl_sf_contract_query" model="ir.config_parameter">
@@ -96,16 +90,11 @@
         </record>
         <record id="etl_sf_contract_filter" model="ir.config_parameter">
             <field name="key">etl_sf_contract_filter</field>
-            <field name="value">
-                
-                
-            </field>
+            <field name="value"></field>   
         </record>
         <record id="etl_sf_time_filter" model="ir.config_parameter">
             <field name="key">etl_sf_time_filter</field>
-            <field name="value">
-                
-            </field>
+            <field name="value"></field> 
         </record>
 
     </data>
