@@ -322,12 +322,14 @@ class ETLMap(models.Model):
                 _logger.info("ETL | Successful end of process.")
 
             #Close
-            cron = self.env.ref('vcls-etl.cron_process')
-            cron.write({
-                'active': True,
-                'nextcall': datetime.now() + timedelta(seconds=30),
-                'numbercall': 2,
-            })
+            if loop_cron:
+                cron = self.env.ref('vcls-etl.cron_process')
+                cron.write({
+                    'active': True,
+                    'nextcall': datetime.now() + timedelta(seconds=30),
+                    'numbercall': 2,
+                })
+                _logger.info("ETL | CRON renewed")
             self.env.user.context_data_integration = False
 
 
