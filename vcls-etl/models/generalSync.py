@@ -253,7 +253,7 @@ class ETLMap(models.Model):
         return sql
 
     @api.model
-    def sf_process_keys(self,batch_size=100):
+    def sf_process_keys(self):
 
         top_priority = max(self.search([('state','!=','upToDate')]).mapped('priority'))
         #priorities = list(set())
@@ -263,33 +263,72 @@ class ETLMap(models.Model):
             #Init
             self.env.user.context_data_integration = True
 
-            timestamp_start = datetime.now()
-            timestamp_end = datetime.now() + timedelta(minutes=9)
+            timestamp_end = datetime.now() + timedelta(minutes=1)
+            loop_cron = True
 
             sfInstance = self.open_con()
+            
 
             to_process = self.search([('state','!=','upToDate'),('priority','=',top_priority)])
             
             if to_process:
                 template = to_process[0]
-                _logger.info("ETL | Found {} {} keys {}".format(len(to_process),template.externalObjName,template.state))
+                _logger.info("ETL | Found {} {} keys {} with priority {}".format(len(to_process),template.externalObjName,template.state,template.priority))
+                #we initiate a sync object
+                sync = self.env['etl.salesforce.{}'.format(template.externalObjName.lower())]
+                translator = sync.getSFTranslator(sfInstance)
+                counter = 0
 
+                #get SF records
                 query_id = "vcls-etl.etl_sf_{}_query".format(template.externalObjName.lower())
                 filter_id = "vcls-etl.etl_sf_{}_filter".format(template.externalObjName.lower())
-                
-                sql = "{} {} {}".format(self.env.ref(query_id).value,self.env.ref(filter_id).value,self.env.ref("vcls-etl.etl_sf_time_filter").value)
-                _logger.info("ETL |  {}".format(sql))
-                """records = sfInstance.getConnection().query_all(sql)['records']
+                sql = self.build_sql(self.env.ref(query_id).value,[self.env.ref(filter_id).value,self.env.ref("vcls-etl.etl_sf_time_filter").value])
+                records = sfInstance.getConnection().query_all(sql)['records']
                 if records:
-                    _logger.info("ETL |  {} returned {} records from SF".format(sql,len(records)))"""
-            
+                    _logger.info("ETL |  {} returned {} records from SF".format(sql,len(records)))
+                    #we start the processing loop
+                    for sf_rec in records:
+                        if datetime.now()>timestamp_end:
+                            break
+                        else:
+                            #grab the related key if in to_process
+                            key = to_process.filtered(lambda p: p.externalId == sf_rec['Id'])
+                            if key:
+                                counter += 1
+                                attributes = translator.translateToOdoo(sf_rec, sync, sfInstance)
+
+                                #UPDATE Case
+                                if key[0].state == 'needUpdateOdoo':
+                                    #we catch the existing record
+                                    o_rec = self.env[key[0].odooModelName].search([('id','=',key[0].odooId)],limit=1)
+                                    if o_rec:
+                                        #o_rec.with_context(tracking_disable=1).write(attributes)
+                                        key[0].write({'state':'upToDate'})
+                                        _logger.info("ETL | Record Updated {}/{} | {} | {}".format(counter,len(to_process),key[0].externalObjName,attributes['name']))
+                                    else:
+                                        _logger.info("ETL | Missed Update - Odoo record not found {}/{} | {} | {}".format(counter,len(to_process),key[0].odooModelName,key[0].odooId))
+                                
+                                #CREATE Case
+                                elif key[0].state == 'needCreateOdoo':
+                                    #odoo_id = self.env[key[0].odooModelName].with_context(tracking_disable=1).create(attributes).id
+                                    key[0].write({'state':'upToDate','odooId':odoo_id})
+                                    _logger.info("ETL | Record Created {}/{} | {} | {}".format(counter,len(to_process),key[0].externalObjName,attributes['name']))
+                                else:
+                                    _logger.info("ETL | Non-managed key state {} | {}".format(key[0].id,key[0].state))
+                                
+            else:
+                loop_cron = False
+                _logger.info("ETL | Successful end of process.")
+
             #Close
+            cron = self.env.ref('vcls-etl.cron_process')
+            cron.write({
+                'active': True,
+                'nextcall': datetime.now() + timedelta(seconds=30),
+                'numbercall': 2,
+            })
             self.env.user.context_data_integration = False
 
-        #to_process = self.search([],limit=batch_size)
-        #_logger.info("CRON EXECUTE {} - {}".format(len(priorities),priorities))
-        #cron = self.env.ref('vcls-etl.cron_process')
-        #cron.nextcall = datetime.now() + timedelta(seconds=30)
 
         
     """def updateAccountKey(self, externalInstance):
