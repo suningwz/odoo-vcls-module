@@ -60,14 +60,16 @@ class ETLMap(models.Model):
         keys_exist_sfid = keys_exist.mapped('externalId')
         keys_create = keys_exist.filtered(lambda k: k.externalId and not k.odooId)
 
-        if params['is_full_update']:
+        keys_update = self.env['etl.sync.keys']
+        keys_to_test=keys_exist.filtered(lambda k: k.externalId and k.odooId)
+        """if params['is_full_update']:
             keys_update = keys_exist.filtered(lambda k: k.externalId and k.odooId)
             keys_to_test = self.env['etl.sync.keys']
         else:
             keys_update = self.env['etl.sync.keys']
             #we fix those ones as ok by default
             keys_to_test=keys_exist.filtered(lambda k: k.externalId and k.odooId)
-            keys_to_test.write({'state':'upToDate','priority':params['priority']})
+            keys_to_test.write({'state':'upToDate','priority':params['priority']})"""
 
         #We look for non exisitng keys
         for rec in rec_ext:
@@ -82,7 +84,7 @@ class ETLMap(models.Model):
                 keys_create |= self.create(vals)
                 _logger.info("KEYS | New creation {}".format(vals))
 
-            elif not params['is_full_update']: #if we don't want a full update, we need to find exact ones to update based on records
+            else: #we ensure not to try to update records we don't have in the rec
                 key = keys_to_test.filtered(lambda k: k.externalId==rec['Id'])
                 if key:
                     keys_update |= key         
