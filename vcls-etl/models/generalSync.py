@@ -131,13 +131,13 @@ class ETLMap(models.Model):
 
         ### CONTACT KEYS PROCESSING
         sql = """
-            SELECT Id, LastModifiedDate
+            SELECT Id, LastModifiedDate FROM Contact
             """
         params = {
             'sfInstance':sfInstance,
             'priority':100,
             'externalObjName':'Contact',
-            'sql':self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_contact_filter').value,time_sql),
+            'sql':self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_contact_filter').value,time_sql]),
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
@@ -146,13 +146,13 @@ class ETLMap(models.Model):
         ### ACCOUNT KEYS PROCESSING
         # We do accounts with parents 1st, because of their lower priority 
         sql = """
-            SELECT Id, LastModifiedDate
+            SELECT Id, LastModifiedDate FROM Account 
                 """
         params = {
             'sfInstance':sfInstance,
             'priority':200,
             'externalObjName':'Account',
-            'sql': self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_account_filter').value,time_sql) + ' AND ParentId != null',
+            'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_account_filter').value,time_sql,'ParentId != null']),
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
@@ -160,13 +160,13 @@ class ETLMap(models.Model):
 
         # then accounts without parents 
         sql = """
-            SELECT Id, LastModifiedDate
+            SELECT Id, LastModifiedDate FROM Account 
             """
         params = {
             'sfInstance':sfInstance,
             'priority':300,
             'externalObjName':'Account',
-            'sql': self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_account_filter').value,time_sql) + ' AND ParentId = null',
+            'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_account_filter').value,time_sql,'ParentId = null']),
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
@@ -174,13 +174,13 @@ class ETLMap(models.Model):
 
         ### OPPORTUNITY KEYS PROCESSING
         sql = """
-            SELECT Id, LastModifiedDate
+            SELECT Id, LastModifiedDate FROM Opportunity 
                 """
         params = {
             'sfInstance':sfInstance,
             'priority':80,
             'externalObjName':'Opportunity',
-            'sql': self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_opportunity_filter').value,time_sql),
+            'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_opportunity_filter').value,time_sql]),
             'odooModelName':'crm.lead',
             'is_full_update':is_full_update,
         }
@@ -188,14 +188,14 @@ class ETLMap(models.Model):
 
         ### LEAD KEYS PROCESSING
         sql = """
-            SELECT Id, LastModifiedDate
+            SELECT Id, LastModifiedDate FROM Lead 
               
             """
         params = {
             'sfInstance':sfInstance,
             'priority':60,
             'externalObjName':'Lead',
-            'sql': self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_lead_filter').value,time_sql) + time_sql,
+            'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_lead_filter').value,time_sql]),
             'odooModelName':'crm.lead',
             'is_full_update':is_full_update,
         }
@@ -204,26 +204,26 @@ class ETLMap(models.Model):
         ### CONTRACT KEYS PROCESSING
         #The one without parent contracts
         sql = """
-            SELECT Id, LastModifiedDate
+            SELECT Id, LastModifiedDate FROM Contract
                 """
         params = {
             'sfInstance':sfInstance,
             'priority':50,
             'externalObjName':'Contract',
-            'sql': self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_contract_filter').value,time_sql) + ' AND Link_to_Parent_Contract__c = null',
+            'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_contract_filter').value,time_sql,' Link_to_Parent_Contract__c = null']),
             'odooModelName':'agreement',
             'is_full_update':is_full_update,
         }
         self.update_keys(params)
         #The one with parent contracts
         sql = """
-            SELECT Id, LastModifiedDate
+            SELECT Id, LastModifiedDate FROM Contract
                 """
         params = {
             'sfInstance':sfInstance,
             'priority':40,
             'externalObjName':'Contract',
-            'sql': self.build_sql(sql,self.env.ref('vcls-etl.etl_sf_contract_filter').value,time_sql) + ' AND Link_to_Parent_Contract__c != null',
+            'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_contract_filter').value,time_sql,' Link_to_Parent_Contract__c != null']),
             'odooModelName':'agreement',
             'is_full_update':is_full_update,
         }
@@ -233,14 +233,16 @@ class ETLMap(models.Model):
         self.env.ref('vcls-etl.ETL_LastRun').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
         self.env.user.context_data_integration = False
     
-    def build_sql(self,core,mainf,timef):
-        if timef == "":
-            return "{} {}".format(core,mainf)
-        elif 'WHERE' in mainf:
-            return "{} {} AND {}".format(core,mainf,timef)
-        else:
-            return "{} {} WHERE {}".format(core,mainf,timef)
+    def build_sql(self,core,filters=None):
+        sql = core
+        if filters:
+            for fil in filters:
+                if 'WHERE' not in sql:
+                    sql += " WHERE " + fil
+                else:
+                    sql += " AND " + fil
 
+        return sql
 
     @api.model
     def sf_process_keys(self,batch_size=100):
