@@ -234,7 +234,9 @@ class ETLMap(models.Model):
         self.env.user.context_data_integration = False
     
     def build_sql(self,core,mainf,timef):
-        if 'WHERE' in mainf:
+        if timef == "":
+            return "{} {}".format(core,mainf)
+        elif 'WHERE' in mainf:
             return "{} {} AND {}".format(core,mainf,timef)
         else:
             return "{} {} WHERE {}".format(core,mainf,timef)
