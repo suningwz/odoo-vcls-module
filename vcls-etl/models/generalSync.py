@@ -124,7 +124,7 @@ class ETLMap(models.Model):
             formated_last_run = fields.Datetime.from_string(last_run).astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000")
             time_sql = " LastModifiedDate > {}".format(formated_last_run)
         else:
-            time_sql = ""
+            time_sql = None
 
         self.env.ref('vcls-etl.etl_sf_time_filter').value = time_sql
             
