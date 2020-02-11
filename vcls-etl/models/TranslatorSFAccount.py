@@ -10,85 +10,137 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         mapOdoo = odoo.env['map.odoo']
         
         result = {}
-        # Modify the name with -test
-        result['name'] = SF_Account['Name'] #+ '-test'
 
-        # result['category_id'] = reference Supplier_Category__c
+        ### DEFAULT VALUES
+        result['company_type'] = 'company'
+        result['is_company'] = 'True'
+        
+        ### IDENTIFICATION
+        result['name'] = SF_Account['Name']
+        result['altname'] = SF_Account['VCLS_Alt_Name__c']
+        result['company_group_id'] = TranslatorSFGeneral.TranslatorSFGeneral.extid_to_odooid(SF_Account['ParentId'],odoo)
         result['stage'] = TranslatorSFAccount.convertStatus(SF_Account)
-        # Ignore  Account_Level__c
+        result['description'] = ''
+        if SF_Account['Supplier_Description__c']:
+            result['description'] += 'Supplier description : ' + str(SF_Account['Supplier_Description__c']) + '\n'
+        if SF_Account['Key_Information__c']:
+            result['description'] += 'Key Information : {}\n'.format(SF_Account['Key_Information__c'])
 
-        # result['state_id'] = reference  BillingState
+        ### ADDRESSES
         if SF_Account['BillingAddress']:
             result['city'] = SF_Account['BillingAddress']['city']
             result['zip'] = SF_Account['BillingAddress']['postalCode']
             result['street'] = SF_Account['BillingAddress']['street']
+        if SF_Account['BillingAddress']['country']:
+            result['country_id'] = mapOdoo.convertRef(SF_Account['BillingAddress']['country'],odoo,'res.country',False)
+        if SF_Account['BillingAddress']['state']:
+            result['state_id'] = mapOdoo.convertRef(SF_Account['BillingAddress']['state'],odoo,'res.country.state',False)
+
+        ### VCLS ROLES
+        result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['OwnerId'],odoo, SF)
+        if SF_Account['Project_Assistant__c']:
+            result['assistant_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['Project_Assistant__c'],odoo, SF)
+        if SF_Account['Project_Controller__c']:
+            result['controller_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['Project_Controller__c'],odoo, SF)
+        if SF_Account['Invoice_Administrator__c']:
+           result['invoice_admin_id'] = mapOdoo.convertRef(SF_Account['Invoice_Administrator__c'],odoo,'res.users',False)
+        if SF_Account['VCLS_Main_Contact__c']:
+            result['vcls_contact_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['VCLS_Main_Contact__c'],odoo, SF)
         
-        if SF_Account['BillingCountry']:
-            result['country_id'] = mapOdoo.convertRef(SF_Account['BillingCountry'],odoo,'res.country',False)
+        ### CONTACT INFO
+        result['website'] = SF_Account['Website']
+
+        ### ADMIN VALUES
+        result['create_folder'] = SF_Account['Create_Sharepoint_Folder__c']
+        result['sharepoint_folder'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUrl(SF_Account['Sharepoint_Folder__c'])
+        if SF_Account['Sharepoint_ID__c']:
+            result['legacy_account'] = str(int(SF_Account['Sharepoint_ID__c']))
+        
+        ### FINANCIALS
+
+        ### OTHER
+        if SF_Account['Supplier_Project__c']:
+            result['project_supplier_type_id'] = mapOdoo.convertRef(SF_Account['Supplier_Project__c'],odoo,'project.supplier.type',False)
+        if SF_Account['Area_of_expertise__c']:
+            result['expertise_area_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Area_of_expertise__c'],odoo,'expertise.area',True))]
+        
+        #########
+
+        result['default_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Account['KimbleOne__InvoicingCurrencyIsoCode__c'],odoo)
+
+        """
+        ### SEGMENTATION
+        
+        if SF_Account['Industry']:
+            result['industry_id'] = mapOdoo.convertRef(SF_Account['Industry'],odoo,'res.partner.industry',False)
+        if SF_Account['Activity__c']:
+            result['client_activity_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Activity__c'],odoo,'client.activity',True))]
+        if SF_Account['Product_Type__c']:
+            result['client_product_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Product_Type__c'],odoo,'client.product',True))]"""
+        
+
+        # result['category_id'] = reference Supplier_Category__c
+        
+        # Ignore  Account_Level__c
+
+        # result['state_id'] = reference  BillingState
+        
         
         result['phone'] = SF_Account['Phone']
         
         result['fax'] = SF_Account['Fax']
         # Ignore Area_of_expertise__c
         
-        result['sharepoint_folder'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUrl(SF_Account['Sharepoint_Folder__c']) # /!\
+         # /!\
         
-        if SF_Account['Sharepoint_ID__c']:
-            result['legacy_account'] = str(int(SF_Account['Sharepoint_ID__c']))
         
-        result['description'] = ''
         
-        result['description'] += 'Supplier description : ' + str(SF_Account['Supplier_Description__c']) + '\n'
         
-        result['description'] += 'Key Information : {}\n'.format(SF_Account['Key_Information__c'])
         
         # Ignore Supplier_Selection_Form_completed__c
-        result['website'] = SF_Account['Website']
         
-        result['create_folder'] = SF_Account['Create_Sharepoint_Folder__c']
         
-        result['company_type'] = 'company'
-        #documented to trigger proper default image loaded
-        result['is_company'] = 'True'
         
-        result['default_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Account['KimbleOne__InvoicingCurrencyIsoCode__c'],odoo)
         
-        result['altname'] = SF_Account['VCLS_Alt_Name__c']
+    
         
-        result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['OwnerId'],odoo, SF)
-        
-        if SF_Account['Invoice_Administrator__c']:
-           result['invoice_admin_id'] = mapOdoo.convertRef(SF_Account['Invoice_Administrator__c'],odoo,'res.users',False)
-        
-        if SF_Account['VCLS_Main_Contact__c']:
-            result['expert_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['VCLS_Main_Contact__c'],odoo, SF)
-        
-        if SF_Account['Project_Assistant__c']:
-            result['assistant_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['Project_Assistant__c'],odoo, SF)
-        
-        if SF_Account['Project_Controller__c']:
-            result['controller_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['Project_Controller__c'],odoo, SF)
-        
-        if SF_Account['Industry']:
-            result['industry_id'] = mapOdoo.convertRef(SF_Account['Industry'],odoo,'res.partner.industry',False)
-        
-        if SF_Account['Area_of_expertise__c']:
-            result['expertise_area_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Area_of_expertise__c'],odoo,'expertise.area',True))]
-        
-        if SF_Account['Supplier_Project__c']:
-            result['project_supplier_type_id'] = mapOdoo.convertRef(SF_Account['Supplier_Project__c'],odoo,'project.supplier.type',False)
-        
-        if SF_Account['Activity__c']:
-            result['client_activity_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Activity__c'],odoo,'client.activity',True))]
-        
-        if SF_Account['Product_Type__c']:
-            result['client_product_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Product_Type__c'],odoo,'client.product',True))]
         
         result['category_id'] =  [(6, 0, TranslatorSFAccount.convertCategory(SF_Account,odoo))]
         
         result['message_ids'] = [(0, 0, TranslatorSFAccount.generateLog(SF_Account))]
 
         return result
+
+    @staticmethod
+    def convertCategory(SFAccount, odoo):
+        result = []
+        SFtype = SFAccount['Type']
+        if SFAccount['Is_supplier__c'] or SFAccount['Supplier__c']:
+            result += [odoo.env.ref('vcls-contact.category_PS').id]
+        elif SFAccount['Project_Controller__c'] and SFAccount['VCLS_Alt_Name__c']:
+            result += [odoo.env.ref('vcls-contact.category_account').id]
+        if SFtype:
+            if (not SFAccount['Is_supplier__c'] or not SFAccount['Supplier__c']) and 'supplier' in SFtype.lower():
+                result += [odoo.env.ref('vcls-contact.category_PS').id]
+            if 'competitor' in SFtype.lower():
+                result += [odoo.env.ref('vcls-contact.category_competitor').id]
+            if 'partner' in SFtype.lower():
+                result += [odoo.env.ref('vcls-contact.category_partner').id]
+        return result
+    
+    @staticmethod
+    def convertStatus(SF):
+        status = SF['Supplier_Status__c']
+        if (status == 'Active - contract set up, information completed') or SF['Project_Controller__c'] or SF['VCLS_Alt_Name__c']:
+            return 3
+        elif status == 'Prospective: no contract, pre-identify' or SF['To_be_Reviewed__c']:
+            return 2
+        elif status == 'Inactive - reason mentioned':
+            return 5
+        elif SF['Is_supplier__c'] or SF['Supplier__c']: # New
+            return 2
+        else: # Undefined
+            return 1
     
     @staticmethod
     def generateLog(SF_Account):
@@ -99,6 +151,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         }
 
         return result
+
     @staticmethod
     def translateToSF(Odoo_Contact, odoo):
         result = {}
@@ -144,20 +197,6 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         if Odoo_Contact.project_supplier_type_id:
             result['Supplier_Project__c'] = Odoo_Contact.project_supplier_type_id.name
         return result
-
-    @staticmethod
-    def convertStatus(SF):
-        status = SF['Supplier_Status__c']
-        if (status == 'Active - contract set up, information completed') or SF['Project_Controller__c']:
-            return 3
-        elif status == 'Prospective: no contract, pre-identify':
-            return 2
-        elif status == 'Inactive - reason mentioned':
-            return 5
-        elif SF['Is_supplier__c'] or SF['Supplier__c']: # New
-            return 2
-        else: # Undefined
-            return 1
     
     @staticmethod
     def revertStatus(status):
@@ -172,22 +211,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
 
     
     
-    @staticmethod
-    def convertCategory(SFAccount, odoo):
-        result = []
-        SFtype = SFAccount['Type']
-        if SFAccount['Is_supplier__c'] or SFAccount['Supplier__c']:
-            result += [odoo.env.ref('vcls-contact.category_PS').id]
-        elif SFAccount['Project_Controller__c'] and SFAccount['VCLS_Alt_Name__c']:
-            result += [odoo.env.ref('vcls-contact.category_account').id]
-        if SFtype:
-            if (not SFAccount['Is_supplier__c'] or not SFAccount['Supplier__c']) and 'supplier' in SFtype.lower():
-                result += [odoo.env.ref('vcls-contact.category_PS').id]
-            if 'competitor' in SFtype.lower():
-                result += [odoo.env.ref('vcls-contact.category_competitor').id]
-            if 'partner' in SFtype.lower():
-                result += [odoo.env.ref('vcls-contact.category_partner').id]
-        return result
+    
     
 
     

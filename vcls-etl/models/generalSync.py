@@ -258,7 +258,7 @@ class ETLMap(models.Model):
         return sql
 
     @api.model
-    def sf_process_keys(self,batch_size=False):
+    def sf_process_keys(self,batch_size=False,loop=True):
 
         top_priority = max(self.search([('state','!=','upToDate')]).mapped('priority'))
         #priorities = list(set())
@@ -269,7 +269,7 @@ class ETLMap(models.Model):
             self.env.user.context_data_integration = True
 
             timestamp_end = datetime.now() + timedelta(minutes=1)
-            loop_cron = True
+            loop_cron = loop
 
             sfInstance = self.open_con()
             
@@ -309,17 +309,17 @@ class ETLMap(models.Model):
                                     #we catch the existing record
                                     o_rec = self.env[key[0].odooModelName].search([('id','=',key[0].odooId)],limit=1)
                                     if o_rec:
-                                        #o_rec.with_context(tracking_disable=1).write(attributes)
-                                        key[0].write({'state':'upToDate'})
+                                        o_rec.with_context(tracking_disable=1).write(attributes)
+                                        key[0].write({'state':'upToDate','priority':0})
                                         _logger.info("ETL | Record Updated {}/{} | {} | {}".format(counter,len(to_process),key[0].externalObjName,attributes['name']))
                                     else:
                                         _logger.info("ETL | Missed Update - Odoo record not found {}/{} | {} | {}".format(counter,len(to_process),key[0].odooModelName,key[0].odooId))
                                 
                                 #CREATE Case
                                 elif key[0].state == 'needCreateOdoo':
-                                    #odoo_id = self.env[key[0].odooModelName].with_context(tracking_disable=1).create(attributes).id
-                                    #key[0].write({'state':'upToDate','odooId':odoo_id})
-                                    key[0].write({'state':'upToDate'})
+                                    odoo_id = self.env[key[0].odooModelName].with_context(tracking_disable=1).create(attributes).id
+                                    key[0].write({'state':'upToDate','odooId':odoo_id,'priority':0})
+                                    #key[0].write({'state':'upToDate','priority':0})
                                     _logger.info("ETL | Record Created {}/{} | {} | {}".format(counter,len(to_process),key[0].externalObjName,attributes['name']))
                                 else:
                                     _logger.info("ETL | Non-managed key state {} | {}".format(key[0].id,key[0].state))
