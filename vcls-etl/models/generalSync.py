@@ -278,10 +278,10 @@ class ETLMap(models.Model):
                 filter_id = "vcls-etl.etl_sf_{}_filter".format(template.externalObjName.lower())
                 
                 sql = "{} {} {}".format(self.env.ref(query_id).value,self.env.ref(filter_id).value,self.env.ref("vcls-etl.etl_sf_time_filter").value)
-
-                records = sfInstance.getConnection().query_all(sql)['records']
+                _logger.info("ETL |  {}".format(sql))
+                """records = sfInstance.getConnection().query_all(sql)['records']
                 if records:
-                    _logger.info("ETL |  {} returned {} records from SF".format(sql,len(records)))
+                    _logger.info("ETL |  {} returned {} records from SF".format(sql,len(records)))"""
             
             #Close
             self.env.user.context_data_integration = False
