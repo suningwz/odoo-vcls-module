@@ -311,7 +311,8 @@ class ETLMap(models.Model):
                                 #CREATE Case
                                 elif key[0].state == 'needCreateOdoo':
                                     #odoo_id = self.env[key[0].odooModelName].with_context(tracking_disable=1).create(attributes).id
-                                    key[0].write({'state':'upToDate','odooId':odoo_id})
+                                    #key[0].write({'state':'upToDate','odooId':odoo_id})
+                                    key[0].write({'state':'upToDate'})
                                     _logger.info("ETL | Record Created {}/{} | {} | {}".format(counter,len(to_process),key[0].externalObjName,attributes['name']))
                                 else:
                                     _logger.info("ETL | Non-managed key state {} | {}".format(key[0].id,key[0].state))
