@@ -62,6 +62,7 @@ class ETLMap(models.Model):
 
         keys_update = self.env['etl.sync.keys']
         keys_to_test=keys_exist.filtered(lambda k: k.externalId and k.odooId)
+
         """if params['is_full_update']:
             keys_update = keys_exist.filtered(lambda k: k.externalId and k.odooId)
             keys_to_test = self.env['etl.sync.keys']
@@ -257,7 +258,7 @@ class ETLMap(models.Model):
         return sql
 
     @api.model
-    def sf_process_keys(self):
+    def sf_process_keys(self,batch_size=False):
 
         top_priority = max(self.search([('state','!=','upToDate')]).mapped('priority'))
         #priorities = list(set())
@@ -272,8 +273,10 @@ class ETLMap(models.Model):
 
             sfInstance = self.open_con()
             
-
-            to_process = self.search([('state','!=','upToDate'),('priority','=',top_priority)])
+            if batch_size:
+                to_process = self.search([('state','!=','upToDate'),('priority','=',top_priority)],limit=batch_size)
+            else:
+                to_process = self.search([('state','!=','upToDate'),('priority','=',top_priority)])
             
             if to_process:
                 template = to_process[0]
