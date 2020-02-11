@@ -137,7 +137,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':100,
             'externalObjName':'Contact',
-            'sql':sql + self.env.ref('vcls-etl.etl_sf_contact_query').value + time_sql,
+            'sql':sql + self.env.ref('vcls-etl.etl_sf_contact_filter').value + time_sql,
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
@@ -152,7 +152,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':200,
             'externalObjName':'Account',
-            'sql': sql + self.env.ref('vcls-etl.etl_sf_account_query').value + time_sql + ' AND ParentId != null',
+            'sql': sql + self.env.ref('vcls-etl.etl_sf_account_filter').value + time_sql + ' AND ParentId != null',
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
@@ -166,7 +166,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':300,
             'externalObjName':'Account',
-            'sql': sql + self.env.ref('vcls-etl.etl_sf_account_query').value + time_sql + ' AND ParentId = null',
+            'sql': sql + self.env.ref('vcls-etl.etl_sf_account_filter').value + time_sql + ' AND ParentId = null',
             'odooModelName':'res.partner',
             'is_full_update':is_full_update,
         }
@@ -180,7 +180,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':80,
             'externalObjName':'Opportunity',
-            'sql': sql + self.env.ref('vcls-etl.etl_sf_opportunity_query').value + time_sql,
+            'sql': sql + self.env.ref('vcls-etl.etl_sf_opportunity_filter').value + time_sql,
             'odooModelName':'crm.lead',
             'is_full_update':is_full_update,
         }
@@ -195,7 +195,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':60,
             'externalObjName':'Lead',
-            'sql': sql + self.env.ref('vcls-etl.etl_sf_lead_query').value + time_sql,
+            'sql': sql + self.env.ref('vcls-etl.etl_sf_lead_filter').value + time_sql,
             'odooModelName':'crm.lead',
             'is_full_update':is_full_update,
         }
@@ -210,7 +210,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':50,
             'externalObjName':'Contract',
-            'sql': sql + self.env.ref('vcls-etl.etl_sf_contract_query').value + time_sql + ' AND Link_to_Parent_Contract__c = null',
+            'sql': sql + self.env.ref('vcls-etl.etl_sf_contract_filter').value + time_sql + ' AND Link_to_Parent_Contract__c = null',
             'odooModelName':'agreement',
             'is_full_update':is_full_update,
         }
@@ -223,7 +223,7 @@ class ETLMap(models.Model):
             'sfInstance':sfInstance,
             'priority':40,
             'externalObjName':'Contract',
-            'sql': sql + self.env.ref('vcls-etl.etl_sf_contract_query').value + time_sql + ' AND Link_to_Parent_Contract__c != null',
+            'sql': sql + self.env.ref('vcls-etl.etl_sf_contract_filter').value + time_sql + ' AND Link_to_Parent_Contract__c != null',
             'odooModelName':'agreement',
             'is_full_update':is_full_update,
         }
