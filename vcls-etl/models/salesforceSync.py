@@ -102,6 +102,7 @@ class salesforceSync(models.Model):
                             if key:
                                 counter += 1
                                 attributes = translator.translateToOdoo(sf_rec, sync, sfInstance)
+                                _logger.info("ETL | ATTRIBUTES {}".format(attributes))
 
                                 #UPDATE Case
                                 if key[0].state == 'needUpdateOdoo':
