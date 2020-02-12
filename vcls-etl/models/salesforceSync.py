@@ -107,12 +107,13 @@ class salesforceSync(models.Model):
                                 #UPDATE Case
                                 if key[0].state == 'needUpdateOdoo':
                                     #we catch the existing record
-                                    o_rec = self.env[key[0].odooModelName].search([('id','=',key[0].odooId)],limit=1)
+                                    o_rec = self.env[key[0].odooModelName].with_context(active_test=False).search([('id','=',key[0].odooId)],limit=1)
                                     if o_rec:
                                         o_rec.with_context(tracking_disable=1).write(attributes)
                                         key[0].write({'state':'upToDate','priority':0})
                                         _logger.info("ETL | Record Updated {}/{} | {} | {}".format(counter,len(to_process),key[0].externalObjName,attributes.get('log_info')))
                                     else:
+                                        key[0].write({'state':'upToDate','priority':0})
                                         _logger.info("ETL | Missed Update - Odoo record not found {}/{} | {} | {}".format(counter,len(to_process),key[0].odooModelName,key[0].odooId))
                                 
                                 #CREATE Case

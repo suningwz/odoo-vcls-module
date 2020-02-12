@@ -76,7 +76,7 @@ class ETLMap(models.Model):
                 }
 
                 if rec.get('Email',False) and params['externalObjName']=="Contact": #we need to check if a contact already exists with this email
-                    existing = self.env[params['odooModelName']].search([('email','=ilike',rec['Email']),('is_company','=',False)],limit=1)
+                    existing = self.env[params['odooModelName']].with_context(active_test=False).search([('email','=ilike',rec['Email']),('is_company','=',False)],limit=1)
                     if existing:
                         vals['odooId']=existing.id
                         keys_update |= self.create(vals)
@@ -85,13 +85,13 @@ class ETLMap(models.Model):
                         pass
                 else:        
                     keys_create |= self.create(vals)
-                    _logger.info("KEYS | New creation {}".format(vals))
+                    _logger.info("KEYS | {} New Creation {}".format(params['externalObjName'],vals))
 
             else: #we ensure not to try to update records we don't have in the rec
                 key = keys_to_test.filtered(lambda k: k.externalId==rec['Id'])
                 if key:
                     keys_update |= key
-                    _logger.info("KEYS | To Update {}".format(vals))         
+                    _logger.info("KEYS | {} To Update {}".format(params['externalObjName'],key.odooId))         
                         
     
         if rec_ext:
