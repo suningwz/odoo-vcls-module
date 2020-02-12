@@ -90,7 +90,8 @@ class ETLMap(models.Model):
             else: #we ensure not to try to update records we don't have in the rec
                 key = keys_to_test.filtered(lambda k: k.externalId==rec['Id'])
                 if key:
-                    keys_update |= key         
+                    keys_update |= key
+                    _logger.info("KEYS | To Update {}".format(vals))         
                         
     
         if rec_ext:
