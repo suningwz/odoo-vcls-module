@@ -20,7 +20,7 @@ class KeyNotFoundError(Exception):
 
 class ETLMap(models.Model):
     _name = 'etl.sync.keys'
-    _description = 'Mapping table to link Odoo ID with external ID'
+    _description = 'Odoo ID with external ID'
 
     odooId = fields.Char(readonly = True,index=True)
     externalId = fields.Char(readonly = True,index=True)

@@ -6,7 +6,7 @@ class TranslatorSFGeneral(ITranslator.ITranslator):
         TranslatorSFGeneral.usersSF = SF.query(queryUser)['records']
     
     @staticmethod
-    def extid_to_odooid(extid = None, odoo):
+    def extid_to_odooid(extid, odoo):
         if extid:
             key = odoo.env['etl.sync.keys'].search([('externalId','=',extid)],limit=1)
             if key and key.odooId:
