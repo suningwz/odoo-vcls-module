@@ -24,6 +24,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
             result['firstname'] = SF_Contact['FirstName']
         if SF_Contact['MiddleName']:
             result['lastname'] = SF_Contact['MiddleName']
+            result['name'] = "" #We force name to be empty to avoid repeating when update
         if SF_Contact['LastName']:
             result['lastname2'] = SF_Contact['LastName']
 
