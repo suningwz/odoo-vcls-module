@@ -10,7 +10,7 @@
                 OwnerId, Project_Assistant__c, Project_Controller__c,  Invoice_Administrator__c, VCLS_Main_Contact__c,
                 Website,  Phone, Fax, 
                 Create_Sharepoint_Folder__c, Sharepoint_Folder__c, ExternalID__c,
-                KimbleOne__InvoicingCurrencyIsoCode__c,CurrencyIsoCode,
+                KimbleOne__InvoicingCurrencyIsoCode__c,CurrencyIsoCode,Communication_Percentage__c,
                 Supplier_Project__c, Area_of_expertise__c,
                 LastModifiedDate,  Type,  Activity__c, Industry
                 FROM Account
