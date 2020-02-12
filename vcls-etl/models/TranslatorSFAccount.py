@@ -28,12 +28,12 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         if SF_Account['Key_Information__c']:
             result['description'] += 'Key Information : {}\n'.format(SF_Account['Key_Information__c'])
 
-        if SFAccount['Is_supplier__c'] or SFAccount['Supplier__c']:
+        if SF_Account['Is_supplier__c'] or SF_Account['Supplier__c']:
             result['supplier'] = True
-        elif SFAccount['Project_Controller__c'] or SFAccount['VCLS_Alt_Name__c']:
+        elif SF_Account['Project_Controller__c'] or SF_Account['VCLS_Alt_Name__c']:
             result['customer'] = True
-        elif SFAccount['Type']:
-            if (not SFAccount['Is_supplier__c'] or not SFAccount['Supplier__c']) and 'supplier' in SFAccount['Type'].lower():
+        elif SF_Account['Type']:
+            if (not SF_Account['Is_supplier__c'] or not SF_Account['Supplier__c']) and 'supplier' in SF_Account['Type'].lower():
                 result['supplier'] = True
 
         ### ADDRESSES
