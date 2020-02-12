@@ -78,8 +78,8 @@
             ]"/>
         </record>
 
-        <record id="view_hr_expense_sheet_search_pop_up" model="ir.ui.view">
-            <field name="name">hr_expense_sheet_search_popup</field>
+        <record id="view_hr_expense_sheet_filter" model="ir.ui.view">
+            <field name="name">view_hr_expense_sheet_filter</field>
             <field name="model">hr.expense.sheet</field>
             <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_filter"/>
             <field name="arch" type="xml">
