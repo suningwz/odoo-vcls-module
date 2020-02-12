@@ -165,7 +165,9 @@ model.sf_update_keys(obj_dict,full_update)
             <field name="doall">False</field>
             <field name="model_id" ref="model_etl_sync_salesforce" />
             <field name="state">code</field>
-            <field name="code">model.sf_process_keys()
+            <field name="code">batch_size = None
+loop = True
+model.sf_process_keys(batch_size,loop)
             </field>
         </record>
 

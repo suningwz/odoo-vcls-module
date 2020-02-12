@@ -80,7 +80,7 @@ class ETLMap(models.Model):
                     if existing:
                         vals['odooId']=existing.id
                         keys_update |= self.create(vals)
-                        _logger.info("KEYS | Contact duplicate found {}".format(rec))
+                        _logger.info("KEYS | Contact duplicate found {}".format(rec['Email']))
                     else:
                         pass
                 else:        
