@@ -31,11 +31,11 @@
             <field name="key">etl_sf_contact_query</field>
             <field name="value">
                 SELECT 
-                Id, Salutation, FirstName, MiddleName, LastName, OwnerId,Title,Description,
+                Id, Salutation, FirstName, MiddleName, LastName,Title,Description,
                 OwnerId, AccountId,  VCLS_Main_Contact__c, 
                 MailingAddress,
                 LinkedIn_Profile__c, Phone, Fax, MobilePhone, Email, AccountWebsite__c, 
-                LastModifiedDate, Inactive_Contact__c, Opted_In__c, Unsubscribed_from_Marketing_Comms__c,
+                LastModifiedDate, Inactive_Contact__c, Opted_In__c, Unsubscribed_from_Marketing_Comms__c
                 FROM Contact
             </field>
         </record>

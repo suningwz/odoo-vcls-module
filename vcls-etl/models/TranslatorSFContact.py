@@ -83,7 +83,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         #we catch the category of the parent company
         if SF['AccountId']:
             #get the key
-            key = odoo.env['etl.sync.key'].search([('externalId','=',SF['AccountId'])],limit=1)
+            key = odoo.env['etl.sync.keys'].search([('externalId','=',SF['AccountId'])],limit=1)
             if key:
                 parent = odoo.env['res.partner'].browse(key.odooId)
                 return parent.category_id.ids
