@@ -22,12 +22,13 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
             result['title'] = mapOdoo.convertRef(SF_Contact['Salutation'], odoo,'res.partner.title',False)
         if SF_Contact['FirstName']:
             result['firstname'] = SF_Contact['FirstName']
-        if SF_Contact['MiddleName']:
-            result['lastname'] = SF_Contact['MiddleName']
-            result['name'] = "" #We force name to be empty to avoid repeating when update
         if SF_Contact['LastName']:
             result['lastname2'] = SF_Contact['LastName']
-
+        if SF_Contact['MiddleName']:
+            result['lastname'] = SF_Contact['MiddleName']
+        temp = "{} {} {}".format(SF_Contact.get('FirstName',''),SF_Contact.get('MiddleName',''),SF_Contact.get('LastName',''))
+        result['name'] = temp.replace('  ',' ')
+        
         result['function'] = SF_Contact['Title']
         result['description'] = 'Contact description : \n' + str(SF_Contact['Description']) + '\n'
         # Parent company info
