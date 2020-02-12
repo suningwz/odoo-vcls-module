@@ -15,7 +15,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         ### DEFAULT VALUES
         result['is_company'] = False
         result['company_type'] = 'person'
-        result['type'] = 'Contact'
+        result['type'] = 'contact'
 
         ### IDENTIFICATION
         if SF_Contact['Salutation']:
