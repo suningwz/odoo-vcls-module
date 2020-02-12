@@ -31,10 +31,10 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
             result['city'] = SF_Account['BillingAddress']['city']
             result['zip'] = SF_Account['BillingAddress']['postalCode']
             result['street'] = SF_Account['BillingAddress']['street']
-        if SF_Account['BillingAddress']['country']:
-            result['country_id'] = mapOdoo.convertRef(SF_Account['BillingAddress']['country'],odoo,'res.country',False)
-        if SF_Account['BillingAddress']['state']:
-            result['state_id'] = mapOdoo.convertRef(SF_Account['BillingAddress']['state'],odoo,'res.country.state',False)
+            if SF_Account['BillingAddress']['country']:
+                result['country_id'] = mapOdoo.convertRef(SF_Account['BillingAddress']['country'],odoo,'res.country',False)
+            if SF_Account['BillingAddress']['state']:
+                result['state_id'] = mapOdoo.convertRef(SF_Account['BillingAddress']['state'],odoo,'res.country.state',False)
 
         ### VCLS ROLES
         result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Account['OwnerId'],odoo, SF)

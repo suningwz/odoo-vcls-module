@@ -102,7 +102,7 @@ class salesforceSync(models.Model):
                             if key:
                                 counter += 1
                                 attributes = translator.translateToOdoo(sf_rec, sync, sfInstance)
-                                _logger.info("ETL | ATTRIBUTES {}".format(attributes))
+                                #_logger.info("ETL | ATTRIBUTES {}".format(attributes))
 
                                 #UPDATE Case
                                 if key[0].state == 'needUpdateOdoo':
@@ -111,7 +111,7 @@ class salesforceSync(models.Model):
                                     if o_rec:
                                         o_rec.with_context(tracking_disable=1).write(attributes)
                                         key[0].write({'state':'upToDate','priority':0})
-                                        _logger.info("ETL | Record Updated {}/{} | {} | {}".format(counter,len(to_process),key[0].externalObjName,attributes.get('name')))
+                                        _logger.info("ETL | Record Updated {}/{} | {} | {}".format(counter,len(to_process),key[0].externalObjName,attributes))
                                     else:
                                         _logger.info("ETL | Missed Update - Odoo record not found {}/{} | {} | {}".format(counter,len(to_process),key[0].odooModelName,key[0].odooId))
                                 
@@ -120,7 +120,8 @@ class salesforceSync(models.Model):
                                     odoo_id = self.env[key[0].odooModelName].with_context(tracking_disable=1).create(attributes).id
                                     key[0].write({'state':'upToDate','odooId':odoo_id,'priority':0})
                                     #key[0].write({'state':'upToDate','priority':0})
-                                    _logger.info("ETL | Record Created {}/{} | {} | {}".format(counter,len(to_process),key[0].externalObjName,attributes.get('name')))
+                                    _logger.info("ETL | Record Created {}/{} | {} | {}".format(counter,len(to_process),key[0].externalObjName,attributes))
+
                                 else:
                                     _logger.info("ETL | Non-managed key state {} | {}".format(key[0].id,key[0].state))
                                 
