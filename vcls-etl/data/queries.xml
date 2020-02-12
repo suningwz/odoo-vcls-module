@@ -8,21 +8,11 @@
                 Supplier_Status__c, Supplier_Category__c, Is_supplier__c, Supplier__c, To_be_Reviewed__c,
                 BillingAddress, ShippingAddress,
                 OwnerId, Project_Assistant__c, Project_Controller__c,  Invoice_Administrator__c, VCLS_Main_Contact__c,
-                Website,
-                Create_Sharepoint_Folder__c, Sharepoint_Folder__c, Sharepoint_ID__c,
+                Website,  Phone, Fax, 
+                Create_Sharepoint_Folder__c, Sharepoint_Folder__c, ExternalID__c,
+                KimbleOne__InvoicingCurrencyIsoCode__c,CurrencyIsoCode,
                 Supplier_Project__c, Area_of_expertise__c,
-                LastModifiedDate,
-
-
-
-                Account_Level__c, 
-                 
-                Phone, Fax,   
-                 
-                Supplier_Selection_Form_completed__c, 
-                  
-                 Type,  
-                Activity__c, Product_Type__c, Industry, KimbleOne__InvoicingCurrencyIsoCode__c
+                LastModifiedDate,  Type,  Activity__c, Industry
                 FROM Account
             </field>
         </record>

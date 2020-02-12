@@ -1,4 +1,6 @@
 from . import TranslatorSFGeneral
+import logging
+_logger = logging.getLogger(__name__)
 
 class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
     
@@ -22,7 +24,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         result['stage'] = TranslatorSFAccount.convertStatus(SF_Account)
         result['description'] = ''
         if SF_Account['Supplier_Description__c']:
-            result['description'] += 'Supplier description : ' + str(SF_Account['Supplier_Description__c']) + '\n'
+            result['description'] += 'Supplier description : \n' + str(SF_Account['Supplier_Description__c']) + '\n'
         if SF_Account['Key_Information__c']:
             result['description'] += 'Key Information : {}\n'.format(SF_Account['Key_Information__c'])
 
@@ -49,66 +51,45 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         
         ### CONTACT INFO
         result['website'] = SF_Account['Website']
+        result['phone'] = SF_Account['Phone']
+        result['fax'] = SF_Account['Fax']
 
         ### ADMIN VALUES
         result['create_folder'] = SF_Account['Create_Sharepoint_Folder__c']
         result['sharepoint_folder'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUrl(SF_Account['Sharepoint_Folder__c'])
-        if SF_Account['Sharepoint_ID__c']:
-            result['legacy_account'] = str(int(SF_Account['Sharepoint_ID__c']))
+        if SF_Account['ExternalID__c']:
+            result['legacy_account'] = str(int(SF_Account['ExternalID__c']))
         
         ### FINANCIALS
+        if SF_Account['KimbleOne__InvoicingCurrencyIsoCode__c']:
+            result['default_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Account['KimbleOne__InvoicingCurrencyIsoCode__c'],odoo)
+        elif SF_Account['CurrencyIsoCode']:
+            result['default_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Account['CurrencyIsoCode'],odoo)
+        else:
+            pass
+        
+        if SF_Account['Communication_Percentage__c']:
+            _logger.info("COM RATE {} {}".format(SF_Account['Communication_Percentage__c'],SF_Account['Communication_Percentage__c'].type()))
 
         ### OTHER
         if SF_Account['Supplier_Project__c']:
             result['project_supplier_type_id'] = mapOdoo.convertRef(SF_Account['Supplier_Project__c'],odoo,'project.supplier.type',False)
         if SF_Account['Area_of_expertise__c']:
             result['expertise_area_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Area_of_expertise__c'],odoo,'expertise.area',True))]
+
+        result['category_id'] =  [(6, 0, TranslatorSFAccount.convertCategory(SF_Account,odoo))]
+        result['message_ids'] = [(0, 0, TranslatorSFAccount.generateLog(SF_Account))]
         
-        #########
-
-        result['default_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Account['KimbleOne__InvoicingCurrencyIsoCode__c'],odoo)
-
-        """
         ### SEGMENTATION
-        
+        #if SFAccount['Is_supplier__c'] or SFAccount['Supplier__c']:
         if SF_Account['Industry']:
             result['industry_id'] = mapOdoo.convertRef(SF_Account['Industry'],odoo,'res.partner.industry',False)
         if SF_Account['Activity__c']:
             result['client_activity_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Activity__c'],odoo,'client.activity',True))]
-        if SF_Account['Product_Type__c']:
-            result['client_product_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Product_Type__c'],odoo,'client.product',True))]"""
-        
+        #if SF_Account['Product_Type__c']:
+            #result['client_product_ids'] = [(6, 0, mapOdoo.convertRef(SF_Account['Product_Type__c'],odoo,'client.product',True))]
 
-        # result['category_id'] = reference Supplier_Category__c
-        
-        # Ignore  Account_Level__c
-
-        # result['state_id'] = reference  BillingState
-        
-        
-        result['phone'] = SF_Account['Phone']
-        
-        result['fax'] = SF_Account['Fax']
-        # Ignore Area_of_expertise__c
-        
-         # /!\
-        
-        
-        
-        
-        
-        # Ignore Supplier_Selection_Form_completed__c
-        
-        
-        
-        
-    
-        
-        
-        result['category_id'] =  [(6, 0, TranslatorSFAccount.convertCategory(SF_Account,odoo))]
-        
-        result['message_ids'] = [(0, 0, TranslatorSFAccount.generateLog(SF_Account))]
-
+        #########
         return result
 
     @staticmethod
@@ -117,7 +98,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         SFtype = SFAccount['Type']
         if SFAccount['Is_supplier__c'] or SFAccount['Supplier__c']:
             result += [odoo.env.ref('vcls-contact.category_PS').id]
-        elif SFAccount['Project_Controller__c'] and SFAccount['VCLS_Alt_Name__c']:
+        elif SFAccount['Project_Controller__c'] or SFAccount['VCLS_Alt_Name__c']:
             result += [odoo.env.ref('vcls-contact.category_account').id]
         if SFtype:
             if (not SFAccount['Is_supplier__c'] or not SFAccount['Supplier__c']) and 'supplier' in SFtype.lower():
@@ -147,7 +128,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         result = {
             'model': 'res.partner',
             'message_type': 'comment',
-            'body': '<p>Updated.</p>'
+            'body': '<p>Salesforce Synchronization</p>'
         }
 
         return result
