@@ -116,6 +116,8 @@ class ETLMap(models.Model):
         to_clean = self.search([('odooModelName','=',False)])
         #we also clean the ones to create in externals because we don't manage anymore this usecase
         to_clean |= self.search([('externalId','=',False)])
+        #we also clean the keys not created yet, in order to cover the change in source filtering
+        to_clean |= self.search([('odooId','=',False)])
         for key in to_clean:
             key.unlink()
         

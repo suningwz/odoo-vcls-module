@@ -3,15 +3,26 @@
         <record id="etl_sf_account_query" model="ir.config_parameter">
             <field name="key">etl_sf_account_query</field>
             <field name="value">
-                SELECT Id, Name, Supplier_Category__c,
-                Supplier_Status__c, Account_Level__c, LastModifiedDate,
-                BillingCountry, BillingState, BillingAddress, BillingStreet,
-                Phone, Fax, Area_of_expertise__c, Sharepoint_Folder__c, Sharepoint_ID__c,
-                Supplier_Description__c, Key_Information__c, Project_Assistant__c,
-                Supplier_Selection_Form_completed__c, Website,
-                Create_Sharepoint_Folder__c, OwnerId, Is_supplier__c, VCLS_Main_Contact__c,
-                Supplier__c, Type, Project_Controller__c, VCLS_Alt_Name__c,
-                Supplier_Project__c, Activity__c, Product_Type__c, Industry, KimbleOne__InvoicingCurrencyIsoCode__c, Invoice_Administrator__c 
+                SELECT 
+                Id, Name, VCLS_Alt_Name__c, ParentId, Supplier_Description__c, Key_Information__c,
+                Supplier_Status__c, Supplier_Category__c, Is_supplier__c, Supplier__c, To_be_Reviewed__c,
+                BillingAddress, ShippingAddress,
+                OwnerId, Project_Assistant__c, Project_Controller__c,  Invoice_Administrator__c, VCLS_Main_Contact__c,
+                Website,
+                Create_Sharepoint_Folder__c, Sharepoint_Folder__c, Sharepoint_ID__c,
+                Supplier_Project__c, Area_of_expertise__c,
+                LastModifiedDate,
+
+
+
+                Account_Level__c, 
+                 
+                Phone, Fax,   
+                 
+                Supplier_Selection_Form_completed__c, 
+                  
+                 Type,  
+                Activity__c, Product_Type__c, Industry, KimbleOne__InvoicingCurrencyIsoCode__c
                 FROM Account
             </field>
         </record>
