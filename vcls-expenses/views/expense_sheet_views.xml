@@ -78,6 +78,17 @@
             ]"/>
         </record>
 
+        <record id="view_hr_expense_sheet_search_pop_up" model="ir.ui.view">
+            <field name="name">hr_expense_sheet_search_popup</field>
+            <field name="model">hr.expense.sheet</field>
+            <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_filter"/>
+            <field name="arch" type="xml">
+                <filter name="state" position="replace">
+                    <filter string="Status" domain="[]" context="{'group_by': 'state'}" name="state"/>
+                </filter>
+            </field>
+        </record>
+
         <!-- ACTIONS
         <record id="action_pop_up_add_attachment" model="ir.actions.act_window">
           <field name="name">Add an attachment</field>
