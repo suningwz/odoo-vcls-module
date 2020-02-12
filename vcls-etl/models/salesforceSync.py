@@ -7,7 +7,6 @@ from simple_salesforce.exceptions import SalesforceMalformedRequest
 from tzlocal import get_localzone
 from datetime import datetime
 from datetime import timedelta
-from generalSync import GeneralSync
 import time
 import logging
 _logger = logging.getLogger(__name__)
@@ -89,7 +88,7 @@ class salesforceSync(models.Model):
                 #get SF records
                 query_id = "vcls-etl.etl_sf_{}_query".format(template.externalObjName.lower())
                 filter_id = "vcls-etl.etl_sf_{}_filter".format(template.externalObjName.lower())
-                sql = GeneralSync.build_sql(self.env.ref(query_id).value,[self.env.ref(filter_id).value,self.env.ref("vcls-etl.etl_sf_time_filter").value])
+                sql = self.build_sql(self.env.ref(query_id).value,[self.env.ref(filter_id).value,self.env.ref("vcls-etl.etl_sf_time_filter").value])
                 records = sfInstance.getConnection().query_all(sql)['records']
                 if records:
                     _logger.info("ETL |  {} returned {} records from SF".format(sql,len(records)))
