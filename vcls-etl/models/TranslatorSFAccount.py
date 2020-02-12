@@ -70,7 +70,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         
         if SF_Account['Communication_Percentage__c']:
             result['communication_rate'] = str(SF_Account['Communication_Percentage__c']/100)
-            _logger.info("COM RATE {}".format(SF_Account['Communication_Percentage__c']))
+            #_logger.info("COM RATE {}".format(SF_Account['Communication_Percentage__c']))
 
         ### OTHER
         if SF_Account['Supplier_Project__c']:
