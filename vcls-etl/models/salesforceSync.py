@@ -55,8 +55,90 @@ class salesforceSync(models.Model):
 
     def getExtModelName(self):
         return "This return the model name of external"
+    
+    @api.model
+    def sf_process_keys(self,batch_size=False,loop=True):
 
-    def run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
+        top_priority = max(self.env['etl.sync.keys'].search([('state','!=','upToDate')]).mapped('priority'))
+        #priorities = list(set())
+        #_logger.info("ETL |  {} ".format(priorities))
+
+        if top_priority:
+            #Init
+            self.env.user.context_data_integration = True
+
+            timestamp_end = datetime.now() + timedelta(minutes=1)
+            loop_cron = loop
+
+            sfInstance = self.getSFInstance()
+            
+            if batch_size:
+                to_process = self.env['etl.sync.keys'].search([('state','!=','upToDate'),('priority','=',top_priority)],limit=batch_size)
+            else:
+                to_process = self.env['etl.sync.keys'].search([('state','!=','upToDate'),('priority','=',top_priority)])
+            
+            if to_process:
+                template = to_process[0]
+                _logger.info("ETL | Found {} {} keys {} with priority {}".format(len(to_process),template.externalObjName,template.state,template.priority))
+                #we initiate a sync object
+                sync = self.env['etl.salesforce.{}'.format(template.externalObjName.lower())]
+                translator = sync.getSFTranslator(sfInstance)
+                counter = 0
+
+                #get SF records
+                query_id = "vcls-etl.etl_sf_{}_query".format(template.externalObjName.lower())
+                filter_id = "vcls-etl.etl_sf_{}_filter".format(template.externalObjName.lower())
+                sql = self.build_sql(self.env.ref(query_id).value,[self.env.ref(filter_id).value,self.env.ref("vcls-etl.etl_sf_time_filter").value])
+                records = sfInstance.getConnection().query_all(sql)['records']
+                if records:
+                    _logger.info("ETL |  {} returned {} records from SF".format(sql,len(records)))
+                    #we start the processing loop
+                    for sf_rec in records:
+                        if datetime.now()>timestamp_end:
+                            break
+                        else:
+                            #grab the related key if in to_process
+                            key = to_process.filtered(lambda p: p.externalId == sf_rec['Id'])
+                            if key:
+                                counter += 1
+                                attributes = translator.translateToOdoo(sf_rec, sync, sfInstance)
+
+                                #UPDATE Case
+                                if key[0].state == 'needUpdateOdoo':
+                                    #we catch the existing record
+                                    o_rec = self.env[key[0].odooModelName].search([('id','=',key[0].odooId)],limit=1)
+                                    if o_rec:
+                                        o_rec.with_context(tracking_disable=1).write(attributes)
+                                        key[0].write({'state':'upToDate','priority':0})
+                                        _logger.info("ETL | Record Updated {}/{} | {} | {}".format(counter,len(to_process),key[0].externalObjName,attributes['name']))
+                                    else:
+                                        _logger.info("ETL | Missed Update - Odoo record not found {}/{} | {} | {}".format(counter,len(to_process),key[0].odooModelName,key[0].odooId))
+                                
+                                #CREATE Case
+                                elif key[0].state == 'needCreateOdoo':
+                                    odoo_id = self.env[key[0].odooModelName].with_context(tracking_disable=1).create(attributes).id
+                                    key[0].write({'state':'upToDate','odooId':odoo_id,'priority':0})
+                                    #key[0].write({'state':'upToDate','priority':0})
+                                    _logger.info("ETL | Record Created {}/{} | {} | {}".format(counter,len(to_process),key[0].externalObjName,attributes['name']))
+                                else:
+                                    _logger.info("ETL | Non-managed key state {} | {}".format(key[0].id,key[0].state))
+                                
+            else:
+                loop_cron = False
+                _logger.info("ETL | Successful end of process.")
+
+            #Close
+            if loop_cron:
+                cron = self.env.ref('vcls-etl.cron_relaunch')
+                cron.write({
+                    'active': True,
+                    'nextcall': datetime.now() + timedelta(seconds=30),
+                    'numbercall': 1,
+                })
+                _logger.info("ETL | CRON renewed")
+            self.env.user.context_data_integration = False
+
+    """def run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords):
         # run the ETL
         sfInstance = self.getSFInstance()
         #_logger.info("ETL | SF Instance {}".format(sfInstance))
@@ -204,8 +286,8 @@ class salesforceSync(models.Model):
         sql = self.getSQLForRecord()
         sql += ' ORDER BY Name'
         Modifiedrecords = externalInstance.getConnection().query_all(sql)['records'] #All records
-        """for rec in Modifiedrecords:
-            _logger.info(" FOUND RECORD {} \n\n".format(rec))"""
+        ###for rec in Modifiedrecords:
+            ###_logger.info(" FOUND RECORD {} \n\n".format(rec))
         keys = self.getKeysToUpdateOdoo()
         if not nbMaxRecords:
             nbMaxRecords = len(keys)
@@ -294,4 +376,4 @@ class salesforceSync(models.Model):
                             print('Error : '+ item.name)
                             print(error.url)
                             print(error.content)
-                            _logger.error(error.content)
+                            _logger.error(error.content)"""
