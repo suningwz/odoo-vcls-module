@@ -1,4 +1,6 @@
 from . import TranslatorSFGeneral
+import logging
+_logger = logging.getLogger(__name__)
 
 class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
     def __init__(self,SF):
@@ -8,15 +10,30 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
     def translateToOdoo(SF_Contact, odoo, SF):
         mapOdoo = odoo.env['map.odoo']
         result = {}
+        _logger.info("ETL Contact | {}".format(SF_Contact))
+        ### DEFAULT VALUES
+        result['is_company'] = False
+        result['company_type'] = 'person'
+
+        ### IDENTIFICATION
+
+
+        ### ADDRESS
+        if SF_Contact['MailingAddress']:
+            result['city'] = SF_Contact['MailingAddress']['city']
+            result['zip'] = SF_Contact['MailingAddress']['postalCode']
+            result['street'] = SF_Contact['MailingAddress']['street']
+            if SF_Contact['MailingAddress']['country']:
+                result['country_id'] = mapOdoo.convertRef(SF_Contact['MailingAddress']['country'],odoo,'res.country',False)
+            if SF_Contact['MailingAddress']['state']:
+                result['state_id'] = mapOdoo.convertRef(SF_Contact['MailingAddress']['state'],odoo,'res.country.state',False)
+
         # Modify the name with -test
         result['name'] = SF_Contact['Name'] #+ '-test'
         result['stage'] = TranslatorSFContact.convertStatus(SF_Contact)
         # Ignore  Contact_Level__c
         # result['state_id'] = reference  BillingState
-        if SF_Contact['MailingAddress']:
-            result['city'] = SF_Contact['MailingAddress']['city']
-            result['zip'] = SF_Contact['MailingAddress']['postalCode']
-            result['street'] = SF_Contact['MailingAddress']['street']
+        
         
         result['linkedin'] = SF_Contact['LinkedIn_Profile__c']
         result['phone'] = SF_Contact['Phone']
@@ -30,9 +47,9 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         # Ignore Supplier_Selection_Form_completed__c
         result['website'] = SF_Contact['AccountWebsite__c']
         result['parent_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Contact['AccountId'],"res.partner","Account",odoo)
-        result['company_type'] = 'person'
+        
         #documented to trigger proper default image loaded
-        result['is_company'] = False
+        
         
         if SF_Contact['MailingCountry']:
             result['country_id'] = mapOdoo.convertRef(SF_Contact['MailingCountry'],odoo,'res.country',False)
