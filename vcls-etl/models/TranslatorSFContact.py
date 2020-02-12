@@ -58,6 +58,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         ### ADMIN
         result['stage'] = TranslatorSFContact.convertStatus(SF_Contact)
         result['message_ids'] = [(0, 0, TranslatorSFContact.generateLog(SF_Contact))]
+        result['log_info'] = "{} {} {}".format(SF_Contact['FirstName'],SF_Contact['MiddleName'],SF_Contact['LastName'])
 
         ### MARKETING
         result['opted_in'] = SF_Contact['Opted_In__c']

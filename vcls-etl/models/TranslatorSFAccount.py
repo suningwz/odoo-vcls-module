@@ -80,6 +80,8 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
 
         result['category_id'] =  [(6, 0, TranslatorSFAccount.convertCategory(SF_Account,odoo))]
         result['message_ids'] = [(0, 0, TranslatorSFAccount.generateLog(SF_Account))]
+
+        result['log_info'] = SF_Account['Name']
         
         ### SEGMENTATION
         #if SFAccount['Is_supplier__c'] or SFAccount['Supplier__c']:
