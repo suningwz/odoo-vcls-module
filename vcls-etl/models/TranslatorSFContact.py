@@ -30,7 +30,12 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
 
         result['function'] = SF_Contact['Title']
         result['description'] = 'Contact description : \n' + str(SF_Contact['Description']) + '\n'
-        result['category_id'] =  [(6, 0, TranslatorSFContact.convertCategory(SF_Contact, odoo))]
+        # Parent company info
+        company =TranslatorSFContact.get_parent(SF_Contact, odoo)
+        if company:
+            result['category_id'] =  [(6, 0, company.category_id.ids)]
+            result['customer'] = company.customer
+            result['supplier'] = company.supplier
         
         ### RELATIONS
         result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contact['OwnerId'],odoo, SF)
@@ -81,14 +86,14 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
             return 2
     
     @staticmethod
-    def convertCategory(SF, odoo):
+    def get_parent(SF, odoo):
         #we catch the category of the parent company
         if SF['AccountId']:
             #get the key
             key = odoo.env['etl.sync.keys'].search([('externalId','=',SF['AccountId'])],limit=1)
             if key:
                 parent = odoo.env['res.partner'].browse(int(key.odooId))
-                return parent.category_id.ids
+                return parent
             else:
                 return False
         else:
