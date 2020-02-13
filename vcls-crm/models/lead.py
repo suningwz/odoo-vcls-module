@@ -324,18 +324,17 @@ class Leads(models.Model):
     def create(self, vals):
        
         if vals.get('type', '') == 'lead':
-            if vals.get('contact_name', False) and vals.get('contact_lastname', False):
-                if vals.get('contact_middlename', False):
-                    vals['name'] = vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
-                else:
-                    vals['name'] = vals['contact_name'] + " " + vals['contact_lastname']
+            temp = self.build_lead_name(vals)
+            if temp:
+                vals['name'] = temp
         
         lead = super(Leads, self).create(vals)
         # VCLS MODS
         if lead.type == 'lead':
             lead.message_ids[0].subtype_id = self.env.ref('vcls-crm.lead_creation')
         elif lead.type == 'opportunity' and lead.partner_id:
-            lead.write({'type':'opportunity'})
+            vals.update({'type':'opportunity'})
+            lead.write(vals)
            
         # END OF MODS
         return lead
@@ -344,13 +343,17 @@ class Leads(models.Model):
     def write(self, vals):
         for lead in self:
             lead_vals = {**vals} #we make a copy of the vals to avoid iterative updates
+
+            #Lead naming convention
             if (lead_vals.get('type',False) == 'lead' or lead.type == 'lead'):
-                if lead_vals.get('contact_name', False) and lead_vals.get('contact_lastname', False) and lead_vals.get('contact_middlename', False):
-                        lead_vals['name'] = lead_vals['contact_name'] + " " + lead_vals['contact_middlename'] + " " + lead_vals['contact_lastname']
-                elif lead_vals.get('contact_name', False) and lead_vals.get('contact_lastname', False):
-                        lead_vals['name'] = lead_vals['contact_name'] + " " + lead_vals['contact_lastname']
+                temp = self.build_lead_name(lead_vals)
+                if temp:
+                    lead_vals['name'] = temp
 
             #we manage the reference of the opportunity, if we change the type or update an opportunity not having a ref defined
+            if lead_vals.get('internal_ref',False):
+                lead_vals['internal_ref'] = lead.force_reference(lead_vals) #we force the index
+
             #_logger.info("INTERNAL REF {}".format(vals.get('internal_ref',self.internal_ref)))
             if (lead_vals.get('type',False) == 'opportunity' or lead.type == 'opportunity') and not lead_vals.get('internal_ref',lead.internal_ref):
                 client = self.env['res.partner'].browse(lead_vals.get('partner_id',lead.partner_id.id)) #if a new client defined or was already existing
@@ -377,6 +380,17 @@ class Leads(models.Model):
     ###################
     # COMPUTE METHODS #
     ###################
+
+    @api.model
+    def build_lead_name(self,vals):
+        if vals.get('contact_name', False) and vals.get('contact_lastname', False):
+                if vals.get('contact_middlename', False):
+                    return vals['contact_name'] + " " + vals['contact_middlename'] + " " + vals['contact_lastname']
+                else:
+                    return vals['contact_name'] + " " + vals['contact_lastname']
+        else:
+            return False
+
 
     @api.onchange('industry_id')
     def _onchange_industry_id(self):
@@ -463,6 +477,36 @@ class Leads(models.Model):
     def _change_am(self):
         for lead in self:
             lead.user_id = lead.guess_am()
+    
+    @api.one
+    def force_reference(self,vals):
+        ref = vals['internal_ref']
+        client_id = vals.get('partner_id',self.partner_id.id)
+
+        if client_id:
+            client = self.env['res.partner'].browse(client_id)
+            items = ref.split('-')
+            if len(items)==2:
+                index = int(items[1])
+                if (items[0].lower() == client.altname.lower()) and index:
+                    if index > client.core_process_index:
+                        client.write({
+                            'altname':items[0].upper(),
+                            'core_process_index':index,
+                        })
+                    ref = "{}-{:03}".format(items[0].upper(),index)
+                    _logger.info("OPP REF FORCED | {}".format(ref))
+                    return ref
+
+                else:
+                    _logger.info("Opp ref format error | {}".format(ref))
+                    return False 
+            else:
+                _logger.info("Split Error opp ref | {}".format(ref))
+                return False
+        else:
+            _logger.info("No Client found to force opp ref {}".format(ref))
+            return False
     
     """@api.depends('partner_id','type')
     def _compute_internal_ref(self):

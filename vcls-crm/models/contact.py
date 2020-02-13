@@ -76,7 +76,7 @@ class ContactExt(models.Model):
             raise ValidationError("Please document an ALTNAME in the {} client sheet to automate refence calculation.".format(company.name))
         
         else:
-            reference = "{}-{:03}".format(company.altname, company.core_process_index+1)
+            reference = "{}-{:03}".format(company.altname.upper(), company.core_process_index+1)
             company.core_process_index += 1
             return reference
 
