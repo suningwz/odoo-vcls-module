@@ -14,6 +14,8 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         mapOdoo = odoo.env['map.odoo']
         result = {}
 
+        _logger.info("{}".format(SF_Opportunity))
+
         ### DEFAULT VALUES
         result['type'] = 'opportunity'
         
