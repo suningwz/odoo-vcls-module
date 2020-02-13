@@ -31,7 +31,7 @@ class Leads(models.Model):
                             index = raw_name.lower().split(client.altname.lower())[1][1:4]
 
                             try:
-                                new_ref = "{}-{:03}".format(client.altname.upper(), int(index)),
+                                new_ref = "{}-{:03}".format(client.altname.upper(), int(index))
                                 lead_vals.update({
                                     'internal_ref': new_ref,
                                     'name':raw_name.split(index)[1].lstrip(),
