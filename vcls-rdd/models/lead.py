@@ -54,6 +54,7 @@ class Leads(models.Model):
                                 
 
                 #_logger.info("OPP MIGRATION: New vals {}".format(lead_vals))
+                lead._onchange_currency()
                 if not super(Leads, lead).write(lead_vals):
                     return False
             return True
