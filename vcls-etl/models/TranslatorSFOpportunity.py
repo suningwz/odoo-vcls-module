@@ -20,7 +20,7 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         result['type'] = 'opportunity'
         
         ### IDENTIFICATION
-        result['name'] = SF_Opportunity['Name'] + ' #debug3'
+        result['name'] = SF_Opportunity['Name']
         if SF_Opportunity['StageName']:
             result = TranslatorSFOpportunity.convertStageName(SF_Opportunity['StageName'],odoo,mapOdoo,result)
 

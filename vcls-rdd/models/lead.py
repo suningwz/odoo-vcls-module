@@ -32,10 +32,11 @@ class Leads(models.Model):
 
                             try:
                                 new_ref = "{}-{:03}".format(client.altname.upper(), int(index))
+                                new_name = raw_name.split(index)[1].lstrip()
                                 lead_vals.update({
                                     'internal_ref': new_ref,
                                     #'name':raw_name.split(index)[1].lstrip(),
-                                    'name':"{} | {}".format(new_ref,raw_name.split(index)[1].lstrip()),
+                                    'name':"{} | {}".format(new_ref,new_name) if new_name else new_ref,
                                     })
                                 _logger.info("OPP MIGRATION: found {} in {} with index {} new ref {}".format(client.altname,raw_name,index,new_ref))
 
