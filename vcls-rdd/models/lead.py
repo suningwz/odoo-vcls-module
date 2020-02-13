@@ -45,11 +45,12 @@ class Leads(models.Model):
                                         'altname': client.altname.upper(),
                                         })
                             except:
+                                _logger.info("OPP MIGRATION: Bad format for opp {}".format(lead_vals['name']))
                                 lead_vals.update({
                                     'internal_ref': False,
                                     'name':"({}) {}".format(index,raw_name.split(index)[1].lstrip()),
                                     })
-                                _logger.info("OPP MIGRATION: Bad format for opp {}".format(lead_vals['name']))
+                                
 
                 #_logger.info("OPP MIGRATION: New vals {}".format(lead_vals))
                 if not super(Leads, lead).write(lead_vals):
