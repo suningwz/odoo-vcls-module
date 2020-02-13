@@ -341,9 +341,10 @@ class Leads(models.Model):
     
     @api.multi
     def write(self, vals):
+        _logger.info("OPP VALS {} ".format(vals))
         for lead in self:
             lead_vals = {**vals} #we make a copy of the vals to avoid iterative updates
-
+            _logger.info("OPP LEAD VALS {} ".format(lead_vals))
             #Lead naming convention
             if (lead_vals.get('type',False) == 'lead' or lead.type == 'lead'):
                 temp = self.build_lead_name(lead_vals)
@@ -352,9 +353,7 @@ class Leads(models.Model):
 
             #we manage the reference of the opportunity, if we change the type or update an opportunity not having a ref defined
             if lead_vals.get('internal_ref',False):
-                new_ref = lead.force_reference(lead_vals) #we force the index
-                lead_vals['internal_ref'] = new_ref
-                _logger.info("OPP FORCE REF {} vs. {}".format(new_ref,lead_vals.get('internal_ref',False)))
+                lead_vals['internal_ref'] = lead.force_reference(lead_vals) #we force the index
 
             #_logger.info("INTERNAL REF {}".format(vals.get('internal_ref',self.internal_ref)))
             if (lead_vals.get('type',False) == 'opportunity' or lead.type == 'opportunity') and not lead_vals.get('internal_ref',lead.internal_ref):
