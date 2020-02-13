@@ -19,7 +19,8 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         
         ### IDENTIFICATION
         result['name'] = SF_Account['Name']
-        result['altname'] = SF_Account['VCLS_Alt_Name__c'].upper()
+        if SF_Account['VCLS_Alt_Name__c']:
+            result['altname'] = SF_Account['VCLS_Alt_Name__c'].upper()
         result['company_group_id'] = TranslatorSFGeneral.TranslatorSFGeneral.extid_to_odooid(SF_Account['ParentId'],odoo)
         result['stage'] = TranslatorSFAccount.convertStatus(SF_Account)
         result['description'] = ''
