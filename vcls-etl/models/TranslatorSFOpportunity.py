@@ -20,7 +20,7 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         result['type'] = 'opportunity'
         
         ### IDENTIFICATION
-        result['name'] = SF_Opportunity['Name'] + ' #debug'
+        result['name'] = SF_Opportunity['Name'] + ' #debug2'
         if SF_Opportunity['StageName']:
             result = TranslatorSFOpportunity.convertStageName(SF_Opportunity['StageName'],odoo,mapOdoo,result)
 
@@ -41,7 +41,7 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         # we manage the case of non, exisitng account > will be created later
         if not result['partner_id']:
             return False
-            
+
         result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertSfIdToOdooId(SF_Opportunity['OwnerId'],odoo,SF)
         if SF_Opportunity['Technical_Advisor__c']:
             user_id = TranslatorSFGeneral.TranslatorSFGeneral.convertSfIdToOdooId(SF_Opportunity['Technical_Advisor__c'],odoo,SF)
@@ -60,7 +60,7 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         result['date_closed'] = SF_Opportunity['CloseDate']
         
         ### OTHER
-        result.update(odoo.env['crm.lead']._onchange_partner_id_values(int(result['partner_id']) if result['partner_id'] else False)) 
+        #result.update(odoo.env['crm.lead']._onchange_partner_id_values(int(result['partner_id']) if result['partner_id'] else False)) 
         result['message_ids'] = [(0, 0, TranslatorSFOpportunity.generateLog(SF_Opportunity))]
         result['log_info'] = SF_Opportunity['Name']
 

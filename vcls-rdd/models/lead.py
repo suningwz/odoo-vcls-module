@@ -31,9 +31,11 @@ class Leads(models.Model):
                             index = raw_name.lower().split(client.altname.lower())[1][1:4]
 
                             try:
+                                new_ref = "{}-{:03}".format(client.altname.upper(), int(index)),
                                 lead_vals.update({
-                                    'internal_ref':"{}-{:03}".format(client.altname.upper(), int(index)),
+                                    'internal_ref': new_ref,
                                     'name':raw_name.split(index)[1].lstrip(),
+                                    #'name':"{} | {}".format(new_ref,raw_name.split(index)[1].lstrip()),
                                     })
                                 _logger.info("OPP MIGRATION: found {} in {} with index {}".format(client.altname,raw_name,index))
 
@@ -49,7 +51,8 @@ class Leads(models.Model):
                                     })
                                 _logger.info("OPP MIGRATION: Bad format for opp {}".format(lead_vals['name']))
 
-                if not super(Leads, self).write(lead_vals):
+                _logger.info("OPP MIGRATION: New vals {}".format(lead_vals))
+                if not super(Leads, lead).write(lead_vals):
                     return False
             return True
         
