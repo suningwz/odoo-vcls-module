@@ -15,9 +15,51 @@ class Leads(models.Model):
 
     def write(self, vals):
         """
-        In the context of a migration, we don't request a new internal_ref but we set it based on the name of the opportunity.
+        In the context of a migration, we don't request a new internal_ref but we try to extract in from the name of the opportunity.
         """
-        if (vals.get('type',False) == 'opportunity' or self.type == 'opportunity') and self.env.user.context_data_integration:
+        if self.env.user.context_data_integration:
+            for lead in self:
+                lead_vals = {**vals} #we make a copy of the vals to avoid iterative updates
+
+                if lead_vals.get('type',lead.type) == 'opportunity' and lead_vals.get('name',False): #if opportunity we try to rename
+                    client = self.env['res.partner'].browse(lead_vals.get('partner_id',self.partner_id.id))
+                    if not client.altname:
+                        raise ValidationError("Please document an ALTNAME in the {} client sheet to automate refence calculation.".format(client.name))
+                    else:
+                        raw_name = lead_vals['name']
+                        if client.altname.lower() in raw_name.lower(): 
+                            index = raw_name.lower().split(client.altname.lower())[1][1:4]
+
+                            try:
+                                lead_vals.update({
+                                    'internal_ref':"{}-{:03}".format(client.altname.upper(), int(index)),
+                                    'name':raw_name.split(index)[1].lstrip(),
+                                    })
+                                _logger.info("OPP MIGRATION: found {} in {} with index {}".format(client.altname,raw_name,index))
+
+                                if int(index) > client.core_process_index: #we force the next index
+                                    client.write({
+                                        'core_process_index': int(index),
+                                        'altname': client.altname.upper(),
+                                        })
+                            except:
+                                lead_vals.update({
+                                    'internal_ref': False,
+                                    'name':"({}) {}".format(index,raw_name.split(index)[1].lstrip()),
+                                    })
+                                _logger.info("OPP MIGRATION: Bad format for opp {}".format(lead_vals['name']))
+
+                if not super(Leads, self).write(lead_vals):
+                    return False
+            return True
+        
+
+        else:
+            return super(Leads, self).write(vals)
+
+
+        """ and 
+
             #we get the related client
             client = self.env['res.partner'].browse(vals.get('partner_id',self.partner_id.id))
             raw_name = vals.get('name',False)
@@ -41,7 +83,4 @@ class Leads(models.Model):
                         vals['internal_ref'] = "{}-{}".format(client.altname.upper(), index)
 
                 except:
-                    _logger.info("OPP MIGRATION: Bad format for opp {}".format(vals['name']))
-
-            
-        return super(Leads, self).write(vals)
+                    _logger.info("OPP MIGRATION: Bad format for opp {}".format(vals['name']))"""
