@@ -257,7 +257,7 @@ class ETLMap(models.Model):
         self.env.ref('vcls-etl.ETL_LastRun').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
         self.env.user.context_data_integration = False
     
-    def build_sql(self,core,filters=None):
+    def build_sql(self,core,filters=None,post=None):
         sql = core
         if filters:
             for fil in filters:
@@ -266,6 +266,8 @@ class ETLMap(models.Model):
                         sql += " WHERE " + fil
                     else:
                         sql += " AND " + fil
+        if post:
+            sql += ' ' + post
 
         return sql
 
