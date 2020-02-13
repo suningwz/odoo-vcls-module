@@ -352,7 +352,9 @@ class Leads(models.Model):
 
             #we manage the reference of the opportunity, if we change the type or update an opportunity not having a ref defined
             if lead_vals.get('internal_ref',False):
-                lead_vals['internal_ref'] = lead.force_reference(lead_vals) #we force the index
+                new_ref = lead.force_reference(lead_vals) #we force the index
+                lead_vals['internal_ref'] = new_ref
+                _logger.inf("OPP FORCE REF {} vs. {}".format(new_ref,lead_vals.get('internal_ref',False)))
 
             #_logger.info("INTERNAL REF {}".format(vals.get('internal_ref',self.internal_ref)))
             if (lead_vals.get('type',False) == 'opportunity' or lead.type == 'opportunity') and not lead_vals.get('internal_ref',lead.internal_ref):
