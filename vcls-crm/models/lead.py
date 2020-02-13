@@ -362,7 +362,7 @@ class Leads(models.Model):
                 else:
                     lead_vals['internal_ref']=False
             
-            lead_vals['name']=self.build_opp_name(lead_vals.get('internal_ref',lead.internal_ref),lead_vals.get('name',lead.name))
+            lead_vals['name']=lead.build_opp_name(lead_vals.get('internal_ref',lead.internal_ref),lead_vals.get('name',lead.name))
 
             #we manage the case of manual_probability, we re-use the manually set value, except if new one is 0 or 100
             if lead_vals.get('stage_id') and lead.manual_probability:
@@ -372,7 +372,7 @@ class Leads(models.Model):
 
             #_logger.info("{} Manual={}".format(lead_vals,lead.manual_probability))
 
-            if not super(Leads, self).write(lead_vals):
+            if not super(Leads, lead).write(lead_vals):
                 return False
 
         return True
@@ -565,7 +565,7 @@ class Leads(models.Model):
                 return name
 
         except:
-            _logger.info("Unable to extract ref from opp name {}".format(name))
+            #_logger.info("Unable to extract ref from opp name {}".format(name))
             return name
 
 
