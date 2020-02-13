@@ -35,7 +35,9 @@ class ETLMap(models.Model):
         ('needUpdateOdoo', 'Need Update In Odoo'),
         ('needUpdateExternal', 'Need Update In External'),
         ('needCreateOdoo', 'Need To Be Created In Odoo'),
-        ('needCreateExternal', 'Need To Be Created In External')],
+        ('needCreateExternal', 'Need To Be Created In External'),
+        #('corruptedSource','Missing Key Source Info')
+        ],
         string='State',
         default='upToDate' # For existing keys
     )

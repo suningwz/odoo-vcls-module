@@ -26,6 +26,10 @@
                 )
             </field>
         </record>
+        <record id="etl_sf_account_post" model="ir.config_parameter">
+            <field name="key">etl_sf_account_post</field>
+            <field name="value"></field> 
+        </record>
 
         <record id="etl_sf_contact_query" model="ir.config_parameter">
             <field name="key">etl_sf_contact_query</field>
@@ -45,26 +49,42 @@
                 Automated_Migration__c = True
             </field>
         </record>
+        <record id="etl_sf_contact_post" model="ir.config_parameter">
+            <field name="key">etl_sf_contact_post</field>
+            <field name="value"></field> 
+        </record>
         
 
         <record id="etl_sf_opportunity_query" model="ir.config_parameter">
             <field name="key">etl_sf_opportunity_query</field>
             <field name="value">
-                SELECT Id, Name, AccountId, StageName, Therapeutic_Area__c, 
-                OwnerId, LastModifiedDate, ExpectedRevenue, Reasons_Lost_Comments__c, Probability, CloseDate, Deadline_for_Sending_Proposal__c, LeadSource, 
-                Description, Client_Product_Description__c, CurrencyIsoCode, Product_Category__c, Amount, Geographic_Area__c, VCLS_Activities__c,Project_start_date__c
+                SELECT 
+                Id, Name, StageName, 
+                Description, Client_Product_Description__c, Reasons_Lost_Comments__c, Significant_Opportunity_Notes__c, Probability,
+                AccountId, OwnerId, Technical_Advisor__c, 
+                CurrencyIsoCode, Amount,
+                Project_start_date__c, Deadline_for_Sending_Proposal__c, CloseDate
                 FROM Opportunity
             </field>
         </record>
         <record id="etl_sf_opportunity_filter" model="ir.config_parameter">
             <field name="key">etl_sf_opportunity_filter</field>
-            <field name="value"></field> 
+            <field name="value">
+                Automated_Migration__c = True
+            </field> 
+        </record>
+        <record id="etl_sf_opportunity_post" model="ir.config_parameter">
+            <field name="key">etl_sf_opportunity_post</field>
+            <field name="value">
+                ORDER BY CreatedDate DESC
+            </field> 
         </record>
 
         <record id="etl_sf_lead_query" model="ir.config_parameter">
             <field name="key">etl_sf_lead_query</field>
             <field name="value">
-                SELECT Id, Name, OwnerId, Activity__c, Address, City, Company, Content_Name__c, Country,PostalCode, Street, 
+                SELECT 
+                Id, Name, OwnerId, Activity__c, Address, City, Company, Content_Name__c, Country,PostalCode, Street, 
                 CurrencyIsoCode, Email,First_VCLS_Contact_Point__c, 
                 External_Referee__c, Fax, Functional_Focus__c, Inactive_Lead__c, Industry, Contact_us_Message__c, Initial_Product_Interest__c, 
                 LastModifiedDate, Title, Seniority__c, Phone, Website, Description, LeadSource 
@@ -74,6 +94,10 @@
         <record id="etl_sf_lead_filter" model="ir.config_parameter">
             <field name="key">etl_sf_lead_filter</field>
             <field name="value"></field>   
+        </record>
+        <record id="etl_sf_lead_post" model="ir.config_parameter">
+            <field name="key">etl_sf_lead_post</field>
+            <field name="value"></field> 
         </record>
 
         <record id="etl_sf_contract_query" model="ir.config_parameter">
@@ -92,6 +116,11 @@
             <field name="key">etl_sf_contract_filter</field>
             <field name="value"></field>   
         </record>
+        <record id="etl_sf_contract_post" model="ir.config_parameter">
+            <field name="key">etl_sf_contract_post</field>
+            <field name="value"></field> 
+        </record>
+
         <record id="etl_sf_time_filter" model="ir.config_parameter">
             <field name="key">etl_sf_time_filter</field>
             <field name="value"></field> 
