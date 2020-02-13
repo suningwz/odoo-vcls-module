@@ -367,7 +367,7 @@ class Leads(models.Model):
                 if stage.probability not in [0.0,100.00]:
                     lead_vals['probability']=lead.probability
 
-            _logger.info("{} Manual={}".format(lead_vals,lead.manual_probability))
+            #_logger.info("{} Manual={}".format(lead_vals,lead.manual_probability))
 
             if not super(Leads, self).write(lead_vals):
                 return False
