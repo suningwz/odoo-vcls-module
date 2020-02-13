@@ -37,7 +37,7 @@ class Leads(models.Model):
                                     'name':raw_name.split(index)[1].lstrip(),
                                     #'name':"{} | {}".format(new_ref,raw_name.split(index)[1].lstrip()),
                                     })
-                                _logger.info("OPP MIGRATION: found {} in {} with index {}".format(client.altname,raw_name,index))
+                                _logger.info("OPP MIGRATION: found {} in {} with index {} new ref {}".format(client.altname,raw_name,index,new_ref))
 
                                 if int(index) > client.core_process_index: #we force the next index
                                     client.write({
