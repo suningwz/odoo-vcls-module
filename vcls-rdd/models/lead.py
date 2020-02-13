@@ -21,6 +21,7 @@ class Leads(models.Model):
             #we get the related client
             client = self.env['res.partner'].browse(vals.get('partner_id',self.partner_id.id))
             raw_name = vals.get('name',False)
+            _logger.info("OPP MIGRATION WRITE {}:".format(vals))
 
             #if no ALTNAME, then we raise an error, else, we try to find in in the name of the opp
             if not client.altname:

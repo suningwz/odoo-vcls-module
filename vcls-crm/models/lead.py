@@ -605,7 +605,7 @@ class Leads(models.Model):
                 result.update({
                     "contact_middlename": partner.lastname2,
                 })
-        _logger.info("Partner Id Values END {}".format(result))
+        _logger.info("Partner Id Values END {} - {}".format(self.internal_ref, self.name))
         return result
     
     @api.onchange('contact_name', 'contact_lastname', 'contact_middlename')
