@@ -48,7 +48,7 @@ class Leads(models.Model):
                                 _logger.info("OPP MIGRATION: Bad format for opp {}".format(lead_vals['name']))
                                 lead_vals.update({
                                     'internal_ref': False,
-                                    'name':"({}) {}".format(index,raw_name.split(index)[1].lstrip()),
+                                    'name':"({}) {}".format(index,raw_name.lower().split(index.lower())[1].lstrip()),
                                     })
                                 
 
