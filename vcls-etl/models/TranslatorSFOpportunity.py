@@ -14,7 +14,7 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         mapOdoo = odoo.env['map.odoo']
         result = {}
 
-        _logger.info("{}".format(SF_Opportunity))
+        #_logger.info("{}".format(SF_Opportunity))
 
         ### DEFAULT VALUES
         result['type'] = 'opportunity'
@@ -38,6 +38,10 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         
         ### RELATIONS
         result['partner_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Opportunity['AccountId'],"res.partner","Account",odoo)
+        # we manage the case of non, exisitng account > will be created later
+        if not result['partner_id']:
+            return False
+            
         result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertSfIdToOdooId(SF_Opportunity['OwnerId'],odoo,SF)
         if SF_Opportunity['Technical_Advisor__c']:
             user_id = TranslatorSFGeneral.TranslatorSFGeneral.convertSfIdToOdooId(SF_Opportunity['Technical_Advisor__c'],odoo,SF)

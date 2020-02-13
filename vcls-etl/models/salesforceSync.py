@@ -73,9 +73,9 @@ class salesforceSync(models.Model):
             sfInstance = self.getSFInstance()
             
             if batch_size:
-                to_process = self.env['etl.sync.keys'].search([('state','!=','upToDate'),('priority','=',top_priority)],limit=batch_size)
+                to_process = self.env['etl.sync.keys'].search([('state','not in',['upToDate','postponed']),('priority','=',top_priority)],limit=batch_size)
             else:
-                to_process = self.env['etl.sync.keys'].search([('state','!=','upToDate'),('priority','=',top_priority)])
+                to_process = self.env['etl.sync.keys'].search([('state','not in',['upToDate','postponed']),('priority','=',top_priority)])
             
             if to_process:
                 template = to_process[0]
@@ -103,7 +103,10 @@ class salesforceSync(models.Model):
                             if key:
                                 counter += 1
                                 attributes = translator.translateToOdoo(sf_rec, sync, sfInstance)
-                                #_logger.info("ETL | ATTRIBUTES {}".format(attributes))
+                                if not attributes:
+                                    key[0].write({'state':'postponed'})
+                                    _logger.info("ETL | Missing Mandatory info to process key {} - {}".format(key[0].externalObjName,key[0].externalId))
+                                    continue
 
                                 #UPDATE Case
                                 if key[0].state == 'needUpdateOdoo':
