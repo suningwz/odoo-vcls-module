@@ -10,6 +10,15 @@ var _t = core._t;
 
 UserMenu.include({
 
+    start: function() {
+        var session = this.getSession();
+        var $el = this.$el;
+        return this._super.apply(this, arguments).then(function () {
+            if (!session.is_system){
+                $el.find('[data-menu="support"]').hide();
+            }
+        });
+    },
     _onMenuDocumentation: function () {
         return ajax.jsonRpc('/get/user/documentation', 'call')
         .then(function (data) {

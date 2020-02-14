@@ -19,6 +19,11 @@ class MarketingCampaign(models.Model):
         domain = [('task_type','=','marketing')]
     )
 
+    @api.onchange('marketing_task_id')
+    def _onchange_marketing_task_id(self):
+        if self.marketing_task_id:
+            self.marketing_project_id=self.marketing_task_id.project_id
+
 class MailingCampaign(models.Model):
 
     _inherit = 'mail.mass_mailing.campaign'
@@ -34,6 +39,11 @@ class MailingCampaign(models.Model):
         string = "Related Task",
         domain = [('task_type','=','marketing')]
     )
+
+    @api.onchange('marketing_task_id')
+    def _onchange_marketing_task_id(self):
+        if self.marketing_task_id:
+            self.marketing_project_id=self.marketing_task_id.project_id
 
    
 

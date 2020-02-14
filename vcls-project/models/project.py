@@ -69,6 +69,7 @@ class Project(models.Model):
     tasks_count = fields.Integer()
     timesheets_count = fields.Integer()
     lead_consultant = fields.Many2one('hr.employee', related='core_team_id.lead_consultant', string='Lead Consultant')
+    assistant_id = fields.Many2one('hr.employee', related='core_team_id.assistant_id', string='Project Assistant')
     lead_backup = fields.Many2one('hr.employee', related='core_team_id.lead_backup',
                                   string='Lead Consultant Backup')
     consultant_ids = fields.Many2many('hr.employee', 'rel_project_consultants', related='core_team_id.consultant_ids',

@@ -3,77 +3,101 @@
         <record id="etl_sf_account_query" model="ir.config_parameter">
             <field name="key">etl_sf_account_query</field>
             <field name="value">
-                SELECT Id, Name, Supplier_Category__c,
-                Supplier_Status__c, Account_Level__c, LastModifiedDate,
-                BillingCountry, BillingState, BillingAddress, BillingStreet,
-                Phone, Fax, Area_of_expertise__c, Sharepoint_Folder__c, Sharepoint_ID__c,
-                Supplier_Description__c, Key_Information__c, Project_Assistant__c,
-                Supplier_Selection_Form_completed__c, Website,
-                Create_Sharepoint_Folder__c, OwnerId, Is_supplier__c, VCLS_Main_Contact__c,
-                Supplier__c, Type, Project_Controller__c, VCLS_Alt_Name__c,
-                Supplier_Project__c, Activity__c, Product_Type__c, Industry, KimbleOne__InvoicingCurrencyIsoCode__c, Invoice_Administrator__c 
-                FROM Account as A
+                SELECT 
+                Id, Name, VCLS_Alt_Name__c, ParentId, Supplier_Description__c, Key_Information__c,
+                Supplier_Status__c, Supplier_Category__c, Is_supplier__c, Supplier__c, To_be_Reviewed__c,
+                BillingAddress, ShippingAddress,
+                OwnerId, Project_Assistant__c, Project_Controller__c,  Invoice_Administrator__c, VCLS_Main_Contact__c,
+                Website,  Phone, Fax, 
+                Create_Sharepoint_Folder__c, Sharepoint_Folder__c, ExternalID__c,
+                KimbleOne__InvoicingCurrencyIsoCode__c,CurrencyIsoCode,Communication_Percentage__c,
+                Supplier_Project__c, Area_of_expertise__c,
+                LastModifiedDate,  Type,  Activity__c, Industry
+                FROM Account
             </field>
         </record>
-
         <record id="etl_sf_account_filter" model="ir.config_parameter">
             <field name="key">etl_sf_account_filter</field>
-            <field name="value">
-                WHERE (((A.Supplier__c = True or A.Is_supplier__c = True) or (A.VCLS_Alt_Name__c != null))
-                    or A.Id IN (
-                        SELECT C.AccountId
-                        FROM Contact as C
-                        WHERE C.Opted_In__c = True
-                    ))
+            <field name="value"> 
+                Id IN (
+                    SELECT AccountId
+                        FROM Contact
+                            WHERE Automated_Migration__c = True
+                )
             </field>
+        </record>
+        <record id="etl_sf_account_post" model="ir.config_parameter">
+            <field name="key">etl_sf_account_post</field>
+            <field name="value"></field> 
         </record>
 
         <record id="etl_sf_contact_query" model="ir.config_parameter">
             <field name="key">etl_sf_contact_query</field>
             <field name="value">
-                SELECT Id, Name, AccountId, Phone, Fax,
-                OwnerId, LastModifiedDate, LinkedIn_Profile__c, 
-                Category__c, Supplier__c, Salutation, Email, 
-                Title, MobilePhone, MailingAddress, AccountWebsite__c, 
-                Description, MailingCountry, Inactive_Contact__c, CurrencyIsoCode, 
-                Opted_In__c, VCLS_Main_Contact__c, Unsubscribed_from_Marketing_Comms__c, 
-                VCLS_Initial_Contact__c 
+                SELECT 
+                Id, Salutation, FirstName, MiddleName, LastName,Title,Description,
+                OwnerId, AccountId,  VCLS_Main_Contact__c, 
+                MailingAddress,
+                LinkedIn_Profile__c, Phone, Fax, MobilePhone, Email, AccountWebsite__c, 
+                LastModifiedDate, Inactive_Contact__c, Opted_In__c, Unsubscribed_from_Marketing_Comms__c
+                FROM Contact
             </field>
         </record>
-
         <record id="etl_sf_contact_filter" model="ir.config_parameter">
             <field name="key">etl_sf_contact_filter</field>
             <field name="value">
-                FROM Contact
-                WHERE Automated_Migration__c = True
+                Automated_Migration__c = True
             </field>
         </record>
+        <record id="etl_sf_contact_post" model="ir.config_parameter">
+            <field name="key">etl_sf_contact_post</field>
+            <field name="value"></field> 
+        </record>
+        
 
         <record id="etl_sf_opportunity_query" model="ir.config_parameter">
             <field name="key">etl_sf_opportunity_query</field>
             <field name="value">
-                SELECT O.Id, O.Name, O.AccountId, O.StageName, O.Therapeutic_Area__c, 
-                O.OwnerId, O.LastModifiedDate, O.ExpectedRevenue, O.Reasons_Lost_Comments__c, O.Probability, O.CloseDate, O.Deadline_for_Sending_Proposal__c, O.LeadSource, 
-                O.Description, O.Client_Product_Description__c, O.CurrencyIsoCode, O.Product_Category__c, O.Amount, O.Geographic_Area__c, O.VCLS_Activities__c,Project_start_date__c 
-                FROM Opportunity as O 
-                WHERE O.AccountId In (
-                    SELECT A.Id 
-                    FROM Account as A 
-                    WHERE (A.Supplier__c = True Or A.Is_supplier__c = True) or (A.Project_Controller__c != Null And A.VCLS_Alt_Name__c != null)
-                ) 
+                SELECT 
+                Id, Name, StageName, 
+                Description, Client_Product_Description__c, Reasons_Lost_Comments__c, Significant_Opportunity_Notes__c, Probability,
+                AccountId, OwnerId, Technical_Advisor__c, 
+                CurrencyIsoCode, Amount,
+                Project_start_date__c, Deadline_for_Sending_Proposal__c, CloseDate
+                FROM Opportunity
             </field>
-
+        </record>
+        <record id="etl_sf_opportunity_filter" model="ir.config_parameter">
+            <field name="key">etl_sf_opportunity_filter</field>
+            <field name="value">
+                Automated_Migration__c = True
+            </field> 
+        </record>
+        <record id="etl_sf_opportunity_post" model="ir.config_parameter">
+            <field name="key">etl_sf_opportunity_post</field>
+            <field name="value">
+                ORDER BY CreatedDate DESC
+            </field> 
         </record>
 
         <record id="etl_sf_lead_query" model="ir.config_parameter">
             <field name="key">etl_sf_lead_query</field>
             <field name="value">
-                SELECT Id, Name, OwnerId, Activity__c, Address, City, Company, Content_Name__c, Country,PostalCode, Street, 
+                SELECT 
+                Id, Name, OwnerId, Activity__c, Address, City, Company, Content_Name__c, Country,PostalCode, Street, 
                 CurrencyIsoCode, Email,First_VCLS_Contact_Point__c, 
                 External_Referee__c, Fax, Functional_Focus__c, Inactive_Lead__c, Industry, Contact_us_Message__c, Initial_Product_Interest__c, 
                 LastModifiedDate, Title, Seniority__c, Phone, Website, Description, LeadSource 
                 FROM Lead
             </field>
+        </record>
+        <record id="etl_sf_lead_filter" model="ir.config_parameter">
+            <field name="key">etl_sf_lead_filter</field>
+            <field name="value"></field>   
+        </record>
+        <record id="etl_sf_lead_post" model="ir.config_parameter">
+            <field name="key">etl_sf_lead_post</field>
+            <field name="value"></field> 
         </record>
 
         <record id="etl_sf_contract_query" model="ir.config_parameter">
@@ -85,8 +109,21 @@
                 CustomerSignedId, CustomerSignedTitle, EndDate,Link_to_Parent_Contract__c, 
                 OwnerId, Parent_Contract_Name__c, Parent_Contract_Type__c, 
                 Replaces_Supersedes__c, Type_of_Contract__c, VCLS_Status__c 
-                FROM Contract 
+                FROM Contract
             </field>
+        </record>
+        <record id="etl_sf_contract_filter" model="ir.config_parameter">
+            <field name="key">etl_sf_contract_filter</field>
+            <field name="value"></field>   
+        </record>
+        <record id="etl_sf_contract_post" model="ir.config_parameter">
+            <field name="key">etl_sf_contract_post</field>
+            <field name="value"></field> 
+        </record>
+
+        <record id="etl_sf_time_filter" model="ir.config_parameter">
+            <field name="key">etl_sf_time_filter</field>
+            <field name="value"></field> 
         </record>
 
     </data>

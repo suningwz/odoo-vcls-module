@@ -20,14 +20,11 @@
             <field name="value">ETL</field>
         </record>
 
-
-
-    </data>
-
-    <data noupdate="0">
         <record id="ETL_LastRun" model="ir.config_parameter">
             <field name="key">sf.last_run</field>
-            <field name="value">2000-01-01 00:00:00.000000+00:0</field>
+            <field name="value">2000-01-01 00:00:00.000000+00</field>
         </record>
+
     </data>
+
 </odoo>
