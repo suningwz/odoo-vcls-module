@@ -74,6 +74,13 @@
                 <xpath expr="//field[1]" position="after">
                     <field name="employee_seniority_level_id"/>
                 </xpath>
+                <xpath expr="//field[@name='project_id']" position="attributes">
+                   <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='employee_id']" position="before">
+                    <field name="project_id" filter_domain="[('project_id', 'ilike', self)]" />
+                </xpath>
             </field>
         </record>
 

@@ -3,7 +3,7 @@
 from odoo import models, fields, api
 
 import datetime, pytz
-from datetime import datetime
+from datetime import datetime,timedelta
 
 from abc import ABC,abstractmethod
 
@@ -20,10 +20,10 @@ class KeyNotFoundError(Exception):
 
 class ETLMap(models.Model):
     _name = 'etl.sync.keys'
-    _description = 'Mapping table to link Odoo ID with external ID'
+    _description = 'Odoo ID with external ID'
 
-    odooId = fields.Char(readonly = True)
-    externalId = fields.Char(readonly = True)
+    odooId = fields.Char(readonly = True,index=True)
+    externalId = fields.Char(readonly = True,index=True)
     odooModelName = fields.Char(readonly = True)
     externalObjName = fields.Char(readonly = True)
     lastModifiedExternal = fields.Datetime(readonly = True)
@@ -35,7 +35,9 @@ class ETLMap(models.Model):
         ('needUpdateOdoo', 'Need Update In Odoo'),
         ('needUpdateExternal', 'Need Update In External'),
         ('needCreateOdoo', 'Need To Be Created In Odoo'),
-        ('needCreateExternal', 'Need To Be Created In External')],
+        ('needCreateExternal', 'Need To Be Created In External'),
+        ('postponed','Missing Key Info to Process'),
+        ],
         string='State',
         default='upToDate' # For existing keys
     )
@@ -55,21 +57,18 @@ class ETLMap(models.Model):
         _logger.info("ETL | UPDATE KEYS {}".format(params))
         rec_ext = params['sfInstance'].getConnection().query_all(params['sql'])['records']
         keys_exist = self.search([('externalObjName','=',params['externalObjName']),('odooModelName','=',params['odooModelName'])])
+        #we default the state of all keys
+        keys_exist.write({'state':'upToDate','priority':0})
         keys_exist_sfid = keys_exist.mapped('externalId')
         keys_create = keys_exist.filtered(lambda k: k.externalId and not k.odooId)
 
-        if params['is_full_update']:
-            keys_update = keys_exist.filtered(lambda k: k.externalId and k.odooId)
-            keys_to_test = self.env['etl.sync.keys']
-        else:
-            keys_update = self.env['etl.sync.keys']
-            #we fix those ones as ok by default
-            keys_to_test=keys_exist.filtered(lambda k: k.externalId and k.odooId)
-            keys_to_test.write({'state':'upToDate','priority':params['priority']})
+        keys_update = self.env['etl.sync.keys']
+        keys_to_test=keys_exist.filtered(lambda k: k.externalId and k.odooId)
 
         #We look for non exisitng keys
         for rec in rec_ext:
             if rec['Id'] not in keys_exist_sfid: #if the rec does not exists
+
                 vals = {
                     'externalObjName':params['externalObjName'],
                     'externalId': rec['Id'],
@@ -77,19 +76,30 @@ class ETLMap(models.Model):
                     'odooModelName': params['odooModelName'],
                     'state':'needCreateOdoo',
                 }
-                keys_create |= self.create(vals)
-                _logger.info("KEYS | New creation {}".format(vals))
 
-            elif not params['is_full_update']: #if we don't want a full update, we need to find exact ones to update based on records
+                if rec.get('Email',False) and params['externalObjName']=="Contact": #we need to check if a contact already exists with this email
+                    existing = self.env[params['odooModelName']].with_context(active_test=False).search([('email','=ilike',rec['Email']),('is_company','=',False)],limit=1)
+                    if existing:
+                        vals['odooId']=existing.id
+                        keys_update |= self.create(vals)
+                        _logger.info("KEYS | Contact duplicate found {}".format(rec['Email']))
+                    else:
+                        pass
+                else:        
+                    keys_create |= self.create(vals)
+                    _logger.info("KEYS | {} New Creation {}".format(params['externalObjName'],vals))
+
+            else: #we ensure not to try to update records we don't have in the rec
                 key = keys_to_test.filtered(lambda k: k.externalId==rec['Id'])
                 if key:
-                    keys_update |= key         
+                    keys_update |= key
+                    _logger.info("KEYS | {} To Update {}".format(params['externalObjName'],key.odooId))         
                         
     
         if rec_ext:
             _logger.info("QUERY |\n{}\nreturned {} {} records".format(params['sql'],len(rec_ext),params['externalObjName']))
         if keys_exist:
-            _logger.info("KEYS | Found {} existing keys".format(len(keys_exist)))
+            _logger.info("KEYS | Found {} existing keys of {}".format(len(keys_exist),params['externalObjName']))
 
         if keys_create:
             keys_create.write({'state':'needCreateOdoo','priority':params['priority']+1})
@@ -98,7 +108,8 @@ class ETLMap(models.Model):
             keys_update.write({'state':'needUpdateOdoo','priority':params['priority']})
             _logger.info("KEYS | {} Keys to update".format(len(keys_update)))   
 
-    def sf_update(self, is_full_update=True):
+    @api.model
+    def sf_update_keys(self,obj_dict,is_full_update=True):
         """
         We 1st process the keys and priorities, starting from contacts.
         But then the queue must be executed in revert order of priorities to ensure parent accounts to be created 1st, etc.
@@ -108,6 +119,10 @@ class ETLMap(models.Model):
         self.env.user.context_data_integration = True
         #Clean the keys table of corrupted entries
         to_clean = self.search([('odooModelName','=',False)])
+        #we also clean the ones to create in externals because we don't manage anymore this usecase
+        to_clean |= self.search([('externalId','=',False)])
+        #we also clean the keys not created yet, in order to cover the change in source filtering
+        to_clean |= self.search([('odooId','=',False)])
         for key in to_clean:
             key.unlink()
         
@@ -118,25 +133,159 @@ class ETLMap(models.Model):
         new_run = datetime.now(pytz.timezone("GMT"))
         if not is_full_update:
             last_run = self.env.ref('vcls-etl.ETL_LastRun').value
-            time_sql = " AND LastModifiedDate > {}".format(last_run)
+            formated_last_run = fields.Datetime.from_string(last_run).astimezone(pytz.timezone("GMT")).strftime("%Y-%m-%dT%H:%M:%S.00+0000")
+            time_sql = " LastModifiedDate > {}".format(formated_last_run)
         else:
             time_sql = ""
+
+        self.env.ref('vcls-etl.etl_sf_time_filter').value = time_sql
             
 
-        ### CONTACT KEYS PROCESSING
-        params = {
-            'sfInstance':sfInstance,
-            'priority':10,
-            'externalObjName':'Contact',
-            'sql':'SELECT Id, LastModifiedDate ' + self.env.ref('vcls-etl.etl_sf_contact_filter').value + time_sql,
-            'odooModelName':'res.partner',
-            'is_full_update':is_full_update,
-        }
-        self.update_keys(params)
+        ### CONTACT KEYS PROCESSING (we get emails to manage potential duplicates)
+        if obj_dict.get('do_contact',False):
+            sql = """
+                SELECT Id, LastModifiedDate, Email FROM Contact
+                """
+            params = {
+                'sfInstance':sfInstance,
+                'priority':100,
+                'externalObjName':'Contact',
+                'sql':self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_contact_filter').value,time_sql]),
+                'odooModelName':'res.partner',
+                'is_full_update':is_full_update,
+            }
+            self.update_keys(params)
+
+        ### ACCOUNT KEYS PROCESSING
+        if obj_dict.get('do_account',False):
+            # We do accounts with parents 1st, because of their lower priority 
+            sql = """
+                SELECT Id, LastModifiedDate FROM Account 
+                    """
+            params = {
+                'sfInstance':sfInstance,
+                'priority':200,
+                'externalObjName':'Account',
+                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_account_filter').value,time_sql,'ParentId != null']),
+                'odooModelName':'res.partner',
+                'is_full_update':is_full_update,
+            }
+            self.update_keys(params)
+
+            # then accounts without parents 
+            sql = """
+                SELECT Id, LastModifiedDate FROM Account 
+                """
+            params = {
+                'sfInstance':sfInstance,
+                'priority':300,
+                'externalObjName':'Account',
+                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_account_filter').value,time_sql,'ParentId = null']),
+                'odooModelName':'res.partner',
+                'is_full_update':is_full_update,
+            }
+            self.update_keys(params)
+
+        ### OPPORTUNITY KEYS PROCESSING
+        if obj_dict.get('do_opportunity',False):
+            sql = """
+                SELECT Id, LastModifiedDate FROM Opportunity 
+                    """
+            params = {
+                'sfInstance':sfInstance,
+                'priority':80,
+                'externalObjName':'Opportunity',
+                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_opportunity_filter').value,time_sql]),
+                'odooModelName':'crm.lead',
+                'is_full_update':is_full_update,
+            }
+            self.update_keys(params)
+
+        ### LEAD KEYS PROCESSING
+        if obj_dict.get('do_lead',False):
+            sql = """
+                SELECT Id, LastModifiedDate FROM Lead 
+                """
+            params = {
+                'sfInstance':sfInstance,
+                'priority':60,
+                'externalObjName':'Lead',
+                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_lead_filter').value,time_sql]),
+                'odooModelName':'crm.lead',
+                'is_full_update':is_full_update,
+            }
+            self.update_keys(params)
+
+        ### CONTRACT KEYS PROCESSING
+        if obj_dict.get('do_contract',False):
+            #The one without parent contracts
+            sql = """
+                SELECT Id, LastModifiedDate FROM Contract
+                    """
+            params = {
+                'sfInstance':sfInstance,
+                'priority':50,
+                'externalObjName':'Contract',
+                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_contract_filter').value,time_sql,' Link_to_Parent_Contract__c = null']),
+                'odooModelName':'agreement',
+                'is_full_update':is_full_update,
+            }
+            self.update_keys(params)
+            #The one with parent contracts
+            sql = """
+                SELECT Id, LastModifiedDate FROM Contract
+                    """
+            params = {
+                'sfInstance':sfInstance,
+                'priority':40,
+                'externalObjName':'Contract',
+                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_contract_filter').value,time_sql,' Link_to_Parent_Contract__c != null']),
+                'odooModelName':'agreement',
+                'is_full_update':is_full_update,
+            }
+            self.update_keys(params)
 
         ###CLOSING
-        self.env.ref('vcls-etl.last_run').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
+        #we trigger the processing job
+        cron = self.env.ref('vcls-etl.cron_process')
+        cron.write({
+            'active': True,
+            'nextcall': datetime.now() + timedelta(seconds=30),
+            'numbercall': 2,
+        }) 
+
+        self.env.ref('vcls-etl.ETL_LastRun').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
         self.env.user.context_data_integration = False
+    
+    def build_sql(self,core,filters=None,post=None):
+        sql = core
+        if filters:
+            for fil in filters:
+                if fil != "":
+                    if 'WHERE' not in sql:
+                        sql += " WHERE " + fil
+                    else:
+                        sql += " AND " + fil
+        if post:
+            sql += ' ' + post
+
+        return sql
+
+    
+    
+    @api.model
+    def relaunch_cron(self,external_id=None,numbercall=0):
+        if external_id:
+            cron = self.env.ref(external_id)
+            if cron:
+                cron.write({
+                    'active': True,
+                    'nextcall': datetime.now() + timedelta(seconds=10),
+                    'numbercall': numbercall,
+                })
+                _logger.info("ETL | CRON relaunched")
+
+
 
         
     """def updateAccountKey(self, externalInstance):

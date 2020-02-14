@@ -45,6 +45,11 @@ class Leads(models.Model):
         compute = '_compute_gdpr_status',
     )
 
+    @api.onchange('marketing_task_id')
+    def _onchange_marketing_task_id(self):
+        if self.marketing_task_id:
+            self.marketing_project_id=self.marketing_task_id.project_id
+
     @api.depends('marketing_task_id', 'marketing_task_out_id')
     def _compute_gdpr_status(self):
         for record in self:

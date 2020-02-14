@@ -2,6 +2,7 @@
 <odoo>
     <data>
     
+        <!--
         <record id="cron_etl_account" model="ir.cron">
             <field name="name">ETL Salesforce Account</field>
             <field name="active" eval="False" />
@@ -106,17 +107,7 @@
         </record>
 
         
-        <record id="cron_Update" model="ir.cron">
-            <field name="name">ETL Update Object</field>
-            <field name="active" eval="False" />
-            <field name="user_id" ref="base.user_admin" />
-            <field name="numbercall">-1</field>
-            <field name="doall">False</field>
-            <field name="model_id" ref="model_etl_sync_keys" />
-            <field name="state">code</field>
-            <field name="code">model.run()
-            </field>
-        </record>
+        
 
         <record id="cron_etl_contract" model="ir.cron">
             <field name="name">ETL Salesforce Contract</field>
@@ -142,8 +133,57 @@
             <field name="state">code</field>
             <field name="code">model.run(True, True, True, True, False, None)
 #run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords) </field>
+        </record>-->
+
+        <record id="cron_Update" model="ir.cron">
+            <field name="name">ETL Update Keys</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="doall">False</field>
+            <field name="model_id" ref="model_etl_sync_keys" />
+            <field name="state">code</field>
+            <field name="code">full_update = True
+obj_dict = {
+    'do_contact':True,
+    'do_account':True,
+    'do_opportunity':True,
+    'do_lead':True,
+    'do_contract':True,
+    }
+model.sf_update_keys(obj_dict,full_update)
+            </field>
         </record>
 
+        <record id="cron_process" model="ir.cron">
+            <field name="name">ETL Process Keys</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="interval_number">10</field>
+            <field name="interval_type">minutes</field>
+            <field name="doall">False</field>
+            <field name="model_id" ref="model_etl_sync_salesforce" />
+            <field name="state">code</field>
+            <field name="code">batch_size = None
+loop = True
+model.sf_process_keys(batch_size,loop)
+            </field>
+        </record>
+
+        <record id="cron_relaunch" model="ir.cron">
+            <field name="name">ETL Relaunch Process Keys</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="doall">False</field>
+            <field name="model_id" ref="model_etl_sync_keys" />
+            <field name="state">code</field>
+            <field name="code">model.relaunch_cron('vcls-etl.cron_process',2)
+            </field>
+        </record>
         
     </data>
 </odoo>

@@ -15,32 +15,50 @@ class Leads(models.Model):
 
     def write(self, vals):
         """
-        In the context of a migration, we don't request a new internal_ref but we set it based on the name of the opportunity.
+        In the context of a migration, we don't request a new internal_ref but we try to extract in from the name of the opportunity.
         """
-        if (vals.get('type',False) == 'opportunity' or self.type == 'opportunity') and self.env.user.context_data_integration:
-            #we get the related client
-            client = self.env['res.partner'].browse(vals.get('partner_id',self.partner_id.id))
-            raw_name = vals.get('name',False)
+        if self.env.user.context_data_integration:
+            for lead in self:
+                lead_vals = {**vals} #we make a copy of the vals to avoid iterative updates
 
-            #if no ALTNAME, then we raise an error, else, we try to find in in the name of the opp
-            if not client.altname:
-                raise ValidationError("Please document an ALTNAME in the {} client sheet to automate refence calculation.".format(client.name))
-            elif not raw_name:
-                _logger.info("OPP MIGRATION: corrupted opp {}.".format(vals))
-            else:
-                try:
-                    if client.altname.lower() in raw_name.lower(): 
-                        index = raw_name.lower().split(client.altname.lower())[1][1:4]
-                        _logger.info("OPP MIGRATION: found {} in {} with index {}".format(client.altname,raw_name,index))
+                if lead_vals.get('type',lead.type) == 'opportunity' and lead_vals.get('name',False): #if opportunity we try to rename
+                    client = self.env['res.partner'].browse(lead_vals.get('partner_id',self.partner_id.id))
+                    if not client.altname:
+                        raise ValidationError("Please document an ALTNAME in the {} client sheet to automate refence calculation.".format(client.name))
+                    else:
+                        raw_name = lead_vals['name']
+                        if client.altname.lower() in raw_name.lower(): 
+                            index = raw_name.lower().split(client.altname.lower())[1][1:4]
 
-                        if int(index) > client.core_process_index: #we force the next index
-                            client.write({'core_process_index': int(index)})
+                            try:
+                                new_ref = "{}-{:03}".format(client.altname.upper(), int(index))
+                                new_name = raw_name.split(index)[1].lstrip()
+                                lead_vals.update({
+                                    'internal_ref': new_ref,
+                                    #'name':raw_name.split(index)[1].lstrip(),
+                                    'name':"{} | {}".format(new_ref,new_name) if new_name else new_ref,
+                                    })
+                                _logger.info("OPP MIGRATION: found {} in {} with index {} new ref {}".format(client.altname,raw_name,index,new_ref))
 
-                        vals['name'] = raw_name.split(index)[1].lstrip()
-                        vals['internal_ref'] = "{}-{}".format(client.altname.upper(), index)
+                                if int(index) > client.core_process_index: #we force the next index
+                                    client.write({
+                                        'core_process_index': int(index),
+                                        'altname': client.altname.upper(),
+                                        })
+                            except:
+                                _logger.info("OPP MIGRATION: Bad format for opp {}".format(lead_vals['name']))
+                                lead_vals.update({
+                                    'internal_ref': False,
+                                    'name':"({}) {}".format(index,raw_name.lower().split(index.lower())[1].lstrip()) if index else raw_name,
+                                    })
+                                
 
-                except:
-                    _logger.info("OPP MIGRATION: Bad format for opp {}".format(vals['name']))
+                #_logger.info("OPP MIGRATION: New vals {}".format(lead_vals))
+                lead_vals['planned_revenue']=lead.get_revenue_in_company_currency()
+                if not super(Leads, lead).write(lead_vals):
+                    return False
+            return True
+        
 
-            
-        return super(Leads, self).write(vals)
+        else:
+            return super(Leads, self).write(vals)
