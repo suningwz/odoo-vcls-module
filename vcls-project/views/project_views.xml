@@ -48,7 +48,8 @@
                                     attrs="{'invisible': [('sale_order_id', '=', False)]}"
                             />
                             <button name="toggle_active" type="object" confirm="(Un)archiving a project automatically (un)archives its tasks. Do you want to proceed?"
-                                    class="oe_stat_button" icon="fa-archive">
+                                    class="oe_stat_button" icon="fa-archive"
+                                    groups="vcls_security.group_project_controller">
                                 <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
                             </button>
                         </div>
@@ -243,6 +244,9 @@
             <field name="priority" eval="1"/>
             <field name="inherit_id" ref="project.edit_project"/>
             <field name="arch" type="xml">
+                <button name="toggle_active" position="attributes">
+                    <attribute name="groups">vcls_security.group_project_controller</attribute>
+                </button>
                 <div class="oe_title" position="replace">
                     <group colspan="4">
                         <group cols="2">
