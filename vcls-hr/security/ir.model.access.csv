@@ -80,3 +80,6 @@ access_fleet_vehicle_model_emloyee,fleet.vehicle.model.employee,fleet.model_flee
 access_fleet_vehicle_model_brand_emloyee,fleet.vehicle.model.brand.employee,fleet.model_fleet_vehicle_model_brand,base.group_user,1,0,0,0
 
 access_user_group_history_default,user.group.history.default,model_user_group_history,,1,1,1,1
+
+access_appraisal_global,access_appraisal_global,hr_appraisal.hr_appraisal,vcls_group_HR_global,1,1,1,1
+access_appraisal_local,access_appraisal_local,hr_appraisal.hr_appraisal,vcls_group_HR_local,1,1,1,1
