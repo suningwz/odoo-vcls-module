@@ -125,6 +125,11 @@ class Project(models.Model):
         track_visibility='onchange',
         ) 
     
+    #accounting fields for legacy integration
+    external_account = fields.Char(
+        default="/",
+    )
+    
     def _compute_dates(self):
         for project in self:
             tasks = project.task_ids.filtered(lambda t: t.date_start and t.date_end)
@@ -311,6 +316,10 @@ class Project(models.Model):
 
         #default visibility
         vals['privacy_visibility'] = 'portal'
+
+        #if no ID defined, then increment using the sequence
+        if vals.get('external_account','/')=='/':
+            vals['external_account'] = self.env['ir.sequence'].next_by_code('seq_customer_project_id')
         
         #we automatically assign the project manager to be the one defined in the core team
         if vals.get('sale_order_id',False):
