@@ -372,7 +372,6 @@
         </record>
 
 
-<!-- copy -->
         <!-- Project tree view  -->
         <record id="vcls-project.vcls_project_tree" model="ir.ui.view">
             <field name="name">view_project_tree</field>
