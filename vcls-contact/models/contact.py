@@ -345,7 +345,7 @@ class ResPartner(models.Model):
             #_logger.info("email {} existing {} all vals {}".format(vals.get('email'),existing.mapped('name'),vals))
             if existing and not '@vcls.com' in vals['email']:
                 if vals.get('is_company') == existing.is_company:
-                    raise UserError("Duplicates {}".format(existing.mapped('name')))
+                    raise UserError("Duplicates {}".format(existing.mapped('email')))
             
         new_contact = super(ResPartner, self).create(vals)
         if new_contact.type != 'contact':
