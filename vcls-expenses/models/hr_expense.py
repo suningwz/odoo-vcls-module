@@ -30,21 +30,12 @@ class HrExpense(models.Model):
     )
 
     @api.model
-    def _default_account_id(self, company_id=False):
-        active_id = self._context.get('active_id')
-        active_model = self._context.get('active_model')
-        if active_model == 'hr.expense.sheet' and active_id:
-            sheet = self.env['hr.expense.sheet'].browse(active_id)
-            company_id = sheet.employee_id.company_id
-        if company_id:
-            return self.env['ir.property'].sudo()\
-                .with_context(force_company=company_id.id)\
-                .get('property_account_expense_categ_id', 'product.category')
+    def _default_account_id(self):
+        return False
 
-    def _onchange_employee_id(self):
-        super(HrExpense, self)._onchange_employee_id()
-        if not self.account_id:
-            self.account_id = self._default_account_id(self, company_id=self.employee_id.company_id)
+    @api.onchange('product_id')
+    def _onchange_product_id_account(self):
+        self.account_id = self.product_id.property_account_expense_id.id
 
     @api.model
     def _setup_fields(self):
