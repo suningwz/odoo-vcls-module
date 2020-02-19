@@ -36,8 +36,9 @@ class HrExpense(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_id_account(self):
-        self.account_id = self.sudo().with_context(force_company=self.company_id.id).product_id.property_account_expense_id.id
-        _logger.info("ON change product ID {} in {}".format(self.product_id.name, self.company_id))
+        self.account_id = self.product_id\
+            .with_context(force_company=self.company_id.id)\
+            .property_account_expense_id.id
 
     @api.model
     def _setup_fields(self):
