@@ -84,7 +84,8 @@ class ETLMap(models.Model):
                         keys_update |= self.create(vals)
                         _logger.info("KEYS | Contact duplicate found {}".format(rec['Email']))
                     else:
-                        pass
+                        keys_create |= self.create(vals)
+                        _logger.info("KEYS | {} New Creation {}".format(params['externalObjName'],vals))
                 else:        
                     keys_create |= self.create(vals)
                     _logger.info("KEYS | {} New Creation {}".format(params['externalObjName'],vals))
