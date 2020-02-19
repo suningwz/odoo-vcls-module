@@ -48,7 +48,8 @@
                                     attrs="{'invisible': [('sale_order_id', '=', False)]}"
                             />
                             <button name="toggle_active" type="object" confirm="(Un)archiving a project automatically (un)archives its tasks. Do you want to proceed?"
-                                    class="oe_stat_button" icon="fa-archive">
+                                    class="oe_stat_button" icon="fa-archive"
+                                    groups="vcls_security.group_project_controller">
                                 <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
                             </button>
                         </div>
@@ -129,6 +130,7 @@
                                 <field name="rating_status_period" class="oe_inline" attrs="{'required': [('rating_status','=','periodic')], 'invisible': [('rating_status','!=','periodic')]}" groups="project.group_project_rating"/>
                                 <field name="portal_show_rating" attrs="{'invisible': [('rating_status','==','no')]}" groups="project.group_project_rating"/>
                                 <field name="subtask_project_id" groups="project.group_subtask_project"/>
+                                <field name="external_account"/>
                             </group>
                             <group name="misc">
                                 <group string="Configuration" groups="base.group_no_one" name="configuration">
@@ -243,6 +245,9 @@
             <field name="priority" eval="1"/>
             <field name="inherit_id" ref="project.edit_project"/>
             <field name="arch" type="xml">
+                <button name="toggle_active" position="attributes">
+                    <attribute name="groups">vcls_security.group_project_controller</attribute>
+                </button>
                 <div class="oe_title" position="replace">
                     <group colspan="4">
                         <group cols="2">
@@ -367,15 +372,35 @@
             </field>
         </record>
 
+
+        <!-- Project tree view  -->
+        <record id="vcls-project.vcls_project_tree" model="ir.ui.view">
+            <field name="name">view_project_tree</field>
+            <field name="model">project.project</field>
+            <field name="arch" type="xml">
+                    <tree string="Project Tree">
+                        <field name="name"/>
+                        <field name="user_id" string="Lead Consultant"/>
+                        <field name="partner_id" string="Client"/>
+                        <field name="task_ids"/>
+                        <field name="completion_ratio" string="Task Complete"/>
+                        <field name="consumed_value" string="Budget Consumed"/>
+                        <field name="consummed_completed_ratio" string="BC/TC"/>
+                    </tree>
+                </field>
+        </record>
+
+        <!-- Action -->
         <record id="vcls-project.action_client" model="ir.actions.act_window">
             <field name="name">Client Projects</field>
             <field name="res_model">project.project</field>
             <field name="view_type">form</field>
-            <field name="view_mode">kanban,form</field>
-            <field name="context">{"search_default_mine":1}</field>
+            <field name="view_mode">kanban,form,tree</field>
+            <field name="context">{'search_default_my_projects': 1}</field>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-project.vcls_project_tree')})]"/>
             <field name="domain">[('project_type','=', 'client'), ('parent_id','=', False), ('sale_order_id.state','in', ['sale','done'])]</field>
         </record>
 

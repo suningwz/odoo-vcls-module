@@ -79,12 +79,13 @@ class ETLMap(models.Model):
 
                 if rec.get('Email',False) and params['externalObjName']=="Contact": #we need to check if a contact already exists with this email
                     existing = self.env[params['odooModelName']].with_context(active_test=False).search([('email','=ilike',rec['Email']),('is_company','=',False)],limit=1)
-                    if existing:
+                    if existing and not '@vcls.com' in rec['Email']:
                         vals['odooId']=existing.id
                         keys_update |= self.create(vals)
                         _logger.info("KEYS | Contact duplicate found {}".format(rec['Email']))
                     else:
-                        pass
+                        keys_create |= self.create(vals)
+                        _logger.info("KEYS | {} New Creation {}".format(params['externalObjName'],vals))
                 else:        
                     keys_create |= self.create(vals)
                     _logger.info("KEYS | {} New Creation {}".format(params['externalObjName'],vals))

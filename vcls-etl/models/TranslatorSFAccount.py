@@ -129,7 +129,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         elif status == 'Prospective: no contract, pre-identify' or SF['To_be_Reviewed__c']:
             return 2
         elif status == 'Inactive - reason mentioned':
-            return 5
+            return 4
         elif SF['Is_supplier__c'] or SF['Supplier__c']: # New
             return 2
         else: # Undefined
