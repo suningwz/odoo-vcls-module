@@ -11,7 +11,7 @@ class HrExpense(models.Model):
 
     _inherit = "hr.expense"
 
-    account_id = fields.Many2one(default=lambda s: s._default_account_id())
+    account_id = fields.Many2one(default=lambda self: self._default_account_id())
     is_product_employee = fields.Boolean(related='product_id.is_product_employee', readonly=True, string="Product Employee")
 
 
@@ -41,7 +41,6 @@ class HrExpense(models.Model):
                 .with_context(force_company=company_id.id)\
                 .get('property_account_expense_categ_id', 'product.category')
 
-    @api.onchange('employee_id')
     def _onchange_employee_id(self):
         super(HrExpense, self)._onchange_employee_id()
         if not self.account_id:
