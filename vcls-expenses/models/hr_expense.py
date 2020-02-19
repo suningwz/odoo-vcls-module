@@ -38,7 +38,9 @@ class HrExpense(models.Model):
     def _onchange_product_id_account(self):
         self.account_id = self.product_id\
             .with_context(force_company=self.company_id.id)\
-            .property_account_expense_id.id
+            .property_account_expense_id.id or \
+            self.product_id.categ_id.with_context(force_company=self.company_id.id)\
+                .property_account_expense_categ_id
 
     @api.model
     def _setup_fields(self):
