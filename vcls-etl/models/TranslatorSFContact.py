@@ -24,11 +24,11 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
             result['firstname'] = SF_Contact['FirstName']
         if SF_Contact['MiddleName']:
             if SF_Contact['MiddleName'] != 'None':
-                result['lastname'] = SF_Contact['MiddleName']
+                result['lastname2'] = SF_Contact['MiddleName']
         if SF_Contact['LastName']:
-            result['lastname2'] = SF_Contact['LastName']
+            result['lastname'] = SF_Contact['LastName']
         
-        temp = "{} {} {}".format(result.get('firstname',''),result.get('lastname',''),result.get('lastname2',''))
+        temp = "{} {} {}".format(result.get('firstname',''),result.get('lastname2',''),result.get('lastname',''))
         result['name'] = temp.replace('  ',' ')
         
         result['function'] = SF_Contact['Title']
