@@ -57,7 +57,7 @@ class salesforceSync(models.Model):
         return "This return the model name of external"
     
     @api.model
-    def sf_process_keys(self,batch_size=False,loop=True):
+    def sf_process_keys(self,batch_size=False,loop=True,duration=9):
 
         top_priority = max(self.env['etl.sync.keys'].search([('state','not in',['upToDate','postponed'])]).mapped('priority'))
         #priorities = list(set())
@@ -67,7 +67,7 @@ class salesforceSync(models.Model):
             #Init
             self.env.user.context_data_integration = True
 
-            timestamp_end = datetime.now() + timedelta(minutes=9)
+            timestamp_end = datetime.now() + timedelta(minutes=duration)
             loop_cron = loop
 
             sfInstance = self.getSFInstance()

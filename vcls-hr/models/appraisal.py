@@ -23,7 +23,7 @@ class UserInput(models.Model):
 
     authorized_reader_ids = fields.Many2many(
         comodel_name = 'res.users',
-        conpute = '_compute_authorized_reader',
+        compute = '_compute_authorized_reader',
         store=True,
     )
 

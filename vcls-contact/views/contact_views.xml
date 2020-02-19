@@ -35,11 +35,12 @@
                                                 "{'required': [('lastname', '=', False),
                                                 ('is_company', '=', False),
                                                 ('type', '=', 'contact')]}" placeholder="Firstname"/>
+                                            <field name="lastname2" placeholder="Middlename"/>
                                             <field name="lastname" attrs=
                                                 "{'required': [('firstname', '=', False),
                                                 ('is_company', '=', False),
                                                 ('type', '=', 'contact')]}" placeholder="Lastname"/>
-                                            <field name="lastname2" placeholder="Second lastname"/>
+                                            
 
                                     </div>
                                 </div>
@@ -493,7 +494,7 @@
         <!-- used to visualize VCLS Offices-->
         <record model="ir.actions.act_window" id="action_vcls_offices">
             <field name="name">VCLS Offices</field>
-            <field name="domain" eval="[('category_id','=',ref('vcls-contact.category_vcls_office')),('stage','in',[2,3,4])]"/>
+            <field name="domain" eval="[('category_id','=',ref('vcls-contact.category_vcls_office')),('stage','in',[2,3,4]),('company_type','=','company')]"/>
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,tree,form,activity</field>
             <field name="view_id" ref="view_kanban_vcls_office"/>

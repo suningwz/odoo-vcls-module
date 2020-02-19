@@ -22,11 +22,13 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
             result['title'] = mapOdoo.convertRef(SF_Contact['Salutation'], odoo,'res.partner.title',False)
         if SF_Contact['FirstName']:
             result['firstname'] = SF_Contact['FirstName']
-        if SF_Contact['LastName']:
-            result['lastname2'] = SF_Contact['LastName']
         if SF_Contact['MiddleName']:
-            result['lastname'] = SF_Contact['MiddleName']
-        temp = "{} {} {}".format(SF_Contact.get('FirstName',''),SF_Contact.get('MiddleName',''),SF_Contact.get('LastName',''))
+            if SF_Contact['MiddleName'] != 'None':
+                result['lastname2'] = SF_Contact['MiddleName']
+        if SF_Contact['LastName']:
+            result['lastname'] = SF_Contact['LastName']
+        
+        temp = "{} {} {}".format(result.get('firstname',''),result.get('lastname2',''),result.get('lastname',''))
         result['name'] = temp.replace('  ',' ')
         
         result['function'] = SF_Contact['Title']
@@ -65,7 +67,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         ### ADMIN
         result['stage'] = TranslatorSFContact.convertStatus(SF_Contact)
         result['message_ids'] = [(0, 0, TranslatorSFContact.generateLog(SF_Contact))]
-        result['log_info'] = "{} {} {}".format(SF_Contact['FirstName'],SF_Contact['MiddleName'],SF_Contact['LastName'])
+        result['log_info'] = result['name']
 
         ### MARKETING
         result['opted_in'] = SF_Contact['Opted_In__c']

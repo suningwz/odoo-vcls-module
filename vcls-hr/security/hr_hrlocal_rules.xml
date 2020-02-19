@@ -86,6 +86,39 @@
             ]</field>
             <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
         </record>
+
+        <!-- APPRAISAL-->
+        <!-- Local HR can see all appraisal intheir company -->
+        <record id="hr_appraisal_hr_local_read_rule" model="ir.rule">
+            <field name="name">hr_appraisal_hr_local_read_rule</field>
+            <field name="model_id" ref="hr_appraisal.model_hr_appraisal"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="0"/>
+            <field name="perm_create" eval="0"/>
+            <field name="perm_unlink" eval="0"/>
+            <field name="domain_force">[
+                    ('employee_id.company_id','in',[user.company_id.id]),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
+        </record>
+        
+        <!-- Local HR can't edit themselves -->
+        <record id="hr_appraisal_hr_local_write_rule" model="ir.rule">
+            <field name="name">hr_appraisal_hr_local_write_rule</field>
+            <field name="model_id" ref="hr_appraisal.model_hr_appraisal"/>
+            <field name="perm_read" eval="0"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="domain_force">[
+                    ('employee_id.company_id','in',[user.company_id.id]),
+                    '|','|',
+                    ('employee_id.user_id','!=',user.id),
+                    ('employee_id','=',False),
+                    ('employee_id.user_id','=',False),
+            ]</field>
+            <field name="groups" eval="[(4, ref('vcls_group_HR_local'))]"/>
+        </record>
         
         
         <!-- BONUS-->

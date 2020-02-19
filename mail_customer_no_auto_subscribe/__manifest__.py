@@ -18,7 +18,7 @@ as it is considered a manual action.
 
     'author': "Voisin Consulting",
     'website': "http://www.voisinconsulting.com",
-    'version': '0.0.1',
+    'version': '0.0.2',
     'depends': [
         'base',
         'mail',
@@ -26,5 +26,6 @@ as it is considered a manual action.
     'data': [
         'security/ir.model.access.csv',
         'views/ir_model.xml',
+        'views/templates.xml',
     ],
 }
