@@ -300,6 +300,7 @@ class ETLMap(models.Model):
                         sql += " AND " + fil
         if post:
             sql += ' ' + post
+            
         return sql
 
     
