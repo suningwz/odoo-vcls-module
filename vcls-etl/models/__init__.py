@@ -7,11 +7,13 @@ from . import SFContactSync
 from . import SFOpportunitySync
 from . import SFLeadsSync
 from . import SFContractSync
+from . import SFCampaignSync
 from . import ITranslator
 from . import TranslatorSFAccount
 from . import TranslatorSFContact
 from . import TranslatorSFOpportunity
 from . import TranslatorSFLeads
 from . import TranslatorSFContract
+from . import TranslatorSFCampaign
 from . import ETL_SF
 from . import mapOdoo

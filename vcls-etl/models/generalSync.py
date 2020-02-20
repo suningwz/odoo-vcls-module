@@ -245,6 +245,37 @@ class ETLMap(models.Model):
             }
             self.update_keys(params)
 
+            ### CAMPAIGN KEYS PROCESSING
+        if obj_dict.get('do_campaign',False):
+            
+            # We do campaigns with parents 1st, because of their lower priority 
+            sql = """
+                SELECT Id, LastModifiedDate FROM Campaign 
+                    """
+            params = {
+                'sfInstance':sfInstance,
+                'priority':500,
+                'externalObjName':'Campaign',
+                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_campaign_filter').value,time_sql,'ParentId != null']),
+                'odooModelName':'project.task',
+                'is_full_update':is_full_update,
+            }
+            self.update_keys(params)
+
+            # then campaigns without parents 
+            sql = """
+                SELECT Id, LastModifiedDate FROM Campaign 
+                """
+            params = {
+                'sfInstance':sfInstance,
+                'priority':600,
+                'externalObjName':'Campaign',
+                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_campaign_filter').value,time_sql,'ParentId = null']),
+                'odooModelName':'project.task',
+                'is_full_update':is_full_update,
+            }
+            self.update_keys(params)
+
         ###CLOSING
         #we trigger the processing job
         cron = self.env.ref('vcls-etl.cron_process')
@@ -268,7 +299,6 @@ class ETLMap(models.Model):
                         sql += " AND " + fil
         if post:
             sql += ' ' + post
-
         return sql
 
     
