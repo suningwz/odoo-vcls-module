@@ -28,6 +28,10 @@
                             <strong>Date: </strong>
                             <p class="m-0" t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
                         </div>
+                        <div t-if="o.user_id" class="col-auto mw-100 mb-2">
+                            <strong>Validity: </strong>
+                            <p class="m-0" t-field="o.validity_duration"/>
+                        </div>
                     </div>
 
                     <div style="page-break-inside: avoid;" t-if="services_data">
@@ -179,6 +183,17 @@
                     <t t-if="o.report_details == 'detailed'" t-call="vcls-crm.report_order_detailed_document" t-lang="lang"/>
                     <t t-else="" t-call="vcls-crm.report_order_aggregated_document" t-lang="lang"/>
                 </t>
+            </xpath>
+        </template>
+
+        <template id="quotation_web_template" name="quotayion web template" inherit_id="sale.sale_order_portal_content">
+            <xpath expr="//span[@t-field='sale_order.date_order']" position="after">
+                    <div>
+                        <strong>Validity:</strong> <span t-field="sale_order.validity_duration"/>
+                    </div>
+            </xpath>
+            <xpath expr="//div[@t-if='sale_order.validity_date']" position="attributes">
+                <attribute name="t-if">False</attribute>
             </xpath>
         </template>
     </data>
