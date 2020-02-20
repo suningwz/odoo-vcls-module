@@ -55,6 +55,7 @@ class ResPartner(models.Model):
         string='Sharepoint Folder',
         compute='_compute_sharepoint_folder',
         readonly=True,
+        store=True,
     )
     manual_sharepoint_folder = fields.Char()
 
