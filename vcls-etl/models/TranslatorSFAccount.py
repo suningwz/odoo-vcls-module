@@ -65,7 +65,12 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
 
         ### ADMIN VALUES
         result['create_folder'] = SF_Account['Create_Sharepoint_Folder__c']
-        result['sharepoint_folder'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUrl(SF_Account['Sharepoint_Folder__c'])
+
+        if 'a href="' in SF_Account['Sharepoint_Folder__c']:
+            result['manual_sharepoint_folder'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUrl(SF_Account['Sharepoint_Folder__c']).split('href="')[1]
+        else:
+            result['manual_sharepoint_folder'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUrl(SF_Account['Sharepoint_Folder__c'])
+
         if SF_Account['ExternalID__c']:
             result['legacy_account'] = str(int(SF_Account['ExternalID__c']))
         
@@ -129,7 +134,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
         elif status == 'Prospective: no contract, pre-identify' or SF['To_be_Reviewed__c']:
             return 2
         elif status == 'Inactive - reason mentioned':
-            return 5
+            return 4
         elif SF['Is_supplier__c'] or SF['Supplier__c']: # New
             return 2
         else: # Undefined

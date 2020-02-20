@@ -79,12 +79,13 @@ class ETLMap(models.Model):
 
                 if rec.get('Email',False) and params['externalObjName']=="Contact": #we need to check if a contact already exists with this email
                     existing = self.env[params['odooModelName']].with_context(active_test=False).search([('email','=ilike',rec['Email']),('is_company','=',False)],limit=1)
-                    if existing:
+                    if existing and not '@vcls.com' in rec['Email']:
                         vals['odooId']=existing.id
                         keys_update |= self.create(vals)
                         _logger.info("KEYS | Contact duplicate found {}".format(rec['Email']))
                     else:
-                        pass
+                        keys_create |= self.create(vals)
+                        _logger.info("KEYS | {} New Creation {}".format(params['externalObjName'],vals))
                 else:        
                     keys_create |= self.create(vals)
                     _logger.info("KEYS | {} New Creation {}".format(params['externalObjName'],vals))
@@ -278,12 +279,12 @@ class ETLMap(models.Model):
 
         ###CLOSING
         #we trigger the processing job
-        cron = self.env.ref('vcls-etl.cron_process')
+        """cron = self.env.ref('vcls-etl.cron_process')
         cron.write({
             'active': True,
             'nextcall': datetime.now() + timedelta(seconds=30),
             'numbercall': 2,
-        }) 
+        }) """
 
         self.env.ref('vcls-etl.ETL_LastRun').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
         self.env.user.context_data_integration = False

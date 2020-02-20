@@ -55,7 +55,9 @@ class ResPartner(models.Model):
         string='Sharepoint Folder',
         compute='_compute_sharepoint_folder',
         readonly=True,
+        store=True,
     )
+    manual_sharepoint_folder = fields.Char()
 
     create_folder = fields.Boolean(
         string="Create Sharepoint Folder",
@@ -280,9 +282,11 @@ class ResPartner(models.Model):
             pass
             """ This estimator is related to the type of contact."""
 
-    @api.depends('category_id', 'create_folder','altname')
+    @api.depends('category_id', 'create_folder','altname','manual_sharepoint_folder')
     def _compute_sharepoint_folder(self):
-        pass
+        manual = self.filtered(lambda p: p.manual_sharepoint_folder)
+        for partner in manual:
+            partner.sharepoint_folder = partner.manual_sharepoint_folder
 
     # We reset the number of bounced emails to 0 in order to re-detect problems after email change
     @api.onchange('email')
@@ -343,9 +347,9 @@ class ResPartner(models.Model):
             # we search for existing partners with the same email, but we authorize the creation of a company AND an individual with the same email
             existing = self.env['res.partner'].search([('email','=ilike',vals.get('email'))])
             #_logger.info("email {} existing {} all vals {}".format(vals.get('email'),existing.mapped('name'),vals))
-            if existing:
+            if existing and not '@vcls.com' in vals['email']:
                 if vals.get('is_company') == existing.is_company:
-                    raise UserError("Duplicates {}".format(existing.mapped('name')))
+                    raise UserError("Duplicates {}".format(existing.mapped('email')))
             
         new_contact = super(ResPartner, self).create(vals)
         if new_contact.type != 'contact':

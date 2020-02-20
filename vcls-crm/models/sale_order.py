@@ -122,6 +122,12 @@ class SaleOrder(models.Model):
         'Report rate', default=True
     )
 
+    validity_duration = fields.Selection([
+        ('1', '1 month'),
+        ('2', '3 month'),
+        ('5', '5 month')],
+        string='Validity duration', default='1')
+
     ###############
     # ORM METHODS #
     ###############

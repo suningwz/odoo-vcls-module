@@ -11,6 +11,8 @@ class HrExpense(models.Model):
 
     _inherit = "hr.expense"
 
+    #account_id = fields.Many2one(default=lambda self: self._default_account_id())
+    account_id = fields.Many2one()
     is_product_employee = fields.Boolean(related='product_id.is_product_employee', readonly=True, string="Product Employee")
 
 
@@ -21,13 +23,24 @@ class HrExpense(models.Model):
 
     company_id = fields.Many2one(
         'res.company',
-        related = 'sheet_id.company_id',)
-      
+        related='sheet_id.company_id',)
 
     project_id = fields.Many2one(
         'project.project', 
         related='sheet_id.project_id',
     )
+
+    """@api.model
+    def _default_account_id(self):
+        return False"""
+
+    @api.onchange('product_id')
+    def _onchange_product_id_account(self):
+        self.account_id = self.product_id\
+            .with_context(force_company=self.company_id.id)\
+            .property_account_expense_id.id or \
+            self.product_id.categ_id.with_context(force_company=self.company_id.id)\
+                .property_account_expense_categ_id
 
     @api.model
     def _setup_fields(self):
