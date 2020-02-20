@@ -248,12 +248,12 @@ class ETLMap(models.Model):
 
         ###CLOSING
         #we trigger the processing job
-        cron = self.env.ref('vcls-etl.cron_process')
+        """cron = self.env.ref('vcls-etl.cron_process')
         cron.write({
             'active': True,
             'nextcall': datetime.now() + timedelta(seconds=30),
             'numbercall': 2,
-        }) 
+        }) """
 
         self.env.ref('vcls-etl.ETL_LastRun').value = new_run.strftime("%Y-%m-%d %H:%M:%S.00+0000")
         self.env.user.context_data_integration = False
