@@ -12,14 +12,14 @@ class Employee(models.Model):
     #adds or remove from the lm group according to the subortinates count
     @api.model #to be called from CRON job
     def _check_lc_membership(self):
+        #c_group = self.env.ref('vcls_security.group_vcls_consultant')
         lc_group = self.env.ref('vcls_security.vcls_lc')
         sup_group = self.env.ref('vcls-hr.vcls_group_superuser_lvl1')
-        int_group = self.env.ref('base.group_user')
 
-        effective_lc_ids = self.env['project.project'].search([]).mapped('user_id')
+        effective_lc_ids = self.env['project.project'].search([('project_type','=','client')]).mapped('user_id')
 
-        users_to_upgrade = effective_lc_ids - lc_group.users
-        users_to_downgrade = int_group.users - effective_lc_ids - sup_group.users
+        users_to_upgrade = ((effective_lc_ids | sup_group.users) - lc_group.users).filter(lambda p: p.active)
+        users_to_downgrade = (lc_group.users - (effective_lc_ids | sup_group.users)).filter(lambda p: p.active)
 
         _logger.info("LC MEMBERSHIP TO UPGRADE: {}\nLC MEMBERSHIP TO DOWNGRADE: {}".format(users_to_upgrade.mapped('name'),users_to_downgrade.mapped('name')))
 
