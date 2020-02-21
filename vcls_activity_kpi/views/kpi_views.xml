@@ -1,0 +1,25 @@
+<odoo>
+    <data>
+        <record id='mail_activity_type_inherit_form_view' model='ir.ui.view'>
+            <field name="name">mail.activity.type.view.form</field>
+            <field name="model">mail.activity.type</field>
+            <field name="inherit_id" ref="mail.mail_activity_type_view_tree"/>
+            <field name="arch" type="xml">
+                <field name="res_model_id" position="after">
+                    <field name="kpi_type_id" string="KPI type"/>
+                </field>
+            </field>
+        </record>
+
+        <record id='mail_activity_type_inherit_tree_view' model='ir.ui.view'>
+            <field name="name">mail.activity.type.view.tree</field>
+            <field name="model">mail.activity.type</field>
+             <field name="inherit_id" ref="mail.mail_activity_type_view_form"/>
+            <field name="arch" type="xml">
+                <field name="summary" position="after">
+                    <field name="kpi_type_id" string="KPI type"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>
