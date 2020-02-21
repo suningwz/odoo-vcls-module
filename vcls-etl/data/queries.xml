@@ -37,7 +37,7 @@
                 SELECT 
                 Id, Salutation, FirstName, MiddleName, LastName,Title,Description,
                 OwnerId, AccountId,  VCLS_Main_Contact__c, 
-                MailingAddress,
+                MailingAddress, Opt_in_Campaign__c, Unsubscribe_Campaign__c,
                 LinkedIn_Profile__c, Phone, Fax, MobilePhone, Email, AccountWebsite__c, 
                 LastModifiedDate, Inactive_Contact__c, Opted_In__c, Unsubscribed_from_Marketing_Comms__c
                 FROM Contact
@@ -59,7 +59,7 @@
             <field name="key">etl_sf_opportunity_query</field>
             <field name="value">
                 SELECT 
-                Id, Name, StageName, 
+                Id, Name, StageName, CampaignId,
                 Description, Client_Product_Description__c, Reasons_Lost_Comments__c, Significant_Opportunity_Notes__c, Probability,
                 AccountId, OwnerId, Technical_Advisor__c, 
                 CurrencyIsoCode, Amount,
@@ -85,7 +85,7 @@
             <field name="value">
                 SELECT 
                 Id, Name, OwnerId, Activity__c, Address, City, Company, Content_Name__c, Country,PostalCode, Street, 
-                CurrencyIsoCode, Email,First_VCLS_Contact_Point__c, 
+                CurrencyIsoCode, Email,First_VCLS_Contact_Point__c, Opt_in_Campaign__c, Unsubscribe_Campaign__c,
                 External_Referee__c, Fax, Functional_Focus__c, Inactive_Lead__c, Industry, Contact_us_Message__c, Initial_Product_Interest__c, 
                 LastModifiedDate, Title, Seniority__c, Phone, Website, Description, LeadSource 
                 FROM Lead

@@ -58,7 +58,9 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         result['expected_start_date'] = SF_Opportunity['Project_start_date__c']
         result['date_deadline'] = SF_Opportunity['Deadline_for_Sending_Proposal__c']
         result['date_closed'] = SF_Opportunity['CloseDate']
-        
+
+        if SF_Opportunity['CampaignId']:
+            result['marketing_task_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Opportunity['CampaignId'],"project.task","Campaign",odoo)
         ### OTHER
         #result.update(odoo.env['crm.lead']._onchange_partner_id_values(int(result['partner_id']) if result['partner_id'] else False)) 
         result['message_ids'] = [(0, 0, TranslatorSFOpportunity.generateLog(SF_Opportunity))]
