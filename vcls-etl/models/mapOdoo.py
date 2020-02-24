@@ -41,12 +41,18 @@ class mapOdoo(models.Model):
                         'externalName':item.lower(),
                         'stage':1,
                     })
-                    
-        return results
+
+        if forMany:
+            return results
+        elif results:
+            return results[0]
+        else:
+            return []
 
 
 
-        """element = []
+    """
+        element = []
         SF = SF.split(';')
         for sfname in SF:
             try:
