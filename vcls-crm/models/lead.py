@@ -278,6 +278,10 @@ class Leads(models.Model):
 
     conversion_date = fields.Date(string = 'Lead to Opp date')
 
+    proposal_type = fields.Selection([('email', 'Email Proposal'),
+                                      ('simple', 'Simple Proposal'),
+                                      ('complex', 'Complex Proposal'),])
+
     #name = fields.Char() We don't compute, it breaks too much usecases
 
     lead_history = fields.Many2many(comodel_name="crm.lead", relation="crm_lead_rel", column1="crm_lead_id1")

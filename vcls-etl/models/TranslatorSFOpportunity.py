@@ -35,6 +35,12 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         result['description'] = SF_Opportunity['Significant_Opportunity_Notes__c']  
 
         result['probability'] = SF_Opportunity['Probability']	
+
+        if SF_Opportunity['Proposal_Type__c']:
+            result['proposal_type'] = TranslatorSFOpportunity.convert_opp_type(SF_Opportunity['Proposal_Type__c'])
+        
+        if SF_Opportunity['Significant_Opportunity__c']:
+            result['tag_ids'] =  [(4, 0, TranslatorSFOpportunity.get_tag_id(odoo,'Significant Opportunity'))]
         
         ### RELATIONS
         result['partner_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Opportunity['AccountId'],"res.partner","Account",odoo)
@@ -97,6 +103,26 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
             _logger.info("STAGE CRM {}".format(result['stage_id']))
 
         return result
+    
+    @staticmethod
+    def convert_opp_type(opp_type):
+        if opp_type == 'Email Proposal':
+            result = 'email'
+        elif opp_type == 'Simple Proposal':
+            result = 'simple'
+        elif opp_type == 'Complex Proposal':
+            result = 'complex'
+        else:
+            result = False
+        return result
+
+    @staticmethod
+    def get_tag_id(odoo,tag_name="NoTag"):
+        tag = odoo.env['crm.lead.tag'].search([('name','=',tag_name)],limit=1)
+        if tag:
+            return tag.id
+        else:
+            return False
 
 
 
