@@ -40,10 +40,10 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
             result['proposal_type'] = TranslatorSFOpportunity.convert_opp_type(SF_Opportunity['Proposal_Type__c'])
         
         if SF_Opportunity['Significant_Opportunity__c']:
-            tag = TranslatorSFOpportunity.get_tag_id(odoo,'Significant Opportunity')
+            tag = TranslatorSFOpportunity.get_tag_id(odoo,SF_Opportunity['Significant_Opportunity__c'])
             _logger.info("SIG OPP {} TAG {}".format(SF_Opportunity['Significant_Opportunity__c'],tag))
             if tag:
-                result['tag_ids'] =  [(4, 0, )]
+                result['tag_ids'] =  [(4, tag, 0)]
         
         ### RELATIONS
         result['partner_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Opportunity['AccountId'],"res.partner","Account",odoo)
