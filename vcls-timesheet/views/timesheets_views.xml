@@ -485,8 +485,22 @@
                 <range name="month" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </range>
+                <field name="unit_amount" position="attributes">
+                    <attribute name="widget"></attribute>
+                </field>
             </field>
         </record>
 
+
+        <record id="timesheet_view_kanban_inherit" model="ir.ui.view">
+            <field name="name">account.analytic.line.kanban</field>
+            <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="hr_timesheet.view_kanban_account_analytic_line"/>
+            <field name="arch" type="xml">
+                <xpath expr="//templates//field[@name='unit_amount']" position="attributes">
+                    <attribute name="widget"></attribute>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>
