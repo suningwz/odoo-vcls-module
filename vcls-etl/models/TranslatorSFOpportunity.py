@@ -94,6 +94,7 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         else:
             result['won_status'] = 'pending'
             result['stage_id'] = mapOdoo.convertRef(StageName,odoo,'crm.stage',False)
+            _logger.info("STAGE CRM {}".format(result['stage_id']))
 
         return result
 
