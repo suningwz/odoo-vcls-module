@@ -30,14 +30,14 @@ class mapOdoo(models.Model):
                 if new_map:
                     results.append(new_map.id)
                     self.create({
-                        'adModelName':model,
+                        'odModelName':model,
                         'externalName':item.lower(),
                         'odooId':str(new_map.id),
                         'stage':1,
                     })
                 else:
                     self.create({
-                        'adModelName':model,
+                        'odModelName':model,
                         'externalName':item.lower(),
                         'stage':1,
                     })
