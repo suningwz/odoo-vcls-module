@@ -150,6 +150,7 @@ obj_dict = {
     'do_opportunity':True,
     'do_lead':False,
     'do_contract':False,
+    'do_campaign':True,
     }
 model.sf_update_keys(obj_dict,full_update)
             </field>

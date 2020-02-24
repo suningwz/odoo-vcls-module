@@ -8,7 +8,7 @@
     """,
     'author': "VCLS",
     'website': "http://www.voisinconsulting.com",
-    'version': '0.0.6',
+    'version': '0.1.0',
     'depends': [
         'base',
         'project',
@@ -35,6 +35,7 @@
         'security/project_controller_security.xml',
         'security/cross_company_invoicing.xml',
         'views/menus.xml',
+        'actions/cronjob.xml',
     ],
     'demo': [
     ],

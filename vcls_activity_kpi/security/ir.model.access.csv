@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_activity_kpi_type_user,kpi.type.user,model_kpi_type,base.group_user,1,0,0,0
+access_activity_kpi_type_system,kpi.type.system,model_kpi_type,base.group_system,1,1,1,1
+access_activity_kpi_kpi_user,kpi.kpi.user,model_kpi_kpi,base.group_user,1,0,0,0
+access_activity_kpi_kpi_system,kpi.kpi.system,model_kpi_kpi,base.group_system,1,1,1,1
