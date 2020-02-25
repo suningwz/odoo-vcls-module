@@ -31,7 +31,9 @@ class LeadQuotation(models.TransientModel):
         _logger.info("OPP to QUOTE context {}".format(context))
         if not active_model == 'crm.lead' or not active_id:
             return
+        
         lead = self.env['crm.lead'].browse(active_id)
+        _logger.info("OPP to QUOTE lead {}".format(lead.id))
         additional_context = {
             'search_default_partner_id': lead.partner_id.parent_id.id or lead.partner_id.id,
             'default_partner_id': lead.partner_id.parent_id.id or lead.partner_id.id,
