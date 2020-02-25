@@ -52,6 +52,7 @@ class LeadQuotation(models.TransientModel):
         }
 
         action['context'] = additional_context
+        _logger.info("OPP to QUOTE action context {}".format(action['context']))
         if self.quotation_type == 'new':
             return action
         if self.quotation_type in ('budget_extension', 'scope_extension') and self.existing_quotation_id:
