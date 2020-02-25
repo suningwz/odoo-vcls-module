@@ -28,6 +28,7 @@ class LeadQuotation(models.TransientModel):
         context = self._context
         active_model = context.get('active_model', '')
         active_id = context.get('active_id')
+        _logger.info("OPP to QUOTE context {}".format(context))
         if not active_model == 'crm.lead' or not active_id:
             return
         lead = self.env['crm.lead'].browse(active_id)
