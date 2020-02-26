@@ -46,6 +46,7 @@
                             <field name="cash_rounding_id" groups="account.group_cash_rounding" invisible="1"/>
                             <field name="user_id" groups="base.group_user" string="IA"/>
                             <field name="invoice_template" required="1"/>
+                            <field name="merge_subtask"/>
                             <field name="activity_report_template" required="0"/>
                         </group>
                         <group string="Project">
