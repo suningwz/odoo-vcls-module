@@ -1,0 +1,16 @@
+<odoo>
+    <data noupdate="1">
+        <record id="SP_client_root_prefix" model="ir.config_parameter">
+            <field name="key">SP_client_root_prefix</field>
+            <field name="value">http://frb-sp-01/sites</field>
+        </record>
+        <record id="SP_client_root_postfix" model="ir.config_parameter">
+            <field name="key">SP_client_root_postfix</field>
+            <field name="value">/Documents/Forms/AllItems.aspx</field>
+        </record>
+        <record id="SP_supplier_root_prefix" model="ir.config_parameter">
+            <field name="key">SP_supplier_root_prefix</field>
+            <field name="value">http://frb-sp-01/sites/KM/Documents/Forms/AllItems.aspx?RootFolder=%2Fsites%2FKM%2FDocuments%2F02%20%2D%20Expert%20Log%2FSupplier%20Folders</field>
+        </record>
+    </data>
+</odoo>

@@ -46,6 +46,7 @@
                             <field name="cash_rounding_id" groups="account.group_cash_rounding" invisible="1"/>
                             <field name="user_id" groups="base.group_user" string="IA"/>
                             <field name="invoice_template" required="1"/>
+                            <field name="merge_subtask"/>
                             <field name="activity_report_template" required="0"/>
                         </group>
                         <group string="Project">
@@ -116,6 +117,9 @@
         <record id="account.action_invoice_tree1_view2" model="ir.actions.act_window.view">
             <field name="view_id" ref="view_invoice_form"/>
         </record>
+        <record id="account.action_invoice_tree1" model="ir.actions.act_window">
+            <field name="view_id" ref="view_invoice_form"/>
+        </record>
 
         <record id='po_view_tree' model='ir.ui.view'>
             <field name="name">po.view.tree</field>
@@ -179,8 +183,8 @@
             <field name="domain">[('type','in',['out_invoice','out_refund'])]</field>
             <field name="context">{'search_default_myinvoices':1,'search_default_status':1}</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('ia_invoices_view_tree')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('account.invoice_form')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-invoicing.ia_invoices_view_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-invoicing.view_invoice_form')}),
             ]"/>
         </record>
 
@@ -189,7 +193,10 @@
             <field name="res_model">account.invoice</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref='vcls-invoicing.ia_invoices_view_tree'/>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-invoicing.view_invoice_form')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-invoicing.ia_invoices_view_tree')}),
+            ]"/>
             <field name="domain">[('partner_id.user_id','=', uid)]</field>
             <field name="context">{'search_default_draft':1,'group_by':['commercial_partner_id']}</field>
         </record>
