@@ -358,6 +358,50 @@ class Project(models.Model):
             project.privacy_visibility = 'employees'
         
         return project
+
+    @api.multi
+    def unlink(self):
+        authorized = self.env.user.has_group('vcls_security.group_project_controller') or self.env.user.has_group('vcls_security.group_bd_admin')
+
+        if not authorized:
+            raise UserError(_("PROJECT UNLINK | You need to be a member of 'BD Admin' or 'Project Controller' to delete project(s)."))
+        
+        #we catch all child projects
+        projects = self.env['project.project']
+        for project in self:
+            if project.active:
+                raise UserError(_("PROJECT UNLINK | To avoid un-wanted deletion, we don't delete active project(s). Please archive {} 1st").format(project.name))
+            else:
+                projects |= project
+                projects |= project.child_id
+        
+        #we look for invoices
+        invoices = projects.mapped('out_invoice_ids')
+        if invoices:
+                raise UserError(_("PROJECT UNLINK | We can't delete projects having invoices, please archive instead\n{}").format(invoices.mapped('name')))
+        
+        for project in projects:
+            _logger.info("PROJECT UNLINK | Cleaning {}".format(project.name))
+            #we look for timesheets 
+            ts = self.env['account.analytic.line'].search([('project_id','=',project.id)])
+            if ts:
+                _logger.info("PROJECT UNLINK | Timesheets found {}".format(len(ts)))
+                if not self.env.user.has_group('vcls_security.group_project_controller'):
+                    raise UserError(_("PROJECT UNLINK | You need to be a member of 'Project Controller' to delete timesheet(s)."))
+                ts.unlink()
+            #we look for forecasts
+            fc = self.env['project.forecast'].search([('project_id','=',project.id)])
+            if fc:
+                _logger.info("PROJECT UNLINK | Forecasts found {}".format(len(fc)))
+                fc.unlink()
+            #we clean the tasks
+            tasks = self.env['project.task'].search([('project_id','=',project.id)])
+            if tasks:
+                _logger.info("PROJECT UNLINK | Tasks found {}".format(len(tasks)))
+                tasks.write({'sale_line_id':False})
+                tasks.unlink()
+                
+        return super(Project, self).unlink()
     
 
     ###################
