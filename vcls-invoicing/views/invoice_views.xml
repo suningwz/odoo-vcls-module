@@ -180,8 +180,8 @@
             <field name="domain">[('type','in',['out_invoice','out_refund'])]</field>
             <field name="context">{'search_default_myinvoices':1,'search_default_status':1}</field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('ia_invoices_view_tree')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('account.invoice_form')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-invoicing.ia_invoices_view_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-invoicing.view_invoice_form_inherit')}),
             ]"/>
         </record>
 
