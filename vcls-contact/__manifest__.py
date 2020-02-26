@@ -16,7 +16,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.6.9',
+    'version': '0.7',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -37,6 +37,7 @@
         'data/client.product.csv',
         'data/partner.seniority.csv',
         'data/partner.functional.focus.csv',
+        'data/parameters.xml',
         
         ### SECURITY ###
         'security/vcls_groups.xml',
@@ -56,6 +57,7 @@
 
         ### SEQUENCES ###
         'sequences/partner_sequences.xml',
+
         ],
 
     # only loaded in demonstration mode
