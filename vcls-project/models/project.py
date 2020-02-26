@@ -385,24 +385,24 @@ class Project(models.Model):
         for project in projects:
             _logger.info("PROJECT UNLINK | Cleaning {}".format(project.name))
             #we look for timesheets 
-            ts = self.env['account.analytic.line'].search([('project_id','=',project.id)])
+            ts = self.env['account.analytic.line'].with_context(active_test=False).search([('project_id','=',project.id)])
             if ts:
                 _logger.info("PROJECT UNLINK | Timesheets found {}".format(len(ts)))
                 if not self.env.user.has_group('vcls_security.group_project_controller'):
                     raise UserError(_("PROJECT UNLINK | You need to be a member of 'Project Controller' to delete timesheet(s)."))
                 ts.unlink()
             #we look for forecasts
-            fc = self.env['project.forecast'].search([('project_id','=',project.id)])
+            fc = self.env['project.forecast'].with_context(active_test=False).search([('project_id','=',project.id)])
             if fc:
                 _logger.info("PROJECT UNLINK | Forecasts found {}".format(len(fc)))
                 fc.unlink()
             #we clean the tasks
-            tasks = self.env['project.task'].search([('project_id','=',project.id)])
+            tasks = self.env['project.task'].with_context(active_test=False).search([('project_id','=',project.id)])
             if tasks:
                 _logger.info("PROJECT UNLINK | Tasks found {}".format(len(tasks)))
                 tasks.write({'sale_line_id':False})
                 tasks.unlink()
-                
+
         return super(Project, self).unlink()
     
 
