@@ -60,6 +60,7 @@
                         </div>
                         <group invisible="1" string="Hidden Fields">
                             <field name="active"/>
+                            <field name="show_folder_path"/>
                         </group>
                         <group>
                             

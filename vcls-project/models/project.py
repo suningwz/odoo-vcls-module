@@ -147,27 +147,6 @@ class Project(models.Model):
             reference = project.parent_id.sale_order_id.internal_ref if project.parent_id else project.sale_order_id.internal_ref
             project.sharepoint_folder = "{}/{}/{}/{}{}".format(pre,project.partner_id.altname[0],project.partner_id.altname,reference,post)
             project.show_folder_path = True
-
-
-        """#manual case
-        manual = self.filtered(lambda p: p.manual_sharepoint_folder)
-        for partner in manual:
-            partner.sharepoint_folder = partner.manual_sharepoint_folder
-            partner.create_folder = True
-
-        #suppliers
-        auto_suppliers = self.filtered(lambda p: not p.manual_sharepoint_folder and p.supplier and p.is_company)
-        pre = self.env.ref('vcls-contact.SP_supplier_root_prefix').value
-        for partner in auto_suppliers:
-            partner.sharepoint_folder = "{}/{}".format(pre,partner.name)
-            partner.create_folder = True
-
-        #clients
-        auto_clients = self.filtered(lambda p: not p.manual_sharepoint_folder and p.customer and p.is_company and p.altname)
-        
-        for partner in auto_clients:
-            partner.sharepoint_folder = "{}/{}/{}{}".format(pre,partner.altname[0],partner.altname,post)
-            partner.create_folder = True"""
     
     def _compute_dates(self):
         for project in self:
