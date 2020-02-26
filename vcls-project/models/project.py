@@ -402,6 +402,10 @@ class Project(models.Model):
                 _logger.info("PROJECT UNLINK | Tasks found {}".format(len(tasks)))
                 tasks.write({'sale_line_id':False})
                 tasks.unlink()
+            #we clean the mapping
+            if project.sale_line_employee_ids:
+                _logger.info("PROJECT UNLINK | SO line mappings {}".format(len(project.sale_line_employee_ids)))
+                project.sale_line_employee_ids.unlink()
 
         return super(Project, self).unlink()
     
