@@ -292,7 +292,7 @@ class ResPartner(models.Model):
 
         #suppliers
         auto_suppliers = self.filtered(lambda p: not p.manual_sharepoint_folder and p.supplier and p.is_company)
-        pre = self.env.ref('vcls-contact.SP_client_root_prefix').value
+        pre = self.env.ref('vcls-contact.SP_supplier_root_prefix').value
         for partner in auto_suppliers:
             partner.sharepoint_folder = "{}/{}".format(pre,partner.name)
             partner.create_folder = True
