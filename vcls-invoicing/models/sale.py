@@ -13,7 +13,8 @@ class SaleOrder(models.Model):
 
     def get_activity_report_template(self):
         order_id = self._context.get('params', {}).get('id')
-        if order_id:
+        model = self._context.get('params', {}).get('model')
+        if model == 'sale.order' and order_id:
             order_id = self.env['sale.order'].browse(order_id)
             return order_id.partner_id.activity_report_template
         return False
