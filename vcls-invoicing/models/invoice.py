@@ -72,6 +72,8 @@ class Invoice(models.Model):
         help='Company Bank Account Number to which the invoice will be paid.',
     )
 
+    merge_subtask = fields.Boolean()
+
     @api.multi
     def get_last_report(self):
         self.ensure_one()
@@ -253,8 +255,15 @@ class Invoice(models.Model):
             if not timesheet_id.so_line.qty_invoiced:
                 continue
             project_id = timesheet_id.project_id
-            task_id = timesheet_id.task_id
-            parent_task_id = task_id.parent_id or task_id
+
+            if self.merge_subtask and timesheet_id.task_id.parent_id: #if the task has a parent and we merge
+                parent_task_id = timesheet_id.task_id.parent_id
+            else:
+                parent_task_id = timesheet_id.task_id
+
+            """task_id = timesheet_id.task_id
+            parent_task_id = task_id.parent_id or task_id"""
+
             rate_product_id = timesheet_id.so_line.product_id
             rate_product_ids |= rate_product_id
             time_category_id = timesheet_id.time_category_id
@@ -341,7 +350,13 @@ class Invoice(models.Model):
         for timesheet_id in self.timesheet_ids.filtered(lambda t: t.so_line.qty_invoiced)\
                 .sorted(lambda t: t.so_line.price_unit, reverse=True):
             rate_sale_line_id = timesheet_id.so_line
-            service_sale_line_id = timesheet_id.task_id.sale_line_id
+
+            if self.merge_subtask and timesheet_id.task_id.parent_id: #if the task has a parent and we merge
+                task_id = timesheet_id.task_id.parent_id
+            else:
+                task_id = timesheet_id.task_id
+
+            service_sale_line_id = task_id.sale_line_id
             service_section_line_id = service_sale_line_id.section_line_id
             rates_dict = data.setdefault(service_section_line_id, OrderedDict())
             values = rates_dict.setdefault(
@@ -382,7 +397,12 @@ class Invoice(models.Model):
         for timesheet_id in self.timesheet_ids.filtered(lambda t: t.so_line.qty_invoiced)\
                 .sorted(lambda t: t.so_line.price_unit, reverse=True):
             rate_sale_line_id = timesheet_id.so_line
-            task_id = timesheet_id.task_id
+
+            if self.merge_subtask and timesheet_id.task_id.parent_id: #if the task has a parent and we merge
+                task_id = timesheet_id.task_id.parent_id
+            else:
+                task_id = timesheet_id.task_id
+
             rates_dict = data.setdefault(task_id, OrderedDict())
             values = rates_dict.setdefault(
                 rate_sale_line_id, {

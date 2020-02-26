@@ -11,7 +11,7 @@
     'author': "VCLS",
     'website': "http://www.voisinconsulting.com",
     'category': 'Uncategorized',
-    'version': '0.0.1',
+    'version': '0.0.2',
     'depends': [
         'mail',
     ],
@@ -19,6 +19,7 @@
     'data': [
         ### VIEWS ###
         'views/kpi_views.xml',
+        'views/activity_view.xml',
         ### SECURITY ###
         'security/ir.model.access.csv'
     ],

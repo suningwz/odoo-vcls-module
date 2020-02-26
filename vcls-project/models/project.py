@@ -129,6 +129,27 @@ class Project(models.Model):
     external_account = fields.Char(
         default="/",
     )
+
+    sharepoint_folder = fields.Char(
+        string='Sharepoint Folder',
+        compute='_compute_sharepoint_folder',
+        readonly=True,
+        store=True,
+    )
+
+    show_folder_path = fields.Boolean()
+
+    @api.depends('sale_order_id', 'project_type', 'parent_id','partner_id')
+    def _compute_sharepoint_folder(self):
+        pre = self.env.ref('vcls-contact.SP_client_root_prefix').value
+        post = self.env.ref('vcls-contact.SP_client_root_postfix').value
+        for project in self.filtered(lambda p: p.project_type=='client' and p.sale_order_id and p.partner_id.altname):
+            reference = project.parent_id.sale_order_id.internal_ref if project.parent_id \
+                else project.sale_order_id.internal_ref or ''
+            if reference:
+                reference = "{}-{}".format(reference.split('-')[0],reference.split('-')[1])
+            project.sharepoint_folder = "{}/{}/{}/{}{}".format(pre,project.partner_id.altname[0],project.partner_id.altname,reference,post)
+            project.show_folder_path = True
     
     def _compute_dates(self):
         for project in self:
@@ -339,6 +360,54 @@ class Project(models.Model):
             project.privacy_visibility = 'employees'
         
         return project
+
+    @api.multi
+    def unlink(self):
+        authorized = self.env.user.has_group('vcls_security.group_project_controller') or self.env.user.has_group('vcls_security.group_bd_admin')
+
+        if not authorized:
+            raise UserError(_("PROJECT UNLINK | You need to be a member of 'BD Admin' or 'Project Controller' to delete project(s)."))
+        
+        #we catch all child projects
+        projects = self.env['project.project']
+        for project in self:
+            if project.active:
+                raise UserError(_("PROJECT UNLINK | To avoid un-wanted deletion, we don't delete active project(s). Please archive {} 1st").format(project.name))
+            else:
+                projects |= project
+                projects |= project.child_id
+        
+        #we look for invoices
+        invoices = projects.mapped('out_invoice_ids')
+        if invoices:
+                raise UserError(_("PROJECT UNLINK | We can't delete projects having invoices, please archive instead\n{}").format(invoices.mapped('name')))
+        
+        for project in projects:
+            _logger.info("PROJECT UNLINK | Cleaning {}".format(project.name))
+            #we look for timesheets 
+            ts = self.env['account.analytic.line'].with_context(active_test=False).search([('project_id','=',project.id)])
+            if ts:
+                _logger.info("PROJECT UNLINK | Timesheets found {}".format(len(ts)))
+                if not self.env.user.has_group('vcls_security.group_project_controller'):
+                    raise UserError(_("PROJECT UNLINK | You need to be a member of 'Project Controller' to delete timesheet(s)."))
+                ts.unlink()
+            #we look for forecasts
+            fc = self.env['project.forecast'].with_context(active_test=False).search([('project_id','=',project.id)])
+            if fc:
+                _logger.info("PROJECT UNLINK | Forecasts found {}".format(len(fc)))
+                fc.unlink()
+            #we clean the tasks
+            tasks = self.env['project.task'].with_context(active_test=False).search([('project_id','=',project.id)])
+            if tasks:
+                _logger.info("PROJECT UNLINK | Tasks found {}".format(len(tasks)))
+                tasks.write({'sale_line_id':False})
+                tasks.unlink()
+            #we clean the mapping
+            if project.sale_line_employee_ids:
+                _logger.info("PROJECT UNLINK | SO line mappings {}".format(len(project.sale_line_employee_ids)))
+                project.sale_line_employee_ids.unlink()
+
+        return super(Project, self).unlink()
     
 
     ###################

@@ -54,7 +54,10 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
         result['message_ids'] = [(0, 0, TranslatorSFLeads.generateLog(SF_Leads))]
 
         #_logger.info("TRANSLATOR LEAD {}".format(result))
-
+        if SF_Leads['Opt_in_Campaign__c']:
+            result['marketing_task_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Leads['Opt_in_Campaign__c'],"project.task","Campaign",odoo)
+        if SF_Leads['Unsubscribe_Campaign__c']:
+            result['marketing_task_out_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Leads['Unsubscribe_Campaign__c'],"project.task","Campaign",odoo)
         return result
     
     @staticmethod

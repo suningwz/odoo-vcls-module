@@ -34,7 +34,7 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
         result['function'] = SF_Contact['Title']
         result['description'] = 'Contact description : \n' + str(SF_Contact['Description']) + '\n'
         # Parent company info
-        company =TranslatorSFContact.get_parent(SF_Contact, odoo)
+        company = TranslatorSFContact.get_parent(SF_Contact, odoo)
         if company:
             result['category_id'] =  [(6, 0, company.category_id.ids)]
             result['customer'] = company.customer
@@ -76,6 +76,10 @@ class TranslatorSFContact(TranslatorSFGeneral.TranslatorSFGeneral):
 
         #if SF_Contact['VCLS_Initial_Contact__c']:
             #result['vcls_contact_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUserId(SF_Contact['VCLS_Initial_Contact__c'],odoo, SF)
+        if SF_Contact['Opt_in_Campaign__c']:
+            result['marketing_task_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Contact['Opt_in_Campaign__c'],"project.task","Campaign",odoo)
+        if SF_Contact['Unsubscribe_Campaign__c']:
+            result['marketing_task_out_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Contact['Unsubscribe_Campaign__c'],"project.task","Campaign",odoo)
 
         return result
     
