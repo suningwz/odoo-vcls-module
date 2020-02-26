@@ -145,6 +145,7 @@ class Project(models.Model):
         post = self.env.ref('vcls-contact.SP_client_root_postfix').value
         for project in self.filtered(lambda p: p.project_type=='client' and p.sale_order_id and p.partner_id.altname):
             reference = project.parent_id.sale_order_id.internal_ref if project.parent_id else project.sale_order_id.internal_ref
+            reference = "{}-{}".format(reference.split('-')[0],reference.split('-')[1])
             project.sharepoint_folder = "{}/{}/{}/{}{}".format(pre,project.partner_id.altname[0],project.partner_id.altname,reference,post)
             project.show_folder_path = True
     
