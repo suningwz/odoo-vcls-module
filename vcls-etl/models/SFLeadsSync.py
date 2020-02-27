@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 from odoo import models, fields, api
 
 class SFLeadsSync(models.Model):
-    _name = 'etl.salesforce.leads'
+    _name = 'etl.salesforce.lead'
     _inherit = 'etl.sync.salesforce'
 
     def getSFTranslator(self, sfInstance):
