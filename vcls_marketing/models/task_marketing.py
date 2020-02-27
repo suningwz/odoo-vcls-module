@@ -94,9 +94,8 @@ class Task(models.Model):
     @api.depends('travel_cost','sponsorship_cost','registration_cost','saved_cost')
     def _compute_total_cost(self):
         for task in self.filtered(lambda t: t.task_type == 'marketing'):
-            task.total_cost = (task.travel_cost + task.sponsorship_cost + task.registration_cost - task.saved_cost)
+            task.total_cost = (task.travel_cost + task.sponsorship_cost + task.registration_cost)
 
-    
 
     lead_count = fields.Integer(
         compute="_compute_lead_count",

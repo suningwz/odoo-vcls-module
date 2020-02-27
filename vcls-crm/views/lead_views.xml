@@ -228,6 +228,7 @@
             </field>
 
             <field name="team_id" position="after">
+                <field name='proposal_type' string="Proposal Type"/>
                 <field name="internal_ref" readonly="0" style="color:#08206E;"/>
             </field>
 
@@ -239,7 +240,7 @@
                 <field name='risk_raised' invisible = '1' />
                 <button name="raise_go_nogo" string="Go/NoGo required"
                     type="object" class="oe_highlight" 
-                    attrs="{'invisible': [('risk_raised','=',True)]}"
+                    invisible="1"
                     />
             </xpath>
 

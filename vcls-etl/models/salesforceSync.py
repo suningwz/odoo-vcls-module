@@ -58,10 +58,11 @@ class salesforceSync(models.Model):
     
     @api.model
     def sf_process_keys(self,batch_size=False,loop=True,duration=9):
-        keys = self.env['etl.sync.keys'].search([('state','not in',['upToDate','postponed'])]).mapped('priority')
-        
-        if keys:
-            top_priority = max(keys)
+        priorities = self.env['etl.sync.keys'].search([('state','not in',['upToDate','postponed'])]).mapped('priority')
+        if priorities:
+            top_priority = max(priorities)
+        else:
+            top_priority = False
         #priorities = list(set())
         #_logger.info("ETL |  {} ".format(priorities))
 
