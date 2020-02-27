@@ -33,7 +33,7 @@ class TimeCategory(models.Model):
     @api.model
     def create(self,vals):
         #we search for exisiting entries
-        existing = self.search(['name','=ilike',vals['name'])],limit=1)
+        existing = self.search([('name','=ilike',vals['name'])],limit=1)
         if existing:
             raise UserError(_("Please use the existing category '{}'").format(exisiting.name))
         else:
