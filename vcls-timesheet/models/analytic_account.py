@@ -93,6 +93,25 @@ class AnalyticLine(models.Model):
         domain=[('parent_id', '=', False)],
     )
 
+    billability = fields.Selection([
+        ('na', 'N/A'),
+        ('billable', 'BILLABLE'),
+        ('non_billable', 'NON BILLABLE'),],
+        compute = '_compute_billability',
+        store = True,
+        default = 'na',
+        )
+
+    @api.depends('project_id')
+    def _compute_billability(self):
+        timesheets = self.filtered(lambda t: t.is_timesheet and t.project_id)
+        for ts in timesheets:
+            if ts.project_id.project_type == 'client':
+                ts.billability = 'billable'
+            else:
+                ts.billability = 'non_billable'
+
+
     @api.model
     def show_grid_cell(self, domain=[], column_value='', row_values={}):
         line = self.sudo().search(domain, limit=1)

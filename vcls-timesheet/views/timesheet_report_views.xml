@@ -7,10 +7,11 @@
             <field name="arch" type="xml">
                 <pivot string="Line Manager Report">
                     <field name="employee_id" type="row"/>
+                    <field name="billability" type="row"/>
                     <field name = "project_id" type="row" />
                     <!--<field name = "deliverable_id" type="row" />-->
                     <field name = "task_id" type="row" />
-                    <field name = "date" type = "col" />
+                    <field name = "date" type = "col" interval="week" />
                     <field name="unit_amount" type="measure"/>
                 </pivot>
             </field>
@@ -22,15 +23,16 @@
             <field name="view_mode">pivot</field>
             <field name='view_id' ref='timesheet_lm_report_pivot' />
             <field name = 'domain'>[('date','&gt;=',(context_today()-relativedelta(months=1)).strftime('%Y-%m-01')),('date','&lt;',time.strftime('%Y-%m-01')),('employee_id.parent_id.user_id','=',uid)]</field>
-            <field name = "context">{'group_by': ['date:week','employee_id','project_id']}</field>
+            <field name = "context">{'group_by': ['employee_id','billability','project_id']}</field>
         </record>
 
+        <!--
         <menuitem id="menu_lm_timesheet_tree"
             name="Pivot View"
             sequence="2"
             parent="menu_lm_timesheet"
             action="action_lm_all_timesheet_pivot"
-        />
+        />-->
 
     </data>
 </odoo> 

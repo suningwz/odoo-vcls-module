@@ -322,7 +322,7 @@
         </record>
 
         <record id="action_lm_all_timesheet_tree" model="ir.actions.act_window">
-            <field name="name">Managee Timesheets</field>
+            <field name="name">Managee's Time</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.analytic.line</field>
             <field name="context">{'group_by':['employee_id', 'project_id']}</field>
@@ -333,18 +333,21 @@
 
         <menuitem id="hr_timesheet.timesheet_menu_activity_mine" name="My Timesheets" sequence="1" parent="hr_timesheet.timesheet_menu_root" action="hr_timesheet.act_hr_timesheet_line" />
 
-        <menuitem id="hr_timesheet.timesheet_menu_activity_all"
+        <menuitem id="menu_lm_timesheet"
+                  name="Managee's Time Analysis" sequence="4"
+                  parent="hr_timesheet.timesheet_menu_root"
+                  groups="vcls-hr.vcls_group_lm,vcls-hr.vcls_group_superuser_lvl2"
+                  action="action_lm_all_timesheet_pivot"
+        />
+
+        <!--<menuitem id="hr_timesheet.timesheet_menu_activity_all"
                   name="All Timesheets" parent="hr_timesheet.menu_hr_time_tracking"
                   action="hr_timesheet.timesheet_action_all"
-                  groups="hr_timesheet.group_timesheet_manager,vcls_security.group_project_controller" />
+                  groups="hr_timesheet.group_timesheet_manager,vcls_security.group_project_controller" />-->
 
         <menuitem name="To Validate" id="timesheet_grid.menu_timesheet_grid_validate" parent="hr_timesheet.timesheet_menu_root" groups="hr_timesheet.group_timesheet_manager" sequence="10" active="False" />
 
-        <menuitem id="menu_lm_timesheet"
-                  name="Line Manager" sequence="4"
-                  parent="hr_timesheet.timesheet_menu_root"
-                  groups="vcls-hr.vcls_group_lm"
-        />
+        
 
         <!--<menuitem id="menu_lm_timesheet_tree" name="Tree" sequence="1" parent="menu_lm_timesheet" action="action_lm_all_timesheet_tree" />
 
@@ -485,6 +488,20 @@
             <field name="name">account.analytic.line.grid.project.inherit</field>
             <field name="model">account.analytic.line</field>
             <field name="inherit_id" ref="timesheet_grid.timesheet_view_grid_by_project"/>
+            <field name="arch" type="xml">
+                <range name="month" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </range>
+                <field name="unit_amount" position="attributes">
+                    <attribute name="widget">float</attribute>
+                </field>
+            </field>
+        </record>
+
+        <record id="timesheet_view_grid_by_employee_readonly" model="ir.ui.view">
+            <field name="name">account.analytic.line.grid.employee.readonly</field>
+            <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="timesheet_grid.timesheet_view_grid_by_employee_readonly"/>
             <field name="arch" type="xml">
                 <range name="month" position="attributes">
                     <attribute name="invisible">1</attribute>
