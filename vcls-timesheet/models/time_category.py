@@ -1,4 +1,4 @@
-from odoo import models, fields, tools, api
+from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError
 
 import logging
