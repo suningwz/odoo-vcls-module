@@ -55,5 +55,18 @@ class TimeCategory(models.Model):
                         _logger.info("Found product template to update {}".format(len(pt)))
                         pt.write({'time_category_ids': [(3, tc.id, 0)]})
                         pt.write({'time_category_ids': [(4, to_keep.id, 0)]})
+                    pt = self.env['product.product'].with_context(active_test=False).search([('time_category_ids','in',tc.id)])
+                    if pt:
+                        _logger.info("Found product to update {}".format(len(pt)))
+                        pt.write({'time_category_ids': [(3, tc.id, 0)]})
+                        pt.write({'time_category_ids': [(4, to_keep.id, 0)]})
+                    #we look in tasks
+                    tk = self.env['project.task'].with_context(active_test=False).search([('time_category_ids','in',tc.id)])
+                    if tk:
+                        _logger.info("Found tasks to update {}".format(len(tk)))
+                        pt.write({'time_category_ids': [(3, tk.id, 0)]})
+                        pt.write({'time_category_ids': [(4, to_keep.id, 0)]})
+
+
 
 
