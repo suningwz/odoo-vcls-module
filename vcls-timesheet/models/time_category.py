@@ -45,9 +45,9 @@ class TimeCategory(models.Model):
             #we get all the records having
             tcs = self.search([('name','=ilike',name_to_merge)]).sorted(key=lambda t: t.id)
             if tcs:
-                _logger.info("Merging {} tc as {}".format(len(tcs),name_to_merge))
                 to_keep = tcs[0]
                 to_replace = tcs-to_keep
+                _logger.info("Merging {} tc as {} in {}".format(len(tcs),name_to_merge,to_keep.id))
                 for tc in to_replace:
                     #we look in products
                     pt = self.env['product.template'].with_context(active_test=False).search([('time_category_ids','in',tc.id)])
@@ -66,6 +66,13 @@ class TimeCategory(models.Model):
                         _logger.info("Found tasks to update {}".format(len(tk)))
                         pt.write({'time_category_ids': [(3, tk.id, 0)]})
                         pt.write({'time_category_ids': [(4, to_keep.id, 0)]})
+                    #we replace in timesheet
+                    ts = self.env['account.analytic.line'].with_context(active_test=False).search([('is_timesheet','=',True),('time_category_id','=',tc.id)])
+                    if ts:
+                        _logger.info("Found tasks to update {}".format(len(ts)))
+                        ts.write({'time_category_id': to_keep.id})
+                    tc.name = tc.name+"_toclean"
+                    
 
 
 
