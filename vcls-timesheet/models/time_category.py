@@ -10,7 +10,7 @@ class TimeCategory(models.Model):
 
     _description = 'Time Category'
 
-    name = fields.Char()
+    name = fields.Char(required=True)
     active = fields.Boolean(default="True")
 
     @api.model
@@ -29,3 +29,16 @@ class TimeCategory(models.Model):
                 return []
             
         return time_category_ids
+
+    @api.model
+    def create(self,vals):
+        #we search for exisiting entries
+        existing = self.search(['name','=ilike',vals['name'])],limit=1)
+        if existing:
+            raise UserError(_("Please use the existing category '{}'").format(exisiting.name))
+        else:
+            return super(TimeCategory, self).create(vals)
+
+    
+    """@api.model
+    def replace(self):"""
