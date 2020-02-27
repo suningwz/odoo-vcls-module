@@ -23,6 +23,7 @@
                         <filter string="Project" name="groupby_project" domain="[]" context="{'group_by':'project_id'}"/>
                         <filter string="Deliverable" name="groupby_deliverable" domain="[]" context="{'group_by':'deliverable_id'}"/>
                         <filter string="Task" name="groupby_task" domain="[]" context="{'group_by':'task_id'}"/>
+                        <filter string="Time Category" name="groupby_tc" domain="[]" context="{'group_by':'time_category_id'}" help="Timesheet by Time Category"/>
                         <filter string="Employee" name="groupby_employee" domain="[]" context="{'group_by':'employee_id'}"/>
                         <filter string="Timesheet Date" name="groupby_date" domain="[]" context="{'group_by':'date'}" help="Timesheet by Date"/>
 
