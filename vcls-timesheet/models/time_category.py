@@ -64,14 +64,15 @@ class TimeCategory(models.Model):
                     tk = self.env['project.task'].with_context(active_test=False).search([('time_category_ids','in',tc.id)])
                     if tk:
                         _logger.info("Found tasks to update {}".format(len(tk)))
-                        pt.write({'time_category_ids': [(3, tk.id, 0)]})
+                        pt.write({'time_category_ids': [(3, tc.id, 0)]})
                         pt.write({'time_category_ids': [(4, to_keep.id, 0)]})
                     #we replace in timesheet
                     ts = self.env['account.analytic.line'].with_context(active_test=False).search([('is_timesheet','=',True),('time_category_id','=',tc.id)])
                     if ts:
                         _logger.info("Found tasks to update {}".format(len(ts)))
                         ts.write({'time_category_id': to_keep.id})
-                    tc.name = tc.name+"_toclean"
+                    #we remove the one to clean
+                    tc.unlink()
                     
 
 
