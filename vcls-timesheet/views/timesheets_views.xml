@@ -490,7 +490,7 @@
                     <attribute name="invisible">1</attribute>
                 </range>
                 <field name="unit_amount" position="attributes">
-                    <attribute name="widget"></attribute>
+                    <attribute name="widget">float</attribute>
                 </field>
             </field>
         </record>
