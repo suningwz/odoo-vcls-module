@@ -26,12 +26,13 @@ class mapOdoo(models.Model):
         for item in to_find:
             found = self.search([('externalName','=ilike',item),('odModelName','=',model)],limit=1)
             if found: #a map exist
-                _logger.info("Found ETL map: {} - {} - {} - {}".format(model,item, found.externalName, found.odooId))
-                results.append(int(found.odooId))
+                #_logger.info("Found ETL map: {} - {} - {} - {}".format(model,item, found.externalName, found.odooId))
+                if found.odooId:
+                    results.append(int(found.odooId))
             else: #we create a new map
                 new_map = self.env[model].search([('name','ilike',item)],limit=1)
                 if new_map:
-                    _logger.info("New ETL map from existing: {} - {} | {} - {}".format(model,item,new_map.id,new_map.name))
+                    #_logger.info("New ETL map from existing: {} - {} | {} - {}".format(model,item,new_map.id,new_map.name))
                     results.append(new_map.id)
                     self.create({
                         'odModelName':model,
@@ -40,7 +41,7 @@ class mapOdoo(models.Model):
                         'stage':1,
                     })
                 else:
-                    _logger.info("New ETL map: {} - {}".format(model,item))
+                    #_logger.info("New ETL map: {} - {}".format(model,item))
                     self.create({
                         'odModelName':model,
                         'externalName':item.lower(),
