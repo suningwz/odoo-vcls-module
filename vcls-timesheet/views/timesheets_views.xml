@@ -23,6 +23,8 @@
                         <filter string="Project" name="groupby_project" domain="[]" context="{'group_by':'project_id'}"/>
                         <filter string="Deliverable" name="groupby_deliverable" domain="[]" context="{'group_by':'deliverable_id'}"/>
                         <filter string="Task" name="groupby_task" domain="[]" context="{'group_by':'task_id'}"/>
+                        <filter string="Time Category" name="groupby_tc" domain="[]" context="{'group_by':'time_category_id'}" help="Timesheet by Time Category"/>
+                        <filter string="External Comment" name="groupby_name" domain="[]" context="{'group_by':'name'}" help="Timesheet by External Comment"/>
                         <filter string="Employee" name="groupby_employee" domain="[]" context="{'group_by':'employee_id'}"/>
                         <filter string="Timesheet Date" name="groupby_date" domain="[]" context="{'group_by':'date'}" help="Timesheet by Date"/>
 
@@ -320,7 +322,7 @@
         </record>
 
         <record id="action_lm_all_timesheet_tree" model="ir.actions.act_window">
-            <field name="name">Managee Timesheets</field>
+            <field name="name">Managee's Time</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.analytic.line</field>
             <field name="context">{'group_by':['employee_id', 'project_id']}</field>
@@ -331,18 +333,21 @@
 
         <menuitem id="hr_timesheet.timesheet_menu_activity_mine" name="My Timesheets" sequence="1" parent="hr_timesheet.timesheet_menu_root" action="hr_timesheet.act_hr_timesheet_line" />
 
-        <menuitem id="hr_timesheet.timesheet_menu_activity_all"
+        <menuitem id="menu_lm_timesheet"
+                  name="Managee's Time Analysis" sequence="4"
+                  parent="hr_timesheet.timesheet_menu_root"
+                  groups="vcls-hr.vcls_group_lm,vcls-hr.vcls_group_superuser_lvl2"
+                  action="action_lm_all_timesheet_pivot"
+        />
+
+        <!--<menuitem id="hr_timesheet.timesheet_menu_activity_all"
                   name="All Timesheets" parent="hr_timesheet.menu_hr_time_tracking"
                   action="hr_timesheet.timesheet_action_all"
-                  groups="hr_timesheet.group_timesheet_manager,vcls_security.group_project_controller" />
+                  groups="hr_timesheet.group_timesheet_manager,vcls_security.group_project_controller" />-->
 
         <menuitem name="To Validate" id="timesheet_grid.menu_timesheet_grid_validate" parent="hr_timesheet.timesheet_menu_root" groups="hr_timesheet.group_timesheet_manager" sequence="10" active="False" />
 
-        <menuitem id="menu_lm_timesheet"
-                  name="Line Manager" sequence="4"
-                  parent="hr_timesheet.timesheet_menu_root"
-                  groups="vcls-hr.vcls_group_lm"
-        />
+        
 
         <!--<menuitem id="menu_lm_timesheet_tree" name="Tree" sequence="1" parent="menu_lm_timesheet" action="action_lm_all_timesheet_tree" />
 
@@ -434,6 +439,8 @@
                 'search_default_draft':1,
                 'search_default_groupby_project':1,
                 'search_default_groupby_task':1,
+                'search_default_groupby_tc':1,
+                'search_default_groupby_name':1,
                 }
             </field>
         </record>
@@ -486,7 +493,21 @@
                     <attribute name="invisible">1</attribute>
                 </range>
                 <field name="unit_amount" position="attributes">
-                    <attribute name="widget"></attribute>
+                    <attribute name="widget">float</attribute>
+                </field>
+            </field>
+        </record>
+
+        <record id="timesheet_view_grid_by_employee_readonly" model="ir.ui.view">
+            <field name="name">account.analytic.line.grid.employee.readonly</field>
+            <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="timesheet_grid.timesheet_view_grid_by_employee_readonly"/>
+            <field name="arch" type="xml">
+                <range name="month" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </range>
+                <field name="unit_amount" position="attributes">
+                    <attribute name="widget">float</attribute>
                 </field>
             </field>
         </record>
