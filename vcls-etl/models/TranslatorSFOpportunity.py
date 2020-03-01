@@ -29,6 +29,8 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
             description +='Description :\n' + str(SF_Opportunity['Description']) + '\n'
         if SF_Opportunity['Client_Product_Description__c']:
             description +='Client Product Description :\n' +  str(SF_Opportunity['Client_Product_Description__c'])
+        if SF_Opportunity['Reasons_Lost__c']:
+            result['lost_reasons']=[(6, 0, mapOdoo.convertRef(SF_Opportunity['Reasons_Lost__c'],odoo,'crm.lost.reason',True))]
         if SF_Opportunity['Reasons_Lost_Comments__c']:
             description +='Lost Reason:\n' +  str(SF_Opportunity['Reasons_Lost_Comments__c'])
         result['scope_of_work'] = description
