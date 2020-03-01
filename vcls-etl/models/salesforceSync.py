@@ -70,7 +70,7 @@ class salesforceSync(models.Model):
             #Init
             self.env.user.context_data_integration = True
 
-            timestamp_end = datetime.now() + timedelta(minutes=duration)
+            timestamp_end = datetime.now() + timedelta(minutes=duration) - timedelta(seconds=10)
             loop_cron = loop
 
             sfInstance = self.getSFInstance()
