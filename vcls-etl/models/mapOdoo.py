@@ -30,7 +30,10 @@ class mapOdoo(models.Model):
                 if found.odooId:
                     results.append(int(found.odooId))
             else: #we create a new map
-                new_map = self.env[model].search([('name','ilike',item)],limit=1)
+                #we 1st try an exact match (except case)
+                new_map = self.env[model].search([('name','=ilike',item)],limit=1)
+                if not new_map: #else we try a partial match
+                    new_map = self.env[model].search([('name','ilike',item)],limit=1)
                 if new_map:
                     _logger.info("New ETL map from existing: {} - {} | {} - {}".format(model,item,new_map.id,new_map.name))
                     results.append(new_map.id)
