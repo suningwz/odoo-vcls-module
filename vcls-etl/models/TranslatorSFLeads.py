@@ -22,6 +22,7 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
         if SF_Leads['Description']:
             result['description'] += 'Description : ' + str(SF_Leads['Description']) + '\n'
         if SF_Leads['LeadSource']:
+            _logger.info("Lead Source | {}".format(SF_Leads['LeadSource']))
             result['marketing_project_id'] = mapOdoo.convertRef(SF_Leads['LeadSource'],odoo,'project.project',False)
         result['type'] = 'lead'
 
