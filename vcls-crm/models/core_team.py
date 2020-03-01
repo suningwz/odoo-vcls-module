@@ -49,6 +49,14 @@ class CoreTeam(models.Model):
     )
 
     @api.multi
+    def swap_lc_with_lc_backup(self):
+        self.ensure_one()
+        if self.lead_backup and self.lead_consultant:
+            tmp = self.lead_consultant
+            self.lead_consultant = self.lead_backup
+            self.lead_backup = tmp
+
+    @api.multi
     def write(self, vals):
         if vals.get('lead_consultant',False):
             lc_user = self.env['hr.employee'].browse(vals.get('lead_consultant')).user_id
