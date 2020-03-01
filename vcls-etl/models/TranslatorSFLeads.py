@@ -25,6 +25,9 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
         if SF_Leads['LastName']:
             result['lastname'] = SF_Leads['LastName']
 
+        temp = "{} {} {}".format(result.get('firstname',''),result.get('lastname2',''),result.get('lastname',''))
+        result['name'] = temp.replace('  ',' ')
+
         if SF_Leads['OwnerId']:
             result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertSfIdToOdooId(SF_Leads['OwnerId'],odoo,SF)
         result['description'] = ''
