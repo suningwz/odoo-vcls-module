@@ -74,6 +74,9 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         #result.update(odoo.env['crm.lead']._onchange_partner_id_values(int(result['partner_id']) if result['partner_id'] else False)) 
         result['message_ids'] = [(0, 0, TranslatorSFOpportunity.generateLog(SF_Opportunity))]
         result['log_info'] = SF_Opportunity['Name']
+        
+        if SF_Opportunity['ContractId']:
+            result['agreement_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Opportunity['ContractId'],"agreement","Contract",odoo)
 
         return result
 

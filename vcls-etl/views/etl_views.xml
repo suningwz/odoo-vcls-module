@@ -72,9 +72,14 @@
             <field name="res_model">etl.salesforce.opportunity</field>
             <field name="view_mode">kanban,tree,form,activity</field>
     	</record>
-	    <record model="ir.actions.act_window" id="action_etl_leads">
+	    <record model="ir.actions.act_window" id="action_etl_lead">
             <field name="name">ETL Salesforce Lead</field>
-            <field name="res_model">etl.salesforce.leads</field>
+            <field name="res_model">etl.salesforce.lead</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+    	</record>
+		<record model="ir.actions.act_window" id="action_etl_campaign">
+            <field name="name">ETL Salesforce Campaign</field>
+            <field name="res_model">etl.salesforce.campaign</field>
             <field name="view_mode">kanban,tree,form,activity</field>
     	</record>
 		<record model="ir.actions.act_window" id="action_etl_map">

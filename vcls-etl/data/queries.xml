@@ -62,7 +62,7 @@
                 Id, Name, StageName, CampaignId,
                 Description, Client_Product_Description__c, Reasons_Lost_Comments__c, Significant_Opportunity_Notes__c, Probability,
                 AccountId, OwnerId, Technical_Advisor__c, 
-                CurrencyIsoCode, Amount,
+                CurrencyIsoCode, Amount, ContractId,
                 Project_start_date__c, Deadline_for_Sending_Proposal__c, CloseDate, Proposal_Type__c, Significant_Opportunity__c
                 FROM Opportunity
             </field>
@@ -87,7 +87,8 @@
                 Id, Name, OwnerId, Activity__c, Address, City, Company, Content_Name__c, Country,PostalCode, Street, 
                 CurrencyIsoCode, Email,First_VCLS_Contact_Point__c, Opt_in_Campaign__c, Unsubscribe_Campaign__c,
                 External_Referee__c, Fax, Functional_Focus__c, Inactive_Lead__c, Industry, Contact_us_Message__c, Initial_Product_Interest__c, 
-                LastModifiedDate, Title, Seniority__c, Phone, Website, Description, LeadSource 
+                LastModifiedDate, Title, Seniority__c, Phone, Website, Description, LeadSource, ConvertedDate,
+                Salutation, State, Status, LinkedIn_Profile__c, Opted_In__c
                 FROM Lead
             </field>
         </record>
@@ -108,7 +109,9 @@
                 Contract_Update__c, Contract_URL__c, CurrencyIsoCode, CustomerSignedDate, 
                 CustomerSignedId, CustomerSignedTitle, EndDate,Link_to_Parent_Contract__c, 
                 OwnerId, Parent_Contract_Name__c, Parent_Contract_Type__c, 
-                Replaces_Supersedes__c, Type_of_Contract__c, VCLS_Status__c 
+                Replaces_Supersedes__c, Type_of_Contract__c, VCLS_Status__c,
+                OwnerExpirationNotice, StartDate, SpecialTerms, Description,
+                LastApprovedDate
                 FROM Contract
             </field>
         </record>

@@ -58,7 +58,6 @@ class salesforceSync(models.Model):
     
     @api.model
     def sf_process_keys(self,batch_size=False,loop=True,duration=9):
-
         priorities = self.env['etl.sync.keys'].search([('state','not in',['upToDate','postponed'])]).mapped('priority')
         if priorities:
             top_priority = max(priorities)
@@ -133,7 +132,7 @@ class salesforceSync(models.Model):
 
                                 else:
                                     _logger.info("ETL | Non-managed key state {} | {}".format(key[0].id,key[0].state))
-                                
+                            
             else:
                 loop_cron = False
                 _logger.info("ETL | Successful end of process.")
