@@ -118,13 +118,13 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
     @staticmethod
     def convertRating(SF):
         if SF['Rating'] == 'Hot':
-            return 3 
+            return '3'
         elif SF['Rating'] == 'Warm':
-            return 3
+            return '2'
         elif SF['Rating'] == 'Cold': 
-            return 1
+            return '1'
         else:
-            return 0
+            return '0'
     
     @staticmethod
     def generateLog(SF_Leads):

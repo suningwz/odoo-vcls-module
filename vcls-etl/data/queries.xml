@@ -88,7 +88,7 @@
                 CurrencyIsoCode, Email,First_VCLS_Contact_Point__c, Opt_in_Campaign__c, Unsubscribe_Campaign__c,
                 External_Referee__c, Fax, Functional_Focus__c, Inactive_Lead__c, Industry, Contact_us_Message__c, Initial_Product_Interest__c, 
                 LastModifiedDate, Title, Seniority__c, Phone, Website, Description, LeadSource, ConvertedDate,
-                State, Status, LinkedIn_Profile__c, Opted_In__c
+                State, Status, LinkedIn_Profile__c, Opted_In__c, Rating
                 FROM Lead
             </field>
         </record>
