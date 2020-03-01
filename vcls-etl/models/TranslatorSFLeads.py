@@ -106,7 +106,7 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
                 result['partner_id'] = existing.id
             else:
                 #we try to find if the company exists
-                company = odoo.env['res.partner'].search([('name','=ilike',SF['Company'])],limit=1)
+                company = odoo.env['res.partner'].search([('is_company','=',True),('name','=ilike',SF['Company'])],limit=1)
                 if company:
                     _logger.info("Found existing Company {}".format(company.name))
                     result['partner_id'] = company.id
