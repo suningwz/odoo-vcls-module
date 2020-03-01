@@ -13,14 +13,33 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
     def translateToOdoo(SF_Leads, odoo, SF):
         mapOdoo = odoo.env['map.odoo']
         result = {}
-        result['name'] = SF_Leads['Name']
-        result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertSfIdToOdooId(SF_Leads['OwnerId'],odoo,SF)
+
+        ### IDENTIFICATION
+        if SF_Leads['Salutation']:
+            result['title'] = mapOdoo.convertRef(SF_Leads['Salutation'], odoo,'res.partner.title',False)
+        if SF_Leads['FirstName']:
+            result['contact_name'] = SF_Leads['FirstName']
+        if SF_Leads['MiddleName']:
+            if SF_Leads['MiddleName'] != 'None':
+                result['contact_middlename'] = SF_Leads['MiddleName']
+        if SF_Leads['LastName']:
+            result['contact_lastname'] = SF_Leads['LastName']
+
+        temp = "{} {} {}".format(result.get('contact_name',''),result.get('contact_middlename',''),result.get('contact_lastname',''))
+        result['name'] = temp.replace('  ',' ')
+
+        if SF_Leads['OwnerId']:
+            result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertSfIdToOdooId(SF_Leads['OwnerId'],odoo,SF)
         result['description'] = ''
         if SF_Leads['Description']:
-            result['description'] +='Description : ' + str(SF_Leads['Description']) + '\n'
+            result['description'] += 'Description : ' + str(SF_Leads['Description']) + '\n'
         if SF_Leads['LeadSource']:
-            result['source_id'] = mapOdoo.convertRef(SF_Leads['LeadSource'],odoo,'utm.source',False)
+            #_logger.info("Lead Source | {}".format(SF_Leads['LeadSource']))
+            result['marketing_project_id'] = mapOdoo.convertRef(SF_Leads['LeadSource'],odoo,'project.project',False)
         result['type'] = 'lead'
+
+        result = TranslatorSFLeads.partner_finder(result,SF_Leads,odoo)
+        
 
         if SF_Leads['Activity__c']:
             result['client_activity_ids'] =  [(6, 0, mapOdoo.convertRef(SF_Leads['Activity__c'],odoo,'client.activity',True))]
@@ -34,23 +53,31 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
         result['street'] = SF_Leads['Street']
         if SF_Leads['Country']:
             result['country_id'] = mapOdoo.convertRef(SF_Leads['Country'],odoo,'res.country',False)
-        
-        #result[''] = SF_Leads['Company']
+        if SF_Leads['State']:
+            result['state_id'] = mapOdoo.convertRef(SF_Leads['State'],odoo,'res.country.state',False)
+        if SF_Leads['Status']:
+            result['lead_stage_id'] = mapOdoo.convertRef(SF_Leads['Status'],odoo,'crm.lead.stage',False)
+
+        if SF_Leads['Rating']:
+            result['priority'] = TranslatorSFLeads.convertRating(SF_Leads)
+
         #Content_Name__c
+
         result['customer_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Leads['CurrencyIsoCode'],odoo)
-        result['user_email'] = SF_Leads['Email']
-        #First_VCLS_Contact_Point__c
-        result['referent_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Leads['External_Referee__c'], "res.partner", "Contact", odoo)
+        if SF_Leads['First_VCLS_Contact_Point__c']:
+            result['initial_vcls_contact'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Leads['First_VCLS_Contact_Point__c'],"res.partner","Contact", odoo)
+        if SF_Leads['External_Referee__c']:
+            result['referent_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Leads['External_Referee__c'], "res.partner", "Contact", odoo)
         #fax
         if SF_Leads['Functional_Focus__c']:
             result['functional_focus_id'] = mapOdoo.convertRef(SF_Leads['Functional_Focus__c'],odoo,'partner.functional.focus',False)
         #Inactive_Lead__c
         if SF_Leads['Industry']:
             result['industry_id'] = mapOdoo.convertRef(SF_Leads['Industry'],odoo,'res.partner.industry',False)
-        #Contact_us_Message__c
+        result['contact_us_message'] = SF_Leads['Contact_us_Message__c']
         result['function'] = SF_Leads['Title']
         if SF_Leads['Seniority__c']:
-            result['partner_seniority_id'] = mapOdoo.convertRef(SF_Leads['Seniority__c'], odoo,'res.country',False)
+            result['partner_seniority_id'] = mapOdoo.convertRef(SF_Leads['Seniority__c'], odoo,'partner.seniority',False)
         result['message_ids'] = [(0, 0, TranslatorSFLeads.generateLog(SF_Leads))]
 
         #_logger.info("TRANSLATOR LEAD {}".format(result))
@@ -58,7 +85,46 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
             result['marketing_task_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Leads['Opt_in_Campaign__c'],"project.task","Campaign",odoo)
         if SF_Leads['Unsubscribe_Campaign__c']:
             result['marketing_task_out_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Leads['Unsubscribe_Campaign__c'],"project.task","Campaign",odoo)
+        result['conversion_date'] = SF_Leads['ConvertedDate']
+        if SF_Leads['LinkedIn_Profile__c']:
+            result['linkedin_url'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUrl(SF_Leads['LinkedIn_Profile__c'])
+        if SF_Leads['Opted_In__c']:
+            result['opted_in'] = SF_Leads['Opted_In__c']
+        
+        result['log_info'] = result['name']
+
         return result
+    
+    @staticmethod
+    def partner_finder(result,SF,odoo):
+        if SF['Email']:
+            #we look for an existing partner
+            result['email_from'] = SF['Email']
+            existing = odoo.env['res.partner'].search([('email','=ilike',SF['Email'])],limit=1)
+            if existing:
+                _logger.info("Found existing Lead Partner {}".format(existing.email))
+                result['partner_id'] = existing.id
+            else:
+                #we try to find if the company exists
+                company = odoo.env['res.partner'].search([('is_company','=',True),('name','=ilike',SF['Company'])],limit=1)
+                if company:
+                    _logger.info("Found existing Company {}".format(company.name))
+                    result['partner_id'] = company.id
+                else:
+                    result['partner_name'] = SF['Company']
+
+        return result
+    
+    @staticmethod
+    def convertRating(SF):
+        if SF['Rating'] == 'Hot':
+            return '3'
+        elif SF['Rating'] == 'Warm':
+            return '2'
+        elif SF['Rating'] == 'Cold': 
+            return '1'
+        else:
+            return '0'
     
     @staticmethod
     def generateLog(SF_Leads):

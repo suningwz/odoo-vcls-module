@@ -143,14 +143,14 @@
             <field name="doall">False</field>
             <field name="model_id" ref="model_etl_sync_keys" />
             <field name="state">code</field>
-            <field name="code">full_update = True
+            <field name="code">full_update = False
 obj_dict = {
-    'do_contact':True,
-    'do_account':True,
-    'do_opportunity':True,
-    'do_lead':False,
-    'do_contract':False,
     'do_campaign':True,
+    'do_account':True,
+    'do_contact':True,
+    'do_contract':True,
+    'do_lead':True,
+    'do_opportunity':True,
     }
 model.sf_update_keys(obj_dict,full_update)
             </field>
@@ -167,7 +167,7 @@ model.sf_update_keys(obj_dict,full_update)
             <field name="model_id" ref="model_etl_sync_salesforce" />
             <field name="state">code</field>
             <field name="code">batch_size = None
-loop = True
+loop = False
 max_minutes = 9
 model.sf_process_keys(batch_size,loop,max_minutes)
             </field>
