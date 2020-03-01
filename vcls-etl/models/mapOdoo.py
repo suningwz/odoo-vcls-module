@@ -1,5 +1,6 @@
 from odoo import models, fields, api
 from . import ITranslator
+import logging
 _logger = logging.getLogger(__name__)
 
 class mapOdoo(models.Model):
