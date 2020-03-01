@@ -18,14 +18,14 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
         if SF_Leads['Salutation']:
             result['title'] = mapOdoo.convertRef(SF_Leads['Salutation'], odoo,'res.partner.title',False)
         if SF_Leads['FirstName']:
-            result['firstname'] = SF_Leads['FirstName']
+            result['contact_name'] = SF_Leads['FirstName']
         if SF_Leads['MiddleName']:
             if SF_Leads['MiddleName'] != 'None':
-                result['lastname2'] = SF_Leads['MiddleName']
+                result['contact_middlename'] = SF_Leads['MiddleName']
         if SF_Leads['LastName']:
-            result['lastname'] = SF_Leads['LastName']
+            result['contact_lastname'] = SF_Leads['LastName']
 
-        temp = "{} {} {}".format(result.get('firstname',''),result.get('lastname2',''),result.get('lastname',''))
+        temp = "{} {} {}".format(result.get('contact_name',''),result.get('contact_middlename',''),result.get('contact_lastname',''))
         result['name'] = temp.replace('  ',' ')
 
         if SF_Leads['OwnerId']:

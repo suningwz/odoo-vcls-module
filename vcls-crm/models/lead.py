@@ -440,7 +440,7 @@ class Leads(models.Model):
     def _compute_lead_age(self):
         for lead in self:
             if lead.conversion_date != False:
-                reference = lead.conversion_date.date()
+                reference = lead.conversion_date
             elif lead.create_date != False:
                 reference = lead.create_date.date()
             else:
