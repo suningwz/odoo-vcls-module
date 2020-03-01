@@ -16,6 +16,11 @@ class TimesheetForecastReport(models.Model):
     unit_amount = fields.Float('Duration (Hour(s))', readonly = True)
     date = fields.Date('Date', readonly = True)
     employee_id = fields.Many2one('hr.employee', readonly = True)
+    billability = fields.Selection([
+        ('na', 'N/A'),
+        ('billable', 'BILLABLE'),
+        ('non_billable', 'NON BILLABLE'),],
+        )
 
     # END OF NEEDED FIELDS
 
@@ -33,7 +38,8 @@ class TimesheetForecastReport(models.Model):
                         A.unit_amount AS unit_amount,
                         A.date AS date,
                         A.employee_id AS employee_id,
-                        A.id AS id
+                        A.id AS id,
+                        A.billability AS billability
                     FROM account_analytic_line A
                 )
             )

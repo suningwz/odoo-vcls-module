@@ -238,7 +238,7 @@
             </field>
         </record>
 
-
+        <!--
         <record id="view_project_formm_inherit" model="ir.ui.view">
             <field name="name">project.form</field>
             <field name="model">project.project</field>
@@ -320,6 +320,7 @@
                 </xpath>
             </field>
         </record>
+        -->
 
         <!-- VIEWS -->
         <record model="ir.ui.view" id="project_project_view_form_simplified">
@@ -422,7 +423,7 @@
             <field name="view_mode">kanban,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('vcls-project.view_project_kanban_2')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('vcls-project.vcls_specific_project_form')})]"/>
+                (0, 0, {'view_mode': 'form', 'view_id': ref('project.edit_project')})]"/>
             <field name="domain">[('project_type','=', 'internal')]</field>
             <field name="context">{
                 'default_project_type':'internal',
