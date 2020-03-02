@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from dateutil.relativedelta import relativedelta
 
 from lxml import etree
 from odoo.exceptions import UserError, ValidationError
 
+supported_vcls_types = ('rate', 'subscription', 'expense', 'invoice', 'project_supplier', 'admin_supplier', 'vcls_service', 'other')
 
 class SaleOrder(models.Model):
 
@@ -187,6 +188,10 @@ class SaleOrder(models.Model):
         """
         invoice_vals = super(SaleOrder, self)._prepare_invoice()
         #project_info
+
+        for vcls_type in self.mapped('order_line.product_id.vcls_type'):
+            if vcls_type not in supported_vcls_types:
+                raise UserError(_('The type: %s is no supported yet for the invoicing, please contact the Administrator') %vcls_type)
 
         #invoice period
         if self.timesheet_limit_date:
