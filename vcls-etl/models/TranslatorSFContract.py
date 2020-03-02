@@ -1,5 +1,8 @@
 from . import TranslatorSFGeneral
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
     def __init__(self,SF):
         super().__init__(SF)
@@ -23,6 +26,7 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
         result = TranslatorSFContract.type_and_subtype(result,SF_Contract,odoo,mapOdoo)
         
         if SF_Contract['VCLS_Status__c']:
+            _logger.info("ETL | Contract Stage {}".format(SF_Contract['VCLS_Status__c']))
             result['stage_id'] = mapOdoo.convertRef(SF_Contract['VCLS_Status__c'], odoo, 'agreement.stage', False)
 
         if SF_Contract['Link_to_Parent_Contract__c']:
@@ -73,10 +77,13 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
 
             type_id = mapOdoo.convertRef(SF['Type_of_Contract__c'], odoo, 'agreement.type', False)  
             result['agreement_type_id'] = type_id
-
-            has_sub = odoo.env['agreement.subtype'].search([('agreement_type_id','=',type_id)])
-            if has_sub:
-                result['agreement_subtype_id'] = mapOdoo.convertRef(SF['Type_of_Contract__c'], odoo, 'agreement.subtype', False)
+            if type_id:
+                _logger.info("Type ID {}".format(type_id))
+                has_sub = odoo.env['agreement.subtype'].search([('agreement_type_id','=',type_id)])
+                if has_sub:
+                    result['agreement_subtype_id'] = mapOdoo.convertRef(SF['Type_of_Contract__c'], odoo, 'agreement.subtype', False)
+                else:
+                    return result
             else:
                 return result
         else:
