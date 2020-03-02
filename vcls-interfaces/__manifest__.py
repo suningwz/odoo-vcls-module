@@ -40,13 +40,14 @@
         'views/export_payroll_line_views.xml',
         'views/export_payroll_views.xml',
         'views/export_payroll_overriden_views.xml',
-        
+
         #########
         # MENUS #
         #########
         'actions/export_payroll_menu.xml', 
         'actions/export_billability_menu.xml',
-       
+        'actions/billablility_report_cron.xml',
+
     ],
     
     # only loaded in demonstration mode
