@@ -60,6 +60,8 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
                 employee = odoo.env['hr.employee'].with_context(active_test=False).search([('user_id','=',user_id)],limit=1)
                 if employee:
                     result['technical_adv_id'] = employee.id
+        if SF_Opportunity['Proposal_Writer__c']:
+            result['proposal_writer_id'] = mapOdoo.convertRef(SF_Opportunity['Proposal_Writer__c'], odoo, 'hr.employee', False)
 
         ### FINANCIAL
         result['customer_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Opportunity['CurrencyIsoCode'],odoo)

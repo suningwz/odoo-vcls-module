@@ -61,7 +61,7 @@
                 SELECT 
                 Id, Name, StageName, CampaignId,
                 Description, Client_Product_Description__c, Reasons_lost__c, Reasons_Lost_Comments__c, Significant_Opportunity_Notes__c, Probability,
-                AccountId, OwnerId, Technical_Advisor__c, 
+                AccountId, OwnerId, Technical_Advisor__c, Proposal_Writer__c,
                 CurrencyIsoCode, Amount, ContractId,
                 Project_start_date__c, Deadline_for_Sending_Proposal__c, CloseDate, Proposal_Type__c, Significant_Opportunity__c
                 FROM Opportunity
