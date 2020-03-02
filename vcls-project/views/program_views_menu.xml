@@ -187,6 +187,18 @@
             ]"/>
         </record>
 
+        <record id="vcls-project.action_it_project" model="ir.actions.act_window">
+            <field name="name">IT Projects</field>
+            <field name="res_model">project.project</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'kanban', 'view_id': ref('project.view_project_kanban')})]" />
+            <field name="domain">[('project_type','=', 'it')]</field>
+            <field name="context">{
+                'default_project_type':'it',
+            }</field>
+        </record>
 
         <!-- Menu -->
         <menuitem
@@ -227,6 +239,15 @@
             active="False"
             parent="project.menu_main_pm"
             sequence="5"/>
+
+        <menuitem
+            id="menu_it_project"
+            name="IT Projects"
+            parent="project.menu_main_pm"
+            sequence="6"
+            action="vcls-project.action_it_project"
+            groups="vcls_security.group_vcls_it_team"
+        />
 
         <menuitem name="All Tasks" id="project.menu_project_management" parent="project.menu_main_pm"
             action="project.action_view_task" sequence="2" groups="base.group_no_one,project.group_project_user"

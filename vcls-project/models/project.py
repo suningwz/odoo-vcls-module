@@ -31,7 +31,8 @@ class Project(models.Model):
     project_type = fields.Selection([
         ('dev', 'Developement'),
         ('client', 'Client'),
-        ('internal','Internal')],
+        ('internal','Internal'),
+        ('it', 'IT')],
         string = 'Project Type',
         default = 'client',
     )
