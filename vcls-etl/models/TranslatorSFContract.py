@@ -20,8 +20,7 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
         else:
             result['name'] = result['internal_name']
 
-        if SF_Contract['Type_of_Contract__c']:    
-            result['agreement_type_id'] = mapOdoo.convertRef(SF_Contract['Type_of_Contract__c'], odoo, 'agreement.type', False)
+        result = TranslatorSFContract.type_and_subtype(result,SF_Contract,odoo,mapOdoo)
         
         if SF_Contract['VCLS_Status__c']:
             result['stage_id'] = mapOdoo.convertRef(SF_Contract['VCLS_Status__c'], odoo, 'agreement.stage', False)
@@ -67,3 +66,19 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
     @staticmethod
     def translateToSF(Odoo_Contract, odoo):
         pass
+
+    @staticmethod
+    def type_and_subtype(result,SF, odoo, mapOdoo):
+        if SF['Type_of_Contract__c']:
+
+            type_id = mapOdoo.convertRef(SF['Type_of_Contract__c'], odoo, 'agreement.type', False)  
+            result['agreement_type_id'] = type_id
+
+            has_sub = odoo.env['agreement.subtype'].search([('agreement_type_id','=',type_id)])
+            if has_sub:
+                result['agreement_subtype_id'] = mapOdoo.convertRef(SF['Type_of_Contract__c'], odoo, 'agreement.subtype', False)
+            else:
+                return result
+        else:
+            return result
+        
