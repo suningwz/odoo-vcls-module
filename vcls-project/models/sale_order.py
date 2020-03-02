@@ -108,7 +108,7 @@ class SaleOrder(models.Model):
 
     def action_sync(self):
         super(SaleOrder, self).action_sync()
-        for order in self:
+        for order in self.filtered(lambda p: p.project_id):
             project_id = order.project_id
             if project_id.scope_of_work:
                 order.scope_of_work = project_id.scope_of_work
