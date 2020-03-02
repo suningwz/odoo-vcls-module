@@ -83,9 +83,11 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
                 if has_sub:
                     result['agreement_subtype_id'] = mapOdoo.convertRef(SF['Type_of_Contract__c'], odoo, 'agreement.subtype', False)
                 else:
-                    return result
+                    pass
             else:
-                return result
+                pass
         else:
-            return result
+            pass
+        
+        return result
         
