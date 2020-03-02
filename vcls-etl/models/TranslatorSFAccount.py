@@ -65,7 +65,7 @@ class TranslatorSFAccount(TranslatorSFGeneral.TranslatorSFGeneral):
 
         ### ADMIN VALUES
         result['create_folder'] = SF_Account['Create_Sharepoint_Folder__c']
-        result['manual_sharepoint_folder'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUrl(SF_Account['Sharepoint_Folder__c'])
+        result['sharepoint_folder'] = TranslatorSFGeneral.TranslatorSFGeneral.convertUrl(SF_Account['Sharepoint_Folder__c'])
         if SF_Account['ExternalID__c']:
             result['legacy_account'] = str(int(SF_Account['ExternalID__c']))
         
