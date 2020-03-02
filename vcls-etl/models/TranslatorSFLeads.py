@@ -30,9 +30,13 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
 
         if SF_Leads['OwnerId']:
             result['user_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertSfIdToOdooId(SF_Leads['OwnerId'],odoo,SF)
+
         result['description'] = ''
         if SF_Leads['Description']:
-            result['description'] += 'Description : ' + str(SF_Leads['Description']) + '\n'
+            result['description'] += 'Description : \n' + str(SF_Leads['Description']) + '\n'
+        if SF_Leads['Initial_Product_Interest__c']:
+            result['description'] += 'Initial Interest : \n' + str(SF_Leads['Initial_Product_Interest__c']) + '\n'
+
         if SF_Leads['LeadSource']:
             #_logger.info("Lead Source | {}".format(SF_Leads['LeadSource']))
             result['marketing_project_id'] = mapOdoo.convertRef(SF_Leads['LeadSource'],odoo,'project.project',False)
@@ -43,8 +47,8 @@ class TranslatorSFLeads(TranslatorSFGeneral.TranslatorSFGeneral):
 
         if SF_Leads['Activity__c']:
             result['client_activity_ids'] =  [(6, 0, mapOdoo.convertRef(SF_Leads['Activity__c'],odoo,'client.activity',True))]
-        if SF_Leads['Initial_Product_Interest__c']:
-            result['client_product_ids'] = [(6, 0, mapOdoo.convertRef(SF_Leads['Initial_Product_Interest__c'],odoo,'client.product',True))]
+        if SF_Leads['Product_Type__c']:
+            result['client_product_ids'] = [(6, 0, mapOdoo.convertRef(SF_Leads['Product_Type__c'],odoo,'client.product',True))]
         
         result['phone'] = SF_Leads['Phone']
         result['website'] =  SF_Leads['Website']
