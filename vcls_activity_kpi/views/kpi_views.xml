@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- base generic view  -  -->
+    <record id="vcls_kpi_kpi_tree_view" model="ir.ui.view">
+        <field name="name">kpi.kpi.tree</field>
+        <field name="model">kpi.kpi</field>
+        <field name="arch" type="xml">
+                <tree string="Kpi">
+                    <field name="type_id"/>
+                    <field name="source_model"/>
+                    <field name="source_id"/>
+                    <field name="activity_create_date"/>
+                    <field name="activity_create_uid"/>
+                    <field name="activity_close_date"/>
+                    <field name="activity_close_uid"/>
+                    <field name="value"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+    </record>
+
+    <record id="vcls_kpi_type_tree_view" model="ir.ui.view">
+        <field name="name">kpi.kpi.tree</field>
+        <field name="model">kpi.type</field>
+        <field name="arch" type="xml">
+                <tree string="Kpi">
+                    <field name="name"/>
+                    <field name="active"/>
+                    <field name="owning_group_id"/>
+                </tree>
+            </field>
+    </record>
+
+    <!-- form View -->
+    <record id="vcls_kpi_kpi_form_view" model="ir.ui.view">
+        <field name="name">kpi.kpi.form</field>
+        <field name="model">kpi.kpi</field>
+        <field name="arch" type="xml">
+            <form string="Edit Kpi">
+            <sheet>
+            <group colspan="4">
+                <group colspan="2" col="2">
+                    <separator string="details about the Kpi" colspan="2"/>
+                    <field name="type_id"/>
+                    <field name="source_model"/>
+                    <field name="source_id"/>
+                    <field name="activity_create_date"/>
+                    <field name="activity_create_uid"/>
+                    <field name="activity_close_date"/>
+                    <field name="activity_close_uid"/>
+                    <field name="value"/>
+                    <field name="description"/>
+                </group>
+            </group>
+            </sheet>
+        </form>
+        </field>
+    </record>
+
+    <record id="vcls_kpi_type_form_view" model="ir.ui.view">
+        <field name="name">kpi.kpi.form</field>
+        <field name="model">kpi.type</field>
+        <field name="arch" type="xml">
+            <form string="Edit Kpi">
+            <sheet>
+            <group colspan="4">
+                <group colspan="2" col="2">
+                    <separator string="details about the Kpi" colspan="2"/>
+                    <field name="name"/>
+                    <field name="active"/>
+                    <field name="owning_group_id"/>
+                </group>
+            </group>
+            </sheet>
+        </form>
+        </field>
+    </record>
+
+    <!-- action window -->
+    <record id="act_kpi_kpi" model="ir.actions.act_window">
+        <field name="name">KPI</field>
+        <field name="res_model">kpi.kpi</field>
+        <field name="view_mode">tree,form</field>        
+    </record>
+
+    <record id="act_kpi_type" model="ir.actions.act_window">
+        <field name="name">KPI Type</field>
+        <field name="res_model">kpi.type</field>
+        <field name="view_mode">tree,form</field>        
+    </record>
+
+    <!-- Menus -->
+    <!-- Only the admin group can see the KPI icon (But everyone can access to it) -->
+    <menuitem id="menu_kpi_root" name="Kpi" parent="" sequence="1000" groups="base.group_system"/>
+
+    <menuitem id="menu_kpi_kpi" name="Kpi Details" parent="menu_kpi_root"
+        sequence="1" action="act_kpi_kpi"/>
+
+    <menuitem id="menu_kpi_type" name="Kpi Type" parent="menu_kpi_root"
+        sequence="2" action="act_kpi_type"/>
+
+</odoo>
+
+

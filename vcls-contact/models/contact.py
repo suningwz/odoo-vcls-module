@@ -55,7 +55,9 @@ class ResPartner(models.Model):
         string='Sharepoint Folder',
         compute='_compute_sharepoint_folder',
         readonly=True,
+        store=True,
     )
+    manual_sharepoint_folder = fields.Char()
 
     create_folder = fields.Boolean(
         string="Create Sharepoint Folder",
@@ -280,9 +282,28 @@ class ResPartner(models.Model):
             pass
             """ This estimator is related to the type of contact."""
 
-    @api.depends('category_id', 'create_folder','altname')
+    @api.depends('category_id', 'create_folder','altname','manual_sharepoint_folder')
     def _compute_sharepoint_folder(self):
-        pass
+        #manual case
+        manual = self.filtered(lambda p: p.manual_sharepoint_folder)
+        for partner in manual:
+            partner.sharepoint_folder = partner.manual_sharepoint_folder
+            partner.create_folder = True
+
+        #suppliers
+        auto_suppliers = self.filtered(lambda p: not p.manual_sharepoint_folder and p.supplier and p.is_company)
+        pre = self.env.ref('vcls-contact.SP_supplier_root_prefix').value
+        for partner in auto_suppliers:
+            partner.sharepoint_folder = "{}/{}".format(pre,partner.name)
+            partner.create_folder = True
+
+        #clients
+        auto_clients = self.filtered(lambda p: not p.manual_sharepoint_folder and p.customer and p.is_company and p.altname)
+        pre = self.env.ref('vcls-contact.SP_client_root_prefix').value
+        post = self.env.ref('vcls-contact.SP_client_root_postfix').value
+        for partner in auto_clients:
+            partner.sharepoint_folder = "{}/{}/{}{}".format(pre,partner.altname[0],partner.altname,post)
+            partner.create_folder = True
 
     # We reset the number of bounced emails to 0 in order to re-detect problems after email change
     @api.onchange('email')

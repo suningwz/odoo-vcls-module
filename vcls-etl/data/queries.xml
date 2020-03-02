@@ -37,7 +37,7 @@
                 SELECT 
                 Id, Salutation, FirstName, MiddleName, LastName,Title,Description,
                 OwnerId, AccountId,  VCLS_Main_Contact__c, 
-                MailingAddress,
+                MailingAddress, Opt_in_Campaign__c, Unsubscribe_Campaign__c,
                 LinkedIn_Profile__c, Phone, Fax, MobilePhone, Email, AccountWebsite__c, 
                 LastModifiedDate, Inactive_Contact__c, Opted_In__c, Unsubscribed_from_Marketing_Comms__c
                 FROM Contact
@@ -59,11 +59,11 @@
             <field name="key">etl_sf_opportunity_query</field>
             <field name="value">
                 SELECT 
-                Id, Name, StageName, 
+                Id, Name, StageName, CampaignId,
                 Description, Client_Product_Description__c, Reasons_Lost_Comments__c, Significant_Opportunity_Notes__c, Probability,
                 AccountId, OwnerId, Technical_Advisor__c, 
                 CurrencyIsoCode, Amount,
-                Project_start_date__c, Deadline_for_Sending_Proposal__c, CloseDate
+                Project_start_date__c, Deadline_for_Sending_Proposal__c, CloseDate, Proposal_Type__c, Significant_Opportunity__c
                 FROM Opportunity
             </field>
         </record>
@@ -85,7 +85,7 @@
             <field name="value">
                 SELECT 
                 Id, Name, OwnerId, Activity__c, Address, City, Company, Content_Name__c, Country,PostalCode, Street, 
-                CurrencyIsoCode, Email,First_VCLS_Contact_Point__c, 
+                CurrencyIsoCode, Email,First_VCLS_Contact_Point__c, Opt_in_Campaign__c, Unsubscribe_Campaign__c,
                 External_Referee__c, Fax, Functional_Focus__c, Inactive_Lead__c, Industry, Contact_us_Message__c, Initial_Product_Interest__c, 
                 LastModifiedDate, Title, Seniority__c, Phone, Website, Description, LeadSource 
                 FROM Lead
@@ -111,6 +111,30 @@
                 Replaces_Supersedes__c, Type_of_Contract__c, VCLS_Status__c 
                 FROM Contract
             </field>
+        </record>
+        <record id="etl_sf_campaign_query" model="ir.config_parameter">
+            <field name="key">etl_sf_campaign_query</field>
+            <field name="value">
+                SELECT Id, LastModifiedDate, Name, ParentId, OwnerId, 
+                AmountAllOpportunities, AmountWonOpportunities, Attendance_Approved_by__c,
+                BudgetedCost, Business_Unit__c, Conference_Organisation__c, Costs_approved_by__c,
+                CreatedById, CreatedDate, CurrencyIsoCode, Description, EndDate, IsActive, LastModifiedById, 
+                LastReferencedDate, LastViewedDate, Name_of_attendee_1__c, 
+                Name_of_attendee_2__c, Name_of_presentation_given__c, No_of_meetings_scheduled__c, NumberOfContacts,
+                NumberOfConvertedLeads, NumberOfLeads, NumberOfOpportunities, 
+                Number_of_delegates__c, Post_Event_Feedback__c, Purpose_of_attendance__c,
+                Region__c, Registration_Costs__c, Savings_negotiated__c, Sponsorship_costs__c,
+                StartDate, Status, Status__c, SystemModstamp, Total_Cost__c, Travel_cost__c, Type
+                FROM Campaign
+            </field>
+        </record>
+        <record id="etl_sf_campaign_filter" model="ir.config_parameter">
+            <field name="key">etl_sf_campaign_filter</field>
+            <field name="value"></field>
+        </record>
+        <record id="etl_sf_campaign_post" model="ir.config_parameter">
+            <field name="key">etl_sf_campaign_post</field>
+            <field name="value"></field> 
         </record>
         <record id="etl_sf_contract_filter" model="ir.config_parameter">
             <field name="key">etl_sf_contract_filter</field>

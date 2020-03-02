@@ -4,7 +4,9 @@ class TranslatorSFGeneral(ITranslator.ITranslator):
     def __init__(self,SF):
         queryUser = "Select Username,Id FROM User"
         TranslatorSFGeneral.usersSF = SF.query(queryUser)['records']
-    
+        queryContact = "Select Email,Id FROM Contact"
+        TranslatorSFGeneral.contactSF = SF.query(queryContact)['records']
+
     @staticmethod
     def extid_to_odooid(extid, odoo):
         if extid:
@@ -93,3 +95,23 @@ class TranslatorSFGeneral(ITranslator.ITranslator):
     def convertSfIdToOdooId(ownerId, odoo, SF):
         mail = TranslatorSFGeneral.getUserMail(ownerId,SF)
         return TranslatorSFGeneral.getUserId(mail,odoo)
+
+    @staticmethod
+    def convertSfContactToOdooEmploye(contactId, odoo):
+        mail = TranslatorSFGeneral.getContactMail(contactId)
+        return TranslatorSFGeneral.getEmployeeId(mail,odoo)
+
+    @staticmethod
+    def getContactMail(contactId):
+        for contact in TranslatorSFGeneral.contactSF: 
+            if contact['Id'] == contactId:
+                return contact['Email']
+        return None
+
+    @staticmethod
+    def getEmployeeId(mail, odoo):
+        result = odoo.env['hr.employee'].search([('work_email', '=ilike', mail)], limit=1)
+        if result:
+            return result.id
+        else:
+            return None

@@ -365,7 +365,7 @@
         <record id="act_marketing_project_2_marketing_task_all" model="ir.actions.act_window">
             <field name="name">Marketing Campaigns</field>
             <field name="res_model">project.task</field>
-            <field name="view_mode">kanban,tree,form,calendar</field>
+            <field name="view_mode">kanban,tree,form,calendar,pivot,graph,dashboard</field>
             <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'kanban', 'view_id': ref('project.view_task_kanban')}),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('project.view_task_tree2')}),
@@ -405,7 +405,7 @@
         <record id="action_marketing_task" model="ir.actions.act_window">
             <field name="name">Marketing Campaign</field>
             <field name="res_model">project.task</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree,form,kanban,calendar,pivot,graph,dashboard</field>
             <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('task_marketing_tree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('task_marketing_form')})]"/>
