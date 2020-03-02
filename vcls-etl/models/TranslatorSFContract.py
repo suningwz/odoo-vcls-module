@@ -1,5 +1,8 @@
 from . import TranslatorSFGeneral
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
     def __init__(self,SF):
         super().__init__(SF)
@@ -23,6 +26,7 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
         result = TranslatorSFContract.type_and_subtype(result,SF_Contract,odoo,mapOdoo)
         
         if SF_Contract['VCLS_Status__c']:
+            _logger.info("ETL | Contract Stage {}".format(SF_Contract['VCLS_Status__c']))
             result['stage_id'] = mapOdoo.convertRef(SF_Contract['VCLS_Status__c'], odoo, 'agreement.stage', False)
 
         if SF_Contract['Link_to_Parent_Contract__c']:
