@@ -75,17 +75,21 @@ class SFProjectSync(models.Model):
 
                 KimbleOne__InvoiceItemStatus__c,
                 
-                KimbleOne__TimePeriod__cId,
+                KimbleOne__TimePeriod__c,
                 KimbleOne__Resource__c,
                 KimbleOne__InvoicingCurrencyEntryRevenue__c,
                 KimbleOne__EntryUnits__c,
                 KimbleOne__ActivityAssignment__c,
                 VCLS_Status__c
             FROM KimbleOne__TimeEntry__c
-            WHERE KimbleOne__DeliveryElement__c IN (
+            WHERE KimbleOne__DeliveryElement__c = 'a1U0Y00000BexAu'
+            """
+            
+            """
+            IN (
                 SELECT Id FROM KimbleOne__DeliveryElement__c WHERE Automated_Migration__c = TRUE
             )
-        """
+            """
         records = instance.getConnection().query_all(query)['records']
         for rec in records:
             _logger.info("{}\n{}".format(query,rec))
