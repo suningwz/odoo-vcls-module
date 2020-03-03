@@ -19,7 +19,11 @@ class SFProjectSync(models.Model):
     _inherit = 'etl.sync.salesforce'
 
     project_sfid = fields.Char()
+    project_sfname = fields.Char()
+    project_sfref = fields.Char()
     project_odid = fields.Integer()
+    project_odname = fields.Char()
+    project_odref = fields.Char()
     migration_status = fields.Selection(
         [
             ('todo', 'ToDo'),
@@ -31,9 +35,21 @@ class SFProjectSync(models.Model):
         default = 'todo', 
     )
 
-    #sfInstance = self.getSFInstance()
 
     @api.model
     def build_maps(self):
-        pass
+        instance = self.getSFInstance()
+        self._build_company_map(instance)
+    
+    def _build_company_map(self,instance=False):
+        if not instance:
+            return False
+        
+        query = """
+            SELECT Id, Name FROM KimbleOne__BusinessUnit__c
+        """
+        records = instance.getConnection().query_all(query)['records']
+
+        _logger.info("{}\n{}".format(query,records))
+
 
