@@ -125,6 +125,7 @@ class SFProjectSync(models.Model):
         query = """
             SELECT Id, KimbleOne__StartDate__c FROM KimbleOne__TimePeriod__c
             WHERE KimbleOne__PeriodType__c = 'a353A000000jG5j'
+            AND KimbleOne__StartDate__c < 2020-06-30
         """
         records = instance.getConnection().query_all(query)['records']
         for rec in records:
