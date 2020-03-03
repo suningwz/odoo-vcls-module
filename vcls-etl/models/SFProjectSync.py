@@ -96,11 +96,15 @@ class SFProjectSync(models.Model):
             return False
         
         query = """
-            SELECT Id, Name FROM KimbleOne__Product__c WHERE Id IN (SELECT KimbleOne__Product__c FROM KimbleOne__DeliveryElement__c WHERE Automated_Migration__c = TRUE)
+            SELECT Id, Name FROM KimbleOne__Product__c 
+            WHERE Id IN (
+                SELECT KimbleOne__Product__c FROM KimbleOne__DeliveryElement__c WHERE Automated_Migration__c = TRUE
+                )
         """
         records = instance.getConnection().query_all(query)['records']
         s_query = """
-            SELECT Activity__c FROM KimbleOne__DeliveryElement__c WHERE Automated_Migration__c = TRUE
+            SELECT Activity__c FROM KimbleOne__DeliveryElement__c 
+            WHERE Automated_Migration__c = TRUE
         """
         search_values = instance.getConnection().query_all(s_query)['records']
         #_logger.info("{}\n{}".format(s_query,search_values))
@@ -128,7 +132,13 @@ class SFProjectSync(models.Model):
             return False
         
         query = """
-            SELECT Id, Name FROM KimbleOne__ActivityRole__c
+            SELECT Id, Name FROM KimbleOne__ActivityRole__c 
+            WHERE Id IN (
+                 SELECT KimbleOne__ActivityRole__c FROM KimbleOne__ActivityAssignment__c 
+                    WHERE KimbleOne__DeliveryGroup__c IN (
+                        SELECT Id FROM KimbleOne__DeliveryGroup__c WHERE Automated_Migration__c = TRUE
+                    )
+             )
         """
         records = instance.getConnection().query_all(query)['records']
 
