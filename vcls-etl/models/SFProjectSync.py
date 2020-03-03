@@ -219,7 +219,7 @@ class SFProjectSync(models.Model):
                     'externalId':rec['Activity__c'],
                     'odooModelName':od_model,
                     'state':'map',
-                    'name':rec['Name'],
+                    'name':rec['Activity__c'],
                 })
 
             if not key.odooId:
