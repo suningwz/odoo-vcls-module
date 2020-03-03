@@ -221,7 +221,7 @@ class SFProjectSync(models.Model):
 
             if not key.odooId:
                 #we look for a user map key
-                user_key = self.env['etl.sync.key'].search([('externalObjName','=','User'),('externalId','=',rec['KimbleOne__User__c']),('odooId','!=',False)],limit=1)
+                user_key = self.env['etl.sync.keys'].search([('externalObjName','=','User'),('externalId','=',rec['KimbleOne__User__c']),('odooId','!=',False)],limit=1)
                 if user_key:
                     #we look for a related employee
                     employee = self.env[od_model].with_context(active_test=False).search([('user_id','=',int(user_key.odooId))],limit=1)
