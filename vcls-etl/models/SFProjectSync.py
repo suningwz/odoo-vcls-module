@@ -25,9 +25,9 @@ class ETLKey(models.Model):
     )
     name = fields.Char()
     search_value = fields.Char()
-    """odooId = fields.Char(
+    odooId = fields.Char(
         readonly = False,
-    )"""
+    )
 
 class SFProjectSync(models.Model):
     _name = 'etl.salesforce.project'
@@ -108,9 +108,16 @@ class SFProjectSync(models.Model):
 
         for product in records:
             for item in search_values:
-                pass
-                #key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('odooModelName','=',od_model),('state','=','map')],limit=1)
-
+                key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',product['Id']),('search_value','=',item),('odooModelName','=',od_model),('state','=','map')],limit=1)
+                if not key:
+                    key = self.env['etl.sync.keys'].create({
+                        'externalObjName':sf_model,
+                        'externalId':product['Id'],
+                        'odooModelName':od_model,
+                        'search_value':item if item != None else False,
+                        'state':'map',
+                        'name':product['Name'],
+                    })
 
         """for rec in records:
             key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('odooModelName','=',od_model),('state','=','map')],limit=1)
