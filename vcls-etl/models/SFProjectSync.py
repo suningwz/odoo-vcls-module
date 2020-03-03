@@ -58,6 +58,7 @@ class SFProjectSync(models.Model):
         self._build_product_map(instance)
         self._build_rate_map(instance)
         self._build_user_map(instance)
+        self._build_activity_map(instance)
         self._test_maps(instance)
     
     def _build_company_map(self,instance=False):
@@ -195,6 +196,36 @@ class SFProjectSync(models.Model):
                 if found:
                     key.write({'odooId':str(found.id)})
 
+    def _build_activity_map(self,instance=False):
+        sf_model = 'KimbleOne__DeliveryGroup__r.Activity__c'
+        od_model = 'product.category'
+
+        if not instance:
+            return False
+        
+        query = """
+            SELECT Activity__c FROM KimbleOne__DeliveryElement__c 
+            WHERE Automated_Migration__c = TRUE
+        """
+
+        records = instance.getConnection().query_all(query)['records']
+        #_logger.info("{}\n{}".format(query,records))
+
+        for rec in records:
+            key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Activity__c']),('odooModelName','=',od_model),('state','=','map')],limit=1)
+            if not key:
+                key = self.env['etl.sync.keys'].create({
+                    'externalObjName':sf_model,
+                    'externalId':rec['Activity__c'],
+                    'odooModelName':od_model,
+                    'state':'map',
+                    'name':rec['Name'],
+                })
+
+            if not key.odooId:
+                found = self.env[od_model].search([('name','=ilike',rec['Name']),('is_business_line','=',True)],limit=1)
+                if found:
+                    key.write({'odooId':str(found.id)})
             
     def _test_maps(self,instance=False):
         if not instance:
