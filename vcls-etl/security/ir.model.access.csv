@@ -10,3 +10,4 @@ access_etl_salesforce_contract_admin,access_etl_salesforce_contract_admin,vcls-e
 access_map_odoo_admin,access_map_odoo_admin,vcls-etl.model_map_odoo,vcls-hr.vcls_group_superuser_lvl2,1,1,1,1
 
 access_etl_salesforce_campaign_admin,access_etl_salesforce_campaign_admin,vcls-etl.model_etl_salesforce_campaign,vcls-hr.vcls_group_superuser_lvl2,1,1,1,1
+access_etl_salesforce_project_admin,access_etl_salesforce_project_admin,vcls-etl.model_etl_salesforce_project,vcls-hr.vcls_group_superuser_lvl2,1,1,1,1
