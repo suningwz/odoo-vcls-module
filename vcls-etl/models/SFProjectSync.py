@@ -36,9 +36,14 @@ class SFProjectSync(models.Model):
     project_sfid = fields.Char()
     project_sfname = fields.Char()
     project_sfref = fields.Char()
-    project_odid = fields.Integer()
-    project_odname = fields.Char()
-    project_odref = fields.Char()
+    so_ids = fields.Many2many(
+        'sale.order',
+        readonly = True,
+    )
+    project_ids = fields.Many2many(
+        'project.project',
+        readonly = True,
+    )
     migration_status = fields.Selection(
         [
             ('todo', 'ToDo'),
@@ -53,6 +58,29 @@ class SFProjectSync(models.Model):
     ####################
     ## MIGRATION METHODS
     ####################
+    @api.model
+    def initiate(self):
+        instance = self.getSFInstance()
+
+        query = """
+        SELECT Id, Name, KimbleOne__Reference__c, Activity__c  
+        FROM KimbleOne__DeliveryGroup__c 
+        WHERE Automated_Migration__c = TRUE
+        """
+        records = instance.getConnection().query_all(query)['records']
+        for rec in records:
+            existing = self.search([('project_sfid','=',rec['Id'])],limit=1)
+            if not existing:
+                self.create({
+                    'project_sfid': rec['Id'],
+                    'project_sfname': rec['Name'],
+                    'project_sfref': rec['KimbleOne__Reference__c'],
+                })
+
+        migrations = self.search([])
+        for project in migrations:
+            _logger.info("PROJECT MIGRATION STATUS | {} | {} | {}".format(project.project_sfref,project.project_sfname,project.migration_status))
+
     @api.model
     def _dev(self):
         instance = self.getSFInstance()
