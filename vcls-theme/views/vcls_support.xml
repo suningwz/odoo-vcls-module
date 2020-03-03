@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- form View -->
+    <record id="view_vcls_internal_project_form" model="ir.ui.view">
+        <field name="name">project.project.vcls.internal.project.form</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.project_project_view_form_simplified"/>
+        <field name="mode">primary</field>
+            <field name="arch" type="xml">
+                <field name="project_type" position="replace">
+                    <field name="project_type" />
+                </field>
+            </field>
+    </record>
+
+    <record id="action_vcls_support2" model="ir.actions.act_window">
+        <field name="name">VCLS-Support</field>
+        <field name="res_model">project.project</field>
+        <field name="view_mode">kanban</field>        
+    </record>
+
+    <record id="action_vcls_support_create_internal_project" model="ir.actions.act_window">
+        <field name="name">VCLS-Support</field>
+        <field name="res_model">project.project</field>
+        <field name="view_type">form</field> 
+        <field name="view_mode">form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_vcls_internal_project_form')}),
+        ]"/> 
+        <field name="context">{'default_project_type':'internal'}</field>     
+    </record>
+
+    <menuitem id="menu_custom_vcls_support" action="action_vcls_support2" name="VCLS-support" parent="base.menu_administration" sequence="120" groups="base.group_user"/>
+        <menuitem id="menu_custom_vcls_support_create_internal_project" name="Create Internal Project" parent="menu_custom_vcls_support" action="action_vcls_support_create_internal_project"/>>
+</odoo>
