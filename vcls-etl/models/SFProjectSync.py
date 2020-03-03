@@ -135,12 +135,12 @@ class SFProjectSync(models.Model):
             SELECT Id, Name FROM KimbleOne__ActivityRole__c 
             WHERE Id IN (
                  SELECT KimbleOne__ActivityRole__c FROM KimbleOne__ActivityAssignment__c 
-                    WHERE KimbleOne__DeliveryGroup__c IN (
-                        SELECT Id FROM KimbleOne__DeliveryGroup__c WHERE Automated_Migration__c = TRUE
-                    )
+                    WHERE Automated_Migration__c = TRUE
              )
         """
+
         records = instance.getConnection().query_all(query)['records']
+        _logger.info("{}\n{}".format(query,records))
 
         for rec in records:
             key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('odooModelName','=',od_model),('state','=','map')],limit=1)
