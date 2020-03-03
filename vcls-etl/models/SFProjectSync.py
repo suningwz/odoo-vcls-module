@@ -56,6 +56,7 @@ class SFProjectSync(models.Model):
         instance = self.getSFInstance()
         self._build_company_map(instance)
         self._build_product_map(instance)
+        self._build_rate_map(instance)
     
     def _build_company_map(self,instance=False):
         sf_model = 'KimbleOne__BusinessUnit__c'
@@ -102,9 +103,9 @@ class SFProjectSync(models.Model):
             SELECT Activity__c FROM KimbleOne__DeliveryElement__c WHERE Automated_Migration__c = TRUE
         """
         search_values = instance.getConnection().query_all(s_query)['records']
-        _logger.info("{}\n{}".format(s_query,search_values))
+        #_logger.info("{}\n{}".format(s_query,search_values))
         search_values = self._get_unique_records(search_values,'Activity__c')
-        _logger.info("{}\n{}".format(s_query,search_values))
+        #_logger.info("{}\n{}".format(s_query,search_values))
 
         for product in records:
             for item in search_values:
@@ -119,6 +120,35 @@ class SFProjectSync(models.Model):
                         'name':product['Name'],
                     })
 
+    def _build_rate_map(self,instance=False):
+        sf_model = 'KimbleOne__ActivityRole__c'
+        od_model = 'product.template'
+
+        if not instance:
+            return False
+        
+        query = """
+            SELECT Id, Name FROM KimbleOne__ActivityRole__c
+        """
+        records = instance.getConnection().query_all(query)['records']
+
+        for rec in records:
+            key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('odooModelName','=',od_model),('state','=','map')],limit=1)
+            if not key:
+                key = self.env['etl.sync.keys'].create({
+                    'externalObjName':sf_model,
+                    'externalId':rec['Id'],
+                    'odooModelName':od_model,
+                    'state':'map',
+                    'name':rec['Name'],
+                })
+
+            if not key.odooId:
+                found = self.env[od_model].search([('name','=ilike',rec['Name'])],limit=1)
+                if found:
+                    key.write({'odooId':str(found.id)})
+
+            
     def _test_maps(self,instance=False):
         if not instance:
             return False
