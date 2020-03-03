@@ -83,6 +83,7 @@ class SFProjectSync(models.Model):
                 VCLS_Status__c
             FROM KimbleOne__TimeEntry__c
             WHERE KimbleOne__DeliveryElement__c IN ('a1U0Y00000BexAu','a1U0Y00000BexB4')
+            AND VCLS_Status__c IN ('Billable - Draft','Billable - ReadyForApproval','Billable - Approved')
             """
             
             
@@ -101,6 +102,7 @@ class SFProjectSync(models.Model):
     def build_reference_data(self):
         instance = self.getSFInstance()
         self._build_invoice_item_status(instance)
+        self._build_time_periods(instance)
 
     @api.model
     def build_maps(self):
@@ -113,6 +115,28 @@ class SFProjectSync(models.Model):
         self._test_maps(instance)
     
     ####
+
+    def _build_time_periods(self,instance=False):
+        sf_model = 'KimbleOne__TimePeriod__c'
+
+        if not instance:
+            return False
+        
+        query = """
+            SELECT Id, KimbleOne__StartDate__c FROM KimbleOne__TimePeriod__c
+            WHERE KimbleOne__PeriodType__c = 'a353A000000jG5j'
+        """
+        records = instance.getConnection().query_all(query)['records']
+        for rec in records:
+            key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('state','=','map')],limit=1)
+            if not key:
+                key = self.env['etl.sync.keys'].create({
+                    'externalObjName':sf_model,
+                    'externalId':rec['Id'],
+                    'state':'map',
+                    'name':rec['KimbleOne__StartDate__c'],
+                })
+
     def _build_invoice_item_status(self,instance=False):
         sf_model = 'KimbleOne__ReferenceData__c'
         search_value = 'InvoiceItemStatus'
