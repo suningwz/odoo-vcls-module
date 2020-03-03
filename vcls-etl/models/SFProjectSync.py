@@ -135,6 +135,10 @@ class SFProjectSync(models.Model):
         
         query = """
             SELECT Id, Name, Email FROM User
+            WHERE Id IN (
+                 SELECT KimbleOne__ResourceUser__c FROM KimbleOne__ActivityAssignment__c 
+                    WHERE Automated_Migration__c = TRUE
+             )
         """
 
         records = instance.getConnection().query_all(query)['records']
