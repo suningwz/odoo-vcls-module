@@ -153,6 +153,7 @@ class SFProjectSync(models.Model):
                     'odooModelName':od_model,
                     'state':'map',
                     'name':rec['Name'],
+                    'search_value':rec['Email'].lower(), 
                 })
 
             if not key.odooId:
