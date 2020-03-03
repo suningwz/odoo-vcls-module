@@ -25,6 +25,9 @@ class ETLKey(models.Model):
     )
     name = fields.Char()
     search_value = fields.Char()
+    odooId = fields.Char(
+        readonly = False,
+    )
 
 class SFProjectSync(models.Model):
     _name = 'etl.salesforce.project'
@@ -52,6 +55,7 @@ class SFProjectSync(models.Model):
     def build_maps(self):
         instance = self.getSFInstance()
         self._build_company_map(instance)
+        self._build_product_map(instance)
     
     def _build_company_map(self,instance=False):
         sf_model = 'KimbleOne__BusinessUnit__c'
@@ -80,6 +84,43 @@ class SFProjectSync(models.Model):
                 found = self.env[od_model].search([('name','=ilike',rec['Name'])],limit=1)
                 if found:
                     key.write({'odooId':str(found.id)})
+
+        #_logger.info("{}\n{}".format(query,records))
+    
+    def _build_product_map(self,instance=False):
+        sf_model = 'KimbleOne__Product__c'
+        od_model = 'product.template'
+
+        if not instance:
+            return False
+        
+        query = """
+            SELECT Id, Name FROM KimbleOne__BusinessUnit__c
+        """
+        records = instance.getConnection().query_all(query)['records']
+        s_query = """
+            SELECT Activity__c FROM KimbleOne__DeliveryElement__c WHERE Automated_Migration__c = TRUE
+        """
+        search_values = instance.getConnection().query_all(s_query)['records']
+        _logger.info("{}\n{}".format(s_query,search_values))
+        search_values = list(set(search_values))
+        _logger.info("{}\n{}".format(s_query,search_values))
+
+        """for rec in records:
+            key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('odooModelName','=',od_model),('state','=','map')],limit=1)
+            if not key:
+                key = self.env['etl.sync.keys'].create({
+                    'externalObjName':sf_model,
+                    'externalId':rec['Id'],
+                    'odooModelName':od_model,
+                    'state':'map',
+                    'name':rec['Name'],
+                })
+
+            if not key.odooId:
+                found = self.env[od_model].search([('name','=ilike',rec['Name'])],limit=1)
+                if found:
+                    key.write({'odooId':str(found.id)})"""
 
         #_logger.info("{}\n{}".format(query,records))
 
