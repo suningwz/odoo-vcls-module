@@ -85,11 +85,7 @@ class SFProjectSync(models.Model):
             WHERE KimbleOne__DeliveryElement__c = 'a1U0Y00000BexAu'
             """
             
-            """
-            IN (
-                SELECT Id FROM KimbleOne__DeliveryElement__c WHERE Automated_Migration__c = TRUE
-            )
-            """
+            
         records = instance.getConnection().query_all(query)['records']
         for rec in records:
             _logger.info("{}\n{}".format(query,rec))
