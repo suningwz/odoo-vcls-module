@@ -96,7 +96,7 @@ class SFProjectSync(models.Model):
             return False
         
         query = """
-            SELECT Id, Name FROM KimbleOne__Product__c
+            SELECT Id, Name FROM KimbleOne__Product__c WHERE Id IN (SELECT KimbleOne__Product__c FROM KimbleOne__DeliveryElement__c WHERE Automated_Migration__c = TRUE)
         """
         records = instance.getConnection().query_all(query)['records']
         s_query = """
