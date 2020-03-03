@@ -25,9 +25,9 @@ class ETLKey(models.Model):
     )
     name = fields.Char()
     search_value = fields.Char()
-    odooId = fields.Char(
+    """odooId = fields.Char(
         readonly = False,
-    )
+    )"""
 
 class SFProjectSync(models.Model):
     _name = 'etl.salesforce.project'
@@ -103,7 +103,7 @@ class SFProjectSync(models.Model):
         """
         search_values = instance.getConnection().query_all(s_query)['records']
         _logger.info("{}\n{}".format(s_query,search_values))
-        search_values = list(set(val['Activity__c'] for val in search_values))
+        search_values = self._get_unique_records(search_values,'Activity__c')
         _logger.info("{}\n{}".format(s_query,search_values))
 
         for product in records:
@@ -134,10 +134,11 @@ class SFProjectSync(models.Model):
     ## TOOL METHODS
     ###
 
-    """def _get_unique_records(self,records,key):
-        result = {}
+    def _get_unique_records(self,records,key):
+        result = []
         for rec in records:
-            pass"""
+            result.append(rec[key])
+        return list(set(result))
 
 
 
