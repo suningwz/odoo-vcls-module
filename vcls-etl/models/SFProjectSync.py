@@ -95,7 +95,7 @@ class SFProjectSync(models.Model):
             return False
         
         query = """
-            SELECT Id, Name FROM KimbleOne__BusinessUnit__c
+            SELECT Id, Name FROM KimbleOne__Product__c
         """
         records = instance.getConnection().query_all(query)['records']
         s_query = """
@@ -119,23 +119,19 @@ class SFProjectSync(models.Model):
                         'name':product['Name'],
                     })
 
-        """for rec in records:
-            key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('odooModelName','=',od_model),('state','=','map')],limit=1)
-            if not key:
-                key = self.env['etl.sync.keys'].create({
-                    'externalObjName':sf_model,
-                    'externalId':rec['Id'],
-                    'odooModelName':od_model,
-                    'state':'map',
-                    'name':rec['Name'],
-                })
+    def _test_maps(self,instance=False):
+        if not instance:
+            return False
 
-            if not key.odooId:
-                found = self.env[od_model].search([('name','=ilike',rec['Name'])],limit=1)
-                if found:
-                    key.write({'odooId':str(found.id)})"""
+        for key in self.env['etl.sync.keys'].with_context(active_test=False).search([('state','=','map'),('odooId','!=',False)]):
+            try:
+                record = self.env[key.odooModelName].browse(int(key.odooId))
+            except:
+                _logger.info("ETL BAD ODOO KEY {} {}".format(key.odooModelName,key.odooId))
+                return False
+        
+        return True
 
-        #_logger.info("{}\n{}".format(query,records))
     
     ####
     ## TOOL METHODS
