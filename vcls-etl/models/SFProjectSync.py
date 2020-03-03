@@ -134,9 +134,10 @@ class SFProjectSync(models.Model):
     ## TOOL METHODS
     ###
 
-    def _get_unique_records(self,records,key):
+    """def _get_unique_records(self,records,key):
         result = {}
         for rec in records:
+            pass"""
 
 
 
