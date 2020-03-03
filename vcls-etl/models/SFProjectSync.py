@@ -57,6 +57,8 @@ class SFProjectSync(models.Model):
         self._build_company_map(instance)
         self._build_product_map(instance)
         self._build_rate_map(instance)
+        self._build_user_map(instance)
+        self._test_maps(instance)
     
     def _build_company_map(self,instance=False):
         sf_model = 'KimbleOne__BusinessUnit__c'
@@ -124,6 +126,36 @@ class SFProjectSync(models.Model):
                         'name':product['Name'],
                     })
 
+    def _build_user_map(self,instance=False):
+        sf_model = 'User'
+        od_model = 'res.users'
+
+        if not instance:
+            return False
+        
+        query = """
+            SELECT Id, Name, Email FROM User
+        """
+
+        records = instance.getConnection().query_all(query)['records']
+        #_logger.info("{}\n{}".format(query,records))
+
+        for rec in records:
+            key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('odooModelName','=',od_model),('state','=','map')],limit=1)
+            if not key:
+                key = self.env['etl.sync.keys'].create({
+                    'externalObjName':sf_model,
+                    'externalId':rec['Id'],
+                    'odooModelName':od_model,
+                    'state':'map',
+                    'name':rec['Name'],
+                })
+
+            if not key.odooId:
+                found = self.env[od_model].search([('login','=ilike',rec['Email'])],limit=1)
+                if found:
+                    key.write({'odooId':str(found.id)})
+    
     def _build_rate_map(self,instance=False):
         sf_model = 'KimbleOne__ActivityRole__c'
         od_model = 'product.template'
@@ -140,7 +172,7 @@ class SFProjectSync(models.Model):
         """
 
         records = instance.getConnection().query_all(query)['records']
-        _logger.info("{}\n{}".format(query,records))
+        #_logger.info("{}\n{}".format(query,records))
 
         for rec in records:
             key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('odooModelName','=',od_model),('state','=','map')],limit=1)
