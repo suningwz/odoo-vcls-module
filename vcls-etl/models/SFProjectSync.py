@@ -66,12 +66,12 @@ class SFProjectSync(models.Model):
         records = instance.getConnection().query_all(query)['records']
 
         for rec in records:
-            key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('odModelName','=',od_model),('state','=','map')],limit=1)
+            key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('odooModelName','=',od_model),('state','=','map')],limit=1)
             if not key:
                 key = self.env['etl.sync.keys'].create({
                     'externalObjName':sf_model,
                     'externalId':rec['Id'],
-                    'odModelName':od_model,
+                    'odooModelName':od_model,
                     'state':'map',
                     'name':rec['Name'],
                 })
