@@ -66,12 +66,16 @@ class SFProjectSync(models.Model):
         query = """ 
             SELECT 
                 Id,
-                KimbleOne__Category3__c,
-                KimbleOne__Category2__c,
                 KimbleOne__DeliveryElement__c,
-                KimbleOne__InvoiceItemStatus__c,
+                KimbleOne__Category1__c,
+                KimbleOne__Category2__c,
+                KimbleOne__Category3__c,
+                KimbleOne__Category4__c,
                 KimbleOne__Notes__c,
-                KimbleOne__TimePeriod__c,
+
+                KimbleOne__InvoiceItemStatus__c,
+                
+                KimbleOne__TimePeriod__cId,
                 KimbleOne__Resource__c,
                 KimbleOne__InvoicingCurrencyEntryRevenue__c,
                 KimbleOne__EntryUnits__c,
@@ -83,7 +87,9 @@ class SFProjectSync(models.Model):
             )
         """
         records = instance.getConnection().query_all(query)['records']
-        _logger.info("{}\n{}".format(query,records))
+        for rec in records:
+            _logger.info("{}\n{}".format(query,rec))
+            break
         _logger.info("FOUND TIME ENTRIES {}".format(len(records)))
 
 
