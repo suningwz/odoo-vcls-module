@@ -223,7 +223,7 @@ class SFProjectSync(models.Model):
                 })
 
             if not key.odooId:
-                found = self.env[od_model].search([('name','=ilike',rec['Name']),('is_business_line','=',True)],limit=1)
+                found = self.env[od_model].search([('name','=ilike',rec['Activity__c']),('is_business_line','=',True)],limit=1)
                 if found:
                     key.write({'odooId':str(found.id)})
             
