@@ -1,0 +1,39 @@
+from . import ETL_SF
+from . import generalSync
+from . import SFProjectSync_constants
+
+import pytz
+from simple_salesforce import Salesforce
+from simple_salesforce.exceptions import SalesforceMalformedRequest
+from tzlocal import get_localzone
+from datetime import datetime
+from datetime import timedelta
+import time
+import logging
+_logger = logging.getLogger(__name__)
+
+from odoo import models, fields, api
+
+class SFProjectSync(models.Model):
+    _name = 'etl.salesforce.project'
+    _inherit = 'etl.sync.salesforce'
+
+    project_sfid = fields.Char()
+    project_odid = fields.Integer()
+    migration_status = fields.Selection(
+        [
+            ('todo', 'ToDo'),
+            ('so', 'Sale Order'),
+            ('structure', 'Structure'),
+            ('ts', 'Timesheets'),
+            ('complete', 'Complete'),
+        ],
+        default = 'todo', 
+    )
+
+    #sfInstance = self.getSFInstance()
+
+    @api.model
+    def build_maps(self):
+        pass
+
