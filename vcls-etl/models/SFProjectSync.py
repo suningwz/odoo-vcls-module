@@ -50,6 +50,47 @@ class SFProjectSync(models.Model):
         default = 'todo', 
     )
 
+    ####################
+    ## MIGRATION METHODS
+    ####################
+    @api.model
+    def _dev(self):
+        instance = self.getSFInstance()
+        self._get_time_entries(instance)
+
+    def _get_time_entries(self,instance=False):
+        
+        if not instance:
+            return False
+        
+        query = """ 
+            SELECT 
+                Id,
+                KimbleOne__Category3__c,
+                KimbleOne__Category2__c,
+                KimbleOne__DeliveryElement__c,
+                KimbleOne__InvoiceItemStatus__c,
+                KimbleOne__Notes__c,
+                KimbleOne__TimePeriod__c,
+                KimbleOne__Resource__c,
+                KimbleOne__InvoicingCurrencyEntryRevenue__c,
+                KimbleOne__EntryUnits__c,
+                KimbleOne__ActivityAssignment__c,
+                VCLS_Status__c
+            FROM KimbleOne__TimeEntry__c
+            WHERE KimbleOne__DeliveryElement__c IN (
+                SELECT Id FROM KimbleOne__DeliveryElement__c WHERE WHERE Automated_Migration__c = TRUE
+            )
+        """
+        records = instance.getConnection().query_all(query)['records']
+        _logger.info("{}\n{}".format(query,records))
+        _logger.info("FOUND TIME ENTRIES {}".format(len(records))
+
+
+
+    ####################
+    ## MAPPING METHODS
+    ####################
 
     @api.model
     def build_maps(self):
@@ -241,9 +282,9 @@ class SFProjectSync(models.Model):
         return True
 
     
-    ####
+    ##################
     ## TOOL METHODS
-    ###
+    ##################
 
     def _get_unique_records(self,records,key):
         result = []
