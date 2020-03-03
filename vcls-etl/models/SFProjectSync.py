@@ -114,7 +114,28 @@ class SFProjectSync(models.Model):
     
     ####
     def _build_invoice_item_status(self,instance=False):
-        sf_model = 'KimbleOne__BusinessUnit__c'
+        sf_model = 'KimbleOne__ReferenceData__c'
+        search_value = 'InvoiceItemStatus'
+
+        if not instance:
+            return False
+        
+        query = """
+            SELECT Id, KimbleOne__Enum__c FROM KimbleOne__ReferenceData__c
+            WHERE KimbleOne__Domain__c = 'InvoiceItemStatus'
+        """
+        records = instance.getConnection().query_all(query)['records']
+        for rec in records:
+            key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('search_value','=',search_value),('state','=','map')],limit=1)
+            if not key:
+                key = self.env['etl.sync.keys'].create({
+                    'externalObjName':sf_model,
+                    'externalId':rec['Id'],
+                    'search_value':search_value,
+                    'state':'map',
+                    'name':rec['KimbleOne__Enum__c'],
+                })
+
 
     ####
     
