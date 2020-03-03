@@ -77,7 +77,7 @@ class SFProjectSync(models.Model):
                 })
 
             if not key.odooId:
-                found = self.env['ad_model'].search([('name','=ilike',rec['Name'])],limit=1)
+                found = self.env[od_model].search([('name','=ilike',rec['Name'])],limit=1)
                 if found:
                     key.write({'odooId':str(found.id)})
 
