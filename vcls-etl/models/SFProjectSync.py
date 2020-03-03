@@ -112,6 +112,7 @@ class SFProjectSync(models.Model):
         self._build_rate_map(instance)
         self._build_user_map(instance)
         self._build_activity_map(instance)
+        self._build_resources_map(instance)
         self._test_maps(instance)
     
     ####
@@ -188,11 +189,44 @@ class SFProjectSync(models.Model):
                 })
 
             if not key.odooId:
-                found = self.env[od_model].search([('name','=ilike',rec['Name'])],limit=1)
+                found = self.env[od_model].with_context(active_test=False).search([('name','=ilike',rec['Name'])],limit=1)
                 if found:
                     key.write({'odooId':str(found.id)})
 
         #_logger.info("{}\n{}".format(query,records))
+    
+    def _build_resources_map(self,instance=False):
+        sf_model = 'KimbleOne__Resource__c'
+        od_model = 'hr.employee'
+
+        if not instance:
+            return False
+        
+        query = """
+            SELECT Id, Name, KimbleOne__User__c FROM KimbleOne__Resource__c
+            WHERE KimbleOne__User__c != NULL
+        """
+        records = instance.getConnection().query_all(query)['records']
+
+        for rec in records:
+            key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('odooModelName','=',od_model),('state','=','map')],limit=1)
+            if not key:
+                key = self.env['etl.sync.keys'].create({
+                    'externalObjName':sf_model,
+                    'externalId':rec['Id'],
+                    'odooModelName':od_model,
+                    'state':'map',
+                    'name':rec['Name'],
+                })
+
+            if not key.odooId:
+                #we look for a user map key
+                user_key = self.env['etl.sync.key'].search([('externalObjName','=','User'),('externalId','=',rec['KimbleOne__User__c']),('odooId','!=',False)],limit=1)
+                if user_key:
+                    #we look for a related employee
+                    employee = self.env[od_model].with_context(active_test=False).search([('user_id','=',int(user_key.odooId))],limit=1)
+                    if employee:
+                        key.write({'odooId':str(employee.id)})
     
     def _build_product_map(self,instance=False):
         sf_model = 'KimbleOne__Product__c'
@@ -261,7 +295,7 @@ class SFProjectSync(models.Model):
                 })
 
             if not key.odooId:
-                found = self.env[od_model].search([('login','=ilike',rec['Email'])],limit=1)
+                found = self.env[od_model].with_context(active_test=False).search([('login','=ilike',rec['Email'])],limit=1)
                 if found:
                     key.write({'odooId':str(found.id)})
     
@@ -295,7 +329,7 @@ class SFProjectSync(models.Model):
                 })
 
             if not key.odooId:
-                found = self.env[od_model].search([('name','=ilike',rec['Name'])],limit=1)
+                found = self.env[od_model].with_context(active_test=False).search([('name','=ilike',rec['Name'])],limit=1)
                 if found:
                     key.write({'odooId':str(found.id)})
 
@@ -326,7 +360,7 @@ class SFProjectSync(models.Model):
                 })
 
             if not key.odooId:
-                found = self.env[od_model].search([('name','=ilike',rec['Activity__c']),('is_business_line','=',True)],limit=1)
+                found = self.env[od_model].with_context(active_test=False).search([('name','=ilike',rec['Activity__c']),('is_business_line','=',True)],limit=1)
                 if found:
                     key.write({'odooId':str(found.id)})
             
