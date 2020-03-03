@@ -103,8 +103,14 @@ class SFProjectSync(models.Model):
         """
         search_values = instance.getConnection().query_all(s_query)['records']
         _logger.info("{}\n{}".format(s_query,search_values))
-        search_values = list(set(search_values))
+        search_values = list(set(val['Activity__c'] for val in search_values))
         _logger.info("{}\n{}".format(s_query,search_values))
+
+        for product in records:
+            for item in search_values:
+                pass
+                #key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('odooModelName','=',od_model),('state','=','map')],limit=1)
+
 
         """for rec in records:
             key = self.env['etl.sync.keys'].search([('externalObjName','=',sf_model),('externalId','=',rec['Id']),('odooModelName','=',od_model),('state','=','map')],limit=1)
@@ -123,5 +129,14 @@ class SFProjectSync(models.Model):
                     key.write({'odooId':str(found.id)})"""
 
         #_logger.info("{}\n{}".format(query,records))
+    
+    ####
+    ## TOOL METHODS
+    ###
+
+    def _get_unique_records(self,records,key):
+        result = {}
+        for rec in records:
+
 
 
