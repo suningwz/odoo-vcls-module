@@ -82,7 +82,7 @@ class SFProjectSync(models.Model):
                 KimbleOne__ActivityAssignment__c,
                 VCLS_Status__c
             FROM KimbleOne__TimeEntry__c
-            WHERE KimbleOne__DeliveryElement__c = 'a1U0Y00000BexAu'
+            WHERE KimbleOne__DeliveryElement__c IN ('a1U0Y00000BexAu','a1U0Y00000BexB4')
             """
             
             
@@ -97,6 +97,10 @@ class SFProjectSync(models.Model):
     ####################
     ## MAPPING METHODS
     ####################
+    @api.model
+    def build_reference_data(self):
+        instance = self.getSFInstance()
+        self._build_invoice_item_status(instance)
 
     @api.model
     def build_maps(self):
@@ -107,6 +111,12 @@ class SFProjectSync(models.Model):
         self._build_user_map(instance)
         self._build_activity_map(instance)
         self._test_maps(instance)
+    
+    ####
+    def _build_invoice_item_status(self,instance=False):
+        sf_model = 'KimbleOne__BusinessUnit__c'
+
+    ####
     
     def _build_company_map(self,instance=False):
         sf_model = 'KimbleOne__BusinessUnit__c'
