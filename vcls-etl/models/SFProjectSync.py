@@ -79,7 +79,7 @@ class SFProjectSync(models.Model):
                 VCLS_Status__c
             FROM KimbleOne__TimeEntry__c
             WHERE KimbleOne__DeliveryElement__c IN (
-                SELECT Id FROM KimbleOne__DeliveryElement__c WHERE WHERE Automated_Migration__c = TRUE
+                SELECT Id FROM KimbleOne__DeliveryElement__c WHERE Automated_Migration__c = TRUE
             )
         """
         records = instance.getConnection().query_all(query)['records']
