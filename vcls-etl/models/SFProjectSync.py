@@ -84,7 +84,7 @@ class SFProjectSync(models.Model):
         """
         records = instance.getConnection().query_all(query)['records']
         _logger.info("{}\n{}".format(query,records))
-        _logger.info("FOUND TIME ENTRIES {}".format(len(records))
+        _logger.info("FOUND TIME ENTRIES {}".format(len(records)))
 
 
 
