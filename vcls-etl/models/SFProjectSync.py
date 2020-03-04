@@ -80,16 +80,21 @@ class SFProjectSync(models.Model):
         if not instance:
             return False
 
-        element_data = self._get_element_data(instance)
-        project_data = self._get_project_data(instance)
-        #proposal_data = self._get_proposal_data(instance)
+        #We get all the source data required for the projects in self
+        project_string = self.id_list_to_filter_string(self.mapped('project_sfid'))
+        element_data = self._get_element_data(instance,project_string)
+        project_data = self._get_project_data(instance,project_string)
+
+        proposal_string = self.id_list_to_filter_string([p['Id'] for p in project_data])
+        proposal_data = self._get_proposal_data(instance)
+
+        #Then we loop to process projects separately
     
     ###
 
-    def _get_element_data(self,instance):
-        project_string = self.id_list_to_filter_string(self.mapped('project_sfid'))
+    def _get_element_data(self,instance,filter_string = False):
         query = SFProjectSync_constants.SELECT_GET_ELEMENT_DATA
-        query += "WHERE KimbleOne__DeliveryGroup__c IN " + project_string
+        query += "WHERE KimbleOne__DeliveryGroup__c IN " + filter_string
         _logger.info(query)
 
         records = instance.getConnection().query_all(query)['records']
@@ -97,10 +102,20 @@ class SFProjectSync(models.Model):
         
         return [records]
 
-    def _get_project_data(self,instance):
-        project_string = self.id_list_to_filter_string(self.mapped('project_sfid'))
+    def _get_project_data(self,instance,filter_string = False):
         query = SFProjectSync_constants.SELECT_GET_PROJECT_DATA
-        query += "WHERE Id IN " + project_string
+        query += "WHERE Id IN " + filter_string
+        _logger.info(query)
+
+        records = instance.getConnection().query_all(query)['records']
+        _logger.info("Found {} Projects".format(len(records)))
+        
+        return [records]
+
+    def _get_proposal_data(self,instance,filter_string = False):
+        proposal_string = self.id_list_to_filter_string(self.mapped('project_sfid'))
+        query = SFProjectSync_constants.SELECT_GET_PROPOSAL_DATA
+        query += "WHERE Id IN " + proposal_string
         _logger.info(query)
 
         records = instance.getConnection().query_all(query)['records']

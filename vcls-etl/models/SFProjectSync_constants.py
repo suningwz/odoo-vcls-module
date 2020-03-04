@@ -32,16 +32,22 @@ SELECT_GET_PROJECT_DATA = """
         Activity__c,
         KimbleOne__ExpectedEndDate__c,
         KimbleOne__ForecastStatus__c,
-        KimbleOne__DeliveryStage__c,
+        KimbleOne__DeliveryStage__c
 
         FROM KimbleOne__DeliveryGroup__c
 
 """
 
 SELECT_GET_PROPOSAL_DATA = """
-
+    SELECT 
+        Id, 
+        KimbleOne__Opportunity__c, 
+        KimbleOne__DeliveryStartDate__c, 
+        KimbleOne__BusinessUnit__c 
+        
+        FROM KimbleOne__Proposal__c
 """
 
 STORE_TEMP = """
-SELECT  ,, , ,  , , , ,   FROM  where Automated_Migration__c = TRUE
+
 """
