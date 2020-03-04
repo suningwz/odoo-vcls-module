@@ -88,6 +88,9 @@ class SFProjectSync(models.Model):
         proposal_string = self.key_to_filter_string(project_data,'KimbleOne__Proposal__c')
         proposal_data = self._get_proposal_data(instance,proposal_string)
 
+        element_string = self.key_to_filter_string(element_data,'Id')
+        milestone_data = self._get_milestone_data(instance,element_string)
+
         #Then we loop to process projects separately
     
     ###
@@ -113,17 +116,24 @@ class SFProjectSync(models.Model):
         return [records]
 
     def _get_proposal_data(self,instance,filter_string = False):
-        proposal_string = self.id_list_to_filter_string(self.mapped('project_sfid'))
         query = SFProjectSync_constants.SELECT_GET_PROPOSAL_DATA
-        query += "WHERE Id IN " + proposal_string
+        query += "WHERE Id IN " + filter_string
         _logger.info(query)
 
         records = instance.getConnection().query_all(query)['records']
         _logger.info("Found {} Projects".format(len(records)))
         
         return [records]
+    
+    def _get_milestone_data(self,instance,filter_string = False):
+        query = SFProjectSync_constants.SELECT_GET_MILESTONE_DATA
+        query += "WHERE Id IN " + filter_string
+        _logger.info(query)
 
-
+        records = instance.getConnection().query_all(query)['records']
+        _logger.info("Found {} Projects".format(len(records)))
+        
+        return [records]
 
 
     ######
@@ -134,8 +144,6 @@ class SFProjectSync(models.Model):
     
 
     def _get_time_entries(self,instance=False):
-        
-        
         
         query = """ 
             SELECT 
@@ -203,11 +211,11 @@ class SFProjectSync(models.Model):
         return result
     
     def key_to_filter_string(self,list_in,key):
-        stack = []
+        result = "("
         for item in list_in:
-            stack.append("\'{}\'".format(item[key]))
+            result += ("\'{}\',".format(item[key]))
 
-        result = "({})".format(",".join(stack))
+        result = result[:-1]+")"   
         return result
         
         
