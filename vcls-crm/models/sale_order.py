@@ -149,6 +149,8 @@ class SaleOrder(models.Model):
 
     @api.model
     def create(self, vals):
+        if self.env.user.context_data_integration:
+            _logger.info("SO CREATE: {}".format(vals))
         # if we force the creation of a quotation with an exiting internal ref (e.g. during migration)
         if vals.get('internal_ref'):
             vals['name'] = self._get_name_without_ref(vals['internal_ref'], vals['name'])

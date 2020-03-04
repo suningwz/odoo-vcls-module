@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.7.9',
+    'version': '0.7.10',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -46,6 +46,7 @@
         'views/ia_menus.xml',
         'views/backend.xml',
         'views/todo_menu.xml',
+        'views/vcls_support.xml',
         'views/marketing_menu.xml',
         'data/translation.sql',
     ],

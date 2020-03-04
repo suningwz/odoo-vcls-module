@@ -245,6 +245,17 @@ class AnalyticLine(models.Model):
             # Timesheet cases
             if line.is_timesheet and line.project_id and line.employee_id:
 
+
+                if vals.get('unit_amount', False):
+                    #the coded amount is changed
+                    if vals['unit_amount'] % 0.25 != 0:
+                        old = vals.get('unit_amount', 0)
+                        vals['unit_amount'] = math.ceil(old * 4) / 4
+                    
+                    #we preserve a potential modification of the rounded_value in the past
+                    delta = vals['unit_amount'] - line.unit_amount
+                    vals['unit_amount_rounded'] = vals.get('unit_amount_rounded', line.unit_amount_rounded)+delta
+
                 # automatically set the stage to lc_review according to the conditions
                 if vals.get('validated', line.validated):
                     if vals.get('stage_id', line.stage_id) == 'draft':
