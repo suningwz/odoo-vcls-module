@@ -85,10 +85,9 @@ class SFProjectSync(models.Model):
         element_data = self._get_element_data(instance,project_string)
         project_data = self._get_project_data(instance,project_string)
 
-        proposal_string = self.key_to_filter_string(project_data,'KimbleOne__Proposal__c')
-        """
+        proposal_string = self.key_to_filter_string(project_data[0],'KimbleOne__Proposal__c')
         proposal_data = self._get_proposal_data(instance,proposal_string)
-
+        """
         element_string = self.key_to_filter_string(element_data,'Id')
         milestone_data = self._get_milestone_data(instance,element_string)
         """
