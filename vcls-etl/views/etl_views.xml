@@ -53,7 +53,7 @@
 					<field name="project_sfref"/>
 					<field name="project_sfname"/>
 					<field name="migration_status"/>
-					<field name="last_run"/>
+					<field name="lastRun"/>
 				</tree>
 			</field>
 		</record>
