@@ -81,17 +81,16 @@ class SFProjectSync(models.Model):
             return False
 
         #We get all the source data required for the projects in self
-        project_string = self.id_list_to_filter_string(self.mapped('project_sfid'))
+        project_string = self.list_to_filter_string(self.mapped('project_sfid'))
         element_data = self._get_element_data(instance,project_string)
         project_data = self._get_project_data(instance,project_string)
 
-        proposal_string = self.key_to_filter_string(project_data[0],'KimbleOne__Proposal__c')
+        proposal_string = self.list_to_filter_string(project_data[0],'KimbleOne__Proposal__c')
         proposal_data = self._get_proposal_data(instance,proposal_string)
         
-        element_string = self.key_to_filter_string(element_data[0],'Id')
+        element_string = self.list_to_filter_string(element_data[0],'Id')
         milestone_data = self._get_milestone_data(instance,element_string)
         
-
         #Then we loop to process projects separately
     
     ###
@@ -210,10 +209,14 @@ class SFProjectSync(models.Model):
         result = "({})".format(",".join(stack))
         return result
     
-    def key_to_filter_string(self,list_in,key):
-        result = []
+    def list_to_filter_string(self,list_in,key=False):
+        stack = []
         for item in list_in:
-            result.append("\'{}\',".format(item[key]))   
+            if key:
+                stack.append("\'{}\',".format(item[key])) 
+            else:
+                stack.append("\'{}\'".format(item))  
+        result = "({})".format(",".join(stack))
         return result
         
         
