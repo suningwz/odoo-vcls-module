@@ -8,6 +8,7 @@ from . import SFOpportunitySync
 from . import SFLeadsSync
 from . import SFContractSync
 from . import SFCampaignSync
+from . import SFProjectSync_mapping
 from . import SFProjectSync
 from . import ITranslator
 from . import TranslatorSFAccount

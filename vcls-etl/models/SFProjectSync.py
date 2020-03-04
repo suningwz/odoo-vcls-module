@@ -15,23 +15,9 @@ _logger = logging.getLogger(__name__)
 
 from odoo import models, fields, api
 
-#######
-### WE EXETEND THE KEY MODEL
-###
-class ETLKey(models.Model):
-    _inherit = 'etl.sync.keys' 
-
-    state = fields.Selection(
-        selection_add = [('map', 'MAP')],
-    )
-    name = fields.Char()
-    search_value = fields.Char()
-    odooId = fields.Char(
-        readonly = False,
-    )
 
 class SFProjectSync(models.Model):
-    _name = 'etl.salesforce.project'
+    #_name = 'etl.salesforce.project'
     _inherit = 'etl.sync.salesforce'
 
     project_sfid = fields.Char()
@@ -82,10 +68,19 @@ class SFProjectSync(models.Model):
         for project in migrations:
             _logger.info("PROJECT MIGRATION STATUS | {} | {} | {}".format(project.project_sfref,project.project_sfname,project.migration_status))
 
+    
+    
+    """@api.multi
+    def build_quotations(self,instance):
+        project_data = self._get_project_data(instance)
+        element_data = self._get_element_data(instance)"""
+    
+    ######
     @api.model
     def _dev(self):
         instance = self.getSFInstance()
         self._get_time_entries(instance)
+    
 
     def _get_time_entries(self,instance=False):
         
@@ -130,19 +125,19 @@ class SFProjectSync(models.Model):
     @api.model
     def build_reference_data(self):
         instance = self.getSFInstance()
-        self._build_invoice_item_status(instance)
-        self._build_time_periods(instance)
+        self.SFProjectSync_mapping._build_invoice_item_status(instance)
+        self.SFProjectSync_mapping._build_time_periods(instance)
 
     @api.model
     def build_maps(self):
         instance = self.getSFInstance()
-        self._build_company_map(instance)
-        self._build_product_map(instance)
-        self._build_rate_map(instance)
-        self._build_user_map(instance)
-        self._build_activity_map(instance)
-        self._build_resources_map(instance)
-        self._test_maps(instance)
+        self.SFProjectSync_mapping._build_company_map(instance)
+        self.SFProjectSync_mapping._build_product_map(instance)
+        self.SFProjectSync_mapping._build_rate_map(instance)
+        self.SFProjectSync_mapping._build_user_map(instance)
+        self.SFProjectSync_mapping._build_activity_map(instance)
+        self.SFProjectSync_mapping._build_resources_map(instance)
+        self.SFProjectSync_mapping._test_maps(instance)
 
     
 

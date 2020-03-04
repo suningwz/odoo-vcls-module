@@ -14,6 +14,22 @@ _logger = logging.getLogger(__name__)
 
 from odoo import models, fields, api
 
+#######
+### WE EXETEND THE KEY MODEL
+###
+class ETLKey(models.Model):
+    _inherit = 'etl.sync.keys' 
+
+    state = fields.Selection(
+        selection_add = [('map', 'MAP')],
+    )
+    name = fields.Char()
+    search_value = fields.Char()
+    odooId = fields.Char(
+        readonly = False,
+    )
+
+
 class SFProjectSync(models.Model):
     _name = 'etl.salesforce.project'
     _inherit = 'etl.sync.salesforce'
