@@ -68,17 +68,33 @@ class SFProjectSync(models.Model):
         for project in migrations:
             _logger.info("PROJECT MIGRATION STATUS | {} | {} | {}".format(project.project_sfref,project.project_sfname,project.migration_status))
 
-    
+    @api.model
+    def test(self):
+        instance = self.getSFInstance()
+        projects = self.search([('migration_status','=','todo')])
+        _logger.info("Processing {} Projects".format(projects.mapped('project_sfref')))
+        projects.build_quotations(instance)
     
     @api.multi
     def build_quotations(self,instance):
+        if not instance:
+            return False
+
         element_data = self._get_element_data(instance)
-        project_data = self._get_project_data(instance)
+        #project_data = self._get_project_data(instance)
         
 
 
     def _get_element_data(self,instance):
-        return []
+        project_string = "({})".format(",".join(self.mapped('project_sfid')))
+        query = SFProjectSync_constants.SELECT_GET_ELEMENT_DATA
+        query += "WHERE KimbleOne__DeliveryGroup__c IN " + project_string
+        _logger.info(query)
+
+        records = instance.getConnection().query_all(query)['records']
+        _logger.info("Found {} Elements".format(len(records)))
+        
+        return [records]
 
     def _get_project_data(self,instance):
         return []
@@ -95,8 +111,7 @@ class SFProjectSync(models.Model):
 
     def _get_time_entries(self,instance=False):
         
-        if not instance:
-            return False
+        
         
         query = """ 
             SELECT 
