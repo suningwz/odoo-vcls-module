@@ -123,6 +123,7 @@ class SFProjectSync(models.Model):
     def split_elements(self,element_data):
         output = []
         for element in element_data:
+            _logger.info("ELEMENT DATA {}".format(element))
             combination = {}
             combination['proposal'] = element['KimbleOne__OriginatingProposal__c']
             prod_info = list(filter(lambda info: info['sf_id']==element['KimbleOne__Product__c'],SFProjectSync_constants.ELEMENTS_INFO))
