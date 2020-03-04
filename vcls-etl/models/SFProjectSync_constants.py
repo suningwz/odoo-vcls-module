@@ -15,9 +15,28 @@ SELECT_GET_ELEMENT_DATA = """
         Contracted_Budget__c,
         KimbleOne__InvoicingCurrencyContractRevenue__c
         FROM KimbleOne__DeliveryElement__c
-        
+
 """
 
+SELECT_GET_PROJECT_DATA = """
+    SELECT
+        Id,
+        Name,
+        KimbleOne__Reference__c,
+        KimbleOne__Account__c,
+        KimbleOne__Proposal__c,
+        
+        KimbleOne__InvoicingCurrencyIsoCode__c,
 
-"SELECT ,, ,  FROM KimbleOne__DeliveryElement__c WHERE KimbleOne__DeliveryGroup__c IN (SELECT Id  FROM KimbleOne__DeliveryGroup__c where Automated_Migration__c = TRUE)
-"
+        Scope_of_Work_Description__c,
+        Activity__c,
+
+"""
+
+SELECT_GET_PROPOSAL_DATA = """
+
+"""
+
+STORE_TEMP = """
+SELECT  ,, KimbleOne__DeliveryStage__c, ,  KimbleOne__ForecastStatus__c, , , KimbleOne__ExpectedEndDate__c,   FROM KimbleOne__DeliveryGroup__c where Automated_Migration__c = TRUE
+"""
