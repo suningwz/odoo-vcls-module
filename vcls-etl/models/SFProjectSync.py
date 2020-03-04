@@ -115,8 +115,23 @@ class SFProjectSync(models.Model):
         my_primary_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']==my_project['KimbleOne__Proposal__c'],element_data))
         my_extention_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']!=my_project['KimbleOne__Proposal__c'],element_data))
 
+        for item in (self.split_elements(my_primary_elements) + self.split_elements(my_extention_elements)):
+            _logger.info("Quotation to create: project {} proposal {} mode {}".format(my_project['KimbleOne__Reference__c'],item['proposal'],item['mode']))
+
 
     ###
+    def split_elements(self,element_data):
+        output = []
+        for element in element_data:
+            combination = {}
+            combination['proposal'] = element['KimbleOne__OriginatingProposal__c']
+            prod_info = list(filter(lambda info: info['sf_id']==element['KimbleOne__Product__c'],SFProjectSync_constants.ELEMENTS_INFO))
+            combination['mode'] = prod_info[0]['mode'] if prod_info else False
+            if combination not in output:
+                output.append(combination)
+        return output
+
+    ###    
     def _get_element_data(self,instance,filter_string = False):
         query = SFProjectSync_constants.SELECT_GET_ELEMENT_DATA
         query += "WHERE KimbleOne__DeliveryGroup__c IN " + filter_string

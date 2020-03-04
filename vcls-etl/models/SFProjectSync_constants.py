@@ -1,7 +1,20 @@
 # -*- coding: utf-8 -*-
+#{'sf_id':'','name':'','type':'','mode':},
+
+ELEMENTS_INFO= [
+    {'sf_id':'a3Q3A0000008kk2','name':'T&M | Consulting Work','type':'service','mode':'tm'},
+
+    {'sf_id':'a3Q0Y000000LqGi','name':'Generic | Consulting Work Monthly Fees','type':'subscription','mode':'fixed_price'},
+    {'sf_id':'a3Q3A0000008kjy','name':'Fixed Price | Consulting Work','type':'service','mode':'fixed_price'},
+
+    {'sf_id':'a3Q0Y000000Lo9X','name':'Generic | Revenue Milestones','type':'milestone','mode':False},
+    {'sf_id':'a3Q3A0000008kjt','name':'Generic | 3rd Party Invoices','type':'milestone','mode':False},
+    {'sf_id':'a3Q3A0000008kjv','name':'Generic | Monthly Fees per Unit','type':'subscription','mode':False},
+    {'sf_id':'a3Q3A0000008kjw','name':'Generic | Monthly Fees','type':'subscription','mode':False},
+]
 
 ###############################
-# QUERIES #
+# QUERIES #	
 ###############################
 
 SELECT_GET_ELEMENT_DATA = """
