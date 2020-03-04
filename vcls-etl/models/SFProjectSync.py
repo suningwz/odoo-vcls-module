@@ -70,11 +70,22 @@ class SFProjectSync(models.Model):
 
     
     
-    """@api.multi
+    @api.multi
     def build_quotations(self,instance):
+        element_data = self._get_element_data(instance)
         project_data = self._get_project_data(instance)
-        element_data = self._get_element_data(instance)"""
-    
+        
+
+
+    def _get_element_data(self,instance):
+        return []
+
+    def _get_project_data(self,instance):
+        return []
+
+
+
+
     ######
     @api.model
     def _dev(self):
@@ -125,19 +136,19 @@ class SFProjectSync(models.Model):
     @api.model
     def build_reference_data(self):
         instance = self.getSFInstance()
-        self.SFProjectSync_mapping._build_invoice_item_status(instance)
-        self.SFProjectSync_mapping._build_time_periods(instance)
+        self._build_invoice_item_status(instance)
+        self._build_time_periods(instance)
 
     @api.model
     def build_maps(self):
         instance = self.getSFInstance()
-        self.SFProjectSync_mapping._build_company_map(instance)
-        self.SFProjectSync_mapping._build_product_map(instance)
-        self.SFProjectSync_mapping._build_rate_map(instance)
-        self.SFProjectSync_mapping._build_user_map(instance)
-        self.SFProjectSync_mapping._build_activity_map(instance)
-        self.SFProjectSync_mapping._build_resources_map(instance)
-        self.SFProjectSync_mapping._test_maps(instance)
+        self._build_company_map(instance)
+        self._build_product_map(instance)
+        self._build_rate_map(instance)
+        self._build_user_map(instance)
+        self._build_activity_map(instance)
+        self._build_resources_map(instance)
+        self._test_maps(instance)
 
     
 
