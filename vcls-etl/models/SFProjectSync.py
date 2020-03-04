@@ -85,8 +85,8 @@ class SFProjectSync(models.Model):
         element_data = self._get_element_data(instance,project_string)
         project_data = self._get_project_data(instance,project_string)
 
-        #proposal_string = self.id_list_to_filter_string([p['Id'] for p in project_data])
-        proposal_string = self.id_list_to_filter_string(list(map(lambda p: p.get('KimbleOne__Proposal__c'),project_data)))
+        list_of_prop = self.extract_key_to_list(project_data,'KimbleOne__Proposal__c')
+        proposal_string = self.id_list_to_filter_string(list_of_prop)
         proposal_data = self._get_proposal_data(instance)
 
         #Then we loop to process projects separately
@@ -201,6 +201,12 @@ class SFProjectSync(models.Model):
             stack.append("\'{}\'".format(item))
         
         result = "({})".format(",".join(stack))
+        return result
+    
+    def extract_key_to_list(self,list_in,key):
+        result = []
+        for item in list_in:
+            result.append(item[key])
         return result
         
         
