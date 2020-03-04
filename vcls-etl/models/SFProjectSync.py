@@ -113,7 +113,7 @@ class SFProjectSync(models.Model):
             _logger.info("Found Opp {} for project {} of proposal {}".format(o_opp.name,my_project['Name'],my_proposal['Id']))
 
         my_primary_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']==my_project['KimbleOne__Proposal__c'],element_data))
-        my_extention_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']!=my_project['KimbleOne__Proposal__c'] and element['KimbleOne__DeliveryGroup__c']!=my_project['Id'],element_data))
+        my_extention_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']!=my_project['KimbleOne__Proposal__c'] and element['KimbleOne__DeliveryGroup__c']==my_project['Id'],element_data))
         
         for item in (self.split_elements(my_primary_elements) + self.split_elements(my_extention_elements)):
             _logger.info("Quotation to create: project {} proposal {} mode {}".format(my_project['KimbleOne__Reference__c'],item['proposal'],item['mode']))
