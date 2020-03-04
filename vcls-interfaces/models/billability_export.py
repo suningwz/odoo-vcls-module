@@ -45,12 +45,13 @@ class BillabilityExport(models.Model):
     # TOOL METHODS #
     ################
     
-    def build_data(self):
+    def build_data(self, start_date=False, end_date=False):
         """ This methods computes a list of dictionnaries for the excel billability export.
         Each row will be related to one active contract for the employee over the defined period.
         Each roww will contain related capacity information, including raw capacity and leaves.
         To make comptation easier, we will iterate over Companies in order to compute a default capacity."""
-        
+        start_date = start_date or self.start_date
+        end_date = end_date or self.end_date
         data= []
         distribution = {
             'Days [d]': 0,
@@ -65,7 +66,7 @@ class BillabilityExport(models.Model):
             'Control [d]': -1,
         }
         
-        all_days = set(self.start_date + timedelta(days=x) for x in range((self.end_date-self.start_date).days + 1))
+        all_days = set(start_date + timedelta(days=x) for x in range((end_date-start_date).days + 1))
         distribution['Days [d]'] = len(all_days)
         
         #we remove the weekend
@@ -75,21 +76,21 @@ class BillabilityExport(models.Model):
         #loop companies to access bank holidays
         companies = self.env['res.company'].search([('short_name','!=','BH')])
         for company in companies:
-            bank_days = set(self.env['hr.bank.holiday'].search([('company_id.id','=',company.id),('date','>=',self.start_date),('date','<=',self.end_date)]).mapped('date'))
+            bank_days = set(self.env['hr.bank.holiday'].search([('company_id.id','=',company.id),('date','>=',start_date),('date','<=',end_date)]).mapped('date'))
             distribution['Bank Holiday [d]'] = len(bank_days)
             comp_worked_days = gen_worked_days - bank_days
             
             #we now look into contracts valid over the defined period (i.e. starterd before the export end, end after export start, no end planned)
-            contracts = self.env['hr.contract'].search([('employee_id.employee_type','=','internal'),('company_id.id','=',company.id),('date_start','<=',self.end_date),
-                                                        '|',('date_end','>=',self.start_date),('date_end','=',False),
-                                                        '|',('employee_id.employee_end_date','>=',self.start_date),('employee_id.employee_end_date','=',False)])
+            contracts = self.env['hr.contract'].search([('employee_id.employee_type','=','internal'),('company_id.id','=',company.id),('date_start','<=',end_date),
+                                                        '|',('date_end','>=',start_date),('date_end','=',False),
+                                                        '|',('employee_id.employee_end_date','>=',start_date),('employee_id.employee_end_date','=',False)])
             for contract in contracts:
                 
                 if not (contract.resource_calendar_id):
                     raise ValidationError('The contract {} has no working schedule configured.'.format(contract.name))
                     
-                start_date = max(contract.date_start,self.start_date)
-                end_date = min(contract.date_end if contract.date_end else self.end_date, contract.employee_id.employee_end_date if contract.employee_id.employee_end_date else self.end_date)
+                start_date = max(contract.date_start,start_date)
+                end_date = min(contract.date_end if contract.date_end else end_date, contract.employee_id.employee_end_date if contract.employee_id.employee_end_date else end_date)
                 
                 contr_worked_days = set(filter(lambda d: d >= contract.date_start and d <= end_date,comp_worked_days))
                 distribution['Out of Contract [d]'] = len(comp_worked_days)-len(contr_worked_days)
@@ -158,6 +159,7 @@ class BillabilityExport(models.Model):
             'Job Title': contract.job_id.project_role_id.name,
             'Working Percentage': contract.resource_calendar_id.effective_percentage,
             'Raw Weekly Capacity [h]': contract.resource_calendar_id.effective_hours,
+            'Employee Internal ID': contract.employee_id.id,
         }
         line = {**line, **distribution}
  

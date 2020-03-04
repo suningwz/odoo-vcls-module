@@ -149,9 +149,9 @@
                     <field name="name"/>
                     <field name="partner_id"/>
                     <field name="user_id"/>
-                    <field name="invoiceable_amount"/>
-                    <field name="pc_budget"/>
-                    <field name="cf_budget"/>
+                    <field name="invoiceable_amount" widget="integer"/>
+                    <field name="pc_budget" widget="integer"/>
+                    <field name="cf_budget" widget="integer"/>
                     <field name="risk_score"/>
                     <field name="risk_ids"  widget="many2many_tags"/>
                     <field name="completion_ratio"/>
@@ -159,11 +159,11 @@
                     <field name="consummed_completed_ratio"/>
                     <field name="valuation_ratio"/>
                     <field name="invoicing_mode"/>
-                    <field name="contractual_budget"/>
-                    <field name="forecasted_budget"/>
-                    <field name="realized_budget"/>
-                    <field name="valued_budget"/>
-                    <field name="invoiced_budget"/>
+                    <field name="contractual_budget" widget="integer"/>
+                    <field name="forecasted_budget" widget="integer"/>
+                    <field name="realized_budget" widget="integer"/>
+                    <field name="valued_budget" widget="integer"/>
+                    <field name="invoiced_budget" widget="integer"/>
                     <field name="last_summary_date"/>
                 </tree>
             </field>

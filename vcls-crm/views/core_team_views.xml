@@ -13,6 +13,11 @@
                             <group>
                                 <field name='lead_consultant' string="Lead Consultant"/>
                                 <field name='lead_backup'/>
+                                <button name="swap_lc_with_lc_backup"
+                                    string="LC &lt;swap&gt; BKP" 
+                                    type="object" 
+                                    attrs="{'invisible': ['|', ('lead_backup', '=', False), ('lead_consultant', '=', False)]}"
+                                />
                             </group>
                             <group>
                                 <field name='assistant_id'/>
@@ -43,6 +48,5 @@
                 </form>
             </field>
         </record>
-
     </data>
 </odoo>
