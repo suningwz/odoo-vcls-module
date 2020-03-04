@@ -85,11 +85,11 @@ class SFProjectSync(models.Model):
         element_data = self._get_element_data(instance,project_string)
         project_data = self._get_project_data(instance,project_string)
 
-        proposal_string = self.key_to_filter_string(project_data,'KimbleOne__Proposal__c')
+        """proposal_string = self.key_to_filter_string(project_data,'KimbleOne__Proposal__c')
         proposal_data = self._get_proposal_data(instance,proposal_string)
 
         element_string = self.key_to_filter_string(element_data,'Id')
-        milestone_data = self._get_milestone_data(instance,element_string)
+        milestone_data = self._get_milestone_data(instance,element_string)"""
 
         #Then we loop to process projects separately
     
@@ -213,10 +213,12 @@ class SFProjectSync(models.Model):
     def key_to_filter_string(self,list_in,key):
         result = "("
         for item in list_in:
-            result += ("\'{}\',".format(item[key]))
+            _logger.info("{}".format(item))
+            _logger.info("{}".format(item[key]))
+            #result += ("\'{}\',".format(item[key]))
 
-        result = result[:-1]+")"   
-        return result
+        #result = result[:-1]+")"   
+        return False
         
         
 
