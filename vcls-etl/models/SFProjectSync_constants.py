@@ -44,6 +44,16 @@ SELECT_GET_PROPOSAL_DATA = """
         KimbleOne__Opportunity__c, 
         KimbleOne__DeliveryStartDate__c, 
         KimbleOne__BusinessUnit__c 
+
+        FROM KimbleOne__Proposal__c
+"""
+
+SELECT_GET_MILESTONE_DATA = """
+    SELECT 
+        Id, 
+        KimbleOne__Opportunity__c, 
+        KimbleOne__DeliveryStartDate__c, 
+        KimbleOne__BusinessUnit__c 
         
         FROM KimbleOne__Proposal__c
 """

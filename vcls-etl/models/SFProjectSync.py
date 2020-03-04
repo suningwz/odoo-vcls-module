@@ -85,7 +85,8 @@ class SFProjectSync(models.Model):
         element_data = self._get_element_data(instance,project_string)
         project_data = self._get_project_data(instance,project_string)
 
-        proposal_string = self.id_list_to_filter_string([p['Id'] for p in project_data])
+        #proposal_string = self.id_list_to_filter_string([p['Id'] for p in project_data])
+        proposal_string = self.id_list_to_filter_string(list(map(lambda p: p.get('KimbleOne__Proposal__c'),project_data)))
         proposal_data = self._get_proposal_data(instance)
 
         #Then we loop to process projects separately
@@ -176,6 +177,7 @@ class SFProjectSync(models.Model):
     def build_reference_data(self):
         instance = self.getSFInstance()
         self._build_invoice_item_status(instance)
+        self._build_milestone_type(instance)
         self._build_time_periods(instance)
 
     @api.model
