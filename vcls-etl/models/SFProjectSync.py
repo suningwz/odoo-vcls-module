@@ -81,12 +81,13 @@ class SFProjectSync(models.Model):
             return False
 
         element_data = self._get_element_data(instance)
-        #project_data = self._get_project_data(instance)
-        
-
+        project_data = self._get_project_data(instance)
+        #proposal_data = self._get_proposal_data(instance)
+    
+    ###
 
     def _get_element_data(self,instance):
-        project_string = "({})".format(",".join(self.mapped('project_sfid')))
+        project_string = self.id_list_to_filter_string(self.mapped('project_sfid'))
         query = SFProjectSync_constants.SELECT_GET_ELEMENT_DATA
         query += "WHERE KimbleOne__DeliveryGroup__c IN " + project_string
         _logger.info(query)
@@ -97,7 +98,15 @@ class SFProjectSync(models.Model):
         return [records]
 
     def _get_project_data(self,instance):
-        return []
+        project_string = self.id_list_to_filter_string(self.mapped('project_sfid'))
+        query = SFProjectSync_constants.SELECT_GET_PROJECT_DATA
+        query += "WHERE Id IN " + project_string
+        _logger.info(query)
+
+        records = instance.getConnection().query_all(query)['records']
+        _logger.info("Found {} Projects".format(len(records)))
+        
+        return [records]
 
 
 
@@ -164,6 +173,20 @@ class SFProjectSync(models.Model):
         self._build_activity_map(instance)
         self._build_resources_map(instance)
         self._test_maps(instance)
+
+
+    ####################
+    ## TOOL METHODS
+    ####################
+    def id_list_to_filter_string(self,list_in):
+        stack = []
+        for item in list_in:
+            stack.append("\'{}\'".format(item))
+        
+        result = "({})".format(",".join(stack))
+        return result
+        
+        
 
     
 

@@ -14,6 +14,7 @@ SELECT_GET_ELEMENT_DATA = """
         KimbleOne__Product__c,
         Contracted_Budget__c,
         KimbleOne__InvoicingCurrencyContractRevenue__c
+
         FROM KimbleOne__DeliveryElement__c
 
 """
@@ -27,9 +28,13 @@ SELECT_GET_PROJECT_DATA = """
         KimbleOne__Proposal__c,
         
         KimbleOne__InvoicingCurrencyIsoCode__c,
-
         Scope_of_Work_Description__c,
         Activity__c,
+        KimbleOne__ExpectedEndDate__c,
+        KimbleOne__ForecastStatus__c,
+        KimbleOne__DeliveryStage__c,
+
+        FROM KimbleOne__DeliveryGroup__c
 
 """
 
@@ -38,5 +43,5 @@ SELECT_GET_PROPOSAL_DATA = """
 """
 
 STORE_TEMP = """
-SELECT  ,, KimbleOne__DeliveryStage__c, ,  KimbleOne__ForecastStatus__c, , , KimbleOne__ExpectedEndDate__c,   FROM KimbleOne__DeliveryGroup__c where Automated_Migration__c = TRUE
+SELECT  ,, , ,  , , , ,   FROM  where Automated_Migration__c = TRUE
 """
