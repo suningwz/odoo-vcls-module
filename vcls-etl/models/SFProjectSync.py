@@ -126,8 +126,8 @@ class SFProjectSync(models.Model):
         for element in element_data:
             combination = {}
             combination['proposal'] = element['KimbleOne__OriginatingProposal__c']
-            prod_info = list(filter(lambda info: info['sf_id']==element['KimbleOne__Product__c'],SFProjectSync_constants.ELEMENTS_INFO))
-            _logger.info("Element Product Id {}".format(element['KimbleOne__Product__c']))
+            prod_info = list(filter(lambda info: info['sf_id']==element['KimbleOne__Product__c'][:-3],SFProjectSync_constants.ELEMENTS_INFO))
+            #_logger.info("Element Product Id {}".format(element['KimbleOne__Product__c']))
             mode = prod_info[0]['mode'] if prod_info else False
             combination['mode'] = mode
             if (mode and (combination not in output)) or (combination['proposal'] not in proposals):
