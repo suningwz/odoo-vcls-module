@@ -94,11 +94,29 @@ class SFProjectSync(models.Model):
         activity_data = self._get_activity_data(instance,element_string)
         annuity_data = self._get_annuity_data(instance,element_string)
 
-        
         #Then we loop to process projects separately
+        for project in self:
+            if not project.so_ids: #no sale order yet
+                to_create = project.prepare_so_data(project_data,proposal_data,element_data)
     
     ###
 
+    def prepare_so_data(self,project_data,proposal_data,element_data):
+        self.ensure_one()
+        my_project = list(filter(lambda project: project['Id']==self.project_sfid,project_data))[0]
+        my_proposal = list(filter(lambda proposal: proposal['Id']==my_project['KimbleOne__Proposal__c'],proposal_data))[0]
+
+        #we get the source opportunity
+        key = self.env['etl.sync.keys'].search([('externalId','=',my_proposal['KimbleOne__Opportunity__c']),('odooId','!=',False)],limit=1)
+        if key:
+            o_opp = self.env['crm.lead'].browse(int(key.odooId))
+            _logger.info("Found Opp {} for project {}".format(o_opp.name,my_project['Name']))
+
+        my_primary_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']==my_project['KimbleOne__Proposal__c'],element_data))
+        my_extention_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']!=my_project['KimbleOne__Proposal__c'],element_data))
+
+
+    ###
     def _get_element_data(self,instance,filter_string = False):
         query = SFProjectSync_constants.SELECT_GET_ELEMENT_DATA
         query += "WHERE KimbleOne__DeliveryGroup__c IN " + filter_string
