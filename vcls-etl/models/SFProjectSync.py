@@ -132,7 +132,7 @@ class SFProjectSync(models.Model):
     def _get_milestone_data(self,instance,filter_string = False):
         #we get only revenue milestones
         query = SFProjectSync_constants.SELECT_GET_MILESTONE_DATA
-        query += "WHERE Id IN " + filter_string + " AND KimbleOne__MilestoneType__c='a3d3A0000004bNb'"
+        query += "WHERE KimbleOne__DeliveryElement__c IN " + filter_string + " AND KimbleOne__MilestoneType__c='a3d3A0000004bNb'"
         _logger.info(query)
 
         records = instance.getConnection().query_all(query)['records']
