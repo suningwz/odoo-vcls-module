@@ -62,12 +62,42 @@ SELECT_GET_MILESTONE_DATA = """
         FROM KimbleOne__Milestone__c
 """
 
+SELECT_GET_ASSIGNMENT_DATA = """
+    SELECT 
+        Id,
+        KimbleOne__DeliveryGroup__c,
+        KimbleOne__ResourcedActivity__c,
+        KimbleOne__ActivityRole__c,
+        KimbleOne__InvoicingCurrencyRevenueRate__c
+        
+        FROM KimbleOne__ActivityAssignment__c
+        
+"""
+
+SELECT_GET_ACTIVITY_DATA = """
+    SELECT 
+        Id,
+        Name,
+        KimbleOne__ActivityStatus__c,
+        KimbleOne__DeliveryGroup__c,
+        KimbleOne__DeliveryElement__c
+    
+        FROM KimbleOne__ResourcedActivity__c
+        
+"""
+
+SELECT_GET_ANNUITY_DATA = """
+    SELECT 
+        Id,
+        Name,
+        KimbleOne__DeliveryElement__c,
+        KimbleOne__InvoicingCurrencyRevenueRate__c
+        
+        FROM KimbleOne__Annuity__c
+"""
+
 
 
 STORE_TEMP = """
-
-SELECT Id, KimbleOne__DeliveryGroup__c,KimbleOne__ActivityRole__c,KimbleOne__InvoicingCurrencyRevenueRate__c  FROM KimbleOne__ActivityAssignment__c
-WHERE KimbleOne__ActivityRole__c  != NULL AND KimbleOne__DeliveryGroup__c != NULL
-
 
 """

@@ -84,12 +84,16 @@ class SFProjectSync(models.Model):
         project_string = self.list_to_filter_string(self.mapped('project_sfid'))
         element_data = self._get_element_data(instance,project_string)
         project_data = self._get_project_data(instance,project_string)
+        assignment_data = self._get_assignment_data(instance,project_string)
 
-        proposal_string = self.list_to_filter_string(project_data[0],'KimbleOne__Proposal__c')
+        proposal_string = self.list_to_filter_string(project_data,'KimbleOne__Proposal__c')
         proposal_data = self._get_proposal_data(instance,proposal_string)
         
-        element_string = self.list_to_filter_string(element_data[0],'Id')
+        element_string = self.list_to_filter_string(element_data,'Id')
         milestone_data = self._get_milestone_data(instance,element_string)
+        activity_data = self._get_activity_data(instance,element_string)
+        annuity_data = self._get_annuity_data(instance,element_string)
+
         
         #Then we loop to process projects separately
     
@@ -103,7 +107,7 @@ class SFProjectSync(models.Model):
         records = instance.getConnection().query_all(query)['records']
         _logger.info("Found {} Elements".format(len(records)))
         
-        return [records]
+        return records
 
     def _get_project_data(self,instance,filter_string = False):
         query = SFProjectSync_constants.SELECT_GET_PROJECT_DATA
@@ -113,7 +117,7 @@ class SFProjectSync(models.Model):
         records = instance.getConnection().query_all(query)['records']
         _logger.info("Found {} Projects".format(len(records)))
         
-        return [records]
+        return records
 
     def _get_proposal_data(self,instance,filter_string = False):
         query = SFProjectSync_constants.SELECT_GET_PROPOSAL_DATA
@@ -121,19 +125,50 @@ class SFProjectSync(models.Model):
         _logger.info(query)
 
         records = instance.getConnection().query_all(query)['records']
-        _logger.info("Found {} Projects".format(len(records)))
+        _logger.info("Found {} Proposals".format(len(records)))
         
-        return [records]
+        return records
     
     def _get_milestone_data(self,instance,filter_string = False):
+        #we get only revenue milestones
         query = SFProjectSync_constants.SELECT_GET_MILESTONE_DATA
-        query += "WHERE Id IN " + filter_string
+        query += "WHERE Id IN " + filter_string + " AND KimbleOne__MilestoneType__c='a3d3A0000004bNb'"
         _logger.info(query)
 
         records = instance.getConnection().query_all(query)['records']
-        _logger.info("Found {} Projects".format(len(records)))
+        _logger.info("Found {} Milestones".format(len(records)))
         
-        return [records]
+        return records
+    
+    def _get_assignment_data(self,instance,filter_string = False):
+        query = SFProjectSync_constants.SELECT_GET_ASSIGNMENT_DATA
+        query += "WHERE KimbleOne__DeliveryGroup__c IN " + filter_string
+        _logger.info(query)
+
+        records = instance.getConnection().query_all(query)['records']
+        _logger.info("Found {} Assignments".format(len(records)))
+        
+        return records
+    
+    def _get_activity_data(self,instance,filter_string = False):
+        query = SFProjectSync_constants.SELECT_GET_ACTIVITY_DATA
+        query += "WHERE KimbleOne__DeliveryElement__c IN " + filter_string
+        _logger.info(query)
+
+        records = instance.getConnection().query_all(query)['records']
+        _logger.info("Found {} Resourced Activities".format(len(records)))
+        
+        return records
+    
+    def _get_annuity_data(self,instance,filter_string = False):
+        query = SFProjectSync_constants.SELECT_GET_ANNUITY_DATA
+        query += "WHERE KimbleOne__DeliveryElement__c IN " + filter_string
+        _logger.info(query)
+
+        records = instance.getConnection().query_all(query)['records']
+        _logger.info("Found {} Annuities".format(len(records)))
+        
+        return records
 
 
     ######
@@ -202,12 +237,12 @@ class SFProjectSync(models.Model):
     ####################
     ## TOOL METHODS
     ####################
-    def id_list_to_filter_string(self,list_in):
+    """def id_list_to_filter_string(self,list_in):
         stack = []
         for item in list_in:
             stack.append("\'{}\'".format(item))
         result = "({})".format(",".join(stack))
-        return result
+        return result"""
     
     def list_to_filter_string(self,list_in,key=False):
         stack = []
