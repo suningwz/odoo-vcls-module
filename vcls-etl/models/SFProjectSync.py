@@ -105,16 +105,16 @@ class SFProjectSync(models.Model):
         self.ensure_one()
         my_project = list(filter(lambda project: project['Id']==self.project_sfid,project_data))[0]
         my_proposal = list(filter(lambda proposal: proposal['Id']==my_project['KimbleOne__Proposal__c'],proposal_data))[0]
-
+        
         #we get the source opportunity
         key = self.env['etl.sync.keys'].search([('externalId','=',my_proposal['KimbleOne__Opportunity__c']),('odooId','!=',False)],limit=1)
         if key:
             o_opp = self.env['crm.lead'].browse(int(key.odooId))
-            _logger.info("Found Opp {} for project {}".format(o_opp.name,my_project['Name']))
+            _logger.info("Found Opp {} for project {} of proposal {}".format(o_opp.name,my_project['Name'],my_proposal['Id']))
 
         my_primary_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']==my_project['KimbleOne__Proposal__c'],element_data))
-        my_extention_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']!=my_project['KimbleOne__Proposal__c'],element_data))
-
+        my_extention_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']!=my_project['KimbleOne__Proposal__c'] and element['KimbleOne__DeliveryGroup__c']!=my_project['Id'],element_data))
+        
         for item in (self.split_elements(my_primary_elements) + self.split_elements(my_extention_elements)):
             _logger.info("Quotation to create: project {} proposal {} mode {}".format(my_project['KimbleOne__Reference__c'],item['proposal'],item['mode']))
 
@@ -122,14 +122,17 @@ class SFProjectSync(models.Model):
     ###
     def split_elements(self,element_data):
         output = []
+        proposals = []
         for element in element_data:
-            _logger.info("ELEMENT DATA {}".format(element))
             combination = {}
             combination['proposal'] = element['KimbleOne__OriginatingProposal__c']
             prod_info = list(filter(lambda info: info['sf_id']==element['KimbleOne__Product__c'],SFProjectSync_constants.ELEMENTS_INFO))
-            combination['mode'] = prod_info[0]['mode'] if prod_info else False
-            if combination not in output:
+            mode = prod_info[0]['mode'] if prod_info else False
+            combination['mode'] = mode
+            if (mode and (combination not in output)) or (combination['proposal'] not in proposals):
                 output.append(combination)
+                proposals.append(combination['proposal'])
+
         return output
 
     ###    
