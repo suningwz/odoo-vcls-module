@@ -82,6 +82,7 @@ SELECT_GET_ASSIGNMENT_DATA = """
         Id,
         KimbleOne__DeliveryGroup__c,
         KimbleOne__ResourcedActivity__c,
+        KimbleOne__Resource__c,
         KimbleOne__ActivityRole__c,
         KimbleOne__InvoicingCurrencyRevenueRate__c
         

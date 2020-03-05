@@ -96,21 +96,29 @@ class SFProjectSync(models.Model):
 
         #Then we loop to process projects separately
         for project in self:
+            my_project = list(filter(lambda project: project['Id']==project.project_sfid,project_data))[0]
             if not project.so_ids: #no sale order yet
-                to_create = project.prepare_so_data(project_data,proposal_data,element_data)
-                if to_create:
+                #core_team
+                quote_data = project.prepare_so_data(project_data,proposal_data,element_data)
+                if quote_data:
                     parent_id = False
-                    for quote in to_create:
+                    for quote in quote_data:
                         if not parent_id:
+                            _logger.info("PARENT SO CREATION VALS:\n{}".format(quote))
                             parent_id = self.env['sale.order'].create(quote)
                             project.write({'so_ids':[(4, parent_id.id, 0)]})
                         else:
-                            new = self.env['sale.order'].create(quote.update({'parent_id':parent_id.id}))
+                            quote.update({'parent_id':parent_id.id})
+                            _logger.info("CHILD CREATION VALS:\n{}".format(quote))
+                            new = self.env['sale.order'].create(quote)
                             project.write({'so_ids':[(4, new.id, 0)]})
                         
                     
     
     ###
+    def prepare_core_team_data(self,my_project,assignment_data):
+        return False
+
 
     def prepare_so_data(self,project_data,proposal_data,element_data):
         self.ensure_one()
