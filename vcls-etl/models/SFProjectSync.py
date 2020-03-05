@@ -96,7 +96,7 @@ class SFProjectSync(models.Model):
 
         #Then we loop to process projects separately
         for project in self:
-            my_project = list(filter(lambda project: project['Id']==project.project_sfid,project_data))[0]
+            my_project = list(filter(lambda p: p['Id']==project.project_sfid,project_data))[0]
             if not project.so_ids: #no sale order yet
                 #core_team
                 quote_data = project.prepare_so_data(project_data,proposal_data,element_data)
@@ -117,7 +117,17 @@ class SFProjectSync(models.Model):
     
     ###
     def prepare_core_team_data(self,my_project,assignment_data):
-        return False
+        core_team = {}
+        #we get the LC
+        o_user = self.sf_id_to_odoo_rec(my_project['OwnerId'])
+        employee = self.env['hr.employee'].with_context(active_test=False).search([('user_id','=',o_user.id)],limit=1)
+        if employee:
+            core_team['lead_consultant'] = employee.id
+
+        #we look all assignments to extract resource data
+        all_resources = list(filter(lambda a: a['KimbleOne__DeliveryGroup__c']==my_project['Id'],assignment_data))
+
+        return core_team
 
 
     def prepare_so_data(self,project_data,proposal_data,element_data):
@@ -337,6 +347,7 @@ class SFProjectSync(models.Model):
                 stack.append("\'{}\'".format(item))  
         result = "({})".format(",".join(stack))
         return result
+    
         
         
 

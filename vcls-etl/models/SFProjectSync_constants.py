@@ -37,6 +37,7 @@ SELECT_GET_PROJECT_DATA = """
     SELECT
         Id,
         Name,
+        OwnerId,
         KimbleOne__Reference__c,
         KimbleOne__Account__c,
         KimbleOne__Proposal__c,
