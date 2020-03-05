@@ -176,10 +176,11 @@ class SFProjectSync(models.Model):
 
         index = 0
         quotations = (self.split_elements(my_primary_elements) + self.split_elements(my_extention_elements))
+        _logger.info("PROPOSALE DATA {}".format(quotations))
         for item in sorted(quotations,key=lambda q: q['index']): #we sort it to create 1st the quotation related to the initial element
             #we work the names
             #_logger.info("Quotation to create: project {} proposal {} mode {}".format(my_project['KimbleOne__Reference__c'],item['proposal'],item['mode']))
-            #_logger.info("PROPOSALE DATA {}".format(proposal_data))
+            
             element_proposal = list(filter(lambda p: p['Id']==item['proposal'],proposal_data))
             ep = element_proposal[0] if element_proposal else {'Name':'Change Order'}
             quote_vals = {
@@ -214,6 +215,8 @@ class SFProjectSync(models.Model):
         output = []
         proposals = []
         elements = []
+        combinations = []
+
         for element in element_data:
             combination = {}
             combination['proposal'] = element['KimbleOne__OriginatingProposal__c']
@@ -224,8 +227,12 @@ class SFProjectSync(models.Model):
 
             index = int(element['KimbleOne__Reference__c'][-3:])
             if (mode and (combination not in output)) or (combination['proposal'] not in proposals):
+                #here we need to create a new quote
                 output.append(combination.update({'index':index}))
+                elements = [element]
                 proposals.append(combination['proposal'])
+            else:
+                elements.append(element)
 
         return output
 
