@@ -141,7 +141,12 @@ class SFProjectSync(models.Model):
     def prepare_rates(self,elements,activity_data,assignment_data):
         rates = []
         for element in elements:
-            if element['prod_info']['mode'] in ['tm','fixed_price']: #if this element has assignement
+            if not element['prod_info']:
+                _logger.info("MISSING PROD INFO FOR {} {}".format(element['KimbleOne__Reference__c'],element['KimbleOne__Product__c']))
+                mode = 'tm'
+            else:
+                mode = element['prod_info']['mode']
+            if mode in ['tm','fixed_price']: #if this element has assignement
                 activity = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==element['Id'],activity_data))[0]
                 assignments = list(filter(lambda a: a['KimbleOne__ResourcedActivity__c']==activity['Id'],assignment_data))
                 for assignment in assignments:
