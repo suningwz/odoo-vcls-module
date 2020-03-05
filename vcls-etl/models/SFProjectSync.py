@@ -99,7 +99,7 @@ class SFProjectSync(models.Model):
             my_project = list(filter(lambda p: p['Id']==project.project_sfid,project_data))[0]
             if not project.so_ids: #no sale order yet
                 #core_team
-                core_team = self.env['core.team'].create(project.prepare_core_team_data(assignment_data))
+                core_team = self.env['core.team'].create(project.prepare_core_team_data(my_project,assignment_data))
                 quote_data = project.prepare_so_data(project_data,proposal_data,element_data)
                 if quote_data:
                     parent_id = False
