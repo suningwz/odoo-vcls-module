@@ -7,6 +7,7 @@ import pytz
 from simple_salesforce import Salesforce
 from simple_salesforce.exceptions import SalesforceMalformedRequest
 from tzlocal import get_localzone
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 import time
@@ -191,13 +192,14 @@ class SFProjectSync(models.Model):
             quote_vals = {
                 'company_id':o_company.id,
                 'partner_id':o_opp.partner_id.id,
+                'user_id': o_company.user_id.id,
                 'opportunity_id':o_opp.id,
                 'internal_ref':"{}.{}".format(my_project['KimbleOne__Reference__c'],index) if index>0 else my_project['KimbleOne__Reference__c'],
-                'name': (my_project['Name'] + (" [{}]".format(item['mode']) if item['mode'] else "") + ".{}".format(index) ) if index>0 else my_project['Name'],
+                'name': my_project['KimbleOne__Reference__c'] + " | " + (my_project['Name'] + (" [{}]".format(item['mode']) if item['mode'] else "") + ".{}".format(index) ) if index>0 else my_project['KimbleOne__Reference__c'] + " | " + my_project['Name'],
                 'invoicing_mode':item['mode'] if item['mode'] else False,
                 'pricelist_id':o_pricelist.id,
                 'scope_of_work': gp['Name'] if index>0 else my_project['Scope_of_Work_Description__c'],
-                'expected_start_date':my_proposal['KimbleOne__DeliveryStartDate__c'],
+                'expected_start_date':my_proposal['KimbleOne__DeliveryStartDate__c'] or date.today(),
                 'expected_end_date':my_project['KimbleOne__ExpectedEndDate__c'],
                 'tag_ids':[(4, tag, 0)],
                 'product_category_id':bl,
@@ -225,6 +227,8 @@ class SFProjectSync(models.Model):
 
             prod_info = list(filter(lambda info: info['sf_id']==element['KimbleOne__Product__c'][:-3],SFProjectSync_constants.ELEMENTS_INFO))
             mode = prod_info[0]['mode'] if prod_info else False
+            section = prod_info[0]['type'] if prod_info else False
+            element.update({'section':section}) #we add section info for future use
             proposal = element['KimbleOne__OriginatingProposal__c']
             index = int(element['KimbleOne__Reference__c'][-2:])
             

@@ -96,7 +96,7 @@
                             <field name="deliverable_id" domain="[('product_category_id','=',product_category_id)]" attrs="{'required': [('catalog_details', '=', True),('catalog_mode', '=', 'template')]}"/>
                         </group>
                     </group>
-                    <group string="Reporting">
+                    <group string="Reporting" invisible="1">
                         <field name="report_details"/>
                         <field name="report_rate"/>
                     </group>
