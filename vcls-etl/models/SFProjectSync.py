@@ -109,13 +109,16 @@ class SFProjectSync(models.Model):
                         vals.update({'core_team_id':core_team.id})
                         if not parent_id:
                             _logger.info("PARENT SO CREATION VALS:\n{}".format(vals))
-                            parent_id = self.env['sale.order'].create(vals)
-                            project.write({'so_ids':[(4, parent_id.id, 0)]})
+                            so = self.env['sale.order'].create(vals)
+                            parent_id = so
                         else:
                             vals.update({'parent_id':parent_id.id})
                             _logger.info("CHILD CREATION VALS:\n{}".format(vals))
-                            new = self.env['sale.order'].create(vals)
-                            project.write({'so_ids':[(4, new.id, 0)]})
+                            so = self.env['sale.order'].create(vals)
+
+                        project.write({'so_ids':[(4, so.id, 0)]})
+
+                        so.prepare_lines_data(quote['elements'])
                                  
     
     ###
@@ -192,7 +195,7 @@ class SFProjectSync(models.Model):
             quote_vals = {
                 'company_id':o_company.id,
                 'partner_id':o_opp.partner_id.id,
-                'user_id': o_company.user_id.id,
+                'user_id': o_opp.partner_id.user_id.id,
                 'opportunity_id':o_opp.id,
                 'internal_ref':"{}.{}".format(my_project['KimbleOne__Reference__c'],index) if index>0 else my_project['KimbleOne__Reference__c'],
                 'name': my_project['KimbleOne__Reference__c'] + " | " + (my_project['Name'] + (" [{}]".format(item['mode']) if item['mode'] else "") + ".{}".format(index) ) if index>0 else my_project['KimbleOne__Reference__c'] + " | " + my_project['Name'],
@@ -204,7 +207,7 @@ class SFProjectSync(models.Model):
                 'tag_ids':[(4, tag, 0)],
                 'product_category_id':bl,
             }
-            quote_data.append({'index':item['index'],'quote_vals':quote_vals})  
+            quote_data.append({'index':item['index'],'quote_vals':quote_vals, 'elements':item['elements']})  
             index += 1
 
         return quote_data
@@ -218,7 +221,7 @@ class SFProjectSync(models.Model):
             identifier: used to match existing entries
             proposal: sf_id of the proposal
             mode: invoicing_mode of the group
-            elements: sf_id of the elements linked to this quote
+            elements: elements data linked to this quote
         }
         """
         output = []
