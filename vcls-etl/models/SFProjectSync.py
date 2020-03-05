@@ -147,22 +147,24 @@ class SFProjectSync(models.Model):
             else:
                 mode = element['prod_info']['mode']
             if mode in ['tm','fixed_price']: #if this element has assignement
-                activity = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==element['Id'],activity_data))[0]
-                assignments = list(filter(lambda a: a['KimbleOne__ResourcedActivity__c']==activity['Id'],assignment_data))
-                for assignment in assignments:
-                    o_rate_product = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
-                    if o_rate_product:
-                        #we check if already found
-                        existing = list(filter(lambda p: p['product_id']==o_rate_product.id,rates))
-                        if existing:
-                            if assignment['KimbleOne__InvoicingCurrencyRevenueRate__c'] > existing[0]['price']: #if we found a cheaper one, we need to update it
-                                index = rates.index(existing[0])
-                                rates[index]['price']= assignment['KimbleOne__InvoicingCurrencyRevenueRate__c']
+                activities = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==element['Id'],activity_data))
+                if activities:
+                    activity = activities[0]
+                    assignments = list(filter(lambda a: a['KimbleOne__ResourcedActivity__c']==activity['Id'],assignment_data))
+                    for assignment in assignments:
+                        o_rate_product = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
+                        if o_rate_product:
+                            #we check if already found
+                            existing = list(filter(lambda p: p['product_id']==o_rate_product.id,rates))
+                            if existing:
+                                if assignment['KimbleOne__InvoicingCurrencyRevenueRate__c'] > existing[0]['price']: #if we found a cheaper one, we need to update it
+                                    index = rates.index(existing[0])
+                                    rates[index]['price']= assignment['KimbleOne__InvoicingCurrencyRevenueRate__c']
+                                else:
+                                    pass
                             else:
-                                pass
-                        else:
-                            #we add a rate
-                            rates.append({'name':o_rate_product.name,'product_id':o_rate_product.id,'price':assignment['KimbleOne__InvoicingCurrencyRevenueRate__c']})
+                                #we add a rate
+                                rates.append({'name':o_rate_product.name,'product_id':o_rate_product.id,'price':assignment['KimbleOne__InvoicingCurrencyRevenueRate__c']})
 
         return sorted(rates,key=lambda r: r['price'],reverse = True)
                
