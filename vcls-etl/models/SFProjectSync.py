@@ -99,25 +99,29 @@ class SFProjectSync(models.Model):
             my_project = list(filter(lambda p: p['Id']==project.project_sfid,project_data))[0]
             if not project.so_ids: #no sale order yet
                 #core_team
+                core_team = self.env['core.team'].create(project.prepare_core_team_data(assignment_data))
                 quote_data = project.prepare_so_data(project_data,proposal_data,element_data)
                 if quote_data:
                     parent_id = False
-                    for quote in quote_data:
+                    for quote in sorted(quote_data,key=lambda q: q['index']):
+                        vals = quote['quote_vals']
+                        vals.update({'core_team_id':core_team.id})
                         if not parent_id:
-                            _logger.info("PARENT SO CREATION VALS:\n{}".format(quote))
-                            parent_id = self.env['sale.order'].create(quote)
+                            _logger.info("PARENT SO CREATION VALS:\n{}".format(vals))
+                            parent_id = self.env['sale.order'].create(vals)
                             project.write({'so_ids':[(4, parent_id.id, 0)]})
                         else:
-                            quote.update({'parent_id':parent_id.id})
-                            _logger.info("CHILD CREATION VALS:\n{}".format(quote))
-                            new = self.env['sale.order'].create(quote)
+                            vals.update({'parent_id':parent_id.id})
+                            _logger.info("CHILD CREATION VALS:\n{}".format(vals))
+                            new = self.env['sale.order'].create(vals)
                             project.write({'so_ids':[(4, new.id, 0)]})
-                        
-                    
+                                 
     
     ###
     def prepare_core_team_data(self,my_project,assignment_data):
-        core_team = {}
+        core_team = {'name':"Team {}".format(my_project['KimbleOne__Reference__c'])}
+        consultants = []
+
         #we get the LC
         o_user = self.sf_id_to_odoo_rec(my_project['OwnerId'])
         employee = self.env['hr.employee'].with_context(active_test=False).search([('user_id','=',o_user.id)],limit=1)
@@ -126,13 +130,26 @@ class SFProjectSync(models.Model):
 
         #we look all assignments to extract resource data
         assignments = list(filter(lambda a: a['KimbleOne__DeliveryGroup__c']==my_project['Id'],assignment_data))
-        resources = self.values_from_keys(assignments,'KimbleOne__Resource__c')
-        #all_resources = list(set(all_resources)) #get unique values
+        resources = self.values_from_key(assignments,'KimbleOne__Resource__c')
+        resources = list(set(resources)) #get unique values
+        for res in resources:
+            emp = self.self.sf_id_to_odoo_rec(res)
+            if emp:
+                consultants.append(emp.id)
+
+        core_team['consultant_ids'] = [(6, 0, consultants)]
 
         return core_team
 
 
     def prepare_so_data(self,project_data,proposal_data,element_data):
+        """
+        We use a list of dict:
+        {
+            index: index of the element trigerring the new quotation
+            quote_vals: data to call the create
+        }
+        """
         self.ensure_one()
         quote_data = []
 
@@ -156,27 +173,28 @@ class SFProjectSync(models.Model):
         my_extention_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']!=my_project['KimbleOne__Proposal__c'] and element['KimbleOne__DeliveryGroup__c']==my_project['Id'],element_data))
 
         index = 0
-        for item in (self.split_elements(my_primary_elements) + self.split_elements(my_extention_elements)):
+        quotations = (self.split_elements(my_primary_elements) + self.split_elements(my_extention_elements))
+        for item in sorted(quotations,key=lambda q: q['index']): #we sort it to create 1st the quotation related to the initial element
             #we work the names
-            _logger.info("Quotation to create: project {} proposal {} mode {}".format(my_project['KimbleOne__Reference__c'],item['proposal'],item['mode']))
-            _logger.info("PROPOSALE DATA {}".format(proposal_data))
-            element_proposal = list(filter(lambda p: p['Id']==item['proposal'],proposal_data))[0]
-
-            so_vals = {
+            #_logger.info("Quotation to create: project {} proposal {} mode {}".format(my_project['KimbleOne__Reference__c'],item['proposal'],item['mode']))
+            #_logger.info("PROPOSALE DATA {}".format(proposal_data))
+            element_proposal = list(filter(lambda p: p['Id']==item['proposal'],proposal_data))
+            ep = element_proposal[0] if element_proposal else {'Name':'Change Order'}
+            quote_vals = {
                 'company_id':o_company.id,
                 'partner_id':o_opp.partner_id.id,
                 'opportunity_id':o_opp.id,
                 'internal_ref':"{}.{}".format(my_project['KimbleOne__Reference__c'],index) if index>0 else my_project['KimbleOne__Reference__c'],
                 'name': (my_project['Name'] + " ({})".format(item['mode']) if item['mode'] else "") if index>0 else my_project['Name'],
                 'invoicing_mode':item['mode'] if item['mode'] else False,
-                'price_list_id':o_pricelist.id,
-                'scope_of_work': element_proposal['Name'] if index>0 else my_project['Scope_of_Work_Description__c'],
+                'pricelist_id':o_pricelist.id,
+                'scope_of_work': ep['Name'] if index>0 else my_project['Scope_of_Work_Description__c'],
                 'expected_start_date':my_proposal['KimbleOne__DeliveryStartDate__c'],
                 'expected_end_date':my_project['KimbleOne__ExpectedEndDate__c'],
                 'tag_ids':[(4, tag, 0)],
                 'product_category_id':bl,
             }
-            quote_data.append(so_vals)
+            quote_data.append({'index':item['index'],'quote_vals':quote_vals})  
             index += 1
 
         return quote_data
@@ -192,8 +210,9 @@ class SFProjectSync(models.Model):
             #_logger.info("Element Product Id {}".format(element['KimbleOne__Product__c']))
             mode = prod_info[0]['mode'] if prod_info else False
             combination['mode'] = mode
+            index = int(element['KimbleOne__Reference__c'][-3:])
             if (mode and (combination not in output)) or (combination['proposal'] not in proposals):
-                output.append(combination)
+                output.append(combination.update({'index':index}))
                 proposals.append(combination['proposal'])
 
         return output
@@ -337,7 +356,7 @@ class SFProjectSync(models.Model):
     ####################
     ## TOOL METHODS
     ####################
-    def values_from_keys(self,dict_list, key):
+    def values_from_key(self,dict_list, key):
         output = []
         for item in dict_list:
             output.append(item[key])
