@@ -282,7 +282,7 @@ class SFProjectSync(models.Model):
             proposal = element['KimbleOne__OriginatingProposal__c']
             index = int(element['KimbleOne__Reference__c'][-2:])
             
-            found = 0
+            found = False
             for i in range(len(output)): #we try to find a compatible group
                 p = output[i]['proposal']
                 m = output[i]['mode']
