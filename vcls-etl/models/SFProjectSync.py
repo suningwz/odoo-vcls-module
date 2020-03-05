@@ -117,11 +117,52 @@ class SFProjectSync(models.Model):
                             so = self.env['sale.order'].create(vals)
 
                         project.write({'so_ids':[(4, so.id, 0)]})
-
-                        so.prepare_lines_data(quote['elements'])
+                        so.name = "{} | {}".format(vals['internal_ref'],vals['name'])
+                        #we prepare line content
+                        rates_data = project.prepare_rates(quote['elements'],activity_data,assignment_data)
+                        if rates_data:
+                            #we create a section
+                            section = self.env['sale.order.line'].create({
+                                'order_id':so.id,
+                                'display_type': 'line_section',
+                                'name':'Hourly Rates',
+                                })
+                        for rate in rates_data:
+                            self.env['sale.order.line'].create({
+                                'order_id':so.id,
+                                'product_id': rate['product_id'],
+                                'product_uom_qty':0,
+                                'price_unit':rate['price'],
+                                'section_line_id':section.id,
+                                })
                                  
     
     ###
+    def prepare_rates(self,elements,activity_data,assignment_data):
+        rates = []
+        for element in elements:
+            if element['prod_info']['mode'] in ['tm','fixed_price']: #if this element has assignement
+                activity = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==element['Id'],activity_data))[0]
+                assignments = list(filter(lambda a: a['KimbleOne__ResourcedActivity__c']==activity['Id'],assignment_data))
+                for assignment in assignments:
+                    o_rate_product = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
+                    if o_rate_product:
+                        #we check if already found
+                        existing = list(filter(lambda p: p['product_id']==o_rate_product.id,rates))
+                        if existing:
+                            if assignment['KimbleOne__InvoicingCurrencyRevenueRate__c'] > existing[0]['price']: #if we found a cheaper one, we need to update it
+                                index = rates.index(existing[0])
+                                rates[index]['price']= assignment['KimbleOne__InvoicingCurrencyRevenueRate__c']
+                            else:
+                                pass
+                        else:
+                            #we add a rate
+                            rates.append({'name':o_rate_product.name,'product_id':o_rate_product.id,'price':assignment['KimbleOne__InvoicingCurrencyRevenueRate__c']})
+
+        return sorted(rates,key=lambda r: r['price'],reverse = True)
+               
+
+
     def prepare_core_team_data(self,my_project,assignment_data=False):
         core_team = {'name':"Team {}".format(my_project['KimbleOne__Reference__c'])}
         consultants = []
@@ -198,7 +239,7 @@ class SFProjectSync(models.Model):
                 'user_id': o_opp.partner_id.user_id.id,
                 'opportunity_id':o_opp.id,
                 'internal_ref':"{}.{}".format(my_project['KimbleOne__Reference__c'],index) if index>0 else my_project['KimbleOne__Reference__c'],
-                'name': my_project['KimbleOne__Reference__c'] + " | " + (my_project['Name'] + (" [{}]".format(item['mode']) if item['mode'] else "") + ".{}".format(index) ) if index>0 else my_project['KimbleOne__Reference__c'] + " | " + my_project['Name'],
+                'name': (my_project['Name'] + (" [{}]".format(item['mode']) if item['mode'] else "") + ".{}".format(index) ) if index>0 else my_project['Name'],
                 'invoicing_mode':item['mode'] if item['mode'] else False,
                 'pricelist_id':o_pricelist.id,
                 'scope_of_work': gp['Name'] if index>0 else my_project['Scope_of_Work_Description__c'],
@@ -230,8 +271,7 @@ class SFProjectSync(models.Model):
 
             prod_info = list(filter(lambda info: info['sf_id']==element['KimbleOne__Product__c'][:-3],SFProjectSync_constants.ELEMENTS_INFO))
             mode = prod_info[0]['mode'] if prod_info else False
-            section = prod_info[0]['type'] if prod_info else False
-            element.update({'section':section}) #we add section info for future use
+            element.update({'prod_info':prod_info[0] if prod_info else False}) #we add this info for future use in SO lines creations
             proposal = element['KimbleOne__OriginatingProposal__c']
             index = int(element['KimbleOne__Reference__c'][-2:])
             

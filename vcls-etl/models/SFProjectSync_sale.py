@@ -20,5 +20,8 @@ class SaleOrder(models.Model):
 
     _inherit = 'sale.order'
 
-    def prepare_lines_data(self,elements=False):
+    def create_service_lines(self,elements=False):
+
         pass
+
+    
