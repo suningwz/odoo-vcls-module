@@ -149,6 +149,7 @@ class SFProjectSync(models.Model):
         {
             index: index of the element trigerring the new quotation
             quote_vals: data to call the create
+            elements: sf_id of the elements linked to this quote
         }
         """
         self.ensure_one()
