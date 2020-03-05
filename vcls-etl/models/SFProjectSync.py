@@ -166,9 +166,11 @@ class SFProjectSync(models.Model):
         #get useful fields values
         o_tag = self.env['crm.lead.tag'].search([('name','=','Automated Migration')],limit=1)
         tag = o_tag.id if o_tag else False
-        o_pricelist = self.env['product.pricelist'].search([('name','=',"Standard {}".format(my_project['KimbleOne__InvoicingCurrencyIsoCode__c']))],limit=1)
+        currency_code = my_project['KimbleOne__InvoicingCurrencyIsoCode__c'] or o_company.currency_id.name
+        o_pricelist = self.env['product.pricelist'].search([('name','=',"Standard {}".format(currency_code))],limit=1)
         if not o_pricelist:
-            _logger.info("Pricelist not found {}".format(my_project['KimbleOne__InvoicingCurrencyIsoCode__c']))
+            _logger.error("Pricelist not found {}".format(my_project['KimbleOne__InvoicingCurrencyIsoCode__c']))
+            return False
         o_business_line = self.sf_id_to_odoo_rec(my_project['Activity__c'])
         bl = o_business_line.id if o_business_line else False
 
