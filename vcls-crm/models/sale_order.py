@@ -239,7 +239,7 @@ class SaleOrder(models.Model):
                     so.catalog_mode = 'generic'
                     so.catalog_details = 'True'
             if auto_migration_tag:
-                if auto_migration_tag.id in so.tag_ids:
+                if auto_migration_tag in so.tag_ids:
                     so.catalog_mode = 'migration'
                     
 
