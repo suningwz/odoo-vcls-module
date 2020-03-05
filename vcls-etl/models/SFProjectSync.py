@@ -226,36 +226,27 @@ class SFProjectSync(models.Model):
         o_business_line = self.sf_id_to_odoo_rec(my_project['Activity__c'])
         bl = o_business_line.id if o_business_line else False
 
-        #my_primary_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']==my_project['KimbleOne__Proposal__c'],element_data))
-        #my_extention_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']!=my_project['KimbleOne__Proposal__c'] and element['KimbleOne__DeliveryGroup__c']==my_project['Id'],element_data))
         my_elements = list(filter(lambda element: element['KimbleOne__DeliveryGroup__c']==my_project['Id'],element_data))
 
-        
-        #quotations = (self.split_elements(my_primary_elements) + self.split_elements(my_extention_elements))
         quotations = self.split_elements(my_elements)
         index = 0
         for item in quotations:
-            #we work the names
-            #_logger.info("Quotation to create: project {} proposal {} mode {}".format(my_project['KimbleOne__Reference__c'],item['proposal'],item['mode']))
-            group_proposal = list(filter(lambda p: p['Id']==item['proposal'],proposal_data))
-            gp = group_proposal[0] if group_proposal else {'Name':'Change Order'}
-
             quote_vals = {
                 'company_id':o_company.id,
                 'partner_id':o_opp.partner_id.id,
                 'user_id': o_opp.partner_id.user_id.id,
                 'opportunity_id':o_opp.id,
                 'internal_ref':("{}.{}".format(my_project['KimbleOne__Reference__c'],index) if index>0 else my_project['KimbleOne__Reference__c']).upper(),
-                'name': (my_project['Name'] + (" [{}]".format(item['mode']) if item['mode'] else "") + ".{}".format(index) ) if index>0 else my_project['Name'],
+                'name': (my_project['Name'] + (' -FP' if item['mode']=='fixed_price' else ' -TM')) if index>0 else my_project['Name'],
                 'invoicing_mode':item['mode'] if item['mode'] else False,
                 'pricelist_id':o_pricelist.id,
-                'scope_of_work': gp['Name'] if index>0 else my_project['Scope_of_Work_Description__c'],
+                'scope_of_work': my_project['Scope_of_Work_Description__c'],
                 'expected_start_date':my_proposal['KimbleOne__DeliveryStartDate__c'] or date.today(),
                 'expected_end_date':my_project['KimbleOne__ExpectedEndDate__c'],
                 'tag_ids':[(4, tag, 0)],
                 'product_category_id':bl,
             }
-            quote_data.append({'index':item['index'],'quote_vals':quote_vals, 'elements':item['elements']})  
+            quote_data.append({'index':item['min_index'],'quote_vals':quote_vals, 'elements':item['elements']})  
             index += 1
 
         return quote_data
@@ -265,68 +256,45 @@ class SFProjectSync(models.Model):
         """
         We use a list of dict output=
         {
-            index: index of the element trigerring the new group (used for prioritization)
-            identifier: used to match existing entries
-            proposal: sf_id of the proposal
-            mode: invoicing_mode of the group
+            min_index: used to prioritize quotation creation
             elements: elements data linked to this quote
         }
         """
-        output = []
+        tm_group = {'min_index':100,'elements':[],'mode':'tm'}
+        fp_group = {'min_index':100,'elements':[],'mode':'fixed_price'}
+        others = {'min_index':100,'elements':[]}
 
         for element in sorted(element_data,key=lambda q: q['KimbleOne__Reference__c']):
 
             prod_info = list(filter(lambda info: info['sf_id']==element['KimbleOne__Product__c'][:-3],SFProjectSync_constants.ELEMENTS_INFO))
             mode = prod_info[0]['mode'] if prod_info else False
-            element.update({'prod_info':prod_info[0] if prod_info else False}) #we add this info for future use in SO lines creations
-            proposal = element['KimbleOne__OriginatingProposal__c']
             index = int(element['KimbleOne__Reference__c'][-2:])
+            element.update({'index':index,'prod_info':prod_info[0] if prod_info else False}) #we add this info for future use in SO lines creations
             
-            found = False
-            for i in range(len(output)): #we try to find a compatible group
-                p = output[i]['proposal']
-                m = output[i]['mode']
-                if m == mode or not mode:
-                    found = i
-                    break #we have the group index
-                elif not m:
-                    found = i
-                    output[i]['mode'] = mode #we update the mode
-                    break
-                else:
-                    pass
-
-                # The below bloc splits per source proposal
-                """if p == proposal and m == mode:
-                    found = i
-                    break #we have the group index
-                elif p == proposal and not m: #no mode defined yet, we can use this group
-                    found = i
-                    output[i]['mode'] = mode #we update the mode
-                    break
-                elif p == proposal and not mode: #no mode in the current element, we can match the 1st possible group with the same proposal
-                    found = i
-                    break
-                else:
-                    pass"""
+            #proposal = element['KimbleOne__OriginatingProposal__c']
             
-            if found: #combination already exist so we just add the element to the group
-                output[found]['elements'].append(element)
-                _logger.info("Element {} added to group {} {}".format(element['KimbleOne__Reference__c'],output[found]['proposal'],output[found]['mode']))
+            if mode=='tm':
+                tm_group['elements'].append(element)
+                if index < tm_group['min_index']:
+                    tm_group['min_index'] = index
+            elif mode=='fixed_price':
+                fp_group['elements'].append(element)
+                if index < fp_group['min_index']:
+                    fp_group['min_index'] = index
+            else:
+                others['elements'].append(element)
+                if index < others['min_index']:
+                    others['min_index'] = index
 
-            else: #we add a new group to output
-                new = {
-                    'index':index,
-                    'proposal': proposal,
-                    'mode':mode,
-                    'elements':[element],
-                }
-                _logger.info("New group created {}".format(new))
-                output.append(new)
-
-        output = sorted(output,key=lambda q: q['index'])
-        _logger.info("ELEMENTS PROCESSED {}".format(output))
-        return output
+        #we merge the groups
+        if len(tm_group['elements'])>0:
+            tm_group['elements'] = sorted(tm_group['elements'] + others['elements'],key=lambda q: q['index'])
+            tm_group['min_index'] = min(tm_group['min_index'],others['min_index'])
+        elif len(fp_group['elements'])>0:
+            fp_group['elements'] = sorted(fp_group['elements'] + others['elements'],key=lambda q: q['index'])
+            fp_group['min_index'] = min(fp_group['min_index'],others['min_index'])
+        
+        return sorted([tm_group,fp_group],key=lambda q: q['min_index'])
 
     ###    
     def _get_element_data(self,instance,filter_string = False):
