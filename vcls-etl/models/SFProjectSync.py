@@ -190,7 +190,7 @@ class SFProjectSync(models.Model):
                 'partner_id':o_opp.partner_id.id,
                 'opportunity_id':o_opp.id,
                 'internal_ref':"{}.{}".format(my_project['KimbleOne__Reference__c'],index) if index>0 else my_project['KimbleOne__Reference__c'],
-                'name': (my_project['Name'] + " ({})".format(item['mode']) if item['mode'] else "") if index>0 else my_project['Name'],
+                'name': (my_project['Name'] + (" [{}]".format(item['mode']) if item['mode'] else "") + ".{}".format(index) ) if index>0 else my_project['Name'],
                 'invoicing_mode':item['mode'] if item['mode'] else False,
                 'pricelist_id':o_pricelist.id,
                 'scope_of_work': gp['Name'] if index>0 else my_project['Scope_of_Work_Description__c'],
@@ -223,7 +223,7 @@ class SFProjectSync(models.Model):
             prod_info = list(filter(lambda info: info['sf_id']==element['KimbleOne__Product__c'][:-3],SFProjectSync_constants.ELEMENTS_INFO))
             mode = prod_info[0]['mode'] if prod_info else False
             proposal = element['KimbleOne__OriginatingProposal__c']
-            index = int(element['KimbleOne__Reference__c'][-3:])
+            index = int(element['KimbleOne__Reference__c'][-2:])
             
             found = 0
             for i in range(len(output)): #we try to find a compatible group
