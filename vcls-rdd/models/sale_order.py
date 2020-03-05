@@ -198,6 +198,7 @@ class SaleOrderLine(models.Model):
                         elif invoice_line.invoice_id.type == 'out_refund':
                             qty_invoiced -= invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
             line.qty_invoiced = qty_invoiced
+        super()._get_invoice_qty()
 
     @api.multi
     @api.depends('qty_delivered_method', 'qty_delivered_manual', 'analytic_line_ids.so_line', 'analytic_line_ids.unit_amount', 'analytic_line_ids.product_uom_id')

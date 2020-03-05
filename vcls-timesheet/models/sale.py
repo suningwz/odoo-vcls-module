@@ -98,6 +98,9 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
+    # Historical Invoiced Amount is the amount already invoiced in the previous system
+    historical_invoiced_amount = fields.Monetary(string="Historical Invoiced Amount")
+
     def _timesheet_compute_delivered_quantity_domain(self):
         domain = super()._timesheet_compute_delivered_quantity_domain()
         # We add the condition on the timesheet stage_id
@@ -137,7 +140,8 @@ class SaleOrderLine(models.Model):
         'amount_delivered_from_task',
         'price_unit',
         'task_id.stage_id',
-        'order_id.invoicing_mode')
+        'order_id.invoicing_mode',
+        'historical_invoiced_amount',)
     def _compute_qty_delivered(self):
         """Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type"""
 
@@ -157,10 +161,11 @@ class SaleOrderLine(models.Model):
                     line.qty_delivered = 0.
                 else:
                     pass
+                if line.price_unit:
+                    line.qty_delivered += line.historical_invoiced_amount / line.price_unit
             
             else:
                 pass
-
 
     """@api.multi
     @api.depends(
@@ -180,15 +185,32 @@ class SaleOrderLine(models.Model):
                     line.qty_invoiced = 0.
                 else:
                     pass
-            
             elif line.order_id.invoicing_mode == 'fixed_price':
                 if line.product_id.vcls_type == 'rate':
                     line.qty_invoiced = 0.
                 else:
                     pass
-            
             else:
                 pass"""
+
+    @api.multi
+    @api.depends(
+        'product_uom_qty',
+        'price_unit',
+        'amount_invoiced_from_task',
+        'task_id.stage_id',
+        'order_id.invoicing_mode',
+        'historical_invoiced_amount')
+    def _get_invoice_qty(self):
+        # Change qantity delivered for lines according to order.invoicing_mode
+        super()._get_invoice_qty()
+        for line in self:
+            if line.order_id.invoicing_mode == 'fixed_price':
+                if line.price_unit:
+                    line.qty_invoiced += line.historical_invoiced_amount / line.price_unit
+            else:
+                pass
+
 
     # We need to override the OCA to take the rounded_unit_amount in account rather than the standard unit_amount
     @api.multi
@@ -197,6 +219,7 @@ class SaleOrderLine(models.Model):
         'task_id.timesheet_ids.timesheet_invoice_id',
         'task_id.timesheet_ids.unit_amount_rounded',
         'task_id.timesheet_ids.stage_id',
+        'historical_invoiced_amount',
     )
     def _compute_amount_delivered_from_task(self):
         for line in self:
@@ -208,13 +231,16 @@ class SaleOrderLine(models.Model):
                 )
                 total += ts.unit_amount_rounded * rate_line.price_unit"""
                 total += ts.unit_amount_rounded * ts.so_line_unit_price
-            line.amount_delivered_from_task = total
+            if line.order_id.invoicing_mode == 'tm':
+                line.amount_delivered_from_task = total + line.historical_invoiced_amount
+            else:
+                line.amount_delivered_from_task = total
             line.amount_delivered_from_task_company_currency = (
                 total * line.order_id.currency_rate
             )
 
     @api.multi
-    @api.depends('task_id', 'task_id.timesheet_ids.timesheet_invoice_id')
+    @api.depends('task_id', 'task_id.timesheet_ids.timesheet_invoice_id', 'historical_invoiced_amount')
     def _compute_amount_invoiced_from_task(self):
         for line in self:
             total = 0
@@ -224,7 +250,10 @@ class SaleOrderLine(models.Model):
                 )
                 total += ts.unit_amount_rounded * rate_line.price_unit"""
                 total += ts.unit_amount_rounded * ts.so_line_unit_price
-            line.amount_invoiced_from_task = total
+            if line.order_id.invoicing_mode == 'tm':
+                line.amount_invoiced_from_task = total + line.historical_invoiced_amount
+            else:
+                line.amount_invoiced_from_task = total
             line.amount_invoiced_from_task_company_currency = (
                 total * line.order_id.currency_rate
             )

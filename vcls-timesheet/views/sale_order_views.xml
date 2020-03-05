@@ -5,6 +5,9 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="vcls-crm.view_order_form" />
             <field name="arch" type="xml">
+                <xpath expr="//tree//field[@name='discount']" position="after">
+                    <field name="historical_invoiced_amount"/>
+                </xpath>
                 <xpath expr="//div[@name='button_box']" position="inside">
                     <button type="action"
                             class="oe_stat_button"
