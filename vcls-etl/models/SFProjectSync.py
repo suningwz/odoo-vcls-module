@@ -134,7 +134,7 @@ class SFProjectSync(models.Model):
             resources = self.values_from_key(assignments,'KimbleOne__Resource__c')
             resources = list(set(resources)) #get unique values
             for res in resources:
-                emp = self.self.sf_id_to_odoo_rec(res)
+                emp = self.sf_id_to_odoo_rec(res)
                 if emp:
                     consultants.append(emp.id)
 
@@ -145,7 +145,7 @@ class SFProjectSync(models.Model):
 
     def prepare_so_data(self,project_data,proposal_data,element_data):
         """
-        We use a list of dict:
+        We use a list of dict quote_data=
         {
             index: index of the element trigerring the new quotation
             quote_vals: data to call the create
@@ -203,8 +203,17 @@ class SFProjectSync(models.Model):
 
     ###
     def split_elements(self,element_data):
+        """
+        We use a list of dict output=
+        {
+            index: index of the element trigerring the new quotation
+            quote_vals: data to call the create
+            elements: sf_id of the elements linked to this quote
+        }
+        """
         output = []
         proposals = []
+        elements = []
         for element in element_data:
             combination = {}
             combination['proposal'] = element['KimbleOne__OriginatingProposal__c']
@@ -212,6 +221,7 @@ class SFProjectSync(models.Model):
             #_logger.info("Element Product Id {}".format(element['KimbleOne__Product__c']))
             mode = prod_info[0]['mode'] if prod_info else False
             combination['mode'] = mode
+
             index = int(element['KimbleOne__Reference__c'][-3:])
             if (mode and (combination not in output)) or (combination['proposal'] not in proposals):
                 output.append(combination.update({'index':index}))
