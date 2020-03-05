@@ -124,9 +124,10 @@ class SFProjectSync(models.Model):
 
         #we get the LC
         o_user = self.sf_id_to_odoo_rec(my_project['OwnerId'])
-        employee = self.env['hr.employee'].with_context(active_test=False).search([('user_id','=',o_user.id)],limit=1)
-        if employee:
-            core_team['lead_consultant'] = employee.id
+        if o_user:
+            employee = self.env['hr.employee'].with_context(active_test=False).search([('user_id','=',o_user.id)],limit=1)
+            if employee:
+                core_team['lead_consultant'] = employee.id
 
         #we look all assignments to extract resource data
         if assignment_data:
