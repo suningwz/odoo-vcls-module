@@ -125,7 +125,9 @@ class SFProjectSync(models.Model):
             core_team['lead_consultant'] = employee.id
 
         #we look all assignments to extract resource data
-        all_resources = list(filter(lambda a: a['KimbleOne__DeliveryGroup__c']==my_project['Id'],assignment_data))
+        assignments = list(filter(lambda a: a['KimbleOne__DeliveryGroup__c']==my_project['Id'],assignment_data))
+        resources = self.values_from_keys(assignments,'KimbleOne__Resource__c')
+        #all_resources = list(set(all_resources)) #get unique values
 
         return core_team
 
@@ -155,6 +157,11 @@ class SFProjectSync(models.Model):
 
         index = 0
         for item in (self.split_elements(my_primary_elements) + self.split_elements(my_extention_elements)):
+            #we work the names
+            _logger.info("Quotation to create: project {} proposal {} mode {}".format(my_project['KimbleOne__Reference__c'],item['proposal'],item['mode']))
+            _logger.info("PROPOSALE DATA {}".format(proposal_data))
+            element_proposal = list(filter(lambda p: p['Id']==item['proposal'],proposal_data))[0]
+
             so_vals = {
                 'company_id':o_company.id,
                 'partner_id':o_opp.partner_id.id,
@@ -163,7 +170,7 @@ class SFProjectSync(models.Model):
                 'name': (my_project['Name'] + " ({})".format(item['mode']) if item['mode'] else "") if index>0 else my_project['Name'],
                 'invoicing_mode':item['mode'] if item['mode'] else False,
                 'price_list_id':o_pricelist.id,
-                'scope_of_work': list(filter(lambda proposal: proposal['Id']==item['proposal'],proposal_data))[0]['Name'] if index>0 else my_project['Scope_of_Work_Description__c'],
+                'scope_of_work': element_proposal['Name'] if index>0 else my_project['Scope_of_Work_Description__c'],
                 'expected_start_date':my_proposal['KimbleOne__DeliveryStartDate__c'],
                 'expected_end_date':my_project['KimbleOne__ExpectedEndDate__c'],
                 'tag_ids':[(4, tag, 0)],
@@ -171,7 +178,6 @@ class SFProjectSync(models.Model):
             }
             quote_data.append(so_vals)
             index += 1
-            #_logger.info("Quotation to create: project {} proposal {} mode {}".format(my_project['KimbleOne__Reference__c'],item['proposal'],item['mode']))
 
         return quote_data
 
@@ -331,6 +337,12 @@ class SFProjectSync(models.Model):
     ####################
     ## TOOL METHODS
     ####################
+    def values_from_keys(self,dict_list, key):
+        output = []
+        for item in dict_list:
+            output.append(item[key])
+        return output
+
     def sf_id_to_odoo_rec(self,sf_id):
         key = self.env['etl.sync.keys'].search([('externalId','=',sf_id),('odooId','!=',False)],limit=1)
         if key:
