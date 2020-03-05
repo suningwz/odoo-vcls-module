@@ -245,7 +245,7 @@ class SFProjectSync(models.Model):
                 'partner_id':o_opp.partner_id.id,
                 'user_id': o_opp.partner_id.user_id.id,
                 'opportunity_id':o_opp.id,
-                'internal_ref':"{}.{}".format(my_project['KimbleOne__Reference__c'],index) if index>0 else my_project['KimbleOne__Reference__c'],
+                'internal_ref':("{}.{}".format(my_project['KimbleOne__Reference__c'],index) if index>0 else my_project['KimbleOne__Reference__c']).upper(),
                 'name': (my_project['Name'] + (" [{}]".format(item['mode']) if item['mode'] else "") + ".{}".format(index) ) if index>0 else my_project['Name'],
                 'invoicing_mode':item['mode'] if item['mode'] else False,
                 'pricelist_id':o_pricelist.id,
@@ -286,7 +286,18 @@ class SFProjectSync(models.Model):
             for i in range(len(output)): #we try to find a compatible group
                 p = output[i]['proposal']
                 m = output[i]['mode']
-                if p == proposal and m == mode:
+                if m == mode or not mode:
+                    found = i
+                    break #we have the group index
+                elif not m:
+                    found = i
+                    output[i]['mode'] = mode #we update the mode
+                    break
+                else:
+                    pass
+
+                # The below bloc splits per source proposal
+                """if p == proposal and m == mode:
                     found = i
                     break #we have the group index
                 elif p == proposal and not m: #no mode defined yet, we can use this group
@@ -297,7 +308,7 @@ class SFProjectSync(models.Model):
                     found = i
                     break
                 else:
-                    pass
+                    pass"""
             
             if found: #combination already exist so we just add the element to the group
                 output[found]['elements'].append(element)
@@ -320,7 +331,7 @@ class SFProjectSync(models.Model):
     ###    
     def _get_element_data(self,instance,filter_string = False):
         query = SFProjectSync_constants.SELECT_GET_ELEMENT_DATA
-        query += "WHERE KimbleOne__DeliveryGroup__c IN " + filter_string + " ORDER BY KimbleOne__Reference__c ASC"
+        query += "WHERE Automated_Migration__c = TRUE AND KimbleOne__DeliveryGroup__c IN " + filter_string + " ORDER BY KimbleOne__Reference__c ASC"
         _logger.info(query)
 
         records = instance.getConnection().query_all(query)['records']
