@@ -132,7 +132,7 @@ class SFProjectSync(models.Model):
                                 'order_id':so.id,
                                 'product_id': rate['product_id'],
                                 'product_uom_qty':0,
-                                'price_unit':rate['price'],
+                                'price_unit':rate['price'] if rate['price']>0 else False,
                                 'section_line_id':section.id,
                                 })
                                  
@@ -294,7 +294,12 @@ class SFProjectSync(models.Model):
             fp_group['elements'] = sorted(fp_group['elements'] + others['elements'],key=lambda q: q['index'])
             fp_group['min_index'] = min(fp_group['min_index'],others['min_index'])
         
-        return sorted([tm_group,fp_group],key=lambda q: q['min_index'])
+        output = []
+        if len(tm_group['elements'])>0:
+            output.append(tm_group)
+        if len(fp_group['elements'])>0:
+            output.append(fp_group)
+        return sorted(output,key=lambda q: q['min_index'])
 
     ###    
     def _get_element_data(self,instance,filter_string = False):
