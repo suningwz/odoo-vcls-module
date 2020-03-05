@@ -23,6 +23,7 @@ SELECT_GET_ELEMENT_DATA = """
         Name,
         KimbleOne__DeliveryGroup__c,
         KimbleOne__OriginatingProposal__c,
+        KimbleOne__Reference__c,
         Activity__c,
         KimbleOne__Product__c,
         Contracted_Budget__c,
@@ -54,6 +55,7 @@ SELECT_GET_PROJECT_DATA = """
 SELECT_GET_PROPOSAL_DATA = """
     SELECT 
         Id, 
+        Name,
         KimbleOne__Opportunity__c, 
         KimbleOne__DeliveryStartDate__c, 
         KimbleOne__BusinessUnit__c 

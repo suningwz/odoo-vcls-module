@@ -98,26 +98,64 @@ class SFProjectSync(models.Model):
         for project in self:
             if not project.so_ids: #no sale order yet
                 to_create = project.prepare_so_data(project_data,proposal_data,element_data)
+                if to_create:
+                    parent_id = False
+                    for quote in to_create:
+                        if not parent_id:
+                            parent_id = self.env['sale.order'].create(quote)
+                            project.write({'so_ids':[(4, parent_id.id, 0)]})
+                        else:
+                            new = self.env['sale.order'].create(quote.update({'parent_id':parent_id.id}))
+                            project.write({'so_ids':[(4, new.id, 0)]})
+                        
+                    
     
     ###
 
     def prepare_so_data(self,project_data,proposal_data,element_data):
         self.ensure_one()
+        quote_data = []
+
         my_project = list(filter(lambda project: project['Id']==self.project_sfid,project_data))[0]
         my_proposal = list(filter(lambda proposal: proposal['Id']==my_project['KimbleOne__Proposal__c'],proposal_data))[0]
         
-        #we get the source opportunity
-        key = self.env['etl.sync.keys'].search([('externalId','=',my_proposal['KimbleOne__Opportunity__c']),('odooId','!=',False)],limit=1)
-        if key:
-            o_opp = self.env['crm.lead'].browse(int(key.odooId))
-            _logger.info("Found Opp {} for project {} of proposal {}".format(o_opp.name,my_project['Name'],my_proposal['Id']))
+        #we get useful exisitng records
+        o_opp = self.sf_id_to_odoo_rec(my_proposal['KimbleOne__Opportunity__c'])
+        o_company = self.sf_id_to_odoo_rec(my_proposal['KimbleOne__BusinessUnit__c'])
+
+        #get useful fields values
+        o_tag = self.env['crm.lead.tag'].search([('name','=','Automated Migration')],limit=1)
+        tag = o_tag.id if o_tag else False
+        o_pricelist = self.env['product.pricelist'].search([('name','=',"Standard {}".format(my_project['KimbleOne__InvoicingCurrencyIsoCode__c']))],limit=1)
+        if not o_pricelist:
+            _logger.info("Pricelist not found {}".format(my_project['KimbleOne__InvoicingCurrencyIsoCode__c']))
+        o_business_line = self.sf_id_to_odoo_rec(my_project['Activity__c'])
+        bl = o_business_line.id if o_business_line else False
 
         my_primary_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']==my_project['KimbleOne__Proposal__c'],element_data))
         my_extention_elements = list(filter(lambda element: element['KimbleOne__OriginatingProposal__c']!=my_project['KimbleOne__Proposal__c'] and element['KimbleOne__DeliveryGroup__c']==my_project['Id'],element_data))
-        
-        for item in (self.split_elements(my_primary_elements) + self.split_elements(my_extention_elements)):
-            _logger.info("Quotation to create: project {} proposal {} mode {}".format(my_project['KimbleOne__Reference__c'],item['proposal'],item['mode']))
 
+        index = 0
+        for item in (self.split_elements(my_primary_elements) + self.split_elements(my_extention_elements)):
+            so_vals = {
+                'company_id':o_company.id,
+                'partner_id':o_opp.partner_id.id,
+                'opportunity_id':o_opp.id,
+                'internal_ref':"{}.{}".format(my_project['KimbleOne__Reference__c'],index) if index>0 else my_project['KimbleOne__Reference__c'],
+                'name': (my_project['Name'] + " ({})".format(item['mode']) if item['mode'] else "") if index>0 else my_project['Name'],
+                'invoicing_mode':item['mode'] if item['mode'] else False,
+                'price_list_id':o_pricelist.id,
+                'scope_of_work': list(filter(lambda proposal: proposal['Id']==item['proposal'],proposal_data))[0]['Name'] if index>0 else my_project['Scope_of_Work_Description__c'],
+                'expected_start_date':my_proposal['KimbleOne__DeliveryStartDate__c'],
+                'expected_end_date':my_project['KimbleOne__ExpectedEndDate__c'],
+                'tag_ids':[(4, tag, 0)],
+                'product_category_id':bl,
+            }
+            quote_data.append(so_vals)
+            index += 1
+            #_logger.info("Quotation to create: project {} proposal {} mode {}".format(my_project['KimbleOne__Reference__c'],item['proposal'],item['mode']))
+
+        return quote_data
 
     ###
     def split_elements(self,element_data):
@@ -139,7 +177,7 @@ class SFProjectSync(models.Model):
     ###    
     def _get_element_data(self,instance,filter_string = False):
         query = SFProjectSync_constants.SELECT_GET_ELEMENT_DATA
-        query += "WHERE KimbleOne__DeliveryGroup__c IN " + filter_string
+        query += "WHERE KimbleOne__DeliveryGroup__c IN " + filter_string + " ORDER BY KimbleOne__Reference__c ASC"
         _logger.info(query)
 
         records = instance.getConnection().query_all(query)['records']
@@ -275,12 +313,12 @@ class SFProjectSync(models.Model):
     ####################
     ## TOOL METHODS
     ####################
-    """def id_list_to_filter_string(self,list_in):
-        stack = []
-        for item in list_in:
-            stack.append("\'{}\'".format(item))
-        result = "({})".format(",".join(stack))
-        return result"""
+    def sf_id_to_odoo_rec(self,sf_id):
+        key = self.env['etl.sync.keys'].search([('externalId','=',sf_id),('odooId','!=',False)],limit=1)
+        if key:
+            return self.env[key.odooModelName].browse(int(key.odooId))
+        else:
+            return False
     
     def list_to_filter_string(self,list_in,key=False):
         stack = []
