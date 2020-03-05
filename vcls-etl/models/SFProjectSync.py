@@ -118,7 +118,7 @@ class SFProjectSync(models.Model):
                                  
     
     ###
-    def prepare_core_team_data(self,my_project,assignment_data):
+    def prepare_core_team_data(self,my_project,assignment_data=False):
         core_team = {'name':"Team {}".format(my_project['KimbleOne__Reference__c'])}
         consultants = []
 
@@ -129,15 +129,16 @@ class SFProjectSync(models.Model):
             core_team['lead_consultant'] = employee.id
 
         #we look all assignments to extract resource data
-        assignments = list(filter(lambda a: a['KimbleOne__DeliveryGroup__c']==my_project['Id'],assignment_data))
-        resources = self.values_from_key(assignments,'KimbleOne__Resource__c')
-        resources = list(set(resources)) #get unique values
-        for res in resources:
-            emp = self.self.sf_id_to_odoo_rec(res)
-            if emp:
-                consultants.append(emp.id)
+        if assignment_data:
+            assignments = list(filter(lambda a: a['KimbleOne__DeliveryGroup__c']==my_project['Id'],assignment_data))
+            resources = self.values_from_key(assignments,'KimbleOne__Resource__c')
+            resources = list(set(resources)) #get unique values
+            for res in resources:
+                emp = self.self.sf_id_to_odoo_rec(res)
+                if emp:
+                    consultants.append(emp.id)
 
-        core_team['consultant_ids'] = [(6, 0, consultants)]
+            core_team['consultant_ids'] = [(6, 0, consultants)]
 
         return core_team
 
