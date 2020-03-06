@@ -116,5 +116,5 @@ SELECT_GET_ANNUITY_DATA = """
 
 
 STORE_TEMP = """
-
+KimbleOne__PerformanceAnalysis__c.KimbleOne__ActualRevenue__c.CONVERT:SUM - KimbleOne__PerformanceAnalysis__c.KimbleOne__ActualWIPValue__c.CONVERT:SUM
 """

@@ -119,7 +119,20 @@ class SFProjectSync(models.Model):
                         project.write({'so_ids':[(4, so.id, 0)]})
                         so.name = "{} | {}".format(vals['internal_ref'],vals['name'])
                         #we prepare line content
+                        services_data = project.prepare_services(quote['elements'],so)
                         rates_data = project.prepare_rates(quote['elements'],activity_data,assignment_data)
+
+                        #create lines
+                        if services_data:
+                            #we create a section
+                            section = self.env['sale.order.line'].create({
+                                'order_id':so.id,
+                                'display_type': 'line_section',
+                                'name':'Services',
+                                })
+                            for service in services_data:
+                                self.env['sale.order.line'].create(service)
+                        
                         if rates_data:
                             #we create a section
                             section = self.env['sale.order.line'].create({
@@ -135,7 +148,26 @@ class SFProjectSync(models.Model):
                                 'price_unit':rate['price'] if rate['price']>0 else False,
                                 'section_line_id':section.id,
                                 })
-                                 
+
+    def prepare_services(self,elements,sale_order):
+        ouput=[]
+        services = list(filter(lambda a: a['prod_info']['type']=='service',elements))
+        for line in services:
+            o_product = self.sf_id_to_odoo_rec(line['KimbleOne__Product__c'],sale_order.product_category_id) 
+            if o_product:
+                vals = {
+                    'order_id':sale_order.id,
+                    'name':line['Name'],
+                    'product_id':o_product.id,
+                    'product_uom_qty':1,
+                    'price_unit':line['Contracted_Budget__c'] or line['KimbleOne__InvoicingCurrencyContractRevenue__c'],
+                    #if fixed price, this is the sum of invoiced milestones
+                }
+                output.append(vals)
+            else:
+                _logger.info("No Odoo Product found for {}".format(line))
+        return output
+
     
     ###
     def prepare_rates(self,elements,activity_data,assignment_data):
@@ -446,8 +478,11 @@ class SFProjectSync(models.Model):
             output.append(item[key])
         return output
 
-    def sf_id_to_odoo_rec(self,sf_id):
-        key = self.env['etl.sync.keys'].search([('externalId','=',sf_id),('odooId','!=',False)],limit=1)
+    def sf_id_to_odoo_rec(self,sf_id,search_value = False):
+        if search_value:
+            key = self.env['etl.sync.keys'].search([('externalId','=',sf_id),('search_value','=',search_value),('odooId','!=',False)],limit=1)
+        else:
+            key = self.env['etl.sync.keys'].search([('externalId','=',sf_id),('odooId','!=',False)],limit=1)
         if key:
             return self.env[key.odooModelName].browse(int(key.odooId))
         else:
