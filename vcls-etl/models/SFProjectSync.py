@@ -153,7 +153,7 @@ class SFProjectSync(models.Model):
         ouput=[]
         services = list(filter(lambda a: a['prod_info']['type']=='service',elements))
         for line in services:
-            o_product = self.sf_id_to_odoo_rec(line['KimbleOne__Product__c'],sale_order.product_category_id) 
+            o_product = self.sf_id_to_odoo_rec(line['KimbleOne__Product__c'],line['Activity__c']) 
             if o_product:
                 vals = {
                     'order_id':sale_order.id,
