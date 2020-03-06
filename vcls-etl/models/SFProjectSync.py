@@ -150,7 +150,7 @@ class SFProjectSync(models.Model):
                                 })
 
     def prepare_services(self,elements,sale_order):
-        ouput=[]
+        output=[]
         services = list(filter(lambda a: a['prod_info']['type']=='service',elements))
         for line in services:
             o_product = self.sf_id_to_odoo_rec(line['KimbleOne__Product__c'],line['Activity__c']) 
