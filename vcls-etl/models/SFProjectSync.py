@@ -153,6 +153,7 @@ class SFProjectSync(models.Model):
         line = self.env['sale.order.line'].create(vals)
         if line.display_type != 'line_section':
             line.product_id_change()
+            line.write(vals)
             line._inverse_qty_delivered()
             line.product_uom_change()
         return line
