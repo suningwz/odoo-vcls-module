@@ -201,11 +201,11 @@ class SFProjectSync(models.Model):
         for milestone in milestones:
             invoicing_status = self.env['etl.sync.keys'].search([('externalId','=',milestone['KimbleOne__InvoiceItemStatus__c']),('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
             if invoicing_status:
-                if invoicing_status in ['None','WrittenOff']:
+                if invoicing_status.name in ['None','WrittenOff']:
                     ordered += milestone['KimbleOne__InvoicingCurrencyMilestoneValue__c']
-                elif invoicing_status == 'Ready':
+                elif invoicing_status.name == 'Ready':
                     delivered += milestone['KimbleOne__InvoicingCurrencyMilestoneValue__c']
-                elif invoicing_status == 'Invoiced':
+                elif invoicing_status.name == 'Invoiced':
                     invoiced += milestone['KimbleOne__InvoicingCurrencyMilestoneValue__c']
                 else:
                     _logger.error("Invoicing Status Mismatch for milestone in {}\n{}".format(element,milestone))
@@ -216,7 +216,7 @@ class SFProjectSync(models.Model):
             'delivered':delivered+invoiced,
             'invoiced':invoiced,
         }
-        _logger.info("Milestones for element {}\n{}".format(element,output))
+        #_logger.info("Milestones for element {}\n{}".format(element,output))
         return output
             
         
