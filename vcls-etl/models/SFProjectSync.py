@@ -119,7 +119,7 @@ class SFProjectSync(models.Model):
                         project.write({'so_ids':[(4, so.id, 0)]})
                         so.name = "{} | {}".format(vals['internal_ref'],vals['name'])
                         #we prepare line content
-                        services_data = project.prepare_services(quote['elements'],so)
+                        services_data = project.prepare_services(quote['elements'],so,milestone_data)
                         rates_data = project.prepare_rates(quote['elements'],activity_data,assignment_data)
 
                         #create lines
