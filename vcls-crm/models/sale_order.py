@@ -229,6 +229,12 @@ class SaleOrder(models.Model):
     ###################
     # COMPUTE METHODS #
     ###################
+    @api.multi
+    @api.onchange('partner_shipping_id', 'partner_id')
+    def onchange_partner_shipping_id(self):
+        #we call the parent with a forced company tp ensure proper fiscal position
+        return super(SaleOrder,self).with_context(force_company=self.company_id.id).onchange_partner_shipping_id()
+
     @api.depends('product_category_id')
     def _compute_catalog_mode(self):
         for so in self:
