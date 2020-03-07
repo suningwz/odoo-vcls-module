@@ -149,26 +149,59 @@ class SFProjectSync(models.Model):
                                 'section_line_id':section.id,
                                 })
 
-    def prepare_services(self,elements,sale_order):
+    def prepare_services(self,elements,sale_order,milestone_data):
         output=[]
         services = list(filter(lambda a: a['prod_info']['type']=='service',elements))
         for line in services:
-            o_product = self.sf_id_to_odoo_rec(line['KimbleOne__Product__c'],line['Activity__c']) 
-            if o_product:
+            o_product = self.sf_id_to_odoo_rec(line['KimbleOne__Product__c'],line['Activity__c'])
+            mode = line['prod_info']['mode'] 
+            if o_product and mode=='tm':
                 vals = {
                     'order_id':sale_order.id,
                     'name':line['Name'],
                     'product_id':o_product.id,
                     'product_uom_qty':1,
                     'price_unit':line['Contracted_Budget__c'] or line['KimbleOne__InvoicingCurrencyContractRevenue__c'],
-                    #if fixed price, this is the sum of invoiced milestones
+                }
+                output.append(vals)
+            elif o_product and mode=='fixed_price':
+                milestones_values = self.sum_milestones(line,milestone_data)
+                vals = {
+                    'order_id':sale_order.id,
+                    'name':line['Name'],
+                    'product_id':o_product.id,
+                    'product_uom_qty':1,
+                    'price_unit':milestones_values['ordered'],
                 }
                 output.append(vals)
             else:
                 _logger.info("No Odoo Product found for {}".format(line))
         return output
 
-    
+    def sum_milestones(self,element,milestone_data):
+        milestones = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==element['Id'],milestone_data))
+        #invoicing_status = self.env['etl.syn.keys'].search([('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
+        ordered = 0
+        delivered = 0
+        invoiced = 0
+        for milestone in milestones:
+            invoicing_status = self.env['etl.syn.keys'].search([('externalId','=',milestone['KimbleOne__InvoiceItemStatus__c']),('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
+            if invoicing_status:
+                if invoicing_status in ['None','WrittenOff']:
+                    ordered += milestone['KimbleOne__InvoicingCurrencyMilestoneValue__c']
+                elif invoicing_status == 'Ready':
+                    delivered += milestone['KimbleOne__InvoicingCurrencyMilestoneValue__c']
+                elif invoicing_status == 'Invoiced':
+                    invoiced += milestone['KimbleOne__InvoicingCurrencyMilestoneValue__c']
+                else:
+                    _logger.error("Invoicing Status Mismatch for milestone in {}\n{}".format(element,milestone))
+            else:
+                _logger.error("Invoicing Status Mismatch for milestone in {}\n{}".format(element,milestone))
+        return {
+            'ordered':sum(ordered,delivered,invoiced),
+            'delivered':sum(delivered,invoicing_status),
+            'invoiced':invoiced,
+        }
     ###
     def prepare_rates(self,elements,activity_data,assignment_data):
         rates = []
