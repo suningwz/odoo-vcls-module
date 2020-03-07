@@ -180,12 +180,11 @@ class SFProjectSync(models.Model):
 
     def sum_milestones(self,element,milestone_data):
         milestones = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==element['Id'],milestone_data))
-        #invoicing_status = self.env['etl.syn.keys'].search([('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
         ordered = 0
         delivered = 0
         invoiced = 0
         for milestone in milestones:
-            invoicing_status = self.env['etl.syn.keys'].search([('externalId','=',milestone['KimbleOne__InvoiceItemStatus__c']),('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
+            invoicing_status = self.env['etl.sync.keys'].search([('externalId','=',milestone['KimbleOne__InvoiceItemStatus__c']),('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
             if invoicing_status:
                 if invoicing_status in ['None','WrittenOff']:
                     ordered += milestone['KimbleOne__InvoicingCurrencyMilestoneValue__c']
