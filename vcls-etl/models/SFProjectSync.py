@@ -153,9 +153,10 @@ class SFProjectSync(models.Model):
         line = self.env['sale.order.line'].create(vals)
         if line.display_type != 'line_section':
             line.product_id_change()
+            line.product_uom_change()
             line.write(vals)
             line._inverse_qty_delivered()
-            line.product_uom_change()
+            
         return line
     
     def so_create_with_changes(self,vals):
@@ -210,11 +211,15 @@ class SFProjectSync(models.Model):
                     _logger.error("Invoicing Status Mismatch for milestone in {}\n{}".format(element,milestone))
             else:
                 _logger.error("Invoicing Status Mismatch for milestone in {}\n{}".format(element,milestone))
-        return {
+        output = {
             'ordered':ordered+delivered+invoiced,
             'delivered':delivered+invoiced,
             'invoiced':invoiced,
         }
+        _logger.info("Milestones for element {}\n{}".format(element,output))
+        return output
+            
+        
     ###
     def prepare_rates(self,elements,activity_data,assignment_data):
         rates = []
