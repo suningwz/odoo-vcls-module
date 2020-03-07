@@ -109,12 +109,12 @@ class SFProjectSync(models.Model):
                         vals.update({'core_team_id':core_team.id})
                         if not parent_id:
                             _logger.info("PARENT SO CREATION VALS:\n{}".format(vals))
-                            so = self.env['sale.order'].create(vals)
+                            so = project.so_create_with_changes(vals)
                             parent_id = so
                         else:
                             vals.update({'parent_id':parent_id.id})
                             _logger.info("CHILD CREATION VALS:\n{}".format(vals))
-                            so = self.env['sale.order'].create(vals)
+                            so = project.so_create_with_changes(vals)
 
                         project.write({'so_ids':[(4, so.id, 0)]})
                         so.name = "{} | {}".format(vals['internal_ref'],vals['name'])
@@ -131,7 +131,7 @@ class SFProjectSync(models.Model):
                                 'name':'Services',
                                 })
                             for service in services_data:
-                                self.env['sale.order.line'].create(service)
+                                project.so_line_create_with_changes(service)
                         
                         if rates_data:
                             #we create a section
@@ -141,13 +141,26 @@ class SFProjectSync(models.Model):
                                 'name':'Hourly Rates',
                                 })
                         for rate in rates_data:
-                            self.env['sale.order.line'].create({
+                            project.so_line_create_with_changes({
                                 'order_id':so.id,
                                 'product_id': rate['product_id'],
                                 'product_uom_qty':0,
                                 'price_unit':rate['price'] if rate['price']>0 else False,
                                 'section_line_id':section.id,
                                 })
+    
+    def so_line_create_with_changes(self,vals):
+        line = self.env['sale.order.line'].create(vals)
+        if line.display_type != 'line_section':
+            line.product_id_change()
+            line._inverse_qty_delivered()
+            line.product_uom_change()
+        return line
+    
+    def so_create_with_changes(self,vals):
+        so = self.env['sale.order'].create(vals)
+        so._compute_tax_id()
+        return so
 
     def prepare_services(self,elements,sale_order,milestone_data):
         output=[]
@@ -197,8 +210,8 @@ class SFProjectSync(models.Model):
             else:
                 _logger.error("Invoicing Status Mismatch for milestone in {}\n{}".format(element,milestone))
         return {
-            'ordered':sum(ordered,delivered,invoiced),
-            'delivered':sum(delivered,invoicing_status),
+            'ordered':ordered+delivered+invoiced,
+            'delivered':delivered+invoiced,
             'invoiced':invoiced,
         }
     ###
