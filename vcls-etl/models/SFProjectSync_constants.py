@@ -85,6 +85,7 @@ SELECT_GET_ASSIGNMENT_DATA = """
         KimbleOne__ResourcedActivity__c,
         KimbleOne__Resource__c,
         KimbleOne__ActivityRole__c,
+        KimbleOne__InvoicingCurrencyForecastRevenueRate__c,
         KimbleOne__InvoicingCurrencyRevenueRate__c
         
         FROM KimbleOne__ActivityAssignment__c

@@ -141,13 +141,15 @@ class SFProjectSync(models.Model):
                                 'name':'Hourly Rates',
                                 })
                         for rate in rates_data:
-                            project.so_line_create_with_changes({
+                            vals = {
                                 'order_id':so.id,
                                 'product_id': rate['product_id'],
                                 'product_uom_qty':0,
-                                'price_unit':rate['price'] if rate['price']>0 else False,
                                 'section_line_id':section.id,
-                                })
+                                }
+                            if rate['price'] > 0:
+                                vals.update({'price_unit':rate['price']})
+                            project.so_line_create_with_changes(vals)
     
     def so_line_create_with_changes(self,vals):
         line = self.env['sale.order.line'].create(vals)
@@ -155,7 +157,7 @@ class SFProjectSync(models.Model):
             line.product_id_change()
             line.product_uom_change()
             line.write(vals)
-            line._inverse_qty_delivered()
+            #line._inverse_qty_delivered()
             
         return line
     
@@ -240,9 +242,9 @@ class SFProjectSync(models.Model):
                             #we check if already found
                             existing = list(filter(lambda p: p['product_id']==o_rate_product.id,rates))
                             if existing:
-                                if assignment['KimbleOne__InvoicingCurrencyRevenueRate__c'] > existing[0]['price']: #if we found a cheaper one, we need to update it
+                                if assignment['KimbleOne__InvoicingCurrencyForecastRevenueRate__c'] > existing[0]['price']: #if we found a cheaper one, we need to update it
                                     index = rates.index(existing[0])
-                                    rates[index]['price']= assignment['KimbleOne__InvoicingCurrencyRevenueRate__c']
+                                    rates[index]['price']= assignment['KimbleOne__InvoicingCurrencyForecastRevenueRate__c']
                                 else:
                                     pass
                             else:
