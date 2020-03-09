@@ -12,6 +12,13 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     travel_invoicing_ratio = fields.Float(string="Travel Invoicing Ratio")
+    fp_delivery_mode = fields.Selection(
+        selection=[
+        ('task', 'Task Completion'),
+        ('manual', 'Manual')],
+        string="Delivered Qty Method",
+        default='task',
+        )
 
     @api.multi
     def action_view_forecast(self):
@@ -151,8 +158,10 @@ class SaleOrderLine(models.Model):
                     pass
             
             elif line.order_id.invoicing_mode == 'fixed_price':
-                if line.product_id.vcls_type == 'vcls_service':
+                if line.product_id.vcls_type == 'vcls_service' and line.order_id.fp_delivery_mode == 'task':
                     line.qty_delivered = line.task_id.completion_ratio/100
+                elif line.product_id.vcls_type == 'vcls_service' and line.order_id.fp_delivery_mode == 'manual':
+                    line.qty_delivered = line.qty_delivered_manual
                 elif line.product_id.vcls_type == 'rate':
                     line.qty_delivered = 0.
                 else:

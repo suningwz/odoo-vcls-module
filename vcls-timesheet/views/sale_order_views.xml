@@ -38,6 +38,9 @@
                 <xpath expr="//field[@name='fiscal_position_id']" position='after'>
                     <field name="travel_invoicing_ratio"/>
                 </xpath>
+                <xpath expr="//field[@name='invoicing_mode']" position='after'>
+                    <field name="fp_delivery_mode" widget="radio"/>
+                </xpath>
             </field>
         </record>
     </data>
