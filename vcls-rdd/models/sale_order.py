@@ -5,7 +5,7 @@
 from odoo import fields, models, api
 
 
-class CoreTeam(models.Model):
+"""class CoreTeam(models.Model):
     _inherit = 'core.team'
 
     old_id = fields.Char(copy=False, readonly=True)
@@ -15,7 +15,7 @@ class CoreTeam(models.Model):
         if isinstance(vals.get('consultant_ids'), int) and \
                 self.env.user.context_data_integration:
             vals['consultant_ids'] = [(4, vals['consultant_ids'])]
-        return super(CoreTeam, self).write(vals)
+        return super(CoreTeam, self).write(vals)"""
 
 
 class SaleOrder(models.Model):
@@ -23,11 +23,11 @@ class SaleOrder(models.Model):
 
     old_id = fields.Char("Old Id", copy=False, readonly=True)
 
-    @api.model
+    """@api.model
     def get_alpha_index(self, index):
         if not self.env.user.context_data_integration:
             return super(SaleOrder, self).get_alpha_index(index)
-        return 'SF'
+        return 'SF'"""
 
     @api.multi
     def create_invoice_from_analytic_line(self):
@@ -62,7 +62,7 @@ class SaleOrder(models.Model):
                     order.invoice_ids = [invoice_id.id]
         return True
 
-    @api.multi
+    """@api.multi
     def delete_empty_sections(self):
         for order in self:
             datas = {self.env['sale.order.line']: self.env['sale.order.line']}
@@ -76,9 +76,9 @@ class SaleOrder(models.Model):
             for key,vals in datas.items():
                 if not vals and (key.name == 'Hourly Rates' or key.name == 'Subscriptions'):
                     self._cr.execute("DELETE FROM sale_order_line where id in %s", (tuple(key.ids),))
-        return True
+        return True"""
 
-    @api.multi
+    """@api.multi
     def delete_duplicate_hourly_rate_lines(self):
         for order in self:
             datas = {self.env['sale.order.line']: self.env['sale.order.line']}
@@ -109,9 +109,9 @@ class SaleOrder(models.Model):
                     self._cr.execute("DELETE FROM sale_order_line where id in {}".format(tuple(must_be_deleted.ids)))
                 else:
                     self._cr.execute("DELETE FROM sale_order_line where id = {}".format(must_be_deleted.id))
-        return True
+        return True"""
 
-    @api.multi
+    """@api.multi
     def _create_section(self, section):
         self.ensure_one()
         if section not in self.order_line.filtered(lambda l: l.display_type == 'line_section').mapped('name'):
@@ -119,19 +119,19 @@ class SaleOrder(models.Model):
                 'display_type': 'line_section',
                 'name': section,
                 'order_id': self.id
-            })
+            })"""
 
 
-class SaleOrderLine(models.Model):
+"""class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    old_id = fields.Char("Old Id", copy=False, readonly=True)
-    milestone_date = fields.Date("Milestone date")
+    #old_id = fields.Char("Old Id", copy=False, readonly=True)
+    #milestone_date = fields.Date("Milestone date")
     mig_qty_invoiced = fields.Float(readonly=True)
     mig_qty_delivered = fields.Float(readonly=True)
-    section_name = fields.Char()  # For migration only to remove after
+    ##section_name = fields.Char()  # For migration only to remove after"""
 
-    @api.multi
+    """@api.multi
     def _get_ts_invoicing_mode(self, vals):
         if self.env.user.context_data_integration and vals.get('ts_invoicing_mode') \
                 and not vals.get('display_type'):
@@ -171,9 +171,9 @@ class SaleOrderLine(models.Model):
                         new_order._create_section(vals.get('section_name'))
                         del vals['section_name']
                     vals['order_id'] = new_order.id
-        return vals
+        return vals"""
 
-    @api.model
+    """@api.model
     def create(self, vals):
         vals = self._get_ts_invoicing_mode(vals)
         return super(SaleOrderLine, self).create(vals)
@@ -181,13 +181,13 @@ class SaleOrderLine(models.Model):
     @api.multi
     def write(self, vals):
         vals = self._get_ts_invoicing_mode(vals)
-        return super(SaleOrderLine, self).write(vals)
+        return super(SaleOrderLine, self).write(vals)"""
 
-    @api.depends('invoice_lines.invoice_id.state', 'invoice_lines.quantity')
+    """@api.depends('invoice_lines.invoice_id.state', 'invoice_lines.quantity')
     def _get_invoice_qty(self):
-        """
-        Update qty_invoiced field with migrating value if mig_qty_invoiced is set
-        """
+        ###
+        ### Update qty_invoiced field with migrating value if mig_qty_invoiced is set
+        ###
         for line in self:
             qty_invoiced = line.mig_qty_invoiced
             if not qty_invoiced:
@@ -197,14 +197,14 @@ class SaleOrderLine(models.Model):
                             qty_invoiced += invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
                         elif invoice_line.invoice_id.type == 'out_refund':
                             qty_invoiced -= invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
-            line.qty_invoiced = qty_invoiced
+            line.qty_invoiced = qty_invoiced"""
 
-    @api.multi
+    """@api.multi
     @api.depends('qty_delivered_method', 'qty_delivered_manual', 'analytic_line_ids.so_line', 'analytic_line_ids.unit_amount', 'analytic_line_ids.product_uom_id')
     def _compute_qty_delivered(self):
-        """
-        Update qty delivered with migrating value if mig_qty_delivered is set
-        """
+        ###
+        ###Update qty delivered with migrating value if mig_qty_delivered is set
+        ###
         if self.env.user.context_data_integration:
             lines_by_analytic = self.filtered(lambda sol: sol.qty_delivered_method == 'analytic')
             mapping = lines_by_analytic._get_delivered_quantity_by_analytic([('amount', '<=', 0.0)])
@@ -217,4 +217,4 @@ class SaleOrderLine(models.Model):
                     qty_delivered = line.qty_delivered_manual or 0.0
                 line.qty_delivered = qty_delivered
         else:
-            return super(SaleOrderLine, self)._compute_qty_delivered()
+            return super(SaleOrderLine, self)._compute_qty_delivered()"""
