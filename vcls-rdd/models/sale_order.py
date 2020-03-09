@@ -129,9 +129,9 @@ class SaleOrder(models.Model):
     #milestone_date = fields.Date("Milestone date")
     mig_qty_invoiced = fields.Float(readonly=True)
     mig_qty_delivered = fields.Float(readonly=True)
-    ##section_name = fields.Char()  # For migration only to remove after"""
+    ##section_name = fields.Char()  # For migration only to remove after
 
-    """@api.multi
+    @api.multi
     def _get_ts_invoicing_mode(self, vals):
         if self.env.user.context_data_integration and vals.get('ts_invoicing_mode') \
                 and not vals.get('display_type'):
@@ -171,9 +171,9 @@ class SaleOrder(models.Model):
                         new_order._create_section(vals.get('section_name'))
                         del vals['section_name']
                     vals['order_id'] = new_order.id
-        return vals"""
+        return vals
 
-    """@api.model
+    @api.model
     def create(self, vals):
         vals = self._get_ts_invoicing_mode(vals)
         return super(SaleOrderLine, self).create(vals)
@@ -181,9 +181,9 @@ class SaleOrder(models.Model):
     @api.multi
     def write(self, vals):
         vals = self._get_ts_invoicing_mode(vals)
-        return super(SaleOrderLine, self).write(vals)"""
+        return super(SaleOrderLine, self).write(vals)
 
-    """@api.depends('invoice_lines.invoice_id.state', 'invoice_lines.quantity')
+    @api.depends('invoice_lines.invoice_id.state', 'invoice_lines.quantity')
     def _get_invoice_qty(self):
         ###
         ### Update qty_invoiced field with migrating value if mig_qty_invoiced is set
@@ -197,9 +197,9 @@ class SaleOrder(models.Model):
                             qty_invoiced += invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
                         elif invoice_line.invoice_id.type == 'out_refund':
                             qty_invoiced -= invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
-            line.qty_invoiced = qty_invoiced"""
+            line.qty_invoiced = qty_invoiced
 
-    """@api.multi
+    @api.multi
     @api.depends('qty_delivered_method', 'qty_delivered_manual', 'analytic_line_ids.so_line', 'analytic_line_ids.unit_amount', 'analytic_line_ids.product_uom_id')
     def _compute_qty_delivered(self):
         ###
