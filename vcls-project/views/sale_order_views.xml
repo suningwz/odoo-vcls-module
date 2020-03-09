@@ -59,6 +59,9 @@
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name = 'program_id'/>
                 </xpath>
+                <xpath expr="//filter[@name='my_quotation']" position="after">
+                    <filter string="Parent Only" name="parent" domain="[('parent_id', '=', False)]"/>
+                </xpath>
             </field>
         </record>
 

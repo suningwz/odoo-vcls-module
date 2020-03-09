@@ -24,6 +24,7 @@ class SaleOrder(models.Model):
     catalog_mode = fields.Selection([
         ('generic','Generic'),
         ('template','Template'),
+        ('migration','Migration'),
         ], compute = '_compute_catalog_mode')
     
     catalog_details = fields.Boolean(
@@ -229,6 +230,7 @@ class SaleOrder(models.Model):
     ###################
     # COMPUTE METHODS #
     ###################
+
     @api.multi
     @api.onchange('partner_shipping_id', 'partner_id')
     def onchange_partner_shipping_id(self):
@@ -236,15 +238,20 @@ class SaleOrder(models.Model):
         self.fiscal_position_id = self.env['account.fiscal.position'].with_context(force_company=self.company_id.id).get_fiscal_position(self.partner_id.id, self.partner_shipping_id.id)
         return {}
 
-    @api.depends('product_category_id')
+
+    @api.depends('product_category_id','tag_ids')
     def _compute_catalog_mode(self):
         for so in self:
+            auto_migration_tag = self.env['crm.lead.tag'].search([('name','=','Automated Migration')],limit=1)
             generic_catalog = self.env['product.category'].search([('name','=','General Services')])
             so.catalog_mode = 'template'
             if generic_catalog:
                 if so.product_category_id == generic_catalog[0]:
                     so.catalog_mode = 'generic'
                     so.catalog_details = 'True'
+            if auto_migration_tag:
+                if auto_migration_tag in so.tag_ids:
+                    so.catalog_mode = 'migration'
                     
 
     @api.depends('project_ids')

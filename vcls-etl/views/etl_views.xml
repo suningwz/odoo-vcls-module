@@ -45,6 +45,19 @@
 			</field>
 		</record>
 
+		<record id="view_tree_project_migration" model="ir.ui.view">
+			<field name="name">view_tree_project_migration</field>
+			<field name="model">etl.salesforce.project</field>
+			<field name="arch" type="xml">
+				<tree string="Project Migration">
+					<field name="project_sfref"/>
+					<field name="project_sfname"/>
+					<field name="migration_status"/>
+					<field name="lastRun"/>
+				</tree>
+			</field>
+		</record>
+
 		<record model="ir.actions.act_window" id="action_etl_account">
 			<field name="name">ETL Salesforce Account</field>
 			<field name="res_model">etl.salesforce.account</field>
@@ -81,6 +94,14 @@
             <field name="name">ETL Salesforce Campaign</field>
             <field name="res_model">etl.salesforce.campaign</field>
             <field name="view_mode">kanban,tree,form,activity</field>
+    	</record>
+		<record model="ir.actions.act_window" id="action_etl_project">
+            <field name="name">ETL Salesforce Projects</field>
+            <field name="res_model">etl.salesforce.project</field>
+            <field name="view_mode">tree,form</field>
+			<field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_tree_project_migration')}),
+            ]"/>
     	</record>
 		<record model="ir.actions.act_window" id="action_etl_map">
 			<field name="name">ETL Map Odoo</field>
