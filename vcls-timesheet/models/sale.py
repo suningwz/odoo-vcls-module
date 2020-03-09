@@ -12,6 +12,7 @@ class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     travel_invoicing_ratio = fields.Float(string="Travel Invoicing Ratio")
+    is_migrated = fields.Boolean(compute = '_compute_is_migrated',store=True)
     fp_delivery_mode = fields.Selection(
         selection=[
         ('task', 'Task Completion'),
@@ -19,6 +20,13 @@ class SaleOrder(models.Model):
         string="Delivered Qty Method",
         default='task',
         )
+    
+    @api.depends('tag_ids')
+    def _compute_is_migrated(self):
+        if ('Manual Migration' in self.tag_ids.mapped('name')) or ('Automated Migration' in self.tag_ids.mapped('name')):
+            self.is_migrated = True
+        else:
+            self.is_migrated = False
 
     @api.multi
     def action_view_forecast(self):
@@ -105,6 +113,9 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
+    # Historical Invoiced Amount is the amount already invoiced in the previous system
+    historical_invoiced_amount = fields.Monetary(string="Historical Invoiced Amount", default=0.0)
+
     def _timesheet_compute_delivered_quantity_domain(self):
         domain = super()._timesheet_compute_delivered_quantity_domain()
         # We add the condition on the timesheet stage_id
@@ -143,8 +154,10 @@ class SaleOrderLine(models.Model):
         'product_uom_qty',
         'amount_delivered_from_task',
         'price_unit',
+        'historical_invoiced_amount',
         'task_id.stage_id',
-        'order_id.invoicing_mode')
+        'order_id.invoicing_mode',
+        'order_id.fp_delivery_mode',)
     def _compute_qty_delivered(self):
         """Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type"""
 
@@ -158,9 +171,13 @@ class SaleOrderLine(models.Model):
                     pass
             
             elif line.order_id.invoicing_mode == 'fixed_price':
-                if line.product_id.vcls_type == 'vcls_service' and line.order_id.fp_delivery_mode == 'task':
+                if line.product_id.vcls_type in ['vcls_service'] and line.order_id.fp_delivery_mode == 'task':
                     line.qty_delivered = line.task_id.completion_ratio/100
-                elif line.product_id.vcls_type == 'vcls_service' and line.order_id.fp_delivery_mode == 'manual':
+                    if line.historical_invoiced_amount > line.qty_delivered*line.price_unit:
+                        line.qty_delivered = line.historical_invoiced_amount/line.price_unit if line.price_unit>0 else line.historical_invoiced_amount
+                elif line.product_id.vcls_type in ['vcls_service'] and line.order_id.fp_delivery_mode == 'manual':
+                    if line.historical_invoiced_amount > line.qty_delivered*line.price_unit:
+                        line.qty_delivered_manual = line.historical_invoiced_amount/line.price_unit if line.price_unit>0 else line.historical_invoiced_amount
                     line.qty_delivered = line.qty_delivered_manual
                 elif line.product_id.vcls_type == 'rate':
                     line.qty_delivered = 0.
@@ -171,10 +188,11 @@ class SaleOrderLine(models.Model):
                 pass
 
 
-    """@api.multi
+    @api.multi
     @api.depends(
         'product_uom_qty',
         'price_unit',
+        'historical_invoiced_amount',
         'amount_invoiced_from_task',
         'task_id.stage_id',
         'order_id.invoicing_mode')
@@ -183,21 +201,8 @@ class SaleOrderLine(models.Model):
         #Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type
         super()._get_invoice_qty()
         for line in self:
-            #In Time & Material, we invoice the rate product lines and set the other services to 0
-            if line.order_id.invoicing_mode == 'tm':
-                if line.product_id.vcls_type == 'vcls_service':
-                    line.qty_invoiced = 0.
-                else:
-                    pass
-            
-            elif line.order_id.invoicing_mode == 'fixed_price':
-                if line.product_id.vcls_type == 'rate':
-                    line.qty_invoiced = 0.
-                else:
-                    pass
-            
-            else:
-                pass"""
+            if line.order_id.invoicing_mode == 'fixed_price' and line.product_id.vcls_type in ['vcls_service']:
+                line.qty_invoiced += line.historical_invoiced_amount/line.price_unit if line.price_unit>0 else 0.0
 
     # We need to override the OCA to take the rounded_unit_amount in account rather than the standard unit_amount
     @api.multi
