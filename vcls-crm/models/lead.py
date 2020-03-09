@@ -205,7 +205,7 @@ class Leads(models.Model):
 
     internal_ref = fields.Char(
         string="Ref",
-        store = True,
+        #store = True,
         #compute = '_compute_internal_ref',
         #inverse = '_set_internal_ref',
     )
@@ -349,6 +349,10 @@ class Leads(models.Model):
 
         for lead in self:
             lead_vals = {**vals} #we make a copy of the vals to avoid iterative updates
+
+            if self._context.get('clear_ref'):
+                _logger.info("Clearing Opp Ref {}".format(lead.internal_ref))
+                return super(Leads, lead).write(lead_vals)
             
             #Lead naming convention
             if (lead_vals.get('type',lead.type) == 'lead'):
