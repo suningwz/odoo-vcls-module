@@ -23,10 +23,11 @@ class SaleOrder(models.Model):
     
     @api.depends('tag_ids')
     def _compute_is_migrated(self):
-        if ('Manual Migration' in self.tag_ids.mapped('name')) or ('Automated Migration' in self.tag_ids.mapped('name')):
-            self.is_migrated = True
-        else:
-            self.is_migrated = False
+        for so in self:
+            if ('Manual Migration' in so.tag_ids.mapped('name')) or ('Automated Migration' in so.tag_ids.mapped('name')):
+                so.is_migrated = True
+            else:
+                so.is_migrated = False
 
     @api.multi
     def action_view_forecast(self):
