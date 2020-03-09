@@ -13,13 +13,24 @@ _logger = logging.getLogger(__name__)
 class Leads(models.Model):
     _inherit = 'crm.lead'
 
-    @api.models
+    @api.model
     def clear_migrated_ref(self):
-        #we get the opps
+        #we get the opps and clean
         keys = self.env['etl.sync.keys'].search([('externalObjName','=','Opportunity'),('odooId','!=',False)])
         opp_ids = [int(i) for i in keys.mapped('odooId')]
         opps = self.env['crm.lead'].browse(opp_ids)
         opps.with_context(clear_ref=True).write({'internal_ref':False})
+
+        #get the non-cleaned opps
+        manual_opps = self.search([('internal_ref','!=',False)])
+        client_ids = manual_opps.mapped('partner_id.id')
+        clients = self.env['res.partner'].browse(client_ids).write({'core_process_index':0})
+
+        for opp in manual_opps:
+            index = int(opp.internal_ref.split('-')[1])
+            if index > opp.partner_id.core_process_index:
+                opp.partner_id.core_process_index=index
+                _logger.info("CLient Index Update {}-{}".format(opp.partner_id.altname,index))
 
     def write(self, vals):
         """
