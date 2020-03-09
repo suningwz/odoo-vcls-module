@@ -32,10 +32,16 @@
 			action="action_etl_opportunity" 
 			sequence="6" />
 		<menuitem 
-			name="Salesforce Leads" 
+			name="Salesforce Lead" 
 			parent="menu_etl" 
-			id="menu_etl_leads" 
-			action="action_etl_leads" 
+			id="menu_etl_lead" 
+			action="action_etl_lead" 
+			sequence="6" />	
+		<menuitem 
+			name="Salesforce Campaign" 
+			parent="menu_etl" 
+			id="menu_etl_campaign" 
+			action="action_etl_campaign" 
 			sequence="6" />	
 		<menuitem 
 			name="Salesforce Projects" 

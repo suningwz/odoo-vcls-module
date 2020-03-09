@@ -29,6 +29,8 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
             description +='Description :\n' + str(SF_Opportunity['Description']) + '\n'
         if SF_Opportunity['Client_Product_Description__c']:
             description +='Client Product Description :\n' +  str(SF_Opportunity['Client_Product_Description__c'])
+        if SF_Opportunity['Reasons_lost__c']:
+            result['lost_reasons']=[(6, 0, mapOdoo.convertRef(SF_Opportunity['Reasons_lost__c'],odoo,'crm.lost.reason',True))]
         if SF_Opportunity['Reasons_Lost_Comments__c']:
             description +='Lost Reason:\n' +  str(SF_Opportunity['Reasons_Lost_Comments__c'])
         result['scope_of_work'] = description
@@ -58,6 +60,8 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
                 employee = odoo.env['hr.employee'].with_context(active_test=False).search([('user_id','=',user_id)],limit=1)
                 if employee:
                     result['technical_adv_id'] = employee.id
+        if SF_Opportunity['Proposal_Writer__c']:
+            result['proposal_writer_id'] = mapOdoo.convertRef(SF_Opportunity['Proposal_Writer__c'], odoo, 'hr.employee', False)
 
         ### FINANCIAL
         result['customer_currency_id'] = TranslatorSFGeneral.TranslatorSFGeneral.convertCurrency(SF_Opportunity['CurrencyIsoCode'],odoo)
@@ -74,6 +78,9 @@ class TranslatorSFOpportunity(TranslatorSFGeneral.TranslatorSFGeneral):
         #result.update(odoo.env['crm.lead']._onchange_partner_id_values(int(result['partner_id']) if result['partner_id'] else False)) 
         result['message_ids'] = [(0, 0, TranslatorSFOpportunity.generateLog(SF_Opportunity))]
         result['log_info'] = SF_Opportunity['Name']
+        
+        if SF_Opportunity['ContractId']:
+            result['agreement_id'] = TranslatorSFGeneral.TranslatorSFGeneral.toOdooId(SF_Opportunity['ContractId'],"agreement","Contract",odoo)
 
         return result
 

@@ -58,7 +58,7 @@ class TranslatorSFCampaign(TranslatorSFGeneral.TranslatorSFGeneral):
             attendee1 = TranslatorSFGeneral.TranslatorSFGeneral.convertSfContactToOdooEmploye(SF_Campaign['Name_of_attendee_1__c'],odoo)
             attendee1 = TranslatorSFGeneral.TranslatorSFGeneral.convertSfContactToOdooEmploye(SF_Campaign['Name_of_attendee_2__c'],odoo)
             if attendee1 and attendee2:
-                attendee = [attendee1,attendee1]
+                attendee = [attendee1,attendee2]
                 result['attendee_ids'] = [(6, 0, attendee)]
 
 

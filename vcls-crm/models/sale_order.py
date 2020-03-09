@@ -150,6 +150,8 @@ class SaleOrder(models.Model):
 
     @api.model
     def create(self, vals):
+        if self.env.user.context_data_integration:
+            _logger.info("SO CREATE: {}".format(vals))
         # if we force the creation of a quotation with an exiting internal ref (e.g. during migration)
         if vals.get('internal_ref'):
             vals['name'] = self._get_name_without_ref(vals['internal_ref'], vals['name'])
@@ -228,6 +230,15 @@ class SaleOrder(models.Model):
     ###################
     # COMPUTE METHODS #
     ###################
+
+    @api.multi
+    @api.onchange('partner_shipping_id', 'partner_id')
+    def onchange_partner_shipping_id(self):
+        #we force the context to the sales order company
+        self.fiscal_position_id = self.env['account.fiscal.position'].with_context(force_company=self.company_id.id).get_fiscal_position(self.partner_id.id, self.partner_shipping_id.id)
+        return {}
+
+
     @api.depends('product_category_id','tag_ids')
     def _compute_catalog_mode(self):
         for so in self:

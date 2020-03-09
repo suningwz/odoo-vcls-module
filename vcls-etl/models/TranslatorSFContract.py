@@ -1,5 +1,8 @@
 from . import TranslatorSFGeneral
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
     def __init__(self,SF):
         super().__init__(SF)
@@ -9,6 +12,7 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
         mapOdoo = odoo.env['map.odoo']
         result = {}
         # Modify the name with -test
+
         result['code'] = SF_Contract['ContractNumber']
         if SF_Contract['Name']:
             result['internal_name'] = SF_Contract['Name'] #+ '-test'
@@ -19,10 +23,10 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
         else:
             result['name'] = result['internal_name']
 
-        if SF_Contract['Type_of_Contract__c']:    
-            result['agreement_type_id'] = mapOdoo.convertRef(SF_Contract['Type_of_Contract__c'], odoo, 'agreement.type', False)
+        result = TranslatorSFContract.type_and_subtype(result,SF_Contract,odoo,mapOdoo)
         
         if SF_Contract['VCLS_Status__c']:
+            _logger.info("ETL | Contract Stage {}".format(SF_Contract['VCLS_Status__c']))
             result['stage_id'] = mapOdoo.convertRef(SF_Contract['VCLS_Status__c'], odoo, 'agreement.stage', False)
 
         if SF_Contract['Link_to_Parent_Contract__c']:
@@ -54,52 +58,36 @@ class TranslatorSFContract(TranslatorSFGeneral.TranslatorSFGeneral):
 
         result['company_id'] = False
         
+        result['expiration_notice'] = SF_Contract['OwnerExpirationNotice']
+        result['start_date'] = SF_Contract['StartDate']
+        result['special_terms'] = SF_Contract['SpecialTerms']
+        result['description'] = SF_Contract['Description']
+        result['approved_date'] = SF_Contract['LastApprovedDate']
+        #result['parent_agreement_name'] = SF_Contract['Parent_Contract_Name__c']
+        #result['parent_agreement_type'] = SF_Contract['Parent_Contract_Type__c']
         return result
 
     @staticmethod
-    def translateToSF(Odoo_Contact, odoo):
+    def translateToSF(Odoo_Contract, odoo):
         pass
-    """    result = {}
-        # Modify the name with -test
-        if ' ' in Odoo_Contact.name:
-            name = Odoo_Contact.name.split(" ")
-            if len(name) > 2:
-                result['LastName'] = Odoo_Contact.name
+
+    @staticmethod
+    def type_and_subtype(result,SF, odoo, mapOdoo):
+        if SF['Type_of_Contract__c']:
+
+            type_id = mapOdoo.convertRef(SF['Type_of_Contract__c'], odoo, 'agreement.type', False)  
+            result['agreement_type_id'] = type_id
+            if type_id:
+                _logger.info("Type ID {}".format(type_id))
+                has_sub = odoo.env['agreement.subtype'].search([('agreement_type_id','=',type_id)])
+                if has_sub:
+                    result['agreement_subtype_id'] = mapOdoo.convertRef(SF['Type_of_Contract__c'], odoo, 'agreement.subtype', False)
+                else:
+                    pass
             else:
-                result['FirstName'], result['LastName'] = name
+                pass
         else:
-            result['LastName'] = Odoo_Contact.name
-        if Odoo_Contact.city:
-            result['MailingCity'] = Odoo_Contact.city
-        if Odoo_Contact.zip:
-            result['MailingPostalCode'] = Odoo_Contact.zip
-        if Odoo_Contact.street:
-            result['MailingStreet'] = Odoo_Contact.street
-        if Odoo_Contact.phone:
-            result['Phone'] = Odoo_Contact.phone
-        if Odoo_Contact.fax:
-            result['Fax'] = Odoo_Contact.fax
-        if Odoo_Contact.mobile:
-            result['MobilePhone'] = Odoo_Contact.mobile
-        if '@' in str(Odoo_Contact.email):
-           result['Email'] = Odoo_Contact.email
-        if Odoo_Contact.description:
-            result['Description'] = Odoo_Contact.description
-            
-        result['AccountId'] = TranslatorSFGeneral.TranslatorSFGeneral.toSfId(Odoo_Contact.parent_id.id,"res.partner", "Account",odoo)
+            pass
         
-        # Ignore company_type
-        result['MailingCountry'] = TranslatorSFGeneral.TranslatorSFGeneral.revertCountry(Odoo_Contact.country_id.id, odoo)
-        result['CurrencyIsoCode'] = Odoo_Contact.currency_id.name
-        if Odoo_Contact.user_id:
-            result['OwnerId'] = TranslatorSFGeneral.TranslatorSFGeneral.revertOdooIdToSfId(Odoo_Contact.user_id,odoo)
-        elif Odoo_Contact.parent_id:
-            result['OwnerId'] = TranslatorSFGeneral.TranslatorSFGeneral.revertOdooIdToSfId(Odoo_Contact.parent_id.user_id,odoo)
-        for c in Odoo_Contact.category_id:
-            category += c.name 
-        result['Category__c'] = category
-        result['Salutation'] = Odoo_Contact.title.name
-        result['Title'] = Odoo_Contact.function
-
-
-        return result """
+        return result
+        

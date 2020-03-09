@@ -140,46 +140,52 @@ class ETLMap(models.Model):
             time_sql = ""
 
         self.env.ref('vcls-etl.etl_sf_time_filter').value = time_sql
-            
 
-        ### CONTACT KEYS PROCESSING (we get emails to manage potential duplicates)
-        if obj_dict.get('do_contact',False):
+        ### CAMPAIGN KEYS PROCESSING
+        if obj_dict.get('do_campaign',False):
+            """
+            Campaigns have the highest priority, because contacts and leads are related to campaigns
+            """
+            # 1st without parents (because they might be parents) 
             sql = """
-                SELECT Id, LastModifiedDate, Email FROM Contact
+                SELECT Id, LastModifiedDate FROM Campaign 
                 """
             params = {
                 'sfInstance':sfInstance,
-                'priority':100,
-                'externalObjName':'Contact',
-                'sql':self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_contact_filter').value,time_sql]),
-                'odooModelName':'res.partner',
+                'priority':950,
+                'externalObjName':'Campaign',
+                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_campaign_filter').value,time_sql,'ParentId = null']),
+                'odooModelName':'project.task',
+                'is_full_update':is_full_update,
+            }
+            self.update_keys(params)
+            
+            # Then Campaigns Without Parents 
+            sql = """
+                SELECT Id, LastModifiedDate FROM Campaign 
+                    """
+            params = {
+                'sfInstance':sfInstance,
+                'priority':900,
+                'externalObjName':'Campaign',
+                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_campaign_filter').value,time_sql,'ParentId != null']),
+                'odooModelName':'project.task',
                 'is_full_update':is_full_update,
             }
             self.update_keys(params)
 
         ### ACCOUNT KEYS PROCESSING
         if obj_dict.get('do_account',False):
-            # We do accounts with parents 1st, because of their lower priority 
-            sql = """
-                SELECT Id, LastModifiedDate FROM Account 
-                    """
-            params = {
-                'sfInstance':sfInstance,
-                'priority':200,
-                'externalObjName':'Account',
-                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_account_filter').value,time_sql,'ParentId != null']),
-                'odooModelName':'res.partner',
-                'is_full_update':is_full_update,
-            }
-            self.update_keys(params)
-
-            # then accounts without parents 
+            """
+            Account have the second priority, because they are used for opportunities creation
+            """
+            # accounts without parents 
             sql = """
                 SELECT Id, LastModifiedDate FROM Account 
                 """
             params = {
                 'sfInstance':sfInstance,
-                'priority':300,
+                'priority':850,
                 'externalObjName':'Account',
                 'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_account_filter').value,time_sql,'ParentId = null']),
                 'odooModelName':'res.partner',
@@ -187,32 +193,32 @@ class ETLMap(models.Model):
             }
             self.update_keys(params)
 
-        ### OPPORTUNITY KEYS PROCESSING
-        if obj_dict.get('do_opportunity',False):
+            # accounts with parents 
             sql = """
-                SELECT Id, LastModifiedDate FROM Opportunity 
+                SELECT Id, LastModifiedDate FROM Account 
                     """
             params = {
                 'sfInstance':sfInstance,
-                'priority':80,
-                'externalObjName':'Opportunity',
-                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_opportunity_filter').value,time_sql]),
-                'odooModelName':'crm.lead',
+                'priority':800,
+                'externalObjName':'Account',
+                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_account_filter').value,time_sql,'ParentId != null']),
+                'odooModelName':'res.partner',
                 'is_full_update':is_full_update,
             }
             self.update_keys(params)
 
-        ### LEAD KEYS PROCESSING
-        if obj_dict.get('do_lead',False):
+            
+        ### CONTACT KEYS PROCESSING (we get emails to manage potential duplicates)
+        if obj_dict.get('do_contact',False):
             sql = """
-                SELECT Id, LastModifiedDate FROM Lead 
+                SELECT Id, LastModifiedDate, Email FROM Contact
                 """
             params = {
                 'sfInstance':sfInstance,
-                'priority':60,
-                'externalObjName':'Lead',
-                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_lead_filter').value,time_sql]),
-                'odooModelName':'crm.lead',
+                'priority':700,
+                'externalObjName':'Contact',
+                'sql':self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_contact_filter').value,time_sql]),
+                'odooModelName':'res.partner',
                 'is_full_update':is_full_update,
             }
             self.update_keys(params)
@@ -225,7 +231,7 @@ class ETLMap(models.Model):
                     """
             params = {
                 'sfInstance':sfInstance,
-                'priority':50,
+                'priority':650,
                 'externalObjName':'Contract',
                 'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_contract_filter').value,time_sql,' Link_to_Parent_Contract__c = null']),
                 'odooModelName':'agreement',
@@ -238,44 +244,49 @@ class ETLMap(models.Model):
                     """
             params = {
                 'sfInstance':sfInstance,
-                'priority':40,
+                'priority':600,
                 'externalObjName':'Contract',
                 'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_contract_filter').value,time_sql,' Link_to_Parent_Contract__c != null']),
                 'odooModelName':'agreement',
                 'is_full_update':is_full_update,
             }
             self.update_keys(params)
-
-            ### CAMPAIGN KEYS PROCESSING
-        if obj_dict.get('do_campaign',False):
-            
-            # We do campaigns with parents 1st, because of their lower priority 
+        
+        ### LEAD KEYS PROCESSING
+        if obj_dict.get('do_lead',False):
             sql = """
-                SELECT Id, LastModifiedDate FROM Campaign 
-                    """
-            params = {
-                'sfInstance':sfInstance,
-                'priority':500,
-                'externalObjName':'Campaign',
-                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_campaign_filter').value,time_sql,'ParentId != null']),
-                'odooModelName':'project.task',
-                'is_full_update':is_full_update,
-            }
-            self.update_keys(params)
-
-            # then campaigns without parents 
-            sql = """
-                SELECT Id, LastModifiedDate FROM Campaign 
+                SELECT Id, LastModifiedDate FROM Lead 
                 """
             params = {
                 'sfInstance':sfInstance,
-                'priority':600,
-                'externalObjName':'Campaign',
-                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_campaign_filter').value,time_sql,'ParentId = null']),
-                'odooModelName':'project.task',
+                'priority':500,
+                'externalObjName':'Lead',
+                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_lead_filter').value,time_sql]),
+                'odooModelName':'crm.lead',
                 'is_full_update':is_full_update,
             }
             self.update_keys(params)
+
+        ### OPPORTUNITY KEYS PROCESSING
+        if obj_dict.get('do_opportunity',False):
+            sql = """
+                SELECT Id, LastModifiedDate FROM Opportunity 
+                    """
+            params = {
+                'sfInstance':sfInstance,
+                'priority':400,
+                'externalObjName':'Opportunity',
+                'sql': self.build_sql(sql,[self.env.ref('vcls-etl.etl_sf_opportunity_filter').value,time_sql]),
+                'odooModelName':'crm.lead',
+                'is_full_update':is_full_update,
+            }
+            self.update_keys(params)
+
+        
+
+        
+
+        
 
         ###CLOSING
         #we trigger the processing job

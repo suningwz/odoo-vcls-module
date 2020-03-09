@@ -6,3 +6,4 @@ from . import payroll_overriden_classes
 from . import payroll_constants
 from . import payroll_export
 from . import payroll_line
+from . import billability_report
