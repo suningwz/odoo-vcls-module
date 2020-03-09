@@ -229,6 +229,13 @@ class SaleOrder(models.Model):
     ###################
     # COMPUTE METHODS #
     ###################
+    @api.multi
+    @api.onchange('partner_shipping_id', 'partner_id')
+    def onchange_partner_shipping_id(self):
+        #we force the context to the sales order company
+        self.fiscal_position_id = self.env['account.fiscal.position'].with_context(force_company=self.company_id.id).get_fiscal_position(self.partner_id.id, self.partner_shipping_id.id)
+        return {}
+
     @api.depends('product_category_id')
     def _compute_catalog_mode(self):
         for so in self:
