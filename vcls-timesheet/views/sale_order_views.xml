@@ -38,6 +38,13 @@
                 <xpath expr="//field[@name='fiscal_position_id']" position='after'>
                     <field name="travel_invoicing_ratio"/>
                 </xpath>
+                <xpath expr="//field[@name='invoicing_mode']" position='after'>
+                    <field name="fp_delivery_mode" widget="radio" attrs="{'invisible': [('invoicing_mode', '=', 'tm')]}"/>
+                </xpath>
+                <xpath expr="//tree//field[@name='discount']" position="after">
+                    <field name="is_migrated" invisible="1"/>
+                    <field name="historical_invoiced_amount" attrs="{'invisible': [('is_migrated', '=', False)]}"/>
+                </xpath>
             </field>
         </record>
     </data>

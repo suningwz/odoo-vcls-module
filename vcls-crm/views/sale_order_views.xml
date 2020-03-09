@@ -96,7 +96,7 @@
                             <field name="deliverable_id" domain="[('product_category_id','=',product_category_id)]" attrs="{'required': [('catalog_details', '=', True),('catalog_mode', '=', 'template')]}"/>
                         </group>
                     </group>
-                    <group string="Reporting">
+                    <group string="Reporting" invisible="1">
                         <field name="report_details"/>
                         <field name="report_rate"/>
                     </group>
@@ -121,7 +121,7 @@
                             <group name="inv_left">
                                 <field string="Please edit the parent quotation:" readonly="1" name="parent_id" attrs="{'invisible': [('parent_id', '=', False)]}"/>
                                 <field name="invoicing_mode" widget="radio"/>
-                                <field name="fiscal_position_id" options="{'no_create': True}"/>
+                                <field name="fiscal_position_id" options="{'no_create': True}" domain="[('company_id','=',company_id)]"/>
                                 <field name="payment_term_id" options="{'no_create': True}"/>
                                 <field name="ts_invoicing_mode" invisible="1"/>
                             </group>
