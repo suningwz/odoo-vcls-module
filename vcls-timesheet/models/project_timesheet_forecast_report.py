@@ -30,7 +30,6 @@ class TimesheetForecastReport(models.Model):
         readonly=True
     )
 
-    date = fields.Float()
     employee_seniority_level_id = fields.Many2one(
         'hr.employee.seniority.level',
         String='Seniority Level', readonly=True

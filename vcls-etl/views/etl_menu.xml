@@ -44,6 +44,12 @@
 			action="action_etl_campaign" 
 			sequence="6" />	
 		<menuitem 
+			name="Salesforce Projects" 
+			parent="menu_etl" 
+			id="menu_etl_project" 
+			action="action_etl_project" 
+			sequence="7" />	
+		<menuitem 
 			name="Keys" 
 			parent="menu_etl" 
 			id="menu_etl_keys" 

@@ -229,7 +229,7 @@
 
             <field name="team_id" position="after">
                 <field name='proposal_type' string="Proposal Type"/>
-                <field name="internal_ref" readonly="0" style="color:#08206E;"/>
+                <field name="internal_ref" readonly="0" style="color:#08206E;" required="1"/>
             </field>
 
             <field name="website" position="after">
