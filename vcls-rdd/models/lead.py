@@ -20,10 +20,12 @@ class Leads(models.Model):
         opp_ids = [int(i) for i in keys.mapped('odooId')]
         opps = self.env['crm.lead'].browse(opp_ids)
         opps.with_context(clear_ref=True).write({'internal_ref':False})
+        
 
         #get the non-cleaned opps
         manual_opps = self.with_context(active_test=False).search([('internal_ref','!=',False)])
-        client_ids = manual_opps.mapped('partner_id.id')
+
+        client_ids = manual_opps.mapped('partner_id.id') | opps.mapped('partner_id.id')
         clients = self.env['res.partner'].browse(client_ids).write({'core_process_index':0})
 
         for opp in manual_opps:
