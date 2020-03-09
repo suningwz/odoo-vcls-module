@@ -25,7 +25,8 @@ class Leads(models.Model):
         #get the non-cleaned opps
         manual_opps = self.with_context(active_test=False).search([('internal_ref','!=',False)])
 
-        client_ids = manual_opps.mapped('partner_id.id') | opps.mapped('partner_id.id')
+        all_opps = manual_opps | opps
+        client_ids = all_opps.mapped('partner_id.id')
         clients = self.env['res.partner'].browse(client_ids).write({'core_process_index':0})
 
         for opp in manual_opps:
