@@ -3,7 +3,6 @@
 from odoo import models, fields, api
 from datetime import datetime
 
-
 class ProjectTask(models.Model):
     _inherit = 'project.task'
 
@@ -133,6 +132,22 @@ class ProjectTask(models.Model):
 
             #task.sale_line_id._compute_untaxed_amount_to_invoice()
 
+# if we change the parent task
+    @api.onchange('parent_id')
+    def onchange_parent_id(self):
+        for task in self:
+            if task.parent_id:
+                task.write({'time_category_ids': [[6, 0, task.parent_id.time_category_ids]]})
+
+# To remove| if we want to change manually the time category (more for test, no purpose)
+    @api.onchange('time_category_ids')
+    def onchange_time_category_ids(self):
+        for task in self:
+            if task.parent_id:
+                # task.write({"time_category_ids" : "test"})
+                task.write({"time_category_ids" : [(6, 0, task.parent_id.time_category_ids)]})
+                    # pt.write({'time_category_ids': [(3, tc.id, 0)]})
+
     @api.onchange('sale_line_id')
     def _onchange_lead_id(self):
         if not self.date_start:
@@ -156,14 +171,34 @@ class ProjectTask(models.Model):
     def create(self, vals):
         travel_category_id = self.env.ref('vcls-timesheet.travel_time_category')
         time_categories = vals.get('time_category_ids', False)
+
+        if self.parent_id:
+            print("test")
         if travel_category_id:
             if time_categories:
                 if travel_category_id not in vals['time_category_ids'][0][2]:
                     vals['time_category_ids'][0][2].append(travel_category_id.id)
+                    # vals['time_category_ids'][0][2].append(parent_id.time_category_ids.id)
             else:
                 vals.update({'time_category_ids': [[6, False, [travel_category_id.id]]]})
 
         task = super(ProjectTask, self).create(vals)
+
+        for subtask in task:
+            if subtask.parent_id:
+                self.write({"time_category_ids": [(6, 0, self.parent_id.time_category_ids)]})
+        # if task.parent_id:
+        #     print("test")
+        # parent_id = vals.get('parent_id', False)
+        # parent_id2 = self.env.ref('vcls-timesheet.time_category_ids')
+
+        # # for task in self:
+        # if self.parent_id:
+        #     self.write({"time_category_ids": [(6, 0, self.parent_id.time_category_ids)]})
+
+        # if task.parent_id:
+        #     task.write({"time_category_ids": [(6, 0, task.parent_id.time_category_ids)]})
+
 
         # Update end and start date according to related sale_order estimated dates
         if not task.date_start:
