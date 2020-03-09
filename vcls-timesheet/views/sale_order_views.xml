@@ -43,6 +43,7 @@
                     <field name="is_migrated" invisible="1"/>
                 </xpath>
                 <xpath expr="//tree//field[@name='discount']" position="after">
+                    <field name="is_migrated" invisible="1"/>
                     <field name="historical_invoiced_amount" attrs="{'invisible': [('is_migrated', '=', False)]}"/>
                 </xpath>
             </field>

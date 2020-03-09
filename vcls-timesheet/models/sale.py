@@ -116,6 +116,7 @@ class SaleOrderLine(models.Model):
 
     # Historical Invoiced Amount is the amount already invoiced in the previous system
     historical_invoiced_amount = fields.Monetary(string="Historical Invoiced Amount", default=0.0)
+    is_migrated = fields.Boolean(related='order_id.is_migrated')
 
     def _timesheet_compute_delivered_quantity_domain(self):
         domain = super()._timesheet_compute_delivered_quantity_domain()
