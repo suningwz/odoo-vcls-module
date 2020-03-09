@@ -352,7 +352,8 @@ class Leads(models.Model):
 
             if self._context.get('clear_ref'):
                 _logger.info("Clearing Opp Ref {}".format(lead.internal_ref))
-                return super(Leads, lead).write(lead_vals)
+                cleared = super(Leads, lead).write(lead_vals)
+                continue
             
             #Lead naming convention
             if (lead_vals.get('type',lead.type) == 'lead'):

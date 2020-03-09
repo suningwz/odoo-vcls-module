@@ -27,10 +27,13 @@ class Leads(models.Model):
         clients = self.env['res.partner'].browse(client_ids).write({'core_process_index':0})
 
         for opp in manual_opps:
-            index = int(opp.internal_ref.split('-')[1])
-            if index > opp.partner_id.core_process_index:
-                opp.partner_id.core_process_index=index
-                _logger.info("CLient Index Update {}-{}".format(opp.partner_id.altname,index))
+            try:
+                index = int(opp.internal_ref[-3:])
+                if index > opp.partner_id.core_process_index and opp.partner_id.altname:
+                    opp.partner_id.core_process_index=index
+                    _logger.info("CLient Index Update {}-{}".format(opp.partner_id.altname,index))
+            except:
+                pass
 
     def write(self, vals):
         """
