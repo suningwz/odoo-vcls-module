@@ -182,7 +182,7 @@ class SFProjectSync(models.Model):
                 for so in project.so_ids:
                     so._action_confirm()
 
-                project.process_forecasts()
+                project.process_forecasts(activity_data,assignment_data)
                 #project.migration_status = 'structure'
     
     def so_line_create_with_changes(self,vals):
@@ -200,7 +200,7 @@ class SFProjectSync(models.Model):
         so._compute_tax_id()
         return so
     
-    def process_forecast(self,activity_data,assignment_data):
+    def process_forecasts(self,activity_data,assignment_data):
         so_lines = self.so_ids.mapped('order_line')
         for line in so_lines:
             #we look for a key
