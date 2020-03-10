@@ -119,28 +119,28 @@ class SFProjectSync(models.Model):
                         project.write({'so_ids':[(4, so.id, 0)]})
                         so.name = "{} | {}".format(vals['internal_ref'],vals['name'])
                         #we prepare line content
-                        services_data = project.prepare_services(quote['elements'],so,milestone_data)
-                        rates_data = project.prepare_rates(quote['elements'],activity_data,assignment_data)
-                        milestones_data = project.prepare_milestones(quote['elements'],)
+                        services_lines = project.prepare_services(quote['elements'],so,milestone_data)
+                        rates_lines = project.prepare_rates(quote['elements'],activity_data,assignment_data)
+                        milestones_lines = project.prepare_milestones(quote['elements'],milestone_data)
                         #create lines
-                        if services_data:
+                        if services_lines:
                             #we create a section
                             section = self.env['sale.order.line'].create({
                                 'order_id':so.id,
                                 'display_type': 'line_section',
                                 'name':'Services',
                                 })
-                            for service in services_data:
+                            for service in services_lines:
                                 project.so_line_create_with_changes(service)
                         
-                        if rates_data:
+                        if rates_lines:
                             #we create a section
                             section = self.env['sale.order.line'].create({
                                 'order_id':so.id,
                                 'display_type': 'line_section',
                                 'name':'Hourly Rates',
                                 })
-                            for rate in rates_data:
+                            for rate in rates_lines:
                                 vals = {
                                     'order_id':so.id,
                                     'product_id': rate['product_id'],
@@ -165,6 +165,34 @@ class SFProjectSync(models.Model):
         so = self.env['sale.order'].create(vals)
         so._compute_tax_id()
         return so
+    
+    def prepare_milestones(self,elements,milestone_data):
+        output=[]
+        milestones = list(filter(lambda a: a['prod_info']['type']=='milestone',elements))
+        for line in milestones:
+            o_product = self.sf_id_to_odoo_rec(line['KimbleOne__Product__c'],line['Activity__c'])
+            #we create one section per element, then one so line per milestone
+            output.append = {
+                'display_type': 'line_section',
+                'name':line['Name'],
+                }
+            
+            #we get the milestones corresponding to the line
+            msts = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==line['Id'],milestone_data))
+            for mst in msts:
+                invoicing_status = self.env['etl.sync.keys'].search([('externalId','=',mst['KimbleOne__InvoiceItemStatus__c']),('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
+                if invoicing_status != 'WrittenOff':
+                    output.append = {
+                        'name':mst['Name'],
+                        'product_id':o_product.id,
+                        'product_uom_qty':1,
+                        'price_unit':mst['KimbleOne__InvoicingCurrencyMilestoneValue__c'],
+                        'qty_delivered': 1.0 if invoicing_status in ['Ready','Invoiced'] else 0.0,
+                        'historical_invoiced_amount':mst['KimbleOne__InvoicingCurrencyMilestoneValue__c'] if invoicing_status in ['Invoiced'] else 0.0,
+                    }
+
+        return output
+
 
     def prepare_services(self,elements,sale_order,milestone_data):
         output=[]

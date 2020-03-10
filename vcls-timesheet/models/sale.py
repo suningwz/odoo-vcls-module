@@ -167,8 +167,12 @@ class SaleOrderLine(models.Model):
         for line in self:
             # In Time & Material, we invoice the rate product lines and set the other services to 0
             if line.order_id.invoicing_mode == 'tm':
-                if line.product_id.vcls_type == 'vcls_service':
+                if line.product_id.vcls_type == 'vcls_service' and line.product_id.service_tracking != 'no': #if this is a service with a task
                     line.qty_delivered = 0.
+                elif line.product_id.vcls_type == 'vcls_service' and line.product_id.service_tracking == 'no': #a service without a taks is like a fixed price in a tm quotation
+                    if line.historical_invoiced_amount > line.qty_delivered*line.price_unit:
+                        line.qty_delivered_manual = line.historical_invoiced_amount/line.price_unit if line.price_unit>0 else line.historical_invoiced_amount
+                    line.qty_delivered = line.qty_delivered_manual
                 else:
                     pass
             
@@ -203,7 +207,7 @@ class SaleOrderLine(models.Model):
         #Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type
         super()._get_invoice_qty()
         for line in self:
-            if line.order_id.invoicing_mode == 'fixed_price' and line.product_id.vcls_type in ['vcls_service']:
+            if (line.order_id.invoicing_mode == 'fixed_price' and line.product_id.vcls_type in ['vcls_service']) or (line.order_id.invoicing_mode == 'tm' and line.product_id.service_tracking == 'no'):
                 line.qty_invoiced += line.historical_invoiced_amount/line.price_unit if line.price_unit>0 else 0.0
 
     # We need to override the OCA to take the rounded_unit_amount in account rather than the standard unit_amount
