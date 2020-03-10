@@ -726,9 +726,9 @@ class SFProjectSync(models.Model):
         stack = []
         for item in list_in:
             if key:
-                stack.append("\'{}\'".format(item[key])) 
+                stack.append('{}'.format(item[key])) 
             else:
-                stack.append("\'{}\'".format(item))  
+                stack.append('{}'.format(item))  
         return stack
     
         
