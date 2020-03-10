@@ -138,12 +138,13 @@ class SFProjectSync(models.Model):
                                 if existing:
                                     existing.write({'odooId':str(line.id),'name':service['element']['Name']})
                                 else:
-                                    existing.create({
+                                    self.env['etl.sync.keys'].create({
                                         'externalObjName':'KimbleOne__DeliveryElement__c',
                                         'externalId':service['element']['Id'],
                                         'state':'map',
                                         'name':service['element']['Name'],
                                         'odooModelName':'sale.order.line',
+                                        'odooId':str(line.id),
                                     })
                         
                         #Milestones Lines creation
@@ -181,6 +182,7 @@ class SFProjectSync(models.Model):
                 #we confirm the orders
                 for so in project.so_ids:
                     so._action_confirm()
+                    _logger.info("Confirming SO {}".format(so.name) )
 
                 project.process_forecasts(activity_data,assignment_data)
                 #project.migration_status = 'structure'
