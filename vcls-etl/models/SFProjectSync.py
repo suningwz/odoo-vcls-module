@@ -189,6 +189,8 @@ class SFProjectSync(models.Model):
                     'product_id':o_product.id,
                     'product_uom_qty':1,
                     'price_unit':milestones_values['ordered'],
+                    'qty_delivered':milestones_values['delivered'],
+                    'historical_invoiced_amount':milestones_values['invoiced'],
                 }
                 output.append(vals)
             else:
@@ -330,6 +332,8 @@ class SFProjectSync(models.Model):
                 'expected_end_date':my_project['KimbleOne__ExpectedEndDate__c'],
                 'tag_ids':[(4, tag, 0)],
                 'product_category_id':bl,
+                'fp_delivery_mode': 'manual',
+
             }
             quote_data.append({'index':item['min_index'],'quote_vals':quote_vals, 'elements':item['elements']})  
             index += 1
