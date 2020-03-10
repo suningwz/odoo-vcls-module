@@ -121,7 +121,7 @@ class SFProjectSync(models.Model):
                         #we prepare line content
                         services_data = project.prepare_services(quote['elements'],so,milestone_data)
                         rates_data = project.prepare_rates(quote['elements'],activity_data,assignment_data)
-
+                        milestones_data = project.prepare_milestones(quote['elements'],)
                         #create lines
                         if services_data:
                             #we create a section
@@ -140,16 +140,16 @@ class SFProjectSync(models.Model):
                                 'display_type': 'line_section',
                                 'name':'Hourly Rates',
                                 })
-                        for rate in rates_data:
-                            vals = {
-                                'order_id':so.id,
-                                'product_id': rate['product_id'],
-                                'product_uom_qty':0,
-                                'section_line_id':section.id,
-                                }
-                            if rate['price'] > 0:
-                                vals.update({'price_unit':rate['price']})
-                            project.so_line_create_with_changes(vals)
+                            for rate in rates_data:
+                                vals = {
+                                    'order_id':so.id,
+                                    'product_id': rate['product_id'],
+                                    'product_uom_qty':0,
+                                    'section_line_id':section.id,
+                                    }
+                                if rate['price'] > 0:
+                                    vals.update({'price_unit':rate['price']})
+                                project.so_line_create_with_changes(vals)
     
     def so_line_create_with_changes(self,vals):
         line = self.env['sale.order.line'].create(vals)
