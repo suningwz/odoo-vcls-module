@@ -126,9 +126,16 @@ class SFProjectSync(models.Model):
             return False
         
         for project in self:
-            pass
+            #get the related keys of elements
+            line_ids = project.so_ids.mapped('order_line.id')
+            filter_in = project.list_to_filter_string(line_ids)
+            _logger.inf("SO LINES IDS {}".format(filter_in))
+            keys = self.env['etl.sync.keys'].search([('odooId','in',filter_in),('odooModelName','=','sale.order.line'),('externalObjName','=','KimbleOne__DeliveryElement__c')])
+            if keys:
+                element_string = project.list_to_filter_string(keys.mapped('external_id'))
+                timesheet_data = self._get_timesheet_data(instance,element_string)
             #get required source data
-
+            #TODO group by assignments
 
     
     @api.multi
@@ -291,6 +298,8 @@ class SFProjectSync(models.Model):
         milestones = list(filter(lambda a: a['prod_info']['type']=='milestone',elements))
         for line in milestones:
             o_product = self.sf_id_to_odoo_rec(line['KimbleOne__Product__c'],line['Activity__c'])
+            if not o_product:
+                _logger.error("PRODUCT NOT FOUND FOR {} {}".format(line['KimbleOne__Product__c'],line['Activity__c']))
             #we create one section per element, then one so line per milestone
             output.append({
                 'display_type': 'line_section',
@@ -538,7 +547,17 @@ class SFProjectSync(models.Model):
             output.append(fp_group)
         return sorted(output,key=lambda q: q['min_index'])
 
-    ###    
+    ###  
+    def _get_timesheet_data(self,instance,filter_string = False):
+        query = SFProjectSync_constants.SELECT_GET_TIME_ENTRIES
+        query += "WHERE KimbleOne__DeliveryElement__c IN " + filter_string + " ORDER BY KimbleOne__ActivityAssignment__c"
+        _logger.info(query)
+
+        records = instance.getConnection().query_all(query)['records']
+        _logger.info("Found {} Time Entries".format(len(records)))
+        
+        return records
+
     def _get_element_data(self,instance,filter_string = False):
         query = SFProjectSync_constants.SELECT_GET_ELEMENT_DATA
         query += "WHERE Automated_Migration__c = TRUE AND KimbleOne__DeliveryGroup__c IN " + filter_string + " ORDER BY KimbleOne__Reference__c ASC"
