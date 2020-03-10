@@ -28,10 +28,10 @@ class SFProjectSync(models.Model):
         'sale.order',
         readonly = True,
     )
-    project_ids = fields.Many2many(
+    """project_ids = fields.Many2many(
         'project.project',
         readonly = True,
-    )
+    )"""
     migration_status = fields.Selection(
         [
             ('todo', 'ToDo'),
@@ -69,12 +69,56 @@ class SFProjectSync(models.Model):
         for project in migrations:
             _logger.info("PROJECT MIGRATION STATUS | {} | {} | {}".format(project.project_sfref,project.project_sfname,project.migration_status))
 
+        #we update the reference data
+        self._build_invoice_item_status(instance)
+        self._build_milestone_type(instance)
+        self._build_time_periods(instance)
+        #as well as the mapping with odoo objects
+        self._build_company_map(instance)
+        self._build_product_map(instance)
+        self._build_rate_map(instance)
+        self._build_user_map(instance)
+        self._build_activity_map(instance)
+        self._build_resources_map(instance)
+        self._test_maps(instance)
+
     @api.model
     def test(self):
         instance = self.getSFInstance()
         projects = self.search([('migration_status','=','todo')])
         _logger.info("Processing {} Projects".format(projects.mapped('project_sfref')))
         projects.build_quotations(instance)
+    
+    @api.model
+    def migrate_structure(self):
+        instance = self.getSFInstance()
+        projects = self.search([('migration_status','=','todo')]).sorted(key=lambda r: r.create_date)
+        if projects:
+            _logger.info("PROJECT MIGRATION | Structure of {}".format(projects[0].project_sfname))
+            projects[0].build_quotations(instance)
+            #we call the timesheet migration job
+            cron = self.env.ref('vcls-etl.cron_project_timesheets')
+            cron.write({
+                'active': True,
+                'nextcall': datetime.now() + timedelta(seconds=5),
+                'numbercall': 1,
+            })
+    
+    @api.model
+    def migrate_timesheets(self):
+        instance = self.getSFInstance()
+        """projects = self.search([('migration_status','=','todo')]).sorted(key=lambda r: r.create_date)
+        if projects:
+            _logger.info("PROJECT MIGRATION | Structure of {}".format(projects[0].project_sfname))
+            projects[0].build_quotations(instance)"""
+        
+        #we call back the structure migration job to process remining projects
+        cron = self.env.ref('vcls-etl.cron_project_structure')
+        cron.write({
+            'active': True,
+            'nextcall': datetime.now() + timedelta(seconds=5),
+            'numbercall': 1,
+        })
     
     @api.multi
     def build_quotations(self,instance):
@@ -175,7 +219,6 @@ class SFProjectSync(models.Model):
                                 if rate['price'] > 0:
                                     vals.update({'price_unit':rate['price']})
                                 project.so_line_create_with_changes(vals)
-        
                 project.migration_status = 'so'
             
             if project.migration_status == 'so':
@@ -185,7 +228,7 @@ class SFProjectSync(models.Model):
                     _logger.info("Confirming SO {}".format(so.name) )
 
                 project.process_forecasts(activity_data,assignment_data)
-                #project.migration_status = 'structure'
+                project.migration_status = 'structure'
     
     def so_line_create_with_changes(self,vals):
         line = self.env['sale.order.line'].create(vals)
@@ -283,7 +326,7 @@ class SFProjectSync(models.Model):
                     'product_id':o_product.id,
                     'product_uom_qty':1,
                     'price_unit':milestones_values['ordered'],
-                    'qty_delivered':milestones_values['delivered'],
+                    'qty_delivered':milestones_values['delivered']/milestones_values['ordered'],
                     'historical_invoiced_amount':milestones_values['invoiced'],
                 }
                 output.append({'element':line,'values':vals})
