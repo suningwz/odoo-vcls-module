@@ -16,6 +16,30 @@ ELEMENTS_INFO= [
 ###############################
 # QUERIES #	
 ###############################
+SELECT_GET_TIME_ENTRIES = """
+    SELECT 
+        Id,
+        KimbleOne__Category3__c,
+        KimbleOne__Category2__c,
+        KimbleOne__DeliveryElement__c,
+        KimbleOne__InvoiceItemStatus__c,
+        KimbleOne__Notes__c,
+        KimbleOne__TimePeriod__c,
+        KimbleOne__Resource__c,
+        KimbleOne__InvoicingCurrencyEntryRevenue__c,
+        KimbleOne__EntryUnits__c,
+        KimbleOne__ActivityAssignment__c
+
+        FROM KimbleOne__TimeEntry__c
+        
+WHERE KimbleOne__DeliveryElement__c != NULL
+AND KimbleOne__Resource__c != NULL
+AND KimbleOne__ActivityAssignment__c != NULL
+AND VCLS_Status__c like 'Billable%'
+AND (NOT VCLS_Status__c like '%Rejected')
+AND KimbleOne__InvoiceItemStatus__c != NULL
+
+"""
 
 SELECT_GET_ELEMENT_DATA = """
     SELECT

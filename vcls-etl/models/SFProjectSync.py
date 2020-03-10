@@ -82,12 +82,12 @@ class SFProjectSync(models.Model):
         self._build_resources_map(instance)
         self._test_maps(instance)
 
-    @api.model
+    """@api.model
     def test(self):
         instance = self.getSFInstance()
         projects = self.search([('migration_status','=','todo')])
         _logger.info("Processing {} Projects".format(projects.mapped('project_sfref')))
-        projects.build_quotations(instance)
+        projects.build_quotations(instance)"""
     
     @api.model
     def migrate_structure(self):
@@ -107,10 +107,10 @@ class SFProjectSync(models.Model):
     @api.model
     def migrate_timesheets(self):
         instance = self.getSFInstance()
-        """projects = self.search([('migration_status','=','todo')]).sorted(key=lambda r: r.create_date)
+        projects = self.search([('migration_status','=','structure')]).sorted(key=lambda r: r.create_date)
         if projects:
-            _logger.info("PROJECT MIGRATION | Structure of {}".format(projects[0].project_sfname))
-            projects[0].build_quotations(instance)"""
+            _logger.info("PROJECT MIGRATION | Timesheets for {}".format(projects[0].project_sfname))
+            projects[0].process_timesheets(instance)
         
         #we call back the structure migration job to process remining projects
         cron = self.env.ref('vcls-etl.cron_project_structure')
@@ -119,6 +119,17 @@ class SFProjectSync(models.Model):
             'nextcall': datetime.now() + timedelta(seconds=5),
             'numbercall': 1,
         })
+    
+    @api.multi
+    def process_timesheets(self,instance):
+        if not instance:
+            return False
+        
+        for project in self:
+            pass
+            #get required source data
+
+
     
     @api.multi
     def build_quotations(self,instance):
@@ -326,7 +337,7 @@ class SFProjectSync(models.Model):
                     'product_id':o_product.id,
                     'product_uom_qty':1,
                     'price_unit':milestones_values['ordered'],
-                    'qty_delivered':milestones_values['delivered']/milestones_values['ordered'],
+                    'qty_delivered':milestones_values['delivered']/milestones_values['ordered'] if milestones_values['ordered']>0 else 0,
                     'historical_invoiced_amount':milestones_values['invoiced'],
                 }
                 output.append({'element':line,'values':vals})
