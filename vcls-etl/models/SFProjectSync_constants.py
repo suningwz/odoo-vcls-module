@@ -31,14 +31,15 @@ SELECT_GET_TIME_ENTRIES = """
         KimbleOne__ActivityAssignment__c
 
         FROM KimbleOne__TimeEntry__c
-        
+"""
+
+TEMP = """
 WHERE KimbleOne__DeliveryElement__c != NULL
 AND KimbleOne__Resource__c != NULL
 AND KimbleOne__ActivityAssignment__c != NULL
 AND VCLS_Status__c like 'Billable%'
 AND (NOT VCLS_Status__c like '%Rejected')
 AND KimbleOne__InvoiceItemStatus__c != NULL
-
 """
 
 SELECT_GET_ELEMENT_DATA = """
