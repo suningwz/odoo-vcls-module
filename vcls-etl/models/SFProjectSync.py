@@ -129,7 +129,7 @@ class SFProjectSync(models.Model):
             #get the related keys of elements
             line_ids = project.so_ids.mapped('order_line.id')
             filter_in = project.list_to_filter_string(line_ids)
-            _logger.inf("SO LINES IDS {}".format(filter_in))
+            _logger.info("SO LINES IDS {}".format(filter_in))
             keys = self.env['etl.sync.keys'].search([('odooId','in',filter_in),('odooModelName','=','sale.order.line'),('externalObjName','=','KimbleOne__DeliveryElement__c')])
             if keys:
                 element_string = project.list_to_filter_string(keys.mapped('external_id'))
