@@ -45,6 +45,10 @@ class Project(models.Model):
     )
     child_id = fields.One2many('project.project', 'parent_id', 'Child projects')
 
+    # If the task is a sub-task, we don't allow it to modify the budget (we can use this variable for migration purpose)
+    # allow_budget_modification = fields.Boolean(compute='_compute_allow_budget_modification')
+    allow_budget_modification = fields.Boolean()
+
     parent_task_count = fields.Integer(
         compute='_compute_parent_task_count'
     )
@@ -138,6 +142,15 @@ class Project(models.Model):
     )
 
     show_folder_path = fields.Boolean()
+
+# Modification starting HERE
+    # def _compute_allow_budget_modification(self):
+    #     for project in self:
+    #         if project.parent_id == True:
+    #             project.allow_budget_modification = False
+    #         else:
+    #             project.allow_budget_modification = True
+# End Of Modif
 
     @api.depends('sale_order_id', 'project_type', 'parent_id','partner_id')
     def _compute_sharepoint_folder(self):
@@ -358,6 +371,11 @@ class Project(models.Model):
 
         if project.project_type != 'client':
             project.privacy_visibility = 'employees'
+
+        if project.parent_id == True:
+            project.allow_budget_modification = False
+        else:
+            project.allow_budget_modification = True
         
         return project
 
@@ -457,6 +475,7 @@ class Project(models.Model):
             #_logger.info("TASK FOUND {} with {}".format(tasks.mapped('name'),tasks.mapped('progress')))
             project.consumed_value = sum(tasks.mapped('progress')) / len(tasks) if tasks \
                 else sum(tasks.mapped('progress'))
+            # project.consumed_value = project.realized_budget / project.contractual_budged
 
     @api.multi
     @api.depends('task_ids.consummed_completed_ratio')

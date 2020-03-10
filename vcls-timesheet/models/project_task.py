@@ -50,6 +50,9 @@ class ProjectTask(models.Model):
     pc_hours = fields.Float(string="PC Review Hours",readonly=True)
     cf_hours = fields.Float(string="Carry Forward Hours",readonly=True)
 
+    # invoicing_mode_relational = fields.Selection(related='project.invoicing_mode')
+    # allow_budget_modification = fields.Boolean(related='project.allow_budget_modification')
+
     @api.depends('date_end')
     def _compute_deadline(self):
         for task in self:
@@ -87,6 +90,7 @@ class ProjectTask(models.Model):
     @api.multi
     def _get_kpi(self):
         for task in self:
+
             task.contractual_budget = task.sale_line_id.price_unit * task.sale_line_id.product_uom_qty
             task.forecasted_budget = sum([
                 hourly_rate * resource_hours for hourly_rate, resource_hours in

@@ -72,6 +72,7 @@
                     <group>
                         <group>
                             <field name="progress" string="Budget Consumed" widget="progressbar"/>
+                            <!-- <field name="consumed_value" string="Budget Consumed" widget="progressbar"/> -->
                         </group>
                         <group>
                             <field name="completion_ratio" string="Task Complete" widget="progressbar"/>
@@ -103,6 +104,8 @@
             
                 <field name="progress" position="replace">
                     <field name="completion_ratio" string="" widget="progressbar" avg="Average Completion"/>
+                    <!-- <field name="completion_ratio" string="Consumed hours" widget="progressbar" avg="Average Completion"/> -->
+                    <!-- test  -->
                 </field>
 
             </field>

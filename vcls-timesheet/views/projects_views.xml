@@ -71,7 +71,7 @@
                     <field name="valuation_ratio" widget="percentpie" nolabel="1"/>
                 </field>
                 
-                <xpath expr="//page[last()]" position="after">
+                <!-- <xpath expr="//page[last()]" position="after">
                     <page string="KPI" name="kpi">
                     <group>
                         <group string="Hours">
@@ -90,10 +90,13 @@
                             <field name="invoiced_budget"/>
                             <field name="pc_budget"/>
                             <field name="cf_budget"/>
+                            <field name="invoicing_mode_relational" invisible="1"/>
+                            <field name="pc_budget" attrs="{'invisible': [('invoicing_mode_relational', '=', 'fixed_price')]}"/>
+                            <field name="cf_budget" attrs="{'invisible': [('invoicing_mode_relational', '=', 'fixed_price')]}"/>
                         </group>
                     </group>
                     </page>
-                </xpath>
+                </xpath> -->
             </field>
         </record>
 
@@ -128,8 +131,9 @@
                                 <field name="realized_budget"/>
                                 <field name="valued_budget"/>
                                 <field name="invoiced_budget"/>
-                                <field name="pc_budget"/>
-                                <field name="cf_budget"/>
+                                <field name="invoicing_mode_relational" invisible="1"/>
+                                <field name="pc_budget" attrs="{'invisible': [('invoicing_mode_relational', '=', 'fixed_price')]}"/>
+                                <field name="cf_budget" attrs="{'invisible': [('invoicing_mode_relational', '=', 'fixed_price')]}"/>
                             </group>
                             </group>
                         </page>

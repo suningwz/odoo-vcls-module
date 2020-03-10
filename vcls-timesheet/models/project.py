@@ -25,6 +25,8 @@ class Project(models.Model):
     pc_hours = fields.Float(string="PC Review Hours",readonly=True)
     cf_hours = fields.Float(string="Carry Forward Hours",readonly=True)
 
+    invoicing_mode_relational = fields.Selection(related='invoicing_mode')
+
     @api.multi
     def _get_kpi(self):
         for project in self:
