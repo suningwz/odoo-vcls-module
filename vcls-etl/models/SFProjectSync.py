@@ -236,24 +236,24 @@ class SFProjectSync(models.Model):
         for line in milestones:
             o_product = self.sf_id_to_odoo_rec(line['KimbleOne__Product__c'],line['Activity__c'])
             #we create one section per element, then one so line per milestone
-            output.append = {
+            output.append({
                 'display_type': 'line_section',
                 'name':line['Name'],
-                }
+                })
             
             #we get the milestones corresponding to the line
             msts = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==line['Id'],milestone_data))
             for mst in msts:
                 invoicing_status = self.env['etl.sync.keys'].search([('externalId','=',mst['KimbleOne__InvoiceItemStatus__c']),('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
                 if invoicing_status != 'WrittenOff':
-                    output.append = {
+                    output.append({
                         'name':mst['Name'],
                         'product_id':o_product.id,
                         'product_uom_qty':1,
                         'price_unit':mst['KimbleOne__InvoicingCurrencyMilestoneValue__c'],
                         'qty_delivered': 1.0 if invoicing_status in ['Ready','Invoiced'] else 0.0,
                         'historical_invoiced_amount':mst['KimbleOne__InvoicingCurrencyMilestoneValue__c'] if invoicing_status in ['Invoiced'] else 0.0,
-                    }
+                    })
 
         return output
 
