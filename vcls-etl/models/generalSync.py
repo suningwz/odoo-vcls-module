@@ -119,11 +119,11 @@ class ETLMap(models.Model):
         #Update the context to execute vcls-rdd override
         self.env.user.context_data_integration = True
         #Clean the keys table of corrupted entries
-        to_clean = self.search([('odooModelName','=',False)])
+        to_clean = self.search([('odooModelName','=',False),('state','!=','map')])
         #we also clean the ones to create in externals because we don't manage anymore this usecase
-        to_clean |= self.search([('externalId','=',False)])
+        to_clean |= self.search([('externalId','=',False),('state','!=','map')])
         #we also clean the keys not created yet, in order to cover the change in source filtering
-        to_clean |= self.search([('odooId','=',False)])
+        to_clean |= self.search([('odooId','=',False),('state','!=','map')])
         for key in to_clean:
             key.unlink()
         
