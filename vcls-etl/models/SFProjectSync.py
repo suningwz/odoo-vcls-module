@@ -128,7 +128,7 @@ class SFProjectSync(models.Model):
         for project in self:
             #get the related keys of elements
             line_ids = project.so_ids.mapped('order_line.id')
-            filter_in = project.list_to_filter_string(line_ids)
+            filter_in = project.int_list_to_string_list(line_ids)
             _logger.info("SO LINES IDS {}".format(filter_in))
             keys = self.env['etl.sync.keys'].search([('odooId','in',filter_in),('odooModelName','=','sale.order.line'),('externalObjName','=','KimbleOne__DeliveryElement__c')])
             if keys:
@@ -721,6 +721,15 @@ class SFProjectSync(models.Model):
                 stack.append("\'{}\'".format(item))  
         result = "({})".format(",".join(stack))
         return result
+    
+    def int_list_to_string_list(self,list_in,key=False):
+        stack = []
+        for item in list_in:
+            if key:
+                stack.append("\'{}\'".format(item[key])) 
+            else:
+                stack.append("\'{}\'".format(item))  
+        return stack
     
         
         
