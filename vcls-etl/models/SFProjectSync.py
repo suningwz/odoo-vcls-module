@@ -122,6 +122,7 @@ class SFProjectSync(models.Model):
                         services_lines = project.prepare_services(quote['elements'],so,milestone_data)
                         rates_lines = project.prepare_rates(quote['elements'],activity_data,assignment_data)
                         milestones_lines = project.prepare_milestones(quote['elements'],milestone_data)
+
                         #create lines
                         if services_lines:
                             #we create a section
@@ -131,7 +132,30 @@ class SFProjectSync(models.Model):
                                 'name':'Services',
                                 })
                             for service in services_lines:
-                                project.so_line_create_with_changes(service)
+                                line = project.so_line_create_with_changes(service['values'])
+                                #we create a key for later usage
+                                existing = self.env['etl.sync.keys'].search([('externalObjName','=','KimbleOne__DeliveryElement__c'),('externalId','=',service['element']['Id'])],limit=1)
+                                if existing:
+                                    existing.write({'odooId':str(line.id),'name':service['element']['Name']})
+                                else:
+                                    existing.create({
+                                        'externalObjName':'KimbleOne__DeliveryElement__c',
+                                        'externalId':service['element']['Id'],
+                                        'state':'map',
+                                        'name':service['element']['Name'],
+                                        'odooModelName':'sale.order.line',
+                                    })
+                        
+                        #Milestones Lines creation
+                        element_section = False
+                        for milestone in milestones_lines:
+                            milestone.update({'order_id':so.id})
+                            if milestone['display_type'] == 'line_section':
+                                element_section = self.env['sale.order.line'].create(milestone)
+                            else:
+                                milestone.update({'section_line_id':element_section.id if element_section else False})
+                                project.so_line_create_with_changes(milestone)
+                            
                         
                         if rates_lines:
                             #we create a section
@@ -150,6 +174,16 @@ class SFProjectSync(models.Model):
                                 if rate['price'] > 0:
                                     vals.update({'price_unit':rate['price']})
                                 project.so_line_create_with_changes(vals)
+        
+                project.migration_status = 'so'
+            
+            if project.migration_status == 'so':
+                #we confirm the orders
+                for so in project.so_ids:
+                    so._action_confirm()
+
+                project.process_forecasts()
+                #project.migration_status = 'structure'
     
     def so_line_create_with_changes(self,vals):
         line = self.env['sale.order.line'].create(vals)
@@ -165,6 +199,36 @@ class SFProjectSync(models.Model):
         so = self.env['sale.order'].create(vals)
         so._compute_tax_id()
         return so
+    
+    def process_forecast(self,activity_data,assignment_data):
+        so_lines = self.so_ids.mapped('order_line')
+        for line in so_lines:
+            #we look for a key
+            existing = self.env['etl.sync.keys'].search([('externalObjName','=','KimbleOne__DeliveryElement__c'),('odooModelName','=','sale.order.line'),('odooId','=',str(line.id))],limit=1)
+            if existing:
+                _logger.info("Processing Forecasts for {}".format(existing.name))
+                activities = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==existing['externalId'],activity_data))
+                if activities:
+                    activity = activities[0]
+                    assignments = list(filter(lambda a: a['KimbleOne__ResourcedActivity__c']==activity['Id'],assignment_data))
+                    #we get all the roles
+                    roles = self.values_from_key(assignments,'KimbleOne__ActivityRole__c')
+                    roles = list(set(roles)) #we make it a unique list
+                    for role in roles:
+                        role_assignments = list(filter(lambda a: a['KimbleOne__ActivityRole__c']==role,assignments))
+                        forecasted_amount = sum(self.values_from_key(role_assignments,'KimbleOne__ForecastUsage__c'))
+                        #we find the existing forecast
+                        rate_product = self.sf_id_to_odoo_rec(role)
+                        employee = rate_product.forecast_employee_id if rate_product else False
+                        if employee:
+                            forecast = self.env['project.forecast'].search([('task_id','=',line.task_id.id),('employee_id','=',employee.id)],limit=1)
+                            if forecast:
+                                forecast.write({'resource_hours':forecasted_amount})
+                                _logger.info("Forecast Updated for {} in {} with {} hours".format(employee.name,line.task_id.name,forecasted_amount))
+  
+            else:
+                pass
+
     
     def prepare_milestones(self,elements,milestone_data):
         output=[]
@@ -208,7 +272,7 @@ class SFProjectSync(models.Model):
                     'product_uom_qty':1,
                     'price_unit':line['Contracted_Budget__c'] or line['KimbleOne__InvoicingCurrencyContractRevenue__c'],
                 }
-                output.append(vals)
+                output.append({'element':line,'values':vals})
             elif o_product and mode=='fixed_price':
                 milestones_values = self.sum_milestones(line,milestone_data)
                 vals = {
@@ -220,7 +284,7 @@ class SFProjectSync(models.Model):
                     'qty_delivered':milestones_values['delivered'],
                     'historical_invoiced_amount':milestones_values['invoiced'],
                 }
-                output.append(vals)
+                output.append({'element':line,'values':vals})
             else:
                 _logger.info("No Odoo Product found for {}".format(line))
         return output
@@ -361,7 +425,7 @@ class SFProjectSync(models.Model):
                 'tag_ids':[(4, tag, 0)],
                 'product_category_id':bl,
                 'fp_delivery_mode': 'manual',
-
+                'merge_subtask':False,
             }
             quote_data.append({'index':item['min_index'],'quote_vals':quote_vals, 'elements':item['elements']})  
             index += 1
