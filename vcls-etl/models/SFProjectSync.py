@@ -132,7 +132,7 @@ class SFProjectSync(models.Model):
             _logger.info("SO LINES IDS {}".format(filter_in))
             keys = self.env['etl.sync.keys'].search([('odooId','in',filter_in),('odooModelName','=','sale.order.line'),('externalObjName','=','KimbleOne__DeliveryElement__c')])
             if keys:
-                element_string = project.list_to_filter_string(keys.mapped('external_id'))
+                element_string = project.list_to_filter_string(keys.mapped('externalId'))
                 timesheet_data = self._get_timesheet_data(instance,element_string)
             #get required source data
             #TODO group by assignments
