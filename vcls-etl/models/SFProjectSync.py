@@ -150,7 +150,7 @@ class SFProjectSync(models.Model):
                         element_section = False
                         for milestone in milestones_lines:
                             milestone.update({'order_id':so.id})
-                            if milestone['display_type'] == 'line_section':
+                            if milestone.get('display_type','') == 'line_section':
                                 element_section = self.env['sale.order.line'].create(milestone)
                             else:
                                 milestone.update({'section_line_id':element_section.id if element_section else False})
@@ -245,14 +245,14 @@ class SFProjectSync(models.Model):
             msts = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==line['Id'],milestone_data))
             for mst in msts:
                 invoicing_status = self.env['etl.sync.keys'].search([('externalId','=',mst['KimbleOne__InvoiceItemStatus__c']),('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
-                if invoicing_status != 'WrittenOff':
+                if invoicing_status.name != 'WrittenOff':
                     output.append({
                         'name':mst['Name'],
                         'product_id':o_product.id,
                         'product_uom_qty':1,
                         'price_unit':mst['KimbleOne__InvoicingCurrencyMilestoneValue__c'],
-                        'qty_delivered': 1.0 if invoicing_status in ['Ready','Invoiced'] else 0.0,
-                        'historical_invoiced_amount':mst['KimbleOne__InvoicingCurrencyMilestoneValue__c'] if invoicing_status in ['Invoiced'] else 0.0,
+                        'qty_delivered': 1.0 if invoicing_status.name in ['Ready','Invoiced'] else 0.0,
+                        'historical_invoiced_amount':mst['KimbleOne__InvoicingCurrencyMilestoneValue__c'] if invoicing_status.name in ['Invoiced'] else 0.0,
                     })
 
         return output
