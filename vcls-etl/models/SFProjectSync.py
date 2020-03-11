@@ -832,7 +832,9 @@ class SFProjectSync(models.Model):
             if key:
                 stack.append("\'{}\'".format(item[key])) 
             else:
-                stack.append("\'{}\'".format(item))  
+                stack.append("\'{}\'".format(item))
+        #we remove duplicates
+        stack = list(set(stack))  
         result = "({})".format(",".join(stack))
         return result
     
