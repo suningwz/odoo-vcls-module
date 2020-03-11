@@ -217,13 +217,14 @@ class SFProjectSync(models.Model):
         _logger.info("FOUND Time Cat: {}".format(cat_names))
         if cat_names:
             for item in cat_names:
-                #we search for an existing TC
-                tc = self.env['project.time_category'].search([('name','=ilike',item)],limit=1)
-                if tc:
-                    tc_ids.append(tc.id)
-                else: #we create it
-                    tc = self.env['project.time_category'].create({'name':item})
-                    tc_ids.append(tc.id)
+                if item:
+                    #we search for an existing TC
+                    tc = self.env['project.time_category'].search([('name','=ilike',item)],limit=1)
+                    if tc:
+                        tc_ids.append(tc.id)
+                    else: #we create it
+                        tc = self.env['project.time_category'].create({'name':item})
+                        tc_ids.append(tc.id)
         #we write the task
         parent_task.write({'time_category_ids': [(6,0,tc_ids)]})
 
