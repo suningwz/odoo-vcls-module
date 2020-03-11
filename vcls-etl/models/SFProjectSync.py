@@ -178,15 +178,18 @@ class SFProjectSync(models.Model):
                 'externalObjName':'Timesheet_Map',
                 'externalId': element_key.externalId,
                 'odooId': str(parent_task_id.id),
+                'state':'map',
             }
             self.env['etl.sync.keys'].create(vals)
 
         #element timesheets
         e_ts = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==element_key.externalId,timesheet_data))
+
+        #we build the time cat before the subtask in order to let it inherit
+        self.create_time_categories(parent_task_id,e_ts)
         #we build subtasks and timecategories according to found categories
         self.create_subtasks(element_key,parent_task_id,e_ts)
         
-
         for assignment in assignment_data:
             a_ts = list(filter(lambda a: a['KimbleOne__ActivityAssignment__c']==assignment['Id'],e_ts))
             if not a_ts:
@@ -206,6 +209,21 @@ class SFProjectSync(models.Model):
                 'lc_comment':
                 'stage_id':
             }"""
+    
+    def create_time_categories(self,parent_task,timesheets_data):
+        cat_names = self.values_from_key(timesheets_data,'KimbleOne__Category2__c')
+        cat_names = list(set(cat_names))
+        tc_ids = [self.env.ref('vcls-timesheet.travel_time_category').id]#we init with the travel TC
+        for item in sorted(cat_names,key=lambda q: q):
+            #we search for an existing TC
+            tc = self.env['project.time_category'].search([('name','=ilike',item)],limit=1)
+            if tc:
+                tc_ids.append(tc.id)
+            else: #we create it
+                tc = self.env['project.time_category'].create({'name':item})
+                tc_ids.append(tc.id)
+        #we write the task
+        parent_task.write({'time_category_ids': [(6,0,tc_ids)]})
 
     def create_subtasks(self,element_key,parent_task,timesheets_data):
         sub_names = self.values_from_key(timesheets_data,'KimbleOne__Category1__c')
@@ -226,6 +244,7 @@ class SFProjectSync(models.Model):
                     'externalId': element_key.externalId,
                     'search_value': item,
                     'odooId': str(subtask.id),
+                    'state':'map',
                 })
     
     @api.multi
