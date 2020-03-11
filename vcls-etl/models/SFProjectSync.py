@@ -144,7 +144,12 @@ class SFProjectSync(models.Model):
         
         for project in self:
             #get the related keys of elements
-            lines_to_migrate = project.so_ids.mapped('order_line').filtered(lambda l: l.is_migrated==False and l.task_id)
+            line_ids = project.so_ids.mapped('order_line.id')
+            so_lines = self.env['sale.order.line'].browse(line_ids)
+            _logger.info("FOUND Order Lines {} {}".format(so_lines.mapped('name'),so_lines.mapped('is_migrated')))
+            
+            lines_to_migrate = so_lines.filtered(lambda l: l.is_migrated==False and l.task_id)
+
             _logger.info("Lines to migrate {}".format(lines_to_migrate.mapped('name')))
             #when all lines have been migrated
             if not lines_to_migrate:
