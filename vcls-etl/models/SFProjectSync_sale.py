@@ -20,7 +20,7 @@ class SaleOrderLine(models.Model):
 
     _inherit = 'sale.order.line'
 
-    is_migrated = fields.Boolean(
+    ts_migrated = fields.Boolean(
         default=False,
     )
 

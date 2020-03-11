@@ -146,9 +146,9 @@ class SFProjectSync(models.Model):
             #get the related keys of elements
             line_ids = project.so_ids.mapped('order_line.id')
             so_lines = self.env['sale.order.line'].browse(line_ids)
-            _logger.info("FOUND Order Lines {} {}".format(so_lines.mapped('name'),so_lines.mapped('is_migrated')))
+            _logger.info("FOUND Order Lines {} {}".format(so_lines.mapped('name'),so_lines.mapped('ts_migrated')))
             
-            lines_to_migrate = so_lines.filtered(lambda l: l.is_migrated==False and l.task_id)
+            lines_to_migrate = so_lines.filtered(lambda l: l.ts_migrated==False and l.task_id)
 
             _logger.info("Lines to migrate {}".format(lines_to_migrate.mapped('name')))
             #when all lines have been migrated
@@ -176,7 +176,7 @@ class SFProjectSync(models.Model):
                     #we loop per elements
                     for element_key in keys:
                         project.process_element_ts(element_key,assignment_data,timesheet_data)
-                        migrating_line.is_migrated = True
+                        migrating_line.ts_migrated = True
                       
             
 
