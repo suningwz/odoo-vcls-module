@@ -163,7 +163,7 @@ class ProjectTask(models.Model):
     def create(self, vals):
         #we catch the parent time categories if this is a subtask
         if vals.get('parent_id',False):
-            parent_task = self.env.browse(vals['parent_id'])
+            parent_task = self.browse(vals['parent_id'])
             if parent_task.time_category_ids:
                 vals.update({
                     'time_category_ids': [(6, 0, parent_task.time_category_ids.ids)]
