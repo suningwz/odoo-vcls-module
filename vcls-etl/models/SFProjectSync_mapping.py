@@ -8,6 +8,7 @@ from simple_salesforce.exceptions import SalesforceMalformedRequest
 from tzlocal import get_localzone
 from datetime import datetime
 from datetime import timedelta
+from odoo.exceptions import UserError, ValidationError
 import time
 import logging
 _logger = logging.getLogger(__name__)
@@ -311,6 +312,9 @@ class SFProjectSync(models.Model):
         for key in self.env['etl.sync.keys'].with_context(active_test=False).search([('state','=','map'),('odooId','!=',False)]):
             try:
                 record = self.env[key.odooModelName].browse(int(key.odooId))
+                if key.odooModelName=='hr.employee':
+                    if not record.default_rate_ids:
+                        raise ValidationError("Please define a rate for {}".format(record.name))
             except:
                 _logger.info("ETL BAD ODOO KEY {} {}".format(key.odooModelName,key.odooId))
                 return False
