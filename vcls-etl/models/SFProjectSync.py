@@ -210,7 +210,7 @@ class SFProjectSync(models.Model):
     def create_subtasks(self,element_key,parent_task,timesheets_data):
         sub_names = self.values_from_key(timesheets_data,'KimbleOne__Category1__c')
         sub_names = list(set(sub_names))
-        for item in list(filter(lambda a: a['KimbleOne__Category1__c'] not in ['No','None'],sub_names)):
+        for item in list(filter(lambda a: a not in ['No','None'],sub_names)):
             #we check if already created
             map_key = self.env['etl.sync.keys'].search([('externalObjName','=','Timesheet_Map'),('externalId','=',element_key.externalId),('search_value','=',item)],limit=1)
             if not map_key:
