@@ -151,13 +151,14 @@ class SFProjectSync(models.Model):
                 element_string = project.list_to_filter_string(keys.mapped('externalId'))
                 timesheet_data = project._get_timesheet_data(instance,element_string)
 
-                #we get assignements 
-                assignment_string = project.list_to_filter_string(timesheet_data,'KimbleOne__ActivityAssignment__c')
-                assignment_data = project._get_assignment_data(instance,assignment_string)
+                if timesheet_data:
+                    #we get assignements 
+                    assignment_string = project.list_to_filter_string(timesheet_data,'KimbleOne__ActivityAssignment__c')
+                    assignment_data = project._get_assignment_data(instance,assignment_string)
 
-                #we loop per elements
-                for element_key in keys:
-                    project.process_element_ts(element_key,assignment_data,timesheet_data)
+                    #we loop per elements
+                    for element_key in keys:
+                        project.process_element_ts(element_key,assignment_data,timesheet_data)
                       
             project.migration_status = 'ts'
 
