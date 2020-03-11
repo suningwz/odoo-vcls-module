@@ -30,7 +30,8 @@ SELECT_GET_TIME_ENTRIES = """
         KimbleOne__Resource__c,
         KimbleOne__InvoicingCurrencyEntryRevenue__c,
         KimbleOne__EntryUnits__c,
-        KimbleOne__ActivityAssignment__c
+        KimbleOne__ActivityAssignment__c,
+        VCLS_Status__c
 
         FROM KimbleOne__TimeEntry__c
 """

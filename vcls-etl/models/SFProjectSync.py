@@ -164,6 +164,7 @@ class SFProjectSync(models.Model):
 
 
     def process_element_ts(self,element_key,assignment_data,timesheet_data):
+        inv_status = self.env['etl.sync.keys'].search([('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
         #element level values
         so_line = self.env['sale.order.line'].browse(int(element_key.odooId))
         parent_task_id = so_line.task_id
@@ -194,21 +195,87 @@ class SFProjectSync(models.Model):
             a_ts = list(filter(lambda a: a['KimbleOne__ActivityAssignment__c']==assignment['Id'],e_ts))
             if not a_ts:
                 continue
-            
-            """vals = {
-                'is_timesheet': True,
-                'employee_id':
-                'main_project_id': main_project_id.id,
-                'project_id': project_id.id,
-                'task_id':
-                'time_category_id':
-                'date':
-                'unit_amount':
-                'unit_amount_rounded':
-                'name':
-                'lc_comment':
-                'stage_id':
-            }"""
+            #assignment level values
+            hourly_rate = assignment['KimbleOne__InvoicingCurrencyForecastRevenueRate__c']
+            employee = self.sf_id_to_odoo_rec(assignment['KimbleOne__Resource__c'])
+            if not employee: 
+                #this means the employee doesn't exists and we need to look through role to find the forecast employee
+                product = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
+                if product:
+                    employee = product.forecast_employee_id
+
+            #we finally loop in TS
+            for ts in a_ts:
+                #timesheet values
+                stack = []
+                if ts['KimbleOne__Category3__c']:
+                    stack.append(ts['KimbleOne__Category3__c'])
+                if ts['KimbleOne__Notes__c']:
+                    stack.append(ts['KimbleOne__Notes__c'])
+
+                task_key = self.env['etl.sync.keys'].search([('externalObjName','=','Timesheet_Map'),('externalId','=',element_key.externalId),('search_value','=',ts['KimbleOne__Resource__c'])],limit=1)
+                task_id = int(task_key.odooId) if task_key else parent_task_id.id
+                time_category = self.env['project.time_category'].search([('name','=ilike',ts['KimbleOne__Category1__c'])],limit=1)
+                period = self.env['etl.sync.keys'].search([('externalObjName','=','KimbleOne__TimePeriod__c'),('externalId','=',ts['KimbleOne__TimePeriod__c'])],limit=1)
+                date = period.name if period else False
+
+                vals = {
+                    'is_timesheet': True,
+                    'name': " | ".join(stack) if len(stack)>0 else "N/A",
+                    'employee_id': employee.id if employee else False,
+                    'main_project_id': main_project_id.id,
+                    'project_id': project_id.id,
+                    'task_id': task_id,
+                    'time_category_id': time_category.id if time_category else False,
+                    'date': date,
+                    'unit_amount': ts['KimbleOne__EntryUnits__c'],
+                }
+
+                vals = self.get_status_vals(vals,ts,inv_status)
+                if hourly_rate > 0 and not vals.get('so_line_unit_price',False): #if the assignment was billable with a price
+                    vals.update({'so_line_unit_price':hourly_rate})
+                else: #else we let the system pick the value from the sale_order_line
+                    pass
+
+                #we finally check if we have enough to create the timesheet
+                if employee and date:
+                    self.env['account.analytic.line'].create(vals)
+                else:
+                    _logger.info("IMPOSSIBLE TO CREATE TS {}".format(vals))
+    
+    def get_status_vals(self,vals,timesheet,inv_status):
+        for status in inv_status:
+            if status.externalId == timesheet['KimbleOne__InvoiceItemStatus__c']:
+                # VCLS status treatment
+                if 'Draft' in timesheet['VCLS_Status__c']:
+                    temp_stage = 'draft'
+                elif 'ReadyForApproval' in timesheet['VCLS_Status__c']:
+                    temp_stage = 'lc_review'
+                elif 'Approved' in timesheet['VCLS_Status__c']:
+                    temp_stage = 'invoiceable'
+                else:
+                    temp_stage = False
+
+                #invoicing Status treatment
+                if status.name == 'WrittenOff':
+                    vals.update({
+                        'unit_amount_rounded': 0,
+                        'lc_comment': 'Migration - Rejected',
+                        'stage_id': 'invoiced',
+                    })
+                elif status.name == 'Invoiced':
+                    vals.update({
+                        'unit_amount_rounded': timesheet['KimbleOne__EntryUnits__c'],
+                        'stage_id': 'invoiced',
+                    })
+                else:
+                    vals.update({
+                        'unit_amount_rounded': timesheet['KimbleOne__EntryUnits__c'],
+                        'stage_id': temp_stage,
+                    })
+                break
+        return vals
+        
     
     def create_time_categories(self,parent_task,timesheets_data):
         cat_names = self.values_from_key(timesheets_data,'KimbleOne__Category2__c')
