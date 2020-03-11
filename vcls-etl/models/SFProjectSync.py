@@ -110,6 +110,9 @@ class SFProjectSync(models.Model):
         if projects:
             _logger.info("PROJECT MIGRATION | Structure of {}".format(projects[0].project_sfname))
             projects[0].build_quotations(instance)
+        
+        #If timesheets to migrate, we launch the CRON
+        if self.search([('migration_status','in',['so','structure'])]):
             #we call the timesheet migration job
             cron = self.env.ref('vcls-etl.cron_project_timesheets')
             cron.write({
