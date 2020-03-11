@@ -170,23 +170,13 @@ class ProjectTask(models.Model):
                 })
         else:
             travel_category_id = self.env.ref('vcls-timesheet.travel_time_category')
-            
-            if vals.get('time_category_ids', False):
-                time_cat = vals['time_category_ids']
-            else:
-                time_cat = []
-            
-            if travel_category_id:
-                time_cat = list(set(time_cat.append(travel_category_id.id)))
-            
-            vals.update({'time_category_ids': [(6,0,time_cat)]})
 
-            """if travel_category_id:
-                if time_categories:
+            if travel_category_id:
+                if vals.get('time_category_ids', False):
                     if travel_category_id not in vals['time_category_ids'][0][2]:
                         vals['time_category_ids'][0][2].append(travel_category_id.id)
                 else:
-                    vals.update({'time_category_ids': [[6, False, [travel_category_id.id]]]})"""
+                    vals.update({'time_category_ids': [[6, False, [travel_category_id.id]]]})
 
         task = super(ProjectTask, self).create(vals)
 
