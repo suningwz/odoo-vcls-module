@@ -141,11 +141,19 @@ class SFProjectSync(models.Model):
         
         for project in self:
             #get the related keys of elements
-            line_ids = project.so_ids.mapped('order_line.id')
+            lines_to_migrate = project.so_ids.mapped('order_line').filtered(lambda l: (not l.is_migrated) and l.task_id)
+            #when all lines have been migrated
+            if not lines_to_migrate:
+                project.migration_status = 'ts'
+                continue
+
+            """line_ids = project.so_ids.mapped('order_line.id')
             filter_in = project.int_list_to_string_list(line_ids)
-            _logger.info("SO LINES IDS {}".format(filter_in))
+            _logger.info("SO LINES IDS {}".format(filter_in))"""
+
+            migrating_line = lines_to_migrate[0]
             #get required source data
-            keys = self.env['etl.sync.keys'].search([('odooId','in',filter_in),('odooModelName','=','sale.order.line'),('externalObjName','=','KimbleOne__DeliveryElement__c'),('search_value','=',False)])
+            keys = self.env['etl.sync.keys'].search([('odooId','=',str(migrating_line.id)),('odooModelName','=','sale.order.line'),('externalObjName','=','KimbleOne__DeliveryElement__c'),('search_value','=',False)])
             if keys:
                 #get timesheets
                 element_string = project.list_to_filter_string(keys.mapped('externalId'))
@@ -159,8 +167,9 @@ class SFProjectSync(models.Model):
                     #we loop per elements
                     for element_key in keys:
                         project.process_element_ts(element_key,assignment_data,timesheet_data)
+                        migrating_line.is_migrated = True
                       
-            project.migration_status = 'ts'
+            
 
 
     def process_element_ts(self,element_key,assignment_data,timesheet_data):
@@ -172,7 +181,7 @@ class SFProjectSync(models.Model):
         parent_task_id = so_line.task_id
         project_id = so_line.project_id
         main_project_id = project_id.parent_id if project_id.parent_id else project_id
-        _logger.info("Processing {} Timesheets for project {} task {}".format(len(timesheet_data),project_id.name,parent_task_id.name))
+        
 
         #we look for a mapping key and create if not exists. This will help to resync afterwards if required
         map_key = self.env['etl.sync.keys'].search([('externalObjName','=','Timesheet_Map'),('externalId','=',element_key.externalId),('odooId','=',str(parent_task_id.id))],limit=1)
@@ -190,6 +199,7 @@ class SFProjectSync(models.Model):
 
         #element timesheets
         e_ts = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==element_key.externalId,timesheet_data))
+        _logger.info("Processing {} Timesheets for project {} task {}".format(len(e_ts),project_id.name,parent_task_id.name))
 
         #we build the time cat before the subtask in order to let it inherit
         self.create_time_categories(parent_task_id,e_ts)
@@ -246,7 +256,7 @@ class SFProjectSync(models.Model):
                 if employee and date:
                     self.env['account.analytic.line'].create(vals)
                     count += 1
-                    _logger.info("Timesheet Created {}/{}".format(count,len(timesheet_data)))
+                    _logger.info("Timesheet Created {}/{}".format(count,len(e_ts)))
                 else:
                     _logger.info("IMPOSSIBLE TO CREATE TS {}".format(vals))
     
