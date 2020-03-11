@@ -214,14 +214,15 @@ class SFProjectSync(models.Model):
         cat_names = self.values_from_key(timesheets_data,'KimbleOne__Category2__c')
         cat_names = list(set(cat_names))
         tc_ids = [self.env.ref('vcls-timesheet.travel_time_category').id]#we init with the travel TC
-        for item in cat_names.sort():
-            #we search for an existing TC
-            tc = self.env['project.time_category'].search([('name','=ilike',item)],limit=1)
-            if tc:
-                tc_ids.append(tc.id)
-            else: #we create it
-                tc = self.env['project.time_category'].create({'name':item})
-                tc_ids.append(tc.id)
+        if cat_names:
+            for item in cat_names.sort():
+                #we search for an existing TC
+                tc = self.env['project.time_category'].search([('name','=ilike',item)],limit=1)
+                if tc:
+                    tc_ids.append(tc.id)
+                else: #we create it
+                    tc = self.env['project.time_category'].create({'name':item})
+                    tc_ids.append(tc.id)
         #we write the task
         parent_task.write({'time_category_ids': [(6,0,tc_ids)]})
 
