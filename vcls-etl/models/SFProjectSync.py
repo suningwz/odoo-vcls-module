@@ -82,12 +82,26 @@ class SFProjectSync(models.Model):
         self._build_resources_map(instance)
         self._test_maps(instance)
 
-    """@api.model
-    def test(self):
+    """
+    POST PROCESS: Move COmpleted tasks
+    compute KPIs
+    """
+    
+    @api.multi
+    def project_migrate_struc(self):
         instance = self.getSFInstance()
-        projects = self.search([('migration_status','=','todo')])
-        _logger.info("Processing {} Projects".format(projects.mapped('project_sfref')))
-        projects.build_quotations(instance)"""
+        if not instance:
+            return False
+        for project in self:
+            project.sudo().build_quotations(instance)
+
+    @api.multi
+    def project_migrate_ts(self):
+        instance = self.getSFInstance()
+        if not instance:
+            return False
+        for project in self:
+            project.sudo().process_timesheets(instance)
     
     @api.model
     def migrate_structure(self):
@@ -130,13 +144,88 @@ class SFProjectSync(models.Model):
             line_ids = project.so_ids.mapped('order_line.id')
             filter_in = project.int_list_to_string_list(line_ids)
             _logger.info("SO LINES IDS {}".format(filter_in))
-            keys = self.env['etl.sync.keys'].search([('odooId','in',filter_in),('odooModelName','=','sale.order.line'),('externalObjName','=','KimbleOne__DeliveryElement__c')])
-            if keys:
-                element_string = project.list_to_filter_string(keys.mapped('externalId'))
-                timesheet_data = self._get_timesheet_data(instance,element_string)
             #get required source data
-            #TODO group by assignments
+            keys = self.env['etl.sync.keys'].search([('odooId','in',filter_in),('odooModelName','=','sale.order.line'),('externalObjName','=','KimbleOne__DeliveryElement__c'),('search_value','=',False)])
+            if keys:
+                #get timesheets
+                element_string = project.list_to_filter_string(keys.mapped('externalId'))
+                timesheet_data = project._get_timesheet_data(instance,element_string)
 
+                #we get assignements 
+                assignment_string = project.list_to_filter_string(timesheet_data,'KimbleOne__ActivityAssignment__c')
+                assignment_data = project._get_assignment_data(instance,assignment_string)
+
+                #we loop per elements
+                for element_key in keys:
+                    project.process_element_ts(element_key,assignment_data,timesheet_data)
+                      
+            project.migration_status = 'ts'
+
+
+    def process_element_ts(self,element_key,assignment_data,timesheet_data):
+        #element level values
+        so_line = self.env['sale.order.line'].browse(int(element_key.odooId))
+        parent_task_id = so_line.task_id
+        project_id = so_line.project_id
+        main_project_id = project_id.parent_id if project_id.parent_id else project_id
+        _logger.info("Processing Timesheets for project {} task {}".format(project_id.name,parent_task_id.name))
+
+        #we look for a mapping key and create if not exists. This will help to resync afterwards if required
+        map_key = self.env['etl.sync.keys'].search([('externalObjName','=','Timesheet_Map'),('externalId','=',element_key.externalId),('odooId','=',str(parent_task_id.id))],limit=1)
+        if not map_key:
+            vals = {
+                'externalObjName':'Timesheet_Map',
+                'externalId': element_key.externalId,
+                'odooId': str(parent_task_id.id),
+            }
+            self.env['etl.sync.keys'].create(vals)
+
+        #element timesheets
+        e_ts = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==element_key.externalId,timesheet_data))
+        #we build subtasks and timecategories according to found categories
+        self.create_subtasks(element_key,parent_task_id,e_ts)
+        
+
+        for assignment in assignment_data:
+            a_ts = list(filter(lambda a: a['KimbleOne__ActivityAssignment__c']==assignment['Id'],e_ts))
+            if not a_ts:
+                continue
+            
+            """vals = {
+                'is_timesheet': True,
+                'employee_id':
+                'main_project_id': main_project_id.id,
+                'project_id': project_id.id,
+                'task_id':
+                'time_category_id':
+                'date':
+                'unit_amount':
+                'unit_amount_rounded':
+                'name':
+                'lc_comment':
+                'stage_id':
+            }"""
+
+    def create_subtasks(self,element_key,parent_task,timesheets_data):
+        sub_names = self.values_from_key(timesheets_data,'KimbleOne__Category1__c')
+        sub_names = list(set(sub_names))
+        for item in list(filter(lambda a: a['KimbleOne__Category1__c'] not in ['No','None'],sub_names)):
+            #we check if already created
+            map_key = self.env['etl.sync.keys'].search([('externalObjName','=','Timesheet_Map'),('externalId','=',element_key.externalId),('search_value','=',item)],limit=1)
+            if not map_key:
+                #we create the subtask
+                subtask = self.env['project.task'].create({
+                    'project_id':parent_task.project_id.id,
+                    'name': "{}:{}".format(parent_task.name,item),
+                    'parent_id':parent_task.id,
+                })
+                _logger.inf("Subtask Creation {} | {}".format(subtask.project_id.name,subtask.name))
+                self.env['etl.sync.keys'].create({
+                    'externalObjName':'Timesheet_Map',
+                    'externalId': element_key.externalId,
+                    'search_value': item,
+                    'odooId': str(subtask.id),
+                })
     
     @api.multi
     def build_quotations(self,instance):

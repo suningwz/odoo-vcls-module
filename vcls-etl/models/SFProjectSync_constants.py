@@ -19,8 +19,10 @@ ELEMENTS_INFO= [
 SELECT_GET_TIME_ENTRIES = """
     SELECT 
         Id,
-        KimbleOne__Category3__c,
+        KimbleOne__Category1__c,
         KimbleOne__Category2__c,
+        KimbleOne__Category3__c,
+        KimbleOne__Category4__c,
         KimbleOne__DeliveryElement__c,
         KimbleOne__InvoiceItemStatus__c,
         KimbleOne__Notes__c,
