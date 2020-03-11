@@ -229,9 +229,9 @@ class SFProjectSync(models.Model):
                 if ts['KimbleOne__Notes__c']:
                     stack.append(ts['KimbleOne__Notes__c'])
 
-                task_key = self.env['etl.sync.keys'].search([('externalObjName','=','Timesheet_Map'),('externalId','=',element_key.externalId),('search_value','=',ts['KimbleOne__Resource__c'])],limit=1)
+                task_key = self.env['etl.sync.keys'].search([('externalObjName','=','Timesheet_Map'),('externalId','=',element_key.externalId),('search_value','=',ts['KimbleOne__Category1__c'])],limit=1)
                 task_id = int(task_key.odooId) if task_key else parent_task_id.id
-                time_category = self.env['project.time_category'].search([('name','=ilike',ts['KimbleOne__Category1__c'])],limit=1)
+                time_category = self.env['project.time_category'].search([('name','=ilike',ts['KimbleOne__Category2__c'])],limit=1)
                 period = self.env['etl.sync.keys'].search([('externalObjName','=','KimbleOne__TimePeriod__c'),('externalId','=',ts['KimbleOne__TimePeriod__c'])],limit=1)
                 date = period.name if period else False
 
