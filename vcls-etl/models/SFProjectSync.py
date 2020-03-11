@@ -154,7 +154,7 @@ class SFProjectSync(models.Model):
                 if timesheet_data:
                     #we get assignements 
                     assignment_string = project.list_to_filter_string(timesheet_data,'KimbleOne__ActivityAssignment__c')
-                    assignment_data = project._get_assignment_data(instance,assignment_string)
+                    assignment_data = project._get_assignment_data(instance,assignment_string,'Id')
 
                     #we loop per elements
                     for element_key in keys:
@@ -689,9 +689,14 @@ class SFProjectSync(models.Model):
         
         return records
     
-    def _get_assignment_data(self,instance,filter_string = False):
+    def _get_assignment_data(self,instance,filter_string = False,mode='Project'):
         query = SFProjectSync_constants.SELECT_GET_ASSIGNMENT_DATA
-        query += "WHERE KimbleOne__DeliveryGroup__c IN " + filter_string
+        if mode == 'Project':
+            query += "WHERE KimbleOne__DeliveryGroup__c IN " + filter_string
+        elif mode == 'Id':
+            query += "WHERE Id IN " + filter_string
+        else:
+            pass
         _logger.info(query)
 
         records = instance.getConnection().query_all(query)['records']
