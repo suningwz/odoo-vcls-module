@@ -309,7 +309,7 @@ class SFProjectSync(models.Model):
         if not instance:
             return False
 
-        for key in self.env['etl.sync.keys'].with_context(active_test=False).search([('state','=','map'),('odooId','!=',False)]):
+        for key in self.env['etl.sync.keys'].with_context(active_test=False).search([('state','=','map'),('odooId','!=',False),('odooModelName','!=',False)]):
             try:
                 record = self.env[key.odooModelName].browse(int(key.odooId))
                 if key.odooModelName=='hr.employee':
