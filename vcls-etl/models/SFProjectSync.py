@@ -128,11 +128,11 @@ class SFProjectSync(models.Model):
         
         #we call back the structure migration job to process remining projects
         cron = self.env.ref('vcls-etl.cron_project_structure')
-        cron.write({
+        """cron.write({
             'active': True,
             'nextcall': datetime.now() + timedelta(seconds=5),
             'numbercall': 1,
-        })
+        })"""
     
     @api.multi
     def process_timesheets(self,instance):
@@ -141,11 +141,12 @@ class SFProjectSync(models.Model):
         
         for project in self:
             #get the related keys of elements
-            lines_to_migrate = project.so_ids.mapped('order_line').filtered(lambda l: (not l.is_migrated) and l.task_id)
-            #when all lines have been migrated
+            lines_to_migrate = project.so_ids.mapped('order_line').filtered(lambda l: ( l.is_migrated) and l.task_id)
+            _logger.info("Lines to migrate {}".format(lines_to_migrate.mapped('name')))
+            """#when all lines have been migrated
             if not lines_to_migrate:
                 project.migration_status = 'ts'
-                continue
+                continue"""
 
             """line_ids = project.so_ids.mapped('order_line.id')
             filter_in = project.int_list_to_string_list(line_ids)
