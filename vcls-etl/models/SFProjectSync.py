@@ -166,12 +166,13 @@ class SFProjectSync(models.Model):
     def process_element_ts(self,element_key,assignment_data,timesheet_data):
         inv_status = self.env['etl.sync.keys'].search([('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
         task_stage = self.env['project.task.type'].search([('name','=','0% Progress')],limit = 1)
+        count = 0
         #element level values
         so_line = self.env['sale.order.line'].browse(int(element_key.odooId))
         parent_task_id = so_line.task_id
         project_id = so_line.project_id
         main_project_id = project_id.parent_id if project_id.parent_id else project_id
-        _logger.info("Processing Timesheets for project {} task {}".format(project_id.name,parent_task_id.name))
+        _logger.info("Processing {} Timesheets for project {} task {}".format(len(timesheet_data),project_id.name,parent_task_id.name))
 
         #we look for a mapping key and create if not exists. This will help to resync afterwards if required
         map_key = self.env['etl.sync.keys'].search([('externalObjName','=','Timesheet_Map'),('externalId','=',element_key.externalId),('odooId','=',str(parent_task_id.id))],limit=1)
@@ -244,6 +245,8 @@ class SFProjectSync(models.Model):
                 #we finally check if we have enough to create the timesheet
                 if employee and date:
                     self.env['account.analytic.line'].create(vals)
+                    count += 1
+                    _logger.info("Timesheet Created {}/{}".format(count,len(timesheet_data)))
                 else:
                     _logger.info("IMPOSSIBLE TO CREATE TS {}".format(vals))
     
