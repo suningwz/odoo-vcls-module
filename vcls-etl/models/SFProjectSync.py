@@ -214,6 +214,7 @@ class SFProjectSync(models.Model):
         cat_names = self.values_from_key(timesheets_data,'KimbleOne__Category2__c')
         cat_names = list(set(cat_names))
         tc_ids = [self.env.ref('vcls-timesheet.travel_time_category').id]#we init with the travel TC
+        _logger.info("FOUND Time Cat: {}".format(cat_names))
         if cat_names:
             for item in cat_names.sort():
                 #we search for an existing TC
