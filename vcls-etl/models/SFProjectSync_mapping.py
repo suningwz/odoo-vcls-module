@@ -317,7 +317,7 @@ class SFProjectSync(models.Model):
                         raise ValidationError("Please define a rate for {}".format(record.name))
             except:
                 _logger.info("ETL BAD ODOO KEY {} {}".format(key.odooModelName,key.odooId))
-                return False
+                #return False
         
         return True
 
