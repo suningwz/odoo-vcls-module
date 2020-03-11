@@ -72,7 +72,7 @@
                 </field>
 
                 <field name="parent_id" position="attributes">
-                    <attribute name="domain">[('project_id','=',project_id.id)]</attribute>
+                    <attribute name="domain">[('project_id','=',project_id)]</attribute>
                 </field>
                 
                 <xpath expr="//page[last()]" position="after">
