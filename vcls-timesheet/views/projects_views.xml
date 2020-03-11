@@ -70,6 +70,10 @@
                     <br/>
                     <field name="valuation_ratio" widget="percentpie" nolabel="1"/>
                 </field>
+
+                <field name="parent_id" position="attributes">
+                    <attribute name="domain">[('project_id','=',project_id.id)]</attribute>
+                </field>
                 
                 <xpath expr="//page[last()]" position="after">
                     <page string="KPI" name="kpi">
