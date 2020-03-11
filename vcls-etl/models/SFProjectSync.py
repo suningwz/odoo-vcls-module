@@ -216,7 +216,7 @@ class SFProjectSync(models.Model):
         tc_ids = [self.env.ref('vcls-timesheet.travel_time_category').id]#we init with the travel TC
         _logger.info("FOUND Time Cat: {}".format(cat_names))
         if cat_names:
-            for item in cat_names.sort():
+            for item in cat_names:
                 #we search for an existing TC
                 tc = self.env['project.time_category'].search([('name','=ilike',item)],limit=1)
                 if tc:
