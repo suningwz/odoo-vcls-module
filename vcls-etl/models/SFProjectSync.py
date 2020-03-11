@@ -165,6 +165,7 @@ class SFProjectSync(models.Model):
 
     def process_element_ts(self,element_key,assignment_data,timesheet_data):
         inv_status = self.env['etl.sync.keys'].search([('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
+        task_stage = self.env['project.task.type'].search([('name','=','0% Progress')],limit = 1)
         #element level values
         so_line = self.env['sale.order.line'].browse(int(element_key.odooId))
         parent_task_id = so_line.task_id
@@ -182,6 +183,9 @@ class SFProjectSync(models.Model):
                 'state':'map',
             }
             self.env['etl.sync.keys'].create(vals)
+            #we change the stage of the task to allow timesheets
+            parent_task_id.stage_id = task_stage
+
 
         #element timesheets
         e_ts = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==element_key.externalId,timesheet_data))
@@ -307,6 +311,7 @@ class SFProjectSync(models.Model):
                     'project_id':parent_task.project_id.id,
                     'name': "{}:{}".format(parent_task.name,item),
                     'parent_id':parent_task.id,
+                    'stage_id':parent_task.stage_id.id,
                 })
                 _logger.info("Subtask Creation {} | {}".format(subtask.project_id.name,subtask.name))
                 self.env['etl.sync.keys'].create({
