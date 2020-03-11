@@ -220,7 +220,7 @@ class SFProjectSync(models.Model):
                     'name': "{}:{}".format(parent_task.name,item),
                     'parent_id':parent_task.id,
                 })
-                _logger.inf("Subtask Creation {} | {}".format(subtask.project_id.name,subtask.name))
+                _logger.info("Subtask Creation {} | {}".format(subtask.project_id.name,subtask.name))
                 self.env['etl.sync.keys'].create({
                     'externalObjName':'Timesheet_Map',
                     'externalId': element_key.externalId,
