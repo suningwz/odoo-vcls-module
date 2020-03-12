@@ -202,9 +202,8 @@ class SFProjectSync(models.Model):
                     #get timesheets
                     element_string = project.list_to_filter_string(keys.mapped('externalId'))
                     timesheet_data = project._get_timesheet_data(instance,element_string,migrating_line.ts_max_id)
-                    migrating_line.ts_max_id = max(self.values_from_key(timesheet_data,'Migration_Index__c'))
-
                     if timesheet_data:
+                        migrating_line.ts_max_id = max(self.values_from_key(timesheet_data,'Migration_Index__c'))
                         _logger.info("TS MAX ID {} on {} entries.".format(migrating_line.ts_max_id,len(timesheet_data)))
                         #we get assignements 
                         assignment_string = project.list_to_filter_string(timesheet_data,'KimbleOne__ActivityAssignment__c')
@@ -216,7 +215,7 @@ class SFProjectSync(models.Model):
 
                     else:
                         migrating_line.ts_migrated = True
-                        
+
                 #we recheck if remaining lines
                 lines_to_migrate = so_lines.filtered(lambda l: l.ts_migrated==False and l.task_id) 
 
