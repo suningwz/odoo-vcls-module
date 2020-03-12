@@ -212,6 +212,9 @@ class SFProjectSync(models.Model):
                         #we loop per elements
                         for element_key in keys:
                             project.process_element_ts(element_key,assignment_data,timesheet_data)
+                        
+                        if len(timesheet_data)<500: #we got all the TS of the element
+                            migrating_line.ts_migrated = True
 
                     else:
                         migrating_line.ts_migrated = True
