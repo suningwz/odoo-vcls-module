@@ -42,6 +42,12 @@ class Invoice(models.Model):
     temp_name = fields.Char(
         compute='compute_temp_name',
     )
+    program_name = fields.Char(
+        compute='compute_program_name',
+    )
+    program_description = fields.Char(
+        compute='compute_program_description',
+    )
 
     period_start = fields.Date()
     lc_laius = fields.Text()
@@ -73,6 +79,8 @@ class Invoice(models.Model):
     )
 
     merge_subtask = fields.Boolean()
+
+    invoice_is_program = fields.Boolean(default=False, string='invoice in the name of the program')
 
     @api.multi
     def get_last_report(self):
@@ -121,6 +129,22 @@ class Invoice(models.Model):
                 if not project.parent_id and project.sale_order_id and project.sale_order_id.internal_ref:
                     project_string += project.sale_order_id.internal_ref + ' | ' 
             invoice.temp_name = "{} from {} to {}".format(project_string,invoice.period_start,invoice.timesheet_limit_date)
+
+    @api.multi
+    def compute_program_name(self):
+        for invoice in self:
+            program_name = ""
+            for project in invoice.project_ids:
+                if project.program_id.name:
+                    invoice.program_name = project.program_id.name
+
+    @api.multi
+    def compute_program_description(self):
+        for invoice in self:
+            program_description = ""
+            for project in invoice.project_ids:
+                if project.program_id.product_description:
+                    invoice.program_description = project.program_id.product_description
 
     @api.multi
     def _compute_attachment_count(self):

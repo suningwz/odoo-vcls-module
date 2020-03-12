@@ -63,4 +63,9 @@ class SaleAdvancePaymentInv(models.TransientModel):
         order_follower_partner_ids = order.message_partner_ids
         if order_follower_partner_ids:
             invoice._message_subscribe(partner_ids=order_follower_partner_ids.ids)
+        
+        if self.group_invoice_method == "program":
+            invoice.invoice_is_program = True
+        else:
+            invoice.invoice_is_program = False
         return invoice
