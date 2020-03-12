@@ -117,7 +117,7 @@ class SFProjectSync(models.Model):
         
         #we call the timesheet migration job
         _logger.info("Timesheet Migration Callback!")
-        cron = self.env.ref('vcls-etl.cron_project_timesheets')
+        cron = self.env.ref('vcls-etl.cron_project_timesheets_ping')
         cron.write({
             'active': True,
             'nextcall': datetime.now() + timedelta(seconds=3),
@@ -127,20 +127,58 @@ class SFProjectSync(models.Model):
         
     
     @api.model
-    def migrate_timesheets(self):
+    def migrate_timesheets_ping(self):
         instance = self.getSFInstance()
         projects = self.search([('migration_status','=','structure')]).sorted(key=lambda r: r.create_date)
         if projects:
             _logger.info("PROJECT MIGRATION | Timesheets for {}".format(projects[0].project_sfname))
             projects[0].process_timesheets(instance)
+            projects = self.search([('migration_status','=','structure')]).sorted(key=lambda r: r.create_date)
         
-        #we call back the structure migration job to process remining projects
-        cron = self.env.ref('vcls-etl.cron_project_structure')
-        cron.write({
-            'active': True,
-            'nextcall': datetime.now() + timedelta(seconds=5),
-            'numbercall': 1,
-        })
+        if projects: #still timesheets to migrate, launch the pong version
+            cron = self.env.ref('vcls-etl.cron_project_timesheets_pong')
+            cron.write({
+                'active': True,
+                'nextcall': datetime.now() + timedelta(seconds=3),
+                'numbercall': 1,
+            })
+        
+        else:
+            #we call back the structure migration job to process remining projects
+            cron = self.env.ref('vcls-etl.cron_project_structure')
+            cron.write({
+                'active': True,
+                'nextcall': datetime.now() + timedelta(seconds=3),
+                'numbercall': 1,
+            })
+    
+    @api.model
+    def migrate_timesheets_pong(self):
+        instance = self.getSFInstance()
+        projects = self.search([('migration_status','=','structure')]).sorted(key=lambda r: r.create_date)
+        if projects:
+            _logger.info("PROJECT MIGRATION | Timesheets for {}".format(projects[0].project_sfname))
+            projects[0].process_timesheets(instance)
+            projects = self.search([('migration_status','=','structure')]).sorted(key=lambda r: r.create_date)
+        
+        if projects: #still timesheets to migrate, launch the ping version
+            cron = self.env.ref('vcls-etl.cron_project_timesheets_ping')
+            cron.write({
+                'active': True,
+                'nextcall': datetime.now() + timedelta(seconds=3),
+                'numbercall': 1,
+            })
+        
+        else:
+            #we call back the structure migration job to process remining projects
+            cron = self.env.ref('vcls-etl.cron_project_structure')
+            cron.write({
+                'active': True,
+                'nextcall': datetime.now() + timedelta(seconds=3),
+                'numbercall': 1,
+            })
+    
+    
     
     @api.multi
     def process_timesheets(self,instance):
