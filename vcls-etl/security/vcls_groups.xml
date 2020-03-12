@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Create the operational config group -->
+        <record id="vcls_migrators" model="res.groups">
+            <field name="name">The Migrators</field>
+            <field name="category_id" ref=""/>
+        </record>
+
+        <!-- Extend admin group inheritance -->
+        <record id="vcls-hr.vcls_group_superuser_lvl2" model="res.groups">
+            <field name="implied_ids" eval="[(4,ref('vcls_migrators'))]"/>
+        </record>
+        
+    </data>
+</odoo>
