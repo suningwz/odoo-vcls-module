@@ -107,22 +107,22 @@ class SFProjectSync(models.Model):
     def migrate_structure(self):
         #we promote timesheet migrations of ongoing projects
         #If timesheets to migrate, we launch the CRON
-        if self.search([('migration_status','in',['so','structure'])]):
-            #we call the timesheet migration job
-            _logger.info("Timesheet Migration Callback!")
-            cron = self.env.ref('vcls-etl.cron_project_timesheets')
-            cron.write({
-                'active': True,
-                'nextcall': datetime.now() + timedelta(seconds=3),
-                'numbercall': 1,
-            })
-
-        else:
+        ts_projects = self.search([('migration_status','in',['so','structure'])])
+        if not ts_projects:
             instance = self.getSFInstance()
             projects = self.search([('migration_status','=','todo')]).sorted(key=lambda r: r.create_date)
             if projects:
                 _logger.info("PROJECT MIGRATION | Structure of {}".format(projects[0].project_sfname))
                 projects[0].build_quotations(instance)
+        
+        #we call the timesheet migration job
+        _logger.info("Timesheet Migration Callback!")
+        cron = self.env.ref('vcls-etl.cron_project_timesheets')
+        cron.write({
+            'active': True,
+            'nextcall': datetime.now() + timedelta(seconds=3),
+            'numbercall': 1,
+        })
         
         
     
