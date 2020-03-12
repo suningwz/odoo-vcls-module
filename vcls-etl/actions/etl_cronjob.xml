@@ -159,7 +159,7 @@
             <field name="interval_type">minutes</field>
         </record>
 
-        <record id="cron_project_timesheets" model="ir.cron">
+        <record id="cron_project_timesheets_ping" model="ir.cron">
             <field name="name">ETL | Migrate Project Timesheets (ping)</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
@@ -172,7 +172,7 @@
             <field name="interval_type">minutes</field>
         </record>
 
-        <record id="cron_project_timesheets" model="ir.cron">
+        <record id="cron_project_timesheets_pong" model="ir.cron">
             <field name="name">ETL | Migrate Project Timesheets (pong)</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
