@@ -24,4 +24,9 @@ class SaleOrderLine(models.Model):
         default=False,
     )
 
+    ts_max_id = fields.Integer(
+        default = 0,
+        readonly = True,
+    )
+
     
