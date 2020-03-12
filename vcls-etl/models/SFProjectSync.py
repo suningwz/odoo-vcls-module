@@ -176,7 +176,8 @@ class SFProjectSync(models.Model):
                     #we loop per elements
                     for element_key in keys:
                         project.process_element_ts(element_key,assignment_data,timesheet_data)
-                        migrating_line.ts_migrated = True
+                        
+                migrating_line.ts_migrated = True
                       
             
 
