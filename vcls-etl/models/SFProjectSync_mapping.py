@@ -331,7 +331,7 @@ class SFProjectSync(models.Model):
                 #return False
         
         if to_treat:
-            raise UserError(message)
+            _logger.error(message)
         
         return True
 
