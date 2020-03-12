@@ -105,21 +105,26 @@ class SFProjectSync(models.Model):
     
     @api.model
     def migrate_structure(self):
-        instance = self.getSFInstance()
-        projects = self.search([('migration_status','=','todo')]).sorted(key=lambda r: r.create_date)
-        if projects:
-            _logger.info("PROJECT MIGRATION | Structure of {}".format(projects[0].project_sfname))
-            projects[0].build_quotations(instance)
-        
+        #we promote timesheet migrations of ongoing projects
         #If timesheets to migrate, we launch the CRON
         if self.search([('migration_status','in',['so','structure'])]):
             #we call the timesheet migration job
+            _logger.info("Timesheet Migration Callback!")
             cron = self.env.ref('vcls-etl.cron_project_timesheets')
             cron.write({
                 'active': True,
-                'nextcall': datetime.now() + timedelta(seconds=5),
+                'nextcall': datetime.now() + timedelta(seconds=3),
                 'numbercall': 1,
             })
+
+        else:
+            instance = self.getSFInstance()
+            projects = self.search([('migration_status','=','todo')]).sorted(key=lambda r: r.create_date)
+            if projects:
+                _logger.info("PROJECT MIGRATION | Structure of {}".format(projects[0].project_sfname))
+                projects[0].build_quotations(instance)
+        
+        
     
     @api.model
     def migrate_timesheets(self):
@@ -149,36 +154,34 @@ class SFProjectSync(models.Model):
             _logger.info("FOUND Order Lines {} {}".format(so_lines.mapped('name'),so_lines.mapped('ts_migrated')))
             
             lines_to_migrate = so_lines.filtered(lambda l: l.ts_migrated==False and l.task_id)
-
             _logger.info("Lines to migrate {}".format(lines_to_migrate.mapped('name')))
-            #when all lines have been migrated
+            
+            if lines_to_migrate:
+                migrating_line = lines_to_migrate[0]
+                #get required source data
+                keys = self.env['etl.sync.keys'].search([('odooId','=',str(migrating_line.id)),('odooModelName','=','sale.order.line'),('externalObjName','=','KimbleOne__DeliveryElement__c'),('search_value','=',False)])
+                if keys:
+                    #get timesheets
+                    element_string = project.list_to_filter_string(keys.mapped('externalId'))
+                    timesheet_data = project._get_timesheet_data(instance,element_string)
+
+                    if timesheet_data:
+                        #we get assignements 
+                        assignment_string = project.list_to_filter_string(timesheet_data,'KimbleOne__ActivityAssignment__c')
+                        assignment_data = project._get_assignment_data(instance,assignment_string,'Id')
+
+                        #we loop per elements
+                        for element_key in keys:
+                            project.process_element_ts(element_key,assignment_data,timesheet_data)
+
+                migrating_line.ts_migrated = True
+                #we recheck if remaining lines
+                lines_to_migrate = so_lines.filtered(lambda l: l.ts_migrated==False and l.task_id) 
+
+            #when all lines have been migrated 
             if not lines_to_migrate:
                 project.migration_status = 'ts'
-                continue
-
-            """line_ids = project.so_ids.mapped('order_line.id')
-            filter_in = project.int_list_to_string_list(line_ids)
-            _logger.info("SO LINES IDS {}".format(filter_in))"""
-
-            migrating_line = lines_to_migrate[0]
-            #get required source data
-            keys = self.env['etl.sync.keys'].search([('odooId','=',str(migrating_line.id)),('odooModelName','=','sale.order.line'),('externalObjName','=','KimbleOne__DeliveryElement__c'),('search_value','=',False)])
-            if keys:
-                #get timesheets
-                element_string = project.list_to_filter_string(keys.mapped('externalId'))
-                timesheet_data = project._get_timesheet_data(instance,element_string)
-
-                if timesheet_data:
-                    #we get assignements 
-                    assignment_string = project.list_to_filter_string(timesheet_data,'KimbleOne__ActivityAssignment__c')
-                    assignment_data = project._get_assignment_data(instance,assignment_string,'Id')
-
-                    #we loop per elements
-                    for element_key in keys:
-                        project.process_element_ts(element_key,assignment_data,timesheet_data)
-                        
-                migrating_line.ts_migrated = True
-                      
+                continue     
             
 
 
@@ -449,7 +452,8 @@ class SFProjectSync(models.Model):
             if project.migration_status == 'so':
                 #we confirm the orders
                 for so in project.so_ids:
-                    so._action_confirm()
+                    so.action_sync()
+                    so.action_confirm()
                     _logger.info("Confirming SO {}".format(so.name) )
 
                 project.process_forecasts(activity_data,assignment_data)
