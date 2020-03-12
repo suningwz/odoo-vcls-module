@@ -19,7 +19,7 @@ ELEMENTS_INFO= [
 SELECT_GET_TIME_ENTRIES = """
     SELECT 
         Id,
-        Name,
+        Migration_Index__c,
         KimbleOne__Category1__c,
         KimbleOne__Category2__c,
         KimbleOne__Category3__c,

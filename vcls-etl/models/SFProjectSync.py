@@ -803,7 +803,7 @@ class SFProjectSync(models.Model):
         query = SFProjectSync_constants.SELECT_GET_TIME_ENTRIES
         query += "WHERE KimbleOne__DeliveryElement__c IN " + filter_string
         #we add a filter and order by to manage batches of 500
-        query += " AND Name>{} ORDER BY Name LIMIT 500".format(max_id)
+        query += " AND Name>{} ORDER BY Migration_Index__c LIMIT 500".format(max_id)
         _logger.info(query)
 
         records = instance.getConnection().query_all(query)['records']
