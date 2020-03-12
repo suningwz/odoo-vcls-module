@@ -202,7 +202,7 @@ class SFProjectSync(models.Model):
                     #get timesheets
                     element_string = project.list_to_filter_string(keys.mapped('externalId'))
                     timesheet_data = project._get_timesheet_data(instance,element_string,migrating_line.ts_max_id)
-                    migrating_line.ts_max_id = max(self.values_from_key(timesheet_data,'Name'))
+                    migrating_line.ts_max_id = max(self.values_from_key(timesheet_data,'Migration_Index__c'))
 
                     if timesheet_data:
                         _logger.info("TS MAX ID {} on {} entries.".format(migrating_line.ts_max_id,len(timesheet_data)))
@@ -803,7 +803,7 @@ class SFProjectSync(models.Model):
         query = SFProjectSync_constants.SELECT_GET_TIME_ENTRIES
         query += "WHERE KimbleOne__DeliveryElement__c IN " + filter_string
         #we add a filter and order by to manage batches of 500
-        query += " AND Name>{} ORDER BY Migration_Index__c LIMIT 500".format(max_id)
+        query += " AND Migration_Index__c>{} ORDER BY Migration_Index__c LIMIT 500".format(max_id)
         _logger.info(query)
 
         records = instance.getConnection().query_all(query)['records']
