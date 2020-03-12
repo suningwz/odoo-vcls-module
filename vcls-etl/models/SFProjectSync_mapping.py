@@ -309,6 +309,15 @@ class SFProjectSync(models.Model):
         if not instance:
             return False
 
+        
+        #we test if any product not mapped
+        to_treat = self.env['etl.sync.keys'].with_context(active_test=False).search([('state','=','map'),('odooId','=',False),('externalObjName','=','KimbleOne__Product__c')])
+        message = "Please give a mapping value for the following product/activity:\n"
+        for key in to_treat:
+            message += "{} {}\n".format(key.name,key.search_value)
+        
+
+        message += "\nPlease complete following records:\n"
         for key in self.env['etl.sync.keys'].with_context(active_test=False).search([('state','=','map'),('odooId','!=',False),('odooModelName','!=',False)]):
             try:
                 record = self.env[key.odooModelName].browse(int(key.odooId))
@@ -316,8 +325,13 @@ class SFProjectSync(models.Model):
                     if not record.default_rate_ids:
                         raise ValidationError("Please define a rate for {}".format(record.name))
             except:
-                _logger.info("ETL BAD ODOO KEY {} {}".format(key.odooModelName,key.odooId))
+                to_treat += key
+                message += "{} model {} Id {}\n".format(key.name,key.odooModelName,key.odooId)
+                #_logger.info("ETL BAD ODOO KEY {} {}".format(key.odooModelName,key.odooId))
                 #return False
+        
+        if to_treat:
+            raise UserError(message)
         
         return True
 
