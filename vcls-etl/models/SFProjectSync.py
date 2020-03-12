@@ -214,7 +214,9 @@ class SFProjectSync(models.Model):
                         for element_key in keys:
                             project.process_element_ts(element_key,assignment_data,timesheet_data)
 
-                migrating_line.ts_migrated = True
+                    else:
+                        migrating_line.ts_migrated = True
+                        
                 #we recheck if remaining lines
                 lines_to_migrate = so_lines.filtered(lambda l: l.ts_migrated==False and l.task_id) 
 
