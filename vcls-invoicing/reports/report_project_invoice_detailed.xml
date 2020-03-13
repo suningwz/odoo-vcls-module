@@ -328,10 +328,14 @@
                                 <td style="border: none;">VAT Number:</td>
                                 <td style="border: none;"><span class="ml16" t-field="o.company_id.vat"/></td>
                             </tr>
+                            <tr t-if="bank_account_id.bank_account_notes">
+                                <td style="border: none;">Notes:</td>
+                                <td style="border: none;"><span class="ml16" t-field="bank_account_id.bank_account_notes"/></td>
+                            </tr>
                         </table>
                         <div t-if="o.fiscal_position_id">
                         <h6 class="font-weight-bold mt16">Notes</h6>
-                        <p t-field="o.fiscal_position_id.report_note"/>
+                        <p style='font-size:smaller' t-field="o.fiscal_position_id.report_note"/>
                         </div>
                     </div>
                 </div>
