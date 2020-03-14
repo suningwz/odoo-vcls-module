@@ -15,6 +15,7 @@ class TimesheetForecastReport(models.Model):
         ('adjustment_validation', '3. Adjustment Validation'),
         ('invoiceable', '4. Invoiceable'),
         ('invoiced', '5. Invoiced'),
+        ('historical','6. Historical'),
         ('outofscope', 'Out Of Scope'),
     ], 'Stage', readonly=True)
 
@@ -134,6 +135,7 @@ class TimesheetForecastReport(models.Model):
                  WHEN "{table}"."stage_id" = 'adjustment_validation' THEN 3 
                  WHEN "{table}"."stage_id" = 'invoiceable' THEN 4 
                  WHEN "{table}"."stage_id" = 'invoiced' THEN 5 
-                 ELSE 6 END
+                 WHEN "{table}"."stage_id" = 'historical' THEN 6
+                 ELSE 7 END
             """.format(table=self._table)
         return groupby_terms, orderby_terms

@@ -340,7 +340,7 @@ class SFProjectSync(models.Model):
                 elif status.name == 'Invoiced':
                     vals.update({
                         'unit_amount_rounded': timesheet['KimbleOne__EntryUnits__c'],
-                        'stage_id': 'invoiced',
+                        'stage_id': 'historical',
                     })
                 else:
                     vals.update({
