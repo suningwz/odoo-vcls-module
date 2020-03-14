@@ -6,6 +6,7 @@ import datetime
 
 class BillabilityReport(models.Model):
     _name = "billability.report"
+    _description = "Weekly Billability Report"
 
     # employee related fields
     name = fields.Char(compute='_get_name', store=True, readonly=True)
