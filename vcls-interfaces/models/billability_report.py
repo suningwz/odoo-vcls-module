@@ -45,7 +45,7 @@ class BillabilityReport(models.Model):
     year = fields.Integer(string='Year', readonly=True)
     week_number = fields.Integer(string='Week number', readonly=True)
     start_date = fields.Date(string='Week start date', readonly=True)
-    end_date = fields.Date(string='Week start date', readonly=True)
+    end_date = fields.Date(string='Week end date', readonly=True)
     billable_hours = fields.Float(readonly=True)
     valued_billable_hours = fields.Float(readonly=True)
     non_billable_hours = fields.Float(readonly=True)

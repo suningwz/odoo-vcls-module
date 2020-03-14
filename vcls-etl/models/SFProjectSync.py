@@ -24,6 +24,7 @@ class SFProjectSync(models.Model):
     project_sfid = fields.Char()
     project_sfname = fields.Char()
     project_sfref = fields.Char()
+    sf_invoiced_amount = fields.Float()
     so_ids = fields.Many2many(
         'sale.order',
         readonly = True,
@@ -155,11 +156,11 @@ class SFProjectSync(models.Model):
     @api.model
     def migrate_timesheets_pong(self):
         instance = self.getSFInstance()
-        projects = self.search([('migration_status','=','structure')]).sorted(key=lambda r: r.create_date)
+        projects = self.search([('migration_status','in',['structure','ts'])]).sorted(key=lambda r: r.create_date)
         if projects:
             _logger.info("PROJECT MIGRATION | Timesheets for {}".format(projects[0].project_sfname))
             projects[0].process_timesheets(instance)
-            projects = self.search([('migration_status','=','structure')]).sorted(key=lambda r: r.create_date)
+            projects = self.search([('migration_status','in',['structure','ts'])]).sorted(key=lambda r: r.create_date)
         
         if projects: #still timesheets to migrate, launch the ping version
             cron = self.env.ref('vcls-etl.cron_project_timesheets_ping')
@@ -185,7 +186,7 @@ class SFProjectSync(models.Model):
         if not instance:
             return False
         
-        for project in self:
+        for project in self.filtered(lambda p: p.migration_status=='structure'):
             #get the related keys of elements
             line_ids = project.so_ids.mapped('order_line.id')
             so_lines = self.env['sale.order.line'].browse(line_ids)
@@ -226,8 +227,13 @@ class SFProjectSync(models.Model):
             if not lines_to_migrate:
                 project.migration_status = 'ts'
                 continue     
-            
+        
+        for project in self.filtered(lambda p: p.migration_status=='ts'):
+            #we finalise the migration
+            project.get_invoiced_value(instance)
 
+    def get_invoiced_value(self,instance)
+        pass
 
     def process_element_ts(self,element_key,assignment_data,timesheet_data):
         inv_status = self.env['etl.sync.keys'].search([('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
@@ -414,6 +420,11 @@ class SFProjectSync(models.Model):
         #Then we loop to process projects separately
         for project in self:
             my_project = list(filter(lambda p: p['Id']==project.project_sfid,project_data))[0]
+            #we store the total invoicde amount for future use
+            my_elements = list(filter(lambda element: element['KimbleOne__DeliveryGroup__c']==my_project['Id'],element_data))
+            element_filter = project.list_to_filter_string(my_elements,'Id')
+            project.sf_invoiced_amount = project._get_invoiced_amount(instance,element_filter)
+            
             if not project.so_ids: #no sale order yet
                 #core_team
                 core_team = self.env['core.team'].create(project.prepare_core_team_data(my_project,assignment_data))
@@ -803,6 +814,13 @@ class SFProjectSync(models.Model):
         return sorted(output,key=lambda q: q['min_index'])
 
     ###  
+    def _get_invoiced_amount(self,instance,filter_string = False):
+        query = SFProjectSync_constants.SELECT_GET_INVOICED_AMOUNT
+        query += "WHERE KimbleOne__DeliveryElement__c IN " + filter_string
+        records = instance.getConnection().query_all(query)['records']
+        _logger.info("Found {} Invoiced from Elements".format((records)))
+        return records
+
     def _get_timesheet_data(self,instance,filter_string = False, max_id=0):
         query = SFProjectSync_constants.SELECT_GET_TIME_ENTRIES
         query += "WHERE KimbleOne__DeliveryElement__c IN " + filter_string
