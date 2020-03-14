@@ -229,11 +229,9 @@ class SFProjectSync(models.Model):
                 continue     
         
         for project in self.filtered(lambda p: p.migration_status=='ts'):
-            #we finalise the migration
-            project.get_invoiced_value(instance)
-
-    def get_invoiced_value(self,instance)
-        pass
+            #we finalise the 
+            pass
+            
 
     def process_element_ts(self,element_key,assignment_data,timesheet_data):
         inv_status = self.env['etl.sync.keys'].search([('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
@@ -424,7 +422,7 @@ class SFProjectSync(models.Model):
             my_elements = list(filter(lambda element: element['KimbleOne__DeliveryGroup__c']==my_project['Id'],element_data))
             element_filter = project.list_to_filter_string(my_elements,'Id')
             project.sf_invoiced_amount = project._get_invoiced_amount(instance,element_filter)
-            
+
             if not project.so_ids: #no sale order yet
                 #core_team
                 core_team = self.env['core.team'].create(project.prepare_core_team_data(my_project,assignment_data))
