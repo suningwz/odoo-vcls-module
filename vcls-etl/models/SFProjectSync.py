@@ -816,8 +816,8 @@ class SFProjectSync(models.Model):
         query = SFProjectSync_constants.SELECT_GET_INVOICED_AMOUNT
         query += "WHERE KimbleOne__DeliveryElement__c IN " + filter_string
         records = instance.getConnection().query_all(query)['records']
-        _logger.info("Found {} Invoiced from Elements".format((records['expr0'])))
-        return records['expr0']
+        _logger.info("Found {} Invoiced from Elements".format((records[0]['expr0'])))
+        return records[0]['expr0']
 
     def _get_timesheet_data(self,instance,filter_string = False, max_id=0):
         query = SFProjectSync_constants.SELECT_GET_TIME_ENTRIES
