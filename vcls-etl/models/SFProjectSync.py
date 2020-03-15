@@ -111,7 +111,7 @@ class SFProjectSync(models.Model):
             _logger.info("Historical Finalization for project {}".format(project.project_sfref))
             lines = project.so_ids.mapped('order_line')
             #trigger the computation of the  invoiced qty
-            lines._compute_qty_delivered()
+            
             lines._get_invoice_qty()
             invoiced=0
             for line in lines:
@@ -129,10 +129,13 @@ class SFProjectSync(models.Model):
                     'order_id':project.so_ids.filtered(lambda o: not o.parent_id)[0].id,
                     'name':'Historical Balance',
                     'product_uom_qty':1,
+                    'qty_delivered_manual':1,
                     'price_unit':project.sf_invoiced_amount-invoiced,
                     'historical_invoiced_amount':project.sf_invoiced_amount-invoiced,
                 }
                 self.env['sale.order.line'].create(vals)
+            
+            lines._compute_qty_delivered()
                 
 
     
