@@ -112,6 +112,18 @@ class SFProjectSync(models.Model):
             lines = project.so_ids.mapped('order_line')
             #trigger the computation of the  invoiced qty
             lines._get_invoice_qty()
+            invoiced=0
+            for line in lines:
+                if (line.product_id.vcls_type in ['vcls_service']) and (line.order_id.invoicing_mode == 'fixed_price' or line.product_id.service_tracking == 'no'):
+                    invoiced += line.qty_invoiced*line.price_unit
+                elif (line.order_id.invoicing_mode == 'tm' and line.product_id.vcls_type=='rate'):
+                    timesheets = line.order_id.timesheet_ids.filtered(lambda ts: ts.stage_id=='historical' and ts.so_line == line)
+                    if timesheets:
+                        invoiced += sum(timesheets.mapped('unit_amount_rounded'*'so_line_unit_price'))
+
+            if invoiced<project.sf_invoiced_amount:
+                _logger.info("Historical line to add with {}".format(project.sf_invoiced_amount-invoiced))
+
     
     @api.model
     def migrate_structure(self):
