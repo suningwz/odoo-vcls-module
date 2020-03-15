@@ -119,7 +119,7 @@ class SFProjectSync(models.Model):
                 elif (line.order_id.invoicing_mode == 'tm' and line.product_id.vcls_type=='rate'):
                     timesheets = line.order_id.timesheet_ids.filtered(lambda ts: ts.stage_id=='historical' and ts.so_line == line)
                     if timesheets:
-                        invoiced += sum(timesheets.mapped('unit_amount_rounded'*'so_line_unit_price'))
+                        invoiced += sum(timesheets.mapped(lambda t: t.unit_amount_rounded*t.so_line_unit_price))
 
             if invoiced<project.sf_invoiced_amount:
                 _logger.info("Historical line to add with {}".format(project.sf_invoiced_amount-invoiced))
