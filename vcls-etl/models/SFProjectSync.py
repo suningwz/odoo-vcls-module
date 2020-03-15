@@ -105,6 +105,14 @@ class SFProjectSync(models.Model):
             project.sudo().process_timesheets(instance)
     
     @api.model
+    def finalize(self):
+        projects = self.search([('migration_status','in',['ts'])])
+        for project in projects:
+            lines = project.so_ids.mapped('order_line')
+            #trigger the computation of the  invoiced qty
+            lines._get_invoice_qty()
+    
+    @api.model
     def migrate_structure(self):
         #we promote timesheet migrations of ongoing projects
         #If timesheets to migrate, we launch the CRON
