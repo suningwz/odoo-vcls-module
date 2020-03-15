@@ -207,13 +207,17 @@ class SaleOrderLine(models.Model):
         #Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type
         super()._get_invoice_qty()
         for line in self:
+            _logger.info("qty invoiced for {}".format(line.name))
             #we add the historical invoiced amount for migration purpose
             if (line.order_id.invoicing_mode == 'fixed_price' and line.product_id.vcls_type in ['vcls_service']) or (line.order_id.invoicing_mode == 'tm' and line.product_id.service_tracking == 'no'):
                 line.qty_invoiced += line.historical_invoiced_amount/line.price_unit if line.price_unit>0 else 0.0
+                _logger.info("Historical Amount for {} : {}".format(line.name,line.historical_invoiced_amount))
             #for rate products, we add the historical timesheets (unit_amount_rounded)
             if (line.order_id.invoicing_mode == 'tm' and line.product_id.vcls_type=='rate'):
                 timesheets = line.order_id.timesheet_ids.filtered(lambda ts: ts.stage_id=='historic' and ts.so_line == line)
+                
                 if timesheets:
+                    _logger.info("Historical QTY for {} : {}".format(line.name,len(timesheets)))
                     line.qty_invoiced -= sum(timesheets.mapped('unit_amount_rounded'))
                     
 
