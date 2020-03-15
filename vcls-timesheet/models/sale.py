@@ -215,11 +215,11 @@ class SaleOrderLine(models.Model):
                 _logger.info("Historical Amount for {} : {}".format(line.name,line.historical_invoiced_amount))
             #for rate products, we add the historical timesheets (unit_amount_rounded)
             if (line.order_id.invoicing_mode == 'tm' and line.product_id.vcls_type=='rate'):
-                timesheets = line.order_id.timesheet_ids.filtered(lambda ts: ts.stage_id=='historic' and ts.so_line == line)
+                timesheets = line.order_id.timesheet_ids.filtered(lambda ts: ts.stage_id=='historical' and ts.so_line == line)
                 
                 if timesheets:
                     _logger.info("Historical QTY for {} : {}".format(line.name,len(timesheets)))
-                    line.qty_invoiced -= sum(timesheets.mapped('unit_amount_rounded'))
+                    line.qty_invoiced += sum(timesheets.mapped('unit_amount_rounded'))
                     
 
     # We need to override the OCA to take the rounded_unit_amount in account rather than the standard unit_amount
