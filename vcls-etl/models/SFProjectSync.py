@@ -108,6 +108,7 @@ class SFProjectSync(models.Model):
     def finalize(self):
         projects = self.search([('migration_status','in',['ts'])])
         for project in projects:
+            _logger.info("Historical Finalization for project {}".format(project.project_sfref))
             lines = project.so_ids.mapped('order_line')
             #trigger the computation of the  invoiced qty
             lines._get_invoice_qty()

@@ -209,7 +209,8 @@ class SaleOrderLine(models.Model):
         for line in self:
             _logger.info("qty invoiced for {}".format(line.name))
             #we add the historical invoiced amount for migration purpose
-            if (line.order_id.invoicing_mode == 'fixed_price' and line.product_id.vcls_type in ['vcls_service']) or (line.order_id.invoicing_mode == 'tm' and line.product_id.service_tracking == 'no'):
+            if (line.product_id.vcls_type in ['vcls_service']) and (line.order_id.invoicing_mode == 'fixed_price' or line.product_id.service_tracking == 'no'):
+            #if (line.order_id.invoicing_mode == 'fixed_price' and line.product_id.vcls_type in ['vcls_service']) or (line.order_id.invoicing_mode == 'tm' and line.product_id.service_tracking == 'no'):
                 line.qty_invoiced += line.historical_invoiced_amount/line.price_unit if line.price_unit>0 else 0.0
                 _logger.info("Historical Amount for {} : {}".format(line.name,line.historical_invoiced_amount))
             #for rate products, we add the historical timesheets (unit_amount_rounded)
