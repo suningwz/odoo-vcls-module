@@ -123,6 +123,16 @@ class SFProjectSync(models.Model):
 
             if invoiced<project.sf_invoiced_amount:
                 _logger.info("Historical line to add with {}".format(project.sf_invoiced_amount-invoiced))
+                vals = {
+                    'product_id': self.env.ref('vcls-etl.product_historical_balance').id,
+                    'order_id':project.so_ids[0],
+                    'name':'Historical Balance',
+                    'product_uom_qty':1,
+                    'price_unit':project.sf_invoiced_amount-invoiced,
+                    'historical_invoiced_amount':project.sf_invoiced_amount-invoiced,
+                }
+                self.env['sale.order.line'].create(vals)
+                
 
     
     @api.model
