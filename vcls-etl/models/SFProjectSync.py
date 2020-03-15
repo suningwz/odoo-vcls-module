@@ -125,7 +125,7 @@ class SFProjectSync(models.Model):
                 _logger.info("Historical line to add with {}".format(project.sf_invoiced_amount-invoiced))
                 vals = {
                     'product_id': self.env.ref('vcls-etl.product_historical_balance').id,
-                    'order_id':project.so_ids[0],
+                    'order_id':project.so_ids[0].id,
                     'name':'Historical Balance',
                     'product_uom_qty':1,
                     'price_unit':project.sf_invoiced_amount-invoiced,
