@@ -484,6 +484,7 @@ class SFProjectSync(models.Model):
                         services_lines = project.prepare_services(quote['elements'],so,milestone_data)
                         rates_lines = project.prepare_rates(quote['elements'],activity_data,assignment_data)
                         milestones_lines = project.prepare_milestones(quote['elements'],milestone_data)
+                        subscription_lines = project.prepare_subscriptions(quote['elements'],annuity_data)
 
                         #create lines
                         if services_lines:
@@ -518,6 +519,16 @@ class SFProjectSync(models.Model):
                             else:
                                 milestone.update({'section_line_id':element_section.id if element_section else False})
                                 project.so_line_create_with_changes(milestone)
+                        
+                        #Subscriptions Lines creation
+                        sub_section = False
+                        for sub in subscription_lines:
+                            sub.update({'order_id':so.id})
+                            if sub.get('display_type','') == 'line_section':
+                                sub_section = self.env['sale.order.line'].create(sub)
+                            else:
+                                sub.update({'section_line_id':sub_section.id if sub_section else False})
+                                project.so_line_create_with_changes(sub)
                             
                         
                         if rates_lines:
@@ -593,7 +604,30 @@ class SFProjectSync(models.Model):
             else:
                 pass
 
-    
+    def prepare_subscriptions(self,elements,annuity_data):
+        output=[]
+        subscriptions = list(filter(lambda a: a['prod_info']['type']=='subscription',elements))
+        for line in subscriptions:
+            o_product = self.sf_id_to_odoo_rec(line['KimbleOne__Product__c'],line['Activity__c'])
+            if not o_product:
+                _logger.error("PRODUCT NOT FOUND FOR {} {}".format(line['KimbleOne__Product__c'],line['Activity__c']))
+                #continue
+            #we create one section per element, then one so line per milestone
+            output.append({
+                'display_type': 'line_section',
+                'name':line['Name'],
+                })
+                
+            annuities = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==line['Id'],annuity_data))
+            for sub in annuities:
+                output.append({
+                        'name':sub['Name'],
+                        'product_id':o_product.id,
+                        'product_uom_qty':sub['KimbleOne__InitialNumberOfUnits__c'] or 1.0,
+                        'price_unit':sub['KimbleOne__InvoicingCurrencyRevenueRate__c'],
+                    })
+        
+
     def prepare_milestones(self,elements,milestone_data):
         output=[]
         milestones = list(filter(lambda a: a['prod_info']['type']=='milestone',elements))
