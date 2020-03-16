@@ -12,6 +12,7 @@
                         <field name="account_name"/>
                         <field name="swift"/>
                         <field name="iban"/>
+                        <field name="bank_account_notes"/>
                     </group>
                 </group>
             </xpath>
