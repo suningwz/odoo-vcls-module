@@ -54,14 +54,14 @@
         <menuitem id="menu_lm_timesheet"
                   name="Managee's Time Analysis" sequence="4"
                   parent="hr_timesheet.timesheet_menu_root"
-                  groups="vcls_security.group_project_controller,vcls-hr.vcls_group_superuser_lvl2"
+                  groups="vcls-hr.vcls_group_lm,vcls-hr.vcls_group_superuser_lvl2"
                   action="action_lm_all_timesheet_pivot"
         />
 
         <menuitem id="menu_pc_timesheet"
                   name="Employee's Time Analysis" sequence="6"
                   parent="hr_timesheet.timesheet_menu_root"
-                  groups="vcls-hr.vcls_group_lm,vcls-hr.vcls_group_superuser_lvl2"
+                  groups="vcls_security.group_project_controller,vcls-hr.vcls_group_superuser_lvl2"
                   action="action_pc_all_timesheet_pivot"
         />
 
