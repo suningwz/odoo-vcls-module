@@ -48,6 +48,8 @@ class Invoice(models.Model):
     program_description = fields.Char(
         compute='compute_program_description',
     )
+    invoice_is_program = fields.Boolean()
+
 
     period_start = fields.Date()
     lc_laius = fields.Text()
@@ -79,8 +81,6 @@ class Invoice(models.Model):
     )
 
     merge_subtask = fields.Boolean()
-
-    invoice_is_program = fields.Boolean(default=False, string='invoice in the name of the program')
 
     @api.multi
     def get_last_report(self):
@@ -132,7 +132,10 @@ class Invoice(models.Model):
 
     @api.multi
     def compute_program_name(self):
+        list_projects = self.origin.split(', ')
         for invoice in self:
+            if len(list_projects) > 1:
+                self.invoice_is_program = True
             program_name = ""
             for project in invoice.project_ids:
                 if project.program_id.name:

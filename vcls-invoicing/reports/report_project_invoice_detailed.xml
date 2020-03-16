@@ -33,7 +33,7 @@
                     </h2>
 
                     <div class="mt-1">
-                        <t t-if="o.invoice_is_program and o.program_name">
+                        <t t-if="o.program_name and o.invoice_is_program">
                             <h4 t-field="o.program_name"/>
                             <div class="col-auto mw-100 mb-2" t-if="o.program_description" name="description">
                                 <strong>Description:</strong>
