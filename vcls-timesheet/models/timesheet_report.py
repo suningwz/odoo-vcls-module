@@ -21,10 +21,11 @@ class TimesheetForecastReport(models.Model):
         ('billable', 'BILLABLE'),
         ('non_billable', 'NON BILLABLE'),],
         )
+    employee_email = fields.Char(string="Email",store=True)
 
     # END OF NEEDED FIELDS
 
-    # SQL REQUEST
+    # SQL REQUEST A.employee_id.work_email AS employee_email
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -39,8 +40,10 @@ class TimesheetForecastReport(models.Model):
                         A.date AS date,
                         A.employee_id AS employee_id,
                         A.id AS id,
-                        A.billability AS billability
+                        A.billability AS billability,
+                        E.work_email AS employee_email
                     FROM account_analytic_line A
+                        LEFT JOIN hr_employee E ON A.employee_id = E.id
                 )
             )
         """ % (self._table,))
