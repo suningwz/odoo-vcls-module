@@ -236,7 +236,7 @@ class SFProjectSync(models.Model):
                 migrating_line = lines_to_migrate[0]
                 #get required source data
                 keys = self.env['etl.sync.keys'].search([('odooId','=',str(migrating_line.id)),('odooModelName','=','sale.order.line'),('externalObjName','=','KimbleOne__DeliveryElement__c'),('search_value','=',False)])
-                _logger.info("KEYS to migrate {}".format(keys.mapped('name')))
+                _logger.info("KEYS to migrate {} for line {}".format(keys.mapped('name'),migrating_line.id))
                 if keys:
                     #get timesheets
                     element_string = project.list_to_filter_string(keys.mapped('externalId'))
