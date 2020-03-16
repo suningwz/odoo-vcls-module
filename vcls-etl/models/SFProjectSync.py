@@ -229,7 +229,7 @@ class SFProjectSync(models.Model):
             so_lines = self.env['sale.order.line'].browse(line_ids)
             _logger.info("FOUND Order Lines {} {}".format(so_lines.mapped('name'),so_lines.mapped('ts_migrated')))
             
-            lines_to_migrate = so_lines.filtered(lambda l: l.ts_migrated==False and l.task_id)
+            lines_to_migrate = so_lines.filtered(lambda l: l.ts_migrated==False and l.task_id and l.product_id.vcls_type!='subscription')
             _logger.info("Lines to migrate {}".format(lines_to_migrate.mapped('name')))
             
             if lines_to_migrate:
