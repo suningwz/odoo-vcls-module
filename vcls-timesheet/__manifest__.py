@@ -16,7 +16,7 @@
     # for the full list
     'category': 'Uncategorized',
 
-    'version': '0.3.20',
+    'version': '0.3.21',
 
 
     # any module necessary for this one to work correctly
