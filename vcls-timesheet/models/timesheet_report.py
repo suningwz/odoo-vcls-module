@@ -21,7 +21,7 @@ class TimesheetForecastReport(models.Model):
         ('billable', 'BILLABLE'),
         ('non_billable', 'NON BILLABLE'),],
         )
-    employee_email = fields.Char(string="Email",related='employee_id.work_email',store=True)
+    employee_email = fields.Char(string="Email",store=True)
 
     # END OF NEEDED FIELDS
 
@@ -40,8 +40,10 @@ class TimesheetForecastReport(models.Model):
                         A.date AS date,
                         A.employee_id AS employee_id,
                         A.id AS id,
-                        A.billability AS billability
+                        A.billability AS billability,
+                        E.work_email
                     FROM account_analytic_line A
+                        LEFT JOIN hr_employee E ON A.employee_id = E.id
                 )
             )
         """ % (self._table,))
