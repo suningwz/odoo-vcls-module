@@ -40,7 +40,7 @@ class TimesheetForecastReport(models.Model):
                         A.date AS date,
                         A.employee_id AS employee_id,
                         A.id AS id,
-                        A.billability AS billability,
+                        A.billability AS billability
                     FROM account_analytic_line A
                 )
             )
