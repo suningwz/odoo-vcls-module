@@ -104,10 +104,11 @@ class SFProjectSync(models.Model):
         for project in self:
             project.sudo().process_timesheets(instance)
     
-    @api.model
+    @api.multi
     def finalize(self):
-        projects = self.search([('migration_status','in',['ts'])])
-        for project in projects:
+        for project in self:
+            if project.migration_status != 'ts':
+                continue
             _logger.info("Historical Finalization for project {}".format(project.project_sfref))
             lines = project.so_ids.mapped('order_line')
             #trigger the computation of the  invoiced qty
@@ -133,7 +134,8 @@ class SFProjectSync(models.Model):
                     'price_unit':project.sf_invoiced_amount-invoiced,
                     'historical_invoiced_amount':project.sf_invoiced_amount-invoiced,
                 }
-                self.env['sale.order.line'].create(vals)
+                historical = self.env['sale.order.line'].create(vals)
+                historical._get_invoice_qty()
             
             lines._compute_qty_delivered()
                 
@@ -264,8 +266,8 @@ class SFProjectSync(models.Model):
                 continue     
         
         for project in self.filtered(lambda p: p.migration_status=='ts'):
-            #we finalise the 
-            pass
+            project.finalize() 
+            project.migration_status = 'complete'
             
 
     def process_element_ts(self,element_key,assignment_data,timesheet_data):
