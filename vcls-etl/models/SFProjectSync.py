@@ -257,6 +257,8 @@ class SFProjectSync(models.Model):
 
                     else:
                         migrating_line.ts_migrated = True
+                else:
+                    migrating_line.ts_migrated = True
 
                 #we recheck if remaining lines
                 lines_to_migrate = so_lines.filtered(lambda l: l.ts_migrated==False and l.task_id) 
@@ -530,6 +532,7 @@ class SFProjectSync(models.Model):
                             else:
                                 sub.update({'section_line_id':sub_section.id if sub_section else False})
                                 project.so_line_create_with_changes(sub)
+                                
                             
                         
                         if rates_lines:
