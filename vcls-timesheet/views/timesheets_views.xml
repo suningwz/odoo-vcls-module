@@ -333,19 +333,7 @@
 
         <menuitem id="hr_timesheet.timesheet_menu_activity_mine" name="My Timesheets" sequence="1" parent="hr_timesheet.timesheet_menu_root" action="hr_timesheet.act_hr_timesheet_line" />
 
-        <menuitem id="menu_lm_timesheet"
-                  name="Managee's Time Analysis" sequence="4"
-                  parent="hr_timesheet.timesheet_menu_root"
-                  groups="vcls_security.group_project_controller,vcls-hr.vcls_group_superuser_lvl2"
-                  action="action_pc_all_timesheet_pivot"
-        />
-
-        <menuitem id="menu_pc_timesheet"
-                  name="Employee's Time Analysis" sequence="6"
-                  parent="hr_timesheet.timesheet_menu_root"
-                  groups="vcls-hr.vcls_group_lm,vcls-hr.vcls_group_superuser_lvl2"
-                  action="action_lm_all_timesheet_pivot"
-        />
+        
 
         <!--<menuitem id="hr_timesheet.timesheet_menu_activity_all"
                   name="All Timesheets" parent="hr_timesheet.menu_hr_time_tracking"
