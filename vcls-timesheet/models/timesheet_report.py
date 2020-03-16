@@ -21,7 +21,7 @@ class TimesheetForecastReport(models.Model):
         ('billable', 'BILLABLE'),
         ('non_billable', 'NON BILLABLE'),],
         )
-    employee_email = fields.Char(string="Email",related='employee_id.work_email')
+    employee_email = fields.Char(string="Email",related='employee_id.work_email',store=True)
 
     # END OF NEEDED FIELDS
 
