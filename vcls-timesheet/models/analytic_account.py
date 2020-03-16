@@ -25,6 +25,7 @@ class AnalyticLine(models.Model):
         ('adjustment_validation', '4. Adjustment Validation'),
         ('invoiceable', '5. Invoiceable'),
         ('invoiced', '6. Invoiced'),
+        ('historical','7. Historical'),
         ('outofscope', 'Out Of Scope'),
         ], default='draft')
 
@@ -269,14 +270,8 @@ class AnalyticLine(models.Model):
                         self = self.sudo()
 
                 # if one of the 3 important value has changed, and the stage changes the delivered amount
-                if (vals.get('date', False) or vals.get('unit_amount_rounded',
-                                                        False) or vals.get(
-                        'stage_id', False)) and (
-                        vals.get('stage_id', 'no') in ['invoiced',
-                                                       'invoiceable'] or line.stage_id in [
-                            'invoiced', 'invoiceable']):
-                    _logger.info(
-                        "Order timesheet update for {}".format(line.name))
+                if (vals.get('date', False) or vals.get('unit_amount_rounded',False) or vals.get('stage_id', False)) and (vals.get('stage_id', line.stage_id) in ['invoiced','invoiceable','historical']):
+                    _logger.info("Order timesheet update for {}".format(line.name))
                     so_update = True
                     orders |= line.so_line.order_id
 

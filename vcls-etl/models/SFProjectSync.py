@@ -24,14 +24,15 @@ class SFProjectSync(models.Model):
     project_sfid = fields.Char()
     project_sfname = fields.Char()
     project_sfref = fields.Char()
+    sf_invoiced_amount = fields.Float()
     so_ids = fields.Many2many(
         'sale.order',
         readonly = True,
     )
-    project_ids = fields.Many2many(
+    """project_ids = fields.Many2many(
         'project.project',
         readonly = True,
-    )
+    )"""
     migration_status = fields.Selection(
         [
             ('todo', 'ToDo'),
@@ -69,12 +70,368 @@ class SFProjectSync(models.Model):
         for project in migrations:
             _logger.info("PROJECT MIGRATION STATUS | {} | {} | {}".format(project.project_sfref,project.project_sfname,project.migration_status))
 
-    @api.model
-    def test(self):
+        #we update the reference data
+        self._build_invoice_item_status(instance)
+        self._build_milestone_type(instance)
+        self._build_time_periods(instance)
+        #as well as the mapping with odoo objects
+        self._build_company_map(instance)
+        self._build_product_map(instance)
+        self._build_rate_map(instance)
+        self._build_user_map(instance)
+        self._build_activity_map(instance)
+        self._build_resources_map(instance)
+        self._test_maps(instance)
+
+    """
+    POST PROCESS: Move COmpleted tasks
+    compute KPIs
+    """
+    
+    @api.multi
+    def project_migrate_struc(self):
         instance = self.getSFInstance()
-        projects = self.search([('migration_status','=','todo')])
-        _logger.info("Processing {} Projects".format(projects.mapped('project_sfref')))
-        projects.build_quotations(instance)
+        if not instance:
+            return False
+        for project in self:
+            project.sudo().build_quotations(instance)
+
+    @api.multi
+    def project_migrate_ts(self):
+        instance = self.getSFInstance()
+        if not instance:
+            return False
+        for project in self:
+            project.sudo().process_timesheets(instance)
+    
+    @api.multi
+    def finalize(self):
+        for project in self:
+            if project.migration_status != 'ts':
+                continue
+            _logger.info("Historical Finalization for project {}".format(project.project_sfref))
+            lines = project.so_ids.mapped('order_line')
+            #trigger the computation of the  invoiced qty
+            
+            lines._get_invoice_qty()
+            invoiced=0
+            for line in lines:
+                if (line.product_id.vcls_type in ['vcls_service']) and (line.order_id.invoicing_mode == 'fixed_price' or line.product_id.service_tracking == 'no'):
+                    invoiced += line.qty_invoiced*line.price_unit
+                elif (line.order_id.invoicing_mode == 'tm' and line.product_id.vcls_type=='rate'):
+                    timesheets = line.order_id.timesheet_ids.filtered(lambda ts: ts.stage_id=='historical' and ts.so_line == line)
+                    if timesheets:
+                        invoiced += sum(timesheets.mapped(lambda t: t.unit_amount_rounded*t.so_line_unit_price))
+
+            if invoiced<project.sf_invoiced_amount:
+                _logger.info("Historical line to add with {}".format(project.sf_invoiced_amount-invoiced))
+                vals = {
+                    'product_id': self.env.ref('vcls-etl.product_historical_balance').id,
+                    'order_id':project.so_ids.filtered(lambda o: not o.parent_id)[0].id,
+                    'name':'Historical Balance',
+                    'product_uom_qty':1,
+                    'qty_delivered_manual':1,
+                    'price_unit':project.sf_invoiced_amount-invoiced,
+                    'historical_invoiced_amount':project.sf_invoiced_amount-invoiced,
+                }
+                historical = self.env['sale.order.line'].create(vals)
+                historical._get_invoice_qty()
+            
+            lines._compute_qty_delivered()
+                
+
+    
+    @api.model
+    def migrate_structure(self):
+        #we promote timesheet migrations of ongoing projects
+        #If timesheets to migrate, we launch the CRON
+        ts_projects = self.search([('migration_status','in',['so','structure'])])
+        if not ts_projects:
+            instance = self.getSFInstance()
+            projects = self.search([('migration_status','=','todo')]).sorted(key=lambda r: r.create_date)
+            if projects:
+                _logger.info("PROJECT MIGRATION | Structure of {}".format(projects[0].project_sfname))
+                projects[0].build_quotations(instance)
+        
+        #we call the timesheet migration job
+        _logger.info("Timesheet Migration Callback!")
+        cron = self.env.ref('vcls-etl.cron_project_timesheets_ping')
+        cron.write({
+            'active': True,
+            'nextcall': datetime.now() + timedelta(seconds=3),
+            'numbercall': 1,
+        })
+        
+        
+    
+    @api.model
+    def migrate_timesheets_ping(self):
+        instance = self.getSFInstance()
+        projects = self.search([('migration_status','=','structure')]).sorted(key=lambda r: r.create_date)
+        if projects:
+            _logger.info("PROJECT MIGRATION | Timesheets for {}".format(projects[0].project_sfname))
+            projects[0].process_timesheets(instance)
+            projects = self.search([('migration_status','=','structure')]).sorted(key=lambda r: r.create_date)
+        
+        if projects: #still timesheets to migrate, launch the pong version
+            cron = self.env.ref('vcls-etl.cron_project_timesheets_pong')
+            cron.write({
+                'active': True,
+                'nextcall': datetime.now() + timedelta(seconds=3),
+                'numbercall': 1,
+            })
+        
+        else:
+            #we call back the structure migration job to process remining projects
+            cron = self.env.ref('vcls-etl.cron_project_structure')
+            cron.write({
+                'active': True,
+                'nextcall': datetime.now() + timedelta(seconds=3),
+                'numbercall': 1,
+            })
+    
+    @api.model
+    def migrate_timesheets_pong(self):
+        instance = self.getSFInstance()
+        projects = self.search([('migration_status','in',['structure','ts'])]).sorted(key=lambda r: r.create_date)
+        if projects:
+            _logger.info("PROJECT MIGRATION | Timesheets for {}".format(projects[0].project_sfname))
+            projects[0].process_timesheets(instance)
+            projects = self.search([('migration_status','in',['structure','ts'])]).sorted(key=lambda r: r.create_date)
+        
+        if projects: #still timesheets to migrate, launch the ping version
+            cron = self.env.ref('vcls-etl.cron_project_timesheets_ping')
+            cron.write({
+                'active': True,
+                'nextcall': datetime.now() + timedelta(seconds=3),
+                'numbercall': 1,
+            })
+        
+        else:
+            #we call back the structure migration job to process remining projects
+            cron = self.env.ref('vcls-etl.cron_project_structure')
+            cron.write({
+                'active': True,
+                'nextcall': datetime.now() + timedelta(seconds=3),
+                'numbercall': 1,
+            })
+    
+    
+    
+    @api.multi
+    def process_timesheets(self,instance):
+        if not instance:
+            return False
+        
+        for project in self.filtered(lambda p: p.migration_status=='structure'):
+            #get the related keys of elements
+            line_ids = project.so_ids.mapped('order_line.id')
+            so_lines = self.env['sale.order.line'].browse(line_ids)
+            _logger.info("FOUND Order Lines {} {}".format(so_lines.mapped('name'),so_lines.mapped('ts_migrated')))
+            
+            lines_to_migrate = so_lines.filtered(lambda l: l.ts_migrated==False and l.task_id)
+            _logger.info("Lines to migrate {}".format(lines_to_migrate.mapped('name')))
+            
+            if lines_to_migrate:
+                migrating_line = lines_to_migrate[0]
+                #get required source data
+                keys = self.env['etl.sync.keys'].search([('odooId','=',str(migrating_line.id)),('odooModelName','=','sale.order.line'),('externalObjName','=','KimbleOne__DeliveryElement__c'),('search_value','=',False)])
+                if keys:
+                    #get timesheets
+                    element_string = project.list_to_filter_string(keys.mapped('externalId'))
+                    timesheet_data = project._get_timesheet_data(instance,element_string,migrating_line.ts_max_id)
+                    if timesheet_data:
+                        migrating_line.ts_max_id = max(self.values_from_key(timesheet_data,'Migration_Index__c'))
+                        _logger.info("TS MAX ID {} on {} entries.".format(migrating_line.ts_max_id,len(timesheet_data)))
+                        #we get assignements 
+                        assignment_string = project.list_to_filter_string(timesheet_data,'KimbleOne__ActivityAssignment__c')
+                        assignment_data = project._get_assignment_data(instance,assignment_string,'Id')
+
+                        #we loop per elements
+                        for element_key in keys:
+                            project.process_element_ts(element_key,assignment_data,timesheet_data)
+                        
+                        if len(timesheet_data)<500: #we got all the TS of the element
+                            migrating_line.ts_migrated = True
+
+                    else:
+                        migrating_line.ts_migrated = True
+
+                #we recheck if remaining lines
+                lines_to_migrate = so_lines.filtered(lambda l: l.ts_migrated==False and l.task_id) 
+
+            #when all lines have been migrated 
+            if not lines_to_migrate:
+                project.migration_status = 'ts'
+                continue     
+        
+        for project in self.filtered(lambda p: p.migration_status=='ts'):
+            project.finalize() 
+            project.migration_status = 'complete'
+            
+
+    def process_element_ts(self,element_key,assignment_data,timesheet_data):
+        inv_status = self.env['etl.sync.keys'].search([('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
+        task_stage = self.env['project.task.type'].search([('name','=','0% Progress')],limit = 1)
+        count = 0
+        #element level values
+        so_line = self.env['sale.order.line'].browse(int(element_key.odooId))
+        parent_task_id = so_line.task_id
+        project_id = so_line.project_id
+        main_project_id = project_id.parent_id if project_id.parent_id else project_id
+        
+
+        #we look for a mapping key and create if not exists. This will help to resync afterwards if required
+        map_key = self.env['etl.sync.keys'].search([('externalObjName','=','Timesheet_Map'),('externalId','=',element_key.externalId),('odooId','=',str(parent_task_id.id))],limit=1)
+        if not map_key:
+            vals = {
+                'externalObjName':'Timesheet_Map',
+                'externalId': element_key.externalId,
+                'odooId': str(parent_task_id.id),
+                'state':'map',
+            }
+            self.env['etl.sync.keys'].create(vals)
+            #we change the stage of the task to allow timesheets
+            parent_task_id.stage_id = task_stage
+
+
+        #element timesheets
+        e_ts = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==element_key.externalId,timesheet_data))
+        _logger.info("Processing {} Timesheets for project {} task {}".format(len(e_ts),project_id.name,parent_task_id.name))
+
+        #we build the time cat before the subtask in order to let it inherit
+        self.create_time_categories(parent_task_id,e_ts)
+        #we build subtasks and timecategories according to found categories
+        self.create_subtasks(element_key,parent_task_id,e_ts)
+        
+        for assignment in assignment_data:
+            a_ts = list(filter(lambda a: a['KimbleOne__ActivityAssignment__c']==assignment['Id'],e_ts))
+            if not a_ts:
+                continue
+            #assignment level values
+            hourly_rate = assignment['KimbleOne__InvoicingCurrencyForecastRevenueRate__c']
+            employee = self.sf_id_to_odoo_rec(assignment['KimbleOne__Resource__c'])
+            if not employee: 
+                #this means the employee doesn't exists and we need to look through role to find the forecast employee
+                product = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
+                if product:
+                    employee = product.forecast_employee_id
+
+            #we finally loop in TS
+            for ts in a_ts:
+                #timesheet values
+                stack = []
+                if ts['KimbleOne__Category3__c']:
+                    stack.append(ts['KimbleOne__Category3__c'])
+                if ts['KimbleOne__Notes__c']:
+                    stack.append(ts['KimbleOne__Notes__c'])
+
+                task_key = self.env['etl.sync.keys'].search([('externalObjName','=','Timesheet_Map'),('externalId','=',element_key.externalId),('search_value','=',ts['KimbleOne__Category1__c'])],limit=1)
+                task_id = int(task_key.odooId) if task_key else parent_task_id.id
+                time_category = self.env['project.time_category'].search([('name','=ilike',ts['KimbleOne__Category2__c'])],limit=1)
+                period = self.env['etl.sync.keys'].search([('externalObjName','=','KimbleOne__TimePeriod__c'),('externalId','=',ts['KimbleOne__TimePeriod__c'])],limit=1)
+                date = period.name if period else False
+
+                vals = {
+                    'is_timesheet': True,
+                    'name': " | ".join(stack) if len(stack)>0 else "N/A",
+                    'employee_id': employee.id if employee else False,
+                    'main_project_id': main_project_id.id,
+                    'project_id': project_id.id,
+                    'task_id': task_id,
+                    'time_category_id': time_category.id if time_category else False,
+                    'date': date,
+                    'unit_amount': ts['KimbleOne__EntryUnits__c'],
+                }
+
+                vals = self.get_status_vals(vals,ts,inv_status)
+                if hourly_rate > 0 and not vals.get('so_line_unit_price',False): #if the assignment was billable with a price
+                    vals.update({'so_line_unit_price':hourly_rate})
+                else: #else we let the system pick the value from the sale_order_line
+                    pass
+
+                #we finally check if we have enough to create the timesheet
+                if employee and date:
+                    self.env['account.analytic.line'].create(vals)
+                    count += 1
+                    _logger.info("Timesheet Created {}/{}".format(count,len(e_ts)))
+                else:
+                    _logger.info("IMPOSSIBLE TO CREATE TS {}".format(vals))
+    
+    def get_status_vals(self,vals,timesheet,inv_status):
+        for status in inv_status:
+            if status.externalId == timesheet['KimbleOne__InvoiceItemStatus__c']:
+                # VCLS status treatment
+                if 'Draft' in timesheet['VCLS_Status__c']:
+                    temp_stage = 'draft'
+                elif 'ReadyForApproval' in timesheet['VCLS_Status__c']:
+                    temp_stage = 'lc_review'
+                elif 'Approved' in timesheet['VCLS_Status__c']:
+                    temp_stage = 'invoiceable'
+                else:
+                    temp_stage = False
+
+                #invoicing Status treatment
+                if status.name == 'WrittenOff':
+                    vals.update({
+                        'unit_amount_rounded': 0,
+                        'lc_comment': 'Migration - Rejected',
+                        'stage_id': 'invoiced',
+                    })
+                elif status.name == 'Invoiced':
+                    vals.update({
+                        'unit_amount_rounded': timesheet['KimbleOne__EntryUnits__c'],
+                        'stage_id': 'historical',
+                    })
+                else:
+                    vals.update({
+                        'unit_amount_rounded': timesheet['KimbleOne__EntryUnits__c'],
+                        'stage_id': temp_stage,
+                    })
+                break
+        return vals
+        
+    
+    def create_time_categories(self,parent_task,timesheets_data):
+        cat_names = self.values_from_key(timesheets_data,'KimbleOne__Category2__c')
+        cat_names = list(set(cat_names))
+        tc_ids = [self.env.ref('vcls-timesheet.travel_time_category').id]#we init with the travel TC
+        _logger.info("FOUND Time Cat: {}".format(cat_names))
+        if cat_names:
+            for item in cat_names:
+                if item:
+                    #we search for an existing TC
+                    tc = self.env['project.time_category'].search([('name','=ilike',item)],limit=1)
+                    if tc:
+                        tc_ids.append(tc.id)
+                    else: #we create it
+                        tc = self.env['project.time_category'].create({'name':item})
+                        tc_ids.append(tc.id)
+        #we write the task
+        parent_task.write({'time_category_ids': [(6,0,tc_ids)]})
+
+    def create_subtasks(self,element_key,parent_task,timesheets_data):
+        sub_names = self.values_from_key(timesheets_data,'KimbleOne__Category1__c')
+        sub_names = list(set(sub_names))
+        for item in list(filter(lambda a: a not in ['No','None'],sub_names)):
+            #we check if already created
+            map_key = self.env['etl.sync.keys'].search([('externalObjName','=','Timesheet_Map'),('externalId','=',element_key.externalId),('search_value','=',item)],limit=1)
+            if not map_key:
+                #we create the subtask
+                subtask = self.env['project.task'].create({
+                    'project_id':parent_task.project_id.id,
+                    'name': "{}:{}".format(parent_task.name,item),
+                    'parent_id':parent_task.id,
+                    'stage_id':parent_task.stage_id.id,
+                })
+                _logger.info("Subtask Creation {} | {}".format(subtask.project_id.name,subtask.name))
+                self.env['etl.sync.keys'].create({
+                    'externalObjName':'Timesheet_Map',
+                    'externalId': element_key.externalId,
+                    'search_value': item,
+                    'odooId': str(subtask.id),
+                    'state':'map',
+                })
     
     @api.multi
     def build_quotations(self,instance):
@@ -98,6 +455,11 @@ class SFProjectSync(models.Model):
         #Then we loop to process projects separately
         for project in self:
             my_project = list(filter(lambda p: p['Id']==project.project_sfid,project_data))[0]
+            #we store the total invoicde amount for future use
+            my_elements = list(filter(lambda element: element['KimbleOne__DeliveryGroup__c']==my_project['Id'],element_data))
+            element_filter = project.list_to_filter_string(my_elements,'Id')
+            project.sf_invoiced_amount = project._get_invoiced_amount(instance,element_filter)
+
             if not project.so_ids: #no sale order yet
                 #core_team
                 core_team = self.env['core.team'].create(project.prepare_core_team_data(my_project,assignment_data))
@@ -119,37 +481,73 @@ class SFProjectSync(models.Model):
                         project.write({'so_ids':[(4, so.id, 0)]})
                         so.name = "{} | {}".format(vals['internal_ref'],vals['name'])
                         #we prepare line content
-                        services_data = project.prepare_services(quote['elements'],so,milestone_data)
-                        rates_data = project.prepare_rates(quote['elements'],activity_data,assignment_data)
+                        services_lines = project.prepare_services(quote['elements'],so,milestone_data)
+                        rates_lines = project.prepare_rates(quote['elements'],activity_data,assignment_data)
+                        milestones_lines = project.prepare_milestones(quote['elements'],milestone_data)
 
                         #create lines
-                        if services_data:
+                        if services_lines:
                             #we create a section
                             section = self.env['sale.order.line'].create({
                                 'order_id':so.id,
                                 'display_type': 'line_section',
                                 'name':'Services',
                                 })
-                            for service in services_data:
-                                project.so_line_create_with_changes(service)
+                            for service in services_lines:
+                                line = project.so_line_create_with_changes(service['values'])
+                                #we create a key for later usage
+                                existing = self.env['etl.sync.keys'].search([('externalObjName','=','KimbleOne__DeliveryElement__c'),('externalId','=',service['element']['Id'])],limit=1)
+                                if existing:
+                                    existing.write({'odooId':str(line.id),'name':service['element']['Name']})
+                                else:
+                                    self.env['etl.sync.keys'].create({
+                                        'externalObjName':'KimbleOne__DeliveryElement__c',
+                                        'externalId':service['element']['Id'],
+                                        'state':'map',
+                                        'name':service['element']['Name'],
+                                        'odooModelName':'sale.order.line',
+                                        'odooId':str(line.id),
+                                    })
                         
-                        if rates_data:
+                        #Milestones Lines creation
+                        element_section = False
+                        for milestone in milestones_lines:
+                            milestone.update({'order_id':so.id})
+                            if milestone.get('display_type','') == 'line_section':
+                                element_section = self.env['sale.order.line'].create(milestone)
+                            else:
+                                milestone.update({'section_line_id':element_section.id if element_section else False})
+                                project.so_line_create_with_changes(milestone)
+                            
+                        
+                        if rates_lines:
                             #we create a section
                             section = self.env['sale.order.line'].create({
                                 'order_id':so.id,
                                 'display_type': 'line_section',
                                 'name':'Hourly Rates',
                                 })
-                        for rate in rates_data:
-                            vals = {
-                                'order_id':so.id,
-                                'product_id': rate['product_id'],
-                                'product_uom_qty':0,
-                                'section_line_id':section.id,
-                                }
-                            if rate['price'] > 0:
-                                vals.update({'price_unit':rate['price']})
-                            project.so_line_create_with_changes(vals)
+                            for rate in rates_lines:
+                                vals = {
+                                    'order_id':so.id,
+                                    'product_id': rate['product_id'],
+                                    'product_uom_qty':0,
+                                    'section_line_id':section.id,
+                                    }
+                                if rate['price'] > 0:
+                                    vals.update({'price_unit':rate['price']})
+                                project.so_line_create_with_changes(vals)
+                project.migration_status = 'so'
+            
+            if project.migration_status == 'so':
+                #we confirm the orders
+                for so in project.so_ids:
+                    so.action_sync()
+                    so.action_confirm()
+                    _logger.info("Confirming SO {}".format(so.name) )
+
+                project.process_forecasts(activity_data,assignment_data)
+                project.migration_status = 'structure'
     
     def so_line_create_with_changes(self,vals):
         line = self.env['sale.order.line'].create(vals)
@@ -165,6 +563,66 @@ class SFProjectSync(models.Model):
         so = self.env['sale.order'].create(vals)
         so._compute_tax_id()
         return so
+    
+    def process_forecasts(self,activity_data,assignment_data):
+        so_lines = self.so_ids.mapped('order_line')
+        for line in so_lines:
+            #we look for a key
+            existing = self.env['etl.sync.keys'].search([('externalObjName','=','KimbleOne__DeliveryElement__c'),('odooModelName','=','sale.order.line'),('odooId','=',str(line.id))],limit=1)
+            if existing:
+                _logger.info("Processing Forecasts for {}".format(existing.name))
+                activities = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==existing['externalId'],activity_data))
+                if activities:
+                    activity = activities[0]
+                    assignments = list(filter(lambda a: a['KimbleOne__ResourcedActivity__c']==activity['Id'],assignment_data))
+                    #we get all the roles
+                    roles = self.values_from_key(assignments,'KimbleOne__ActivityRole__c')
+                    roles = list(set(roles)) #we make it a unique list
+                    for role in roles:
+                        role_assignments = list(filter(lambda a: a['KimbleOne__ActivityRole__c']==role,assignments))
+                        forecasted_amount = sum(self.values_from_key(role_assignments,'KimbleOne__ForecastUsage__c'))
+                        #we find the existing forecast
+                        rate_product = self.sf_id_to_odoo_rec(role)
+                        employee = rate_product.forecast_employee_id if rate_product else False
+                        if employee:
+                            forecast = self.env['project.forecast'].search([('task_id','=',line.task_id.id),('employee_id','=',employee.id)],limit=1)
+                            if forecast:
+                                forecast.write({'resource_hours':forecasted_amount})
+                                _logger.info("Forecast Updated for {} in {} with {} hours".format(employee.name,line.task_id.name,forecasted_amount))
+  
+            else:
+                pass
+
+    
+    def prepare_milestones(self,elements,milestone_data):
+        output=[]
+        milestones = list(filter(lambda a: a['prod_info']['type']=='milestone',elements))
+        for line in milestones:
+            o_product = self.sf_id_to_odoo_rec(line['KimbleOne__Product__c'],line['Activity__c'])
+            if not o_product:
+                _logger.error("PRODUCT NOT FOUND FOR {} {}".format(line['KimbleOne__Product__c'],line['Activity__c']))
+            #we create one section per element, then one so line per milestone
+            output.append({
+                'display_type': 'line_section',
+                'name':line['Name'],
+                })
+            
+            #we get the milestones corresponding to the line
+            msts = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==line['Id'],milestone_data))
+            for mst in msts:
+                invoicing_status = self.env['etl.sync.keys'].search([('externalId','=',mst['KimbleOne__InvoiceItemStatus__c']),('externalObjName','=','KimbleOne__ReferenceData__c'),('search_value','=','InvoiceItemStatus')])
+                if invoicing_status.name != 'WrittenOff':
+                    output.append({
+                        'name':mst['Name'],
+                        'product_id':o_product.id,
+                        'product_uom_qty':1,
+                        'price_unit':mst['KimbleOne__InvoicingCurrencyMilestoneValue__c'],
+                        'qty_delivered': 1.0 if invoicing_status.name in ['Ready','Invoiced'] else 0.0,
+                        'historical_invoiced_amount':mst['KimbleOne__InvoicingCurrencyMilestoneValue__c'] if invoicing_status.name in ['Invoiced'] else 0.0,
+                    })
+
+        return output
+
 
     def prepare_services(self,elements,sale_order,milestone_data):
         output=[]
@@ -180,7 +638,7 @@ class SFProjectSync(models.Model):
                     'product_uom_qty':1,
                     'price_unit':line['Contracted_Budget__c'] or line['KimbleOne__InvoicingCurrencyContractRevenue__c'],
                 }
-                output.append(vals)
+                output.append({'element':line,'values':vals})
             elif o_product and mode=='fixed_price':
                 milestones_values = self.sum_milestones(line,milestone_data)
                 vals = {
@@ -189,8 +647,10 @@ class SFProjectSync(models.Model):
                     'product_id':o_product.id,
                     'product_uom_qty':1,
                     'price_unit':milestones_values['ordered'],
+                    'qty_delivered':milestones_values['delivered']/milestones_values['ordered'] if milestones_values['ordered']>0 else 0,
+                    'historical_invoiced_amount':milestones_values['invoiced'],
                 }
-                output.append(vals)
+                output.append({'element':line,'values':vals})
             else:
                 _logger.info("No Odoo Product found for {}".format(line))
         return output
@@ -330,6 +790,8 @@ class SFProjectSync(models.Model):
                 'expected_end_date':my_project['KimbleOne__ExpectedEndDate__c'],
                 'tag_ids':[(4, tag, 0)],
                 'product_category_id':bl,
+                'fp_delivery_mode': 'manual',
+                'merge_subtask':False,
             }
             quote_data.append({'index':item['min_index'],'quote_vals':quote_vals, 'elements':item['elements']})  
             index += 1
@@ -386,7 +848,26 @@ class SFProjectSync(models.Model):
             output.append(fp_group)
         return sorted(output,key=lambda q: q['min_index'])
 
-    ###    
+    ###  
+    def _get_invoiced_amount(self,instance,filter_string = False):
+        query = SFProjectSync_constants.SELECT_GET_INVOICED_AMOUNT
+        query += "WHERE KimbleOne__DeliveryElement__c IN " + filter_string
+        records = instance.getConnection().query_all(query)['records']
+        _logger.info("Found {} Invoiced from Elements".format((records[0]['expr0'])))
+        return records[0]['expr0']
+
+    def _get_timesheet_data(self,instance,filter_string = False, max_id=0):
+        query = SFProjectSync_constants.SELECT_GET_TIME_ENTRIES
+        query += "WHERE KimbleOne__DeliveryElement__c IN " + filter_string
+        #we add a filter and order by to manage batches of 500
+        query += " AND Migration_Index__c>{} ORDER BY Migration_Index__c LIMIT 500".format(max_id)
+        _logger.info(query)
+
+        records = instance.getConnection().query_all(query)['records']
+        _logger.info("Found {} Time Entries".format(len(records)))
+        
+        return records
+
     def _get_element_data(self,instance,filter_string = False):
         query = SFProjectSync_constants.SELECT_GET_ELEMENT_DATA
         query += "WHERE Automated_Migration__c = TRUE AND KimbleOne__DeliveryGroup__c IN " + filter_string + " ORDER BY KimbleOne__Reference__c ASC"
@@ -428,9 +909,14 @@ class SFProjectSync(models.Model):
         
         return records
     
-    def _get_assignment_data(self,instance,filter_string = False):
+    def _get_assignment_data(self,instance,filter_string = False,mode='Project'):
         query = SFProjectSync_constants.SELECT_GET_ASSIGNMENT_DATA
-        query += "WHERE KimbleOne__DeliveryGroup__c IN " + filter_string
+        if mode == 'Project':
+            query += "WHERE KimbleOne__DeliveryGroup__c IN " + filter_string
+        elif mode == 'Id':
+            query += "WHERE Id IN " + filter_string
+        else:
+            pass
         _logger.info(query)
 
         records = instance.getConnection().query_all(query)['records']
@@ -547,9 +1033,20 @@ class SFProjectSync(models.Model):
             if key:
                 stack.append("\'{}\'".format(item[key])) 
             else:
-                stack.append("\'{}\'".format(item))  
+                stack.append("\'{}\'".format(item))
+        #we remove duplicates
+        stack = list(set(stack))  
         result = "({})".format(",".join(stack))
         return result
+    
+    def int_list_to_string_list(self,list_in,key=False):
+        stack = []
+        for item in list_in:
+            if key:
+                stack.append('{}'.format(item[key])) 
+            else:
+                stack.append('{}'.format(item))  
+        return stack
     
         
         
