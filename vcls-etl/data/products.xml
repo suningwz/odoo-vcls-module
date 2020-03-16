@@ -1,0 +1,19 @@
+<odoo>
+    <data noupdate="0">
+
+        <record id="product_historical_balance" model="product.template">
+            <field name="name">Historical Balance</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="purchase_ok" eval="False"/>
+            <field name="active" eval="True" />
+            <field name="type">service</field>
+            <field name="vcls_type">expense</field>
+            <field name="service_tracking">no</field>
+            <field name="service_policy">delivered_manual</field>
+            <field name="categ_id" ref="vcls-invoicing.product_category_invoice" />
+            <field name="company_id" eval="" />
+        </record>
+
+    </data>
+
+</odoo>

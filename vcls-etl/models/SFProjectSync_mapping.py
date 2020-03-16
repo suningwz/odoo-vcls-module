@@ -8,6 +8,7 @@ from simple_salesforce.exceptions import SalesforceMalformedRequest
 from tzlocal import get_localzone
 from datetime import datetime
 from datetime import timedelta
+from odoo.exceptions import UserError, ValidationError
 import time
 import logging
 _logger = logging.getLogger(__name__)
@@ -308,12 +309,29 @@ class SFProjectSync(models.Model):
         if not instance:
             return False
 
-        for key in self.env['etl.sync.keys'].with_context(active_test=False).search([('state','=','map'),('odooId','!=',False)]):
+        
+        #we test if any product not mapped
+        to_treat = self.env['etl.sync.keys'].with_context(active_test=False).search([('state','=','map'),('odooId','=',False),('externalObjName','=','KimbleOne__Product__c')])
+        message = "Please give a mapping value for the following product/activity:\n"
+        for key in to_treat:
+            message += "{} {}\n".format(key.name,key.search_value)
+        
+
+        message += "\nPlease complete following records:\n"
+        for key in self.env['etl.sync.keys'].with_context(active_test=False).search([('state','=','map'),('odooId','!=',False),('odooModelName','!=',False)]):
             try:
                 record = self.env[key.odooModelName].browse(int(key.odooId))
+                if key.odooModelName=='hr.employee':
+                    if not record.default_rate_ids:
+                        raise ValidationError("Please define a rate for {}".format(record.name))
             except:
-                _logger.info("ETL BAD ODOO KEY {} {}".format(key.odooModelName,key.odooId))
-                return False
+                to_treat += key
+                message += "{} model {} Id {}\n".format(key.name,key.odooModelName,key.odooId)
+                #_logger.info("ETL BAD ODOO KEY {} {}".format(key.odooModelName,key.odooId))
+                #return False
+        
+        if to_treat:
+            _logger.error(message)
         
         return True
 
