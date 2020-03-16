@@ -31,8 +31,21 @@
                         </span>
                         <span t-field="o.number"/>
                     </h2>
+
+                    <div class="mt-1">
+                        <t t-if="o.program_name and o.invoice_is_program">
+                            <h4 t-field="o.program_name"/>
+                            <div class="col-auto mw-100 mb-2" t-if="o.program_description" name="description">
+                                <strong>Description:</strong>
+                                <p class="m-0" t-field="o.program_description"/>
+                            </div>                                
+                        </t>
+                        <t t-elif="o.origin" name="origin" class="mt-1">
+                            <span t-field="o.origin"/>
+                        </t>
+                    </div>
+
                     <div t-if="o.origin" name="origin" class="mt-1">
-                        <span t-field="o.origin"/>
                         <t t-if="o.period_start and o.timesheet_limit_date">
                         <span> for the period from </span>
                         <span t-field="o.period_start"/>
@@ -42,10 +55,10 @@
                     </div>
                     <div name="informations" class="w-100 pr64 mr64 mt32 mb32 mw-100">
                     <div class="row">
-                        <div class="col-auto mw-100 mb-2" t-if="o.name" name="description">
+                        <!-- <div class="col-auto mw-100 mb-2" t-if="o.name" name="description">
                             <strong>Description:</strong>
                             <p class="m-0" t-field="o.name"/>
-                        </div>
+                        </div> -->
                         <div class="col-auto mw-100 mb-2 pr4 pl4" t-if="o.timesheet_limit_date" name="invoice_date">
                             <strong>Invoice Date:</strong>
                             <p class="m-0" t-field="o.timesheet_limit_date"/>
