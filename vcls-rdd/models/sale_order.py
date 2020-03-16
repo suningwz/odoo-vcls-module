@@ -29,7 +29,7 @@ class SaleOrder(models.Model):
             return super(SaleOrder, self).get_alpha_index(index)
         return 'SF'"""
 
-    @api.multi
+    """@api.multi
     def create_invoice_from_analytic_line(self):
         for order in self:
             if not self.env['account.invoice'].search([('origin', '=', order.name)]):
@@ -60,7 +60,7 @@ class SaleOrder(models.Model):
                     invoice_vals['invoice_line_ids'] = ail_vals
                     invoice_id = self.env['account.invoice'].sudo().create(invoice_vals)
                     order.invoice_ids = [invoice_id.id]
-        return True
+        return True"""
 
     """@api.multi
     def delete_empty_sections(self):

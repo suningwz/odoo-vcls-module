@@ -72,6 +72,10 @@ class Invoice(models.Model):
         help='Company Bank Account Number to which the invoice will be paid.',
     )
 
+    partner_bank_id = fields.Many2one(
+        'res.partner.bank', string='Partner Bank Account',
+    )
+
     merge_subtask = fields.Boolean()
 
     @api.multi

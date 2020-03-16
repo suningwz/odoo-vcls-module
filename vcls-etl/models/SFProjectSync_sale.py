@@ -16,12 +16,17 @@ _logger = logging.getLogger(__name__)
 
 from odoo import models, fields, api
 
-class SaleOrder(models.Model):
+class SaleOrderLine(models.Model):
 
-    _inherit = 'sale.order'
+    _inherit = 'sale.order.line'
 
-    def create_service_lines(self,elements=False):
+    ts_migrated = fields.Boolean(
+        default=False,
+    )
 
-        pass
+    ts_max_id = fields.Integer(
+        default = 0,
+        readonly = True,
+    )
 
     

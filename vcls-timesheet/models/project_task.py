@@ -143,6 +143,13 @@ class ProjectTask(models.Model):
             date_end = self.sale_line_id.order_id.expected_end_date or fields.Datetime.now()
             if date_end:
                 self.date_end = datetime.fromordinal(date_end.toordinal())
+    
+    @api.onchange('parent_id')
+    def get_parent_categories(self):
+        if self.parent_id:
+            self.time_category_ids = self.parent_id.time_category_ids
+        else:
+            self.time_category_ids = False
 
     @api.multi
     def _get_connected_employee_seniority_level_id(self):
@@ -154,14 +161,22 @@ class ProjectTask(models.Model):
 
     @api.model
     def create(self, vals):
-        travel_category_id = self.env.ref('vcls-timesheet.travel_time_category')
-        time_categories = vals.get('time_category_ids', False)
-        if travel_category_id:
-            if time_categories:
-                if travel_category_id not in vals['time_category_ids'][0][2]:
-                    vals['time_category_ids'][0][2].append(travel_category_id.id)
-            else:
-                vals.update({'time_category_ids': [[6, False, [travel_category_id.id]]]})
+        #we catch the parent time categories if this is a subtask
+        if vals.get('parent_id',False):
+            parent_task = self.browse(vals['parent_id'])
+            if parent_task.time_category_ids:
+                vals.update({
+                    'time_category_ids': [(6, 0, parent_task.time_category_ids.ids)]
+                })
+        else:
+            travel_category_id = self.env.ref('vcls-timesheet.travel_time_category')
+
+            if travel_category_id:
+                if vals.get('time_category_ids', False):
+                    if travel_category_id not in vals['time_category_ids'][0][2]:
+                        vals['time_category_ids'][0][2].append(travel_category_id.id)
+                else:
+                    vals.update({'time_category_ids': [[6, False, [travel_category_id.id]]]})
 
         task = super(ProjectTask, self).create(vals)
 

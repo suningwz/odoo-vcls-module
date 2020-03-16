@@ -135,6 +135,56 @@
 #run(self, isFullUpdate, createInOdoo, updateInOdoo, createRevert, updateRevert, nbMaxRecords) </field>
         </record>-->
 
+        <record id="cron_project_initiate" model="ir.cron">
+            <field name="name">ETL | Migrate Project Initiation</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="doall">False</field>
+            <field name="model_id" ref="vcls-etl.model_etl_salesforce_project"/>
+            <field name="state">code</field>
+            <field name="code">model.initiate()</field>
+        </record>
+
+        <record id="cron_project_structure" model="ir.cron">
+            <field name="name">ETL | Migrate Project Structure</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="doall">False</field>
+            <field name="model_id" ref="vcls-etl.model_etl_salesforce_project"/>
+            <field name="state">code</field>
+            <field name="code">model.migrate_structure()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+        </record>
+
+        <record id="cron_project_timesheets_ping" model="ir.cron">
+            <field name="name">ETL | Migrate Project Timesheets (ping)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="doall">False</field>
+            <field name="model_id" ref="vcls-etl.model_etl_salesforce_project"/>
+            <field name="state">code</field>
+            <field name="code">model.migrate_timesheets_ping()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+        </record>
+
+        <record id="cron_project_timesheets_pong" model="ir.cron">
+            <field name="name">ETL | Migrate Project Timesheets (pong)</field>
+            <field name="active" eval="False" />
+            <field name="user_id" ref="base.user_admin" />
+            <field name="numbercall">-1</field>
+            <field name="doall">False</field>
+            <field name="model_id" ref="vcls-etl.model_etl_salesforce_project"/>
+            <field name="state">code</field>
+            <field name="code">model.migrate_timesheets_pong()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+        </record>
+
         <record id="cron_Update" model="ir.cron">
             <field name="name">ETL Update Keys</field>
             <field name="active" eval="False" />

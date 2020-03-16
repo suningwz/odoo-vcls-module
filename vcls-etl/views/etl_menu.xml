@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<data>
+
+		<!-- Root Menu -->
+        <menuitem
+            id="menu_migration_root"
+            name="MIGRATION"
+            web_icon="fa fa-star,#f1c40f,#838383"
+            sequence="22"
+            active="True"
+            groups="vcls-etl.vcls_migrators"
+        />
+
+		<menuitem 
+			name="Technical KEYS" 
+			parent="menu_migration_root" 
+			id="menu_migration_keys" 
+			action="action_etl_keys" 
+			sequence="6" />
+
+
 		<menuitem 
 			name="ETL" 
 			parent="base.menu_custom" 

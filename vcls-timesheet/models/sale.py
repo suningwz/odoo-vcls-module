@@ -82,7 +82,7 @@ class SaleOrder(models.Model):
                     ('amount', '<=', 0.0),
                     ('project_id', '!=', False),
                     # OCA override
-                    ('stage_id', 'in', ['invoiceable','invoiced']),
+                    ('stage_id', 'in', ['invoiceable','invoiced','historical']),
                 ]
                 if order.timesheet_limit_date:
                     domain.append(
@@ -123,7 +123,7 @@ class SaleOrderLine(models.Model):
         # We add the condition on the timesheet stage_id
         domain = expression.AND([
                 domain,
-                [('stage_id', 'in', ['invoiceable','invoiced'])]]
+                [('stage_id', 'in', ['invoiceable','invoiced','historical'])]]
             )
 
         return domain
@@ -136,7 +136,7 @@ class SaleOrderLine(models.Model):
             return timesheets
 
         timesheets = timesheets.filtered(
-                lambda r: r.stage_id in ['invoiceable', 'invoiced']
+                lambda r: r.stage_id in ['invoiceable', 'invoiced','historical']
             )
 
         def ts_filter(rec):
@@ -167,8 +167,12 @@ class SaleOrderLine(models.Model):
         for line in self:
             # In Time & Material, we invoice the rate product lines and set the other services to 0
             if line.order_id.invoicing_mode == 'tm':
-                if line.product_id.vcls_type == 'vcls_service':
+                if line.product_id.vcls_type == 'vcls_service' and line.product_id.service_tracking != 'no': #if this is a service with a task
                     line.qty_delivered = 0.
+                elif line.product_id.vcls_type == 'vcls_service' and line.product_id.service_tracking == 'no': #a service without a taks is like a fixed price in a tm quotation
+                    if line.historical_invoiced_amount > line.qty_delivered*line.price_unit:
+                        line.qty_delivered_manual = line.historical_invoiced_amount/line.price_unit if line.price_unit>0 else line.historical_invoiced_amount
+                    line.qty_delivered = line.qty_delivered_manual
                 else:
                     pass
             
@@ -203,8 +207,20 @@ class SaleOrderLine(models.Model):
         #Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type
         super()._get_invoice_qty()
         for line in self:
-            if line.order_id.invoicing_mode == 'fixed_price' and line.product_id.vcls_type in ['vcls_service']:
+            #_logger.info("qty invoiced for {}\n Type {} | Mode {} | Tracking {}".format(line.name,line.product_id.vcls_type,line.order_id.invoicing_mode,line.product_id.service_tracking))
+            #we add the historical invoiced amount for migration purpose
+            if (line.product_id.vcls_type in ['vcls_service']) and (line.order_id.invoicing_mode == 'fixed_price' or line.product_id.service_tracking == 'no'):
+            #if (line.order_id.invoicing_mode == 'fixed_price' and line.product_id.vcls_type in ['vcls_service']) or (line.order_id.invoicing_mode == 'tm' and line.product_id.service_tracking == 'no'):
                 line.qty_invoiced += line.historical_invoiced_amount/line.price_unit if line.price_unit>0 else 0.0
+                #_logger.info("Historical Amount for {} : {}".format(line.name,line.historical_invoiced_amount))
+            #for rate products, we add the historical timesheets (unit_amount_rounded)
+            if (line.order_id.invoicing_mode == 'tm' and line.product_id.vcls_type=='rate'):
+                timesheets = line.order_id.timesheet_ids.filtered(lambda ts: ts.stage_id=='historical' and ts.so_line == line)
+                
+                if timesheets:
+                    #_logger.info("Historical QTY for {} : {}".format(line.name,len(timesheets)))
+                    line.qty_invoiced += sum(timesheets.mapped('unit_amount_rounded'))
+                    
 
     # We need to override the OCA to take the rounded_unit_amount in account rather than the standard unit_amount
     @api.multi

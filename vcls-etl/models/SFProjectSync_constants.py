@@ -17,6 +17,33 @@ ELEMENTS_INFO= [
 # QUERIES #	
 ###############################
 
+SELECT_GET_INVOICED_AMOUNT = """
+    SELECT SUM(KimbleOne__NetAmount__c)
+        FROM KimbleOne__InvoiceLineItem__c
+"""
+
+
+SELECT_GET_TIME_ENTRIES = """
+    SELECT 
+        Id,
+        Migration_Index__c,
+        KimbleOne__Category1__c,
+        KimbleOne__Category2__c,
+        KimbleOne__Category3__c,
+        KimbleOne__Category4__c,
+        KimbleOne__DeliveryElement__c,
+        KimbleOne__InvoiceItemStatus__c,
+        KimbleOne__Notes__c,
+        KimbleOne__TimePeriod__c,
+        KimbleOne__Resource__c,
+        KimbleOne__InvoicingCurrencyEntryRevenue__c,
+        KimbleOne__EntryUnits__c,
+        KimbleOne__ActivityAssignment__c,
+        VCLS_Status__c
+
+        FROM KimbleOne__TimeEntry__c
+"""
+
 SELECT_GET_ELEMENT_DATA = """
     SELECT
         Id,
@@ -85,6 +112,7 @@ SELECT_GET_ASSIGNMENT_DATA = """
         KimbleOne__ResourcedActivity__c,
         KimbleOne__Resource__c,
         KimbleOne__ActivityRole__c,
+        KimbleOne__ForecastUsage__c,
         KimbleOne__InvoicingCurrencyForecastRevenueRate__c,
         KimbleOne__InvoicingCurrencyRevenueRate__c
         
@@ -110,7 +138,7 @@ SELECT_GET_ANNUITY_DATA = """
         Name,
         KimbleOne__DeliveryElement__c,
         KimbleOne__InvoicingCurrencyRevenueRate__c
-        
+
         FROM KimbleOne__Annuity__c
 """
 
