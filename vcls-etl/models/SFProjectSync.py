@@ -617,7 +617,7 @@ class SFProjectSync(models.Model):
                 'display_type': 'line_section',
                 'name':line['Name'],
                 })
-                
+
             annuities = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==line['Id'],annuity_data))
             for sub in annuities:
                 output.append({
@@ -626,6 +626,7 @@ class SFProjectSync(models.Model):
                         'product_uom_qty':sub['KimbleOne__InitialNumberOfUnits__c'] or 1.0,
                         'price_unit':sub['KimbleOne__InvoicingCurrencyRevenueRate__c'],
                     })
+        return output
         
 
     def prepare_milestones(self,elements,milestone_data):
