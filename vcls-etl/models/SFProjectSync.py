@@ -822,6 +822,7 @@ class SFProjectSync(models.Model):
                 'opportunity_id':o_opp.id,
                 'internal_ref':("{}.{}".format(my_project['KimbleOne__Reference__c'],index) if index>0 else my_project['KimbleOne__Reference__c']).upper(),
                 'name': (my_project['Name'] + (' -FP' if item['mode']=='fixed_price' else ' -TM')) if index>0 else my_project['Name'],
+                'unrevisioned_name':self.env['ir.sequence'].with_context(force_company=o_company.id).next_by_code('sale.order'),
                 'invoicing_mode':item['mode'] if item['mode'] else False,
                 'pricelist_id':o_pricelist.id,
                 'scope_of_work': my_project['Scope_of_Work_Description__c'],
