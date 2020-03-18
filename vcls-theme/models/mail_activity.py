@@ -69,6 +69,7 @@ class MailActivity(models.Model):
             if not self.env.context.get('safe_unlink', False) and not user.has_group('base.group_system'):
                 _logger.info("SAFE UNLINK {} - {}".format(act.res_name,act.user_id.name))
                 raise ValidationError("You are not authorized to cancel this activity.")
+            act.write({'res_model_id':False,'res_id':False})
         return super(MailActivity, self).unlink()
     
     @api.model
@@ -100,3 +101,4 @@ class MailActivity(models.Model):
             except:
                 activity.action_done()
                 _logger.info("Mail Activity Deleted")
+                #if 'FIELD_NAME' in self.env['product.product']._fields:
