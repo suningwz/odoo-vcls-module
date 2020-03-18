@@ -56,11 +56,9 @@ class SaleOrderLine(models.Model):
     def create(self, vals_list):
         if vals_list[0].get('order_id',False):
             order = self.env['sale.order'].browse(vals_list[0]['order_id'])
-            lines = super().with_context(
-                force_company=order.company_id.id,
-                ).create(vals_list)
-        else:
-            lines = super().create(vals_list)
+            self = self.with_context(force_company=order.company_id.id)
+        
+        lines = super(SaleOrderLine, self).create(vals_list)
         
         for line in lines:
             if (line.product_id.service_tracking in ['project_only', 'task_new_project']) and not line.product_id.project_template_id:
