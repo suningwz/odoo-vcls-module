@@ -98,5 +98,5 @@ class MailActivity(models.Model):
                 record = self.env[activity.res_model_id.name].browse(res_id)
 
             except:
-                activity.unlink()
+                activity.action_done()
                 _logger.info("Mail Activity Deleted")
