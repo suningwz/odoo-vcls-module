@@ -317,6 +317,7 @@
                         <field name="CDA" />
                         <field name="MSA" />
                         <field name="sp_folder" widget = "url" />
+                        <button type="object" class = 'btn btn-primary' name="create_sp_folder" string="Create SharePoint Folders" />
                     </group>
                     <group string="Contracts">
                         <field name="contract_type" widget="radio" nolabel="1"/>
