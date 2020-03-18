@@ -90,3 +90,13 @@ class MailActivity(models.Model):
                 pass
 
         return super(MailActivity, self).create(values)
+    
+    @api.model
+    def clean_obsolete(self):
+        for activity in self.search([]):
+            try:
+                record = self.env[activity.res_model_id.name].browse(res_id)
+
+            except:
+                activity.unlink()
+                _logger.info("Mail Activity Deleted")
