@@ -54,8 +54,8 @@ class SaleOrderLine(models.Model):
     # We override the line creation in order to link them with existing project
     @api.model_create_multi
     def create(self, vals_list):
-        if vals_list.get('order_id',False):
-            order = self.env['sale.order'].browse(vals_list['order_id'])
+        if vals_list[0].get('order_id',False):
+            order = self.env['sale.order'].browse(vals_list[0]['order_id'])
             lines = super().with_context(
                 force_company=order.company_id.id,
                 ).create(vals_list)
