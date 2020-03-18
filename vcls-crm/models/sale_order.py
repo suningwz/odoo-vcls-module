@@ -456,6 +456,8 @@ class SaleOrder(models.Model):
                 for line in rate_lines.sorted(lambda s: s.price_unit, reverse=True):
                     line.sequence = min_seq
                     min_seq += 1
+            
+            so.onchange_partner_shipping_id()
 
     @api.multi
     @api.onchange('partner_id')
