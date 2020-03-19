@@ -93,15 +93,16 @@ class MailActivity(models.Model):
     
     @api.model
     def clean_obsolete(self):
-        #we 1st clear the ones related to deleted projects
-        self.env.cr.execute("DELETE FROM mail_activity WHERE res_model='project.project' AND res_id not in (SELECT id FROM project_project)")
-        self.env.cr.commit()
+        models_to_clean = [
+            {'name':'project.project','id':'project_project'},
+            {'name':'project.task','id':'project_task'},
+            {'name':'crm.lead','id':'crm_lead'},
+            {'name':'sale.order','id':'sale_order'},
+            ]
+        
+        for model in models_to_clean:
+            query = "DELETE FROM mail_activity WHERE res_model='{}' AND res_id not in (SELECT id FROM {})".format(model['name'],model['id'])
+            _logger.info("Clearing Obsolete Activities\n{}".format(query))
+            self.env.cr.execute(query)
+            self.env.cr.commit()
 
-        """for activity in self.search([]):
-            try:
-                record = self.env[activity.res_model_id.name].browse(res_id)
-
-            except:
-                activity.action_done()
-                _logger.info("Mail Activity Deleted")
-                #if 'FIELD_NAME' in self.env['product.product']._fields:"""
