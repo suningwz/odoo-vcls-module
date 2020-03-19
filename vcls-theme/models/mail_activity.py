@@ -69,7 +69,6 @@ class MailActivity(models.Model):
             if not self.env.context.get('safe_unlink', False) and not user.has_group('base.group_system'):
                 _logger.info("SAFE UNLINK {} - {}".format(act.res_name,act.user_id.name))
                 raise ValidationError("You are not authorized to cancel this activity.")
-            act.write({'res_model_id':False,'res_id':False})
         return super(MailActivity, self).unlink()
     
     @api.model
@@ -94,11 +93,15 @@ class MailActivity(models.Model):
     
     @api.model
     def clean_obsolete(self):
-        for activity in self.search([]):
+        #we 1st clear the ones related to deleted projects
+        self.env.cr.execute("DELETE FROM mail_activity WHERE res_model='project.project' AND res_id not in (SELECT id FROM project_project)")
+        self.env.cr.commit()
+
+        """for activity in self.search([]):
             try:
                 record = self.env[activity.res_model_id.name].browse(res_id)
 
             except:
                 activity.action_done()
                 _logger.info("Mail Activity Deleted")
-                #if 'FIELD_NAME' in self.env['product.product']._fields:
+                #if 'FIELD_NAME' in self.env['product.product']._fields:"""
