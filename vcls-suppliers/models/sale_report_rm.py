@@ -42,6 +42,7 @@ class SaleReportRM(models.Model):
         'Program Stage',
         readonly=True)
     leader_id = fields.Many2one(comodel_name='res.users', string='Program Leader', readonly=True)
+    program_info = fields.Text(readonly = True)
     
     # QUOTATION FIELDS
     order_id = fields.Many2one('sale.order', 'Quotations', readonly=True)
@@ -107,6 +108,7 @@ class SaleReportRM(models.Model):
         program.product_name as product_name,
         program.stage_id as program_stage_id,
         program.leader_id as leader_id,
+        program.program_info as program_info,
         o.id as order_id,
         o.expected_start_date as order_expected_start_date,
         o.expected_end_date as order_expected_end_date,
