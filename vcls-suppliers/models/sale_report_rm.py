@@ -45,6 +45,7 @@ class SaleReportRM(models.Model):
     
     # QUOTATION FIELDS
     order_id = fields.Many2one('sale.order', 'Quotations', readonly=True)
+    order_catalog_id = fields.Many2one('product.category', string='Order Catalog', readonly=True)
     order_expected_start_date = fields.Date(readonly=True)
     order_expected_end_date = fields.Date(readonly=True)
     scope_of_work = fields.Html(string="Scope of Work", readonly=True)
@@ -112,6 +113,7 @@ class SaleReportRM(models.Model):
         o.scope_of_work as scope_of_work,
         o.state as state,
         o.name as name,
+        o.product_category_id as order_catalog_id,
         team.lead_consultant as lead_consultant,
         team.id as core_team_id,
         team.lead_backup as lead_backup,
