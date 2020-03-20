@@ -440,6 +440,7 @@
             </field>
         </record>
 
+        <!--
         <record id="account_analytic_line_tree_inherit" model="ir.ui.view">
             <field name="name">account.analytic.line.tree.inherit</field>
             <field name="model">account.analytic.line</field>
@@ -449,7 +450,7 @@
                     <field name="unit_amount_rounded" string="Revised Time" sum="Total quantity rounded" widget="float_time" />
                 </xpath>
             </field>
-        </record>
+        </record>-->
 
         <record id="account_analytic_line_tree_inherited" model="ir.ui.view">
             <field name="name">account.analytic.line.tree.inherited</field>
