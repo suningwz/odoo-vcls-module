@@ -313,7 +313,7 @@
                                 <td style="border: none;"><span class="ml16" t-field="bank_account_id.bank_id.name"/></td>
                             </tr>
                             <tr t-if="bank_account_id.acc_number">
-                                <td style="border: none;">Account number:</td>
+                                <td style="border: none;">Journal Name:</td>
                                 <td style="border: none;"><span class="ml16" t-field="bank_account_id.acc_number"/></td>
                             </tr>
                             <tr t-if="bank_account_id.iban">
