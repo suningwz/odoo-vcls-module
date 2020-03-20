@@ -771,6 +771,8 @@ class Leads(models.Model):
             message = "Success"
             data_back = response.json()
             self.sp_folder = data_back['clientSiteUrl']
+            message_log = ("The Sharepoint Folder has been created, here is the link: {}".format(self.sp_folder))
+            self.message_post(body=message_log)
             _logger.info("Call API: Power Automate message: {}, whith the client: {} and for the project: {}".format(message, client_name, project_name))
             return
 
