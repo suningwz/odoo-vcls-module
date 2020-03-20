@@ -144,9 +144,9 @@
                         <button name="set_outofscope" type="object" string="Set as Out of Scope" class="oe_highlight" />
                     </header>
                     <group>
-                        <field name="date" />
                         <field name="project_id" />
                         <field name="task_id" />
+                        <field name="date" />
                         <field name="time_category_id"/>
                         <field name="name"/>
                         <field name="unit_amount" string="Duration (hours)" readonly="1" />
