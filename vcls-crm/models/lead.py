@@ -4,10 +4,13 @@ from odoo import models, fields, tools, api, _
 from odoo.exceptions import UserError, ValidationError, Warning
 from datetime import date
 import datetime
+import requests
+import json
 
 import logging
 _logger = logging.getLogger(__name__)
 
+URL_POWER_AUTOMATE = "https://prod-29.westeurope.logic.azure.com:443/workflows/9f6737616b7047498a61a053cd883fc2/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=W5bnOEb4gMnP_E9_VnzK7c8AuYb2zGovg5BHwIoi-U8"
 
 class ResoucesLeads(models.Model):
 
@@ -744,3 +747,41 @@ class Leads(models.Model):
         if self.type == 'opportunity':
             raise ValidationError(_('You cannot duplicate opportunities'))
         return super(Leads, self).copy(default)
+
+    @api.multi
+    def create_sp_folder(self):
+        self.ensure_one()
+        """
+        As long as the migration in the new Sharepoint Online is not complete, 
+        the client Name should start with AAA (to not interfer in the other folders)
+        """
+        client_name = "AAA-TEST-" + self.partner_id.altname
+        project_name = str(self.internal_ref.split('-', 1)[1].split('|', 1)[0])
+        header_to_send = {
+            "Content-Type": "application/json",
+            "Referrer": "https://vcls.odoo.com/create-sp-folder"
+        }
+        data_to_send = {
+            "client": client_name,
+            "project": project_name,
+        }
+        response = requests.post(URL_POWER_AUTOMATE, data=json.dumps(data_to_send), headers=header_to_send)
+
+        if response.status_code in [200, 202]:
+            message = "Success"
+            data_back = response.json()
+            self.sp_folder = data_back['clientSiteUrl']
+            _logger.info("Call API: Power Automate message: {}, whith the client: {} and for the project: {}".format(message, client_name, project_name))
+            return
+
+        if response.status_code in [400, 403]:
+            _logger.warning("Call API: Power Automate message: {}, whith the client: {} and for the project: {}".format(response.status_code, client_name, project_name))
+            raise Warning(_("Sharepoint didn't respond, Please try again"))
+
+        if response.status_code in [500, 501, 503]:
+            message = "Server error"
+        else:
+            message = response.status_code
+
+        _logger.warning("Call API: Power Automate message: {}, whith the client: {} and for the project: {}".format(message, client_name, project_name))
+        raise Warning(_("Sharepoint didn't respond, Please try again"))
