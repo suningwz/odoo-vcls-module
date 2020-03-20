@@ -79,7 +79,7 @@
                                 </group>
                             </group>
                         </page>
-                        <page name="emails" string="Emails" attrs="{'invisible': [('alias_domain', '=', False)]}" groups="vcls-hr.vcls_group_superuser_lvl2">
+                        <page name="emails" string="Emails" invisible="1" groups="vcls-hr.vcls_group_superuser_lvl2">
                             <group name="group_alias">
                                 <label for="alias_name" string="Email Alias"/>
                                 <div name="alias_def">
