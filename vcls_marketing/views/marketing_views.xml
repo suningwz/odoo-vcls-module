@@ -164,7 +164,7 @@
                         <group>
                             <field name="date_start" widget="date"/>
                             <field name="date_end" widget="date"/>
-                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
+                            <field name="tag_ids" string="Type" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
                             <field name="business_line_id" string="Service Areas" widget="many2many_tags"/>
                         </group>
                     </group>
