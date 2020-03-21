@@ -60,6 +60,7 @@
                     <field name = 'program_id'/>
                 </xpath>
                 <xpath expr="//filter[@name='my_quotation']" position="after">
+                    <separator/>
                     <filter string="Parent Only" name="parent" domain="[('parent_id', '=', False)]"/>
                 </xpath>
             </field>

@@ -438,6 +438,7 @@ class SaleOrder(models.Model):
 
     @api.multi
     def remap(self):
+        #_logger.info("SO remap")
         for so in self:
             sect_index = 0
             for line in so.order_line:

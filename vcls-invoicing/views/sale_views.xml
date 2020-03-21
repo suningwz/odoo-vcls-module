@@ -29,6 +29,7 @@
                     <field name="risk_score" invisible="1"/>
                     <field name="timesheet_limit_date"/>
                     <field name="financial_config_readonly" invisible="1"/>
+                    <field name="invoicing_comment"/>
                 </xpath>
                 <xpath expr="//field[@name='payment_term_id']" position="after">
                     <!--

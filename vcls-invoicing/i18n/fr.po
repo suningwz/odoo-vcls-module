@@ -799,3 +799,20 @@ msgstr ""
 msgid "kg"
 msgstr "kg"
 
+#. module: vcls-invoicing
+#: code:addons/vcls-invoicing/models/res_company.py:9
+#, python-format
+msgid "Phone"
+msgstr "Téléphone"
+
+#. module: vcls-invoicing
+#: code:addons/vcls-invoicing/models/res_company.py:10
+#, python-format
+msgid "VAT"
+msgstr "TVA"
+
+#. module: vcls-invoicing
+#: code:addons/vcls-invoicing/models/res_company.py:12
+#, python-format
+msgid "ID"
+msgstr "SIREN"

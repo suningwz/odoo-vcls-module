@@ -144,9 +144,9 @@
                         <button name="set_outofscope" type="object" string="Set as Out of Scope" class="oe_highlight" />
                     </header>
                     <group>
-                        <field name="date" />
                         <field name="project_id" />
                         <field name="task_id" />
+                        <field name="date" />
                         <field name="time_category_id"/>
                         <field name="name"/>
                         <field name="unit_amount" string="Duration (hours)" readonly="1" />
@@ -440,6 +440,7 @@
             </field>
         </record>
 
+        <!--
         <record id="account_analytic_line_tree_inherit" model="ir.ui.view">
             <field name="name">account.analytic.line.tree.inherit</field>
             <field name="model">account.analytic.line</field>
@@ -449,7 +450,7 @@
                     <field name="unit_amount_rounded" string="Revised Time" sum="Total quantity rounded" widget="float_time" />
                 </xpath>
             </field>
-        </record>
+        </record>-->
 
         <record id="account_analytic_line_tree_inherited" model="ir.ui.view">
             <field name="name">account.analytic.line.tree.inherited</field>
