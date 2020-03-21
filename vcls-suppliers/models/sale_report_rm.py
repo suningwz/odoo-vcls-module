@@ -42,9 +42,11 @@ class SaleReportRM(models.Model):
         'Program Stage',
         readonly=True)
     leader_id = fields.Many2one(comodel_name='res.users', string='Program Leader', readonly=True)
+    program_info = fields.Text(readonly = True)
     
     # QUOTATION FIELDS
     order_id = fields.Many2one('sale.order', 'Quotations', readonly=True)
+    order_catalog_id = fields.Many2one('product.category', string='Order Catalog', readonly=True)
     order_expected_start_date = fields.Date(readonly=True)
     order_expected_end_date = fields.Date(readonly=True)
     scope_of_work = fields.Html(string="Scope of Work", readonly=True)
@@ -106,12 +108,14 @@ class SaleReportRM(models.Model):
         program.product_name as product_name,
         program.stage_id as program_stage_id,
         program.leader_id as leader_id,
+        program.program_info as program_info,
         o.id as order_id,
         o.expected_start_date as order_expected_start_date,
         o.expected_end_date as order_expected_end_date,
         o.scope_of_work as scope_of_work,
         o.state as state,
         o.name as name,
+        o.product_category_id as order_catalog_id,
         team.lead_consultant as lead_consultant,
         team.id as core_team_id,
         team.lead_backup as lead_backup,

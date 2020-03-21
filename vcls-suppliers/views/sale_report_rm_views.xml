@@ -67,6 +67,7 @@
                     <field name="stage_id"/>
                     <field name="program_id"/>
                     <field name="program_stage_id"/>
+                    <field name="program_info"/>
                     <field name="order_id"/>
                     <field name="state"/>
                     <field name="priority"/>
@@ -78,6 +79,7 @@
                     <field name="lead_consultant"/>
                     <field name="lead_backup"/>
                     <field name="deliverables"/>
+                    <field name="order_catalog_id"/>
                 </tree>
             </field>
         </record>
@@ -106,6 +108,7 @@
                                 <field name="order_expected_end_date"/>
                                 <field name="scope_of_work"/>
                                 <field name="deliverables"/>
+                                <field name="order_catalog_id"/>
                                 <field name="state"/>
                             </group>
 
@@ -122,6 +125,7 @@
                                 <field name="product_name"/>
                                 <field name="program_stage_id"/>
                                 <field name="leader_id"/>
+                                <field name="program_info"/>
                             </group>
                         </group>
                     </sheet>

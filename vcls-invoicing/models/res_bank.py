@@ -11,4 +11,5 @@ class ResPartnerBank(models.Model):
     swift = fields.Char('Swift')
     iban = fields.Char('Iban')
     bank_account_notes = fields.Text(string='Notes')
-
+    acc_number = fields.Char('Journal name', required=True)
+    

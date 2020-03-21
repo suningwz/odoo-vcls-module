@@ -3,7 +3,7 @@
 from datetime import date, datetime, time
 from dateutil.relativedelta import relativedelta
 #Odoo Imports
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 
 class VclsEntity(models.Model):
@@ -12,7 +12,19 @@ class VclsEntity(models.Model):
     """ We just add a short name to the company object in order to use it in files naming conventions """
     short_name = fields.Char(
         string = 'Short Name',)
-    
+
+    """ We override the field to allow a translation of the string"""
+    phone = fields.Char(related='partner_id.phone', string=_("Phone"), store=True, readonly=False)
+    vat = fields.Char(related='partner_id.vat', string=_("VAT"), readonly=False)
+    siret = fields.Char(related='partner_id.siret', string=_("ID"), readonly=False)
+    capital = fields.Text(string=_("Capital"), readonly=False, translate=True)
+
+    @api.multi
+    def _get_vcls_template_report_data(self):
+        return {
+            '_t': _,
+        }
+
 class LeaveType(models.Model):
     _inherit = 'hr.leave.type'
     

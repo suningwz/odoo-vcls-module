@@ -57,10 +57,10 @@ class Contacts(models.Model):
     @api.depends('marketing_task_id', 'marketing_task_out_id')
     def _compute_gdpr_status(self):
         for record in self:
-            if record.marketing_task_id and not record.marketing_task_out_id:
-                record.gdpr_status = 'in'
-            elif record.marketing_task_out_id:
+            if record.marketing_task_out_id or record.opted_out:
                 record.gdpr_status = 'out'
+            elif record.gdpr_status != 'out' and (record.opted_in or record.marketing_task_id):
+                record.gdpr_status = 'in'
             else:
                 record.gdpr_status = 'undefined'
 
