@@ -76,6 +76,8 @@ class SaleOrder(models.Model):
 
     merge_subtask = fields.Boolean(default=True)
 
+    invoicing_comment = fields.Text()
+
     @api.depends('order_line','order_line.untaxed_amount_to_invoice','order_line.qty_invoiced')
     def _compute_invoiceable_amount(self):
         for so in self:

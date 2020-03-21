@@ -24,6 +24,7 @@
                 (0, 0, {'view_mode': 'graph', 'view_id': ref('sale.view_sale_order_graph')}),
             ]"/>
             <field name="context">{"search_default_my_quotation":1,"search_default_parent":1}</field>
+            <field name="domain">[('state','!=','cancel')]</field>
         </record>
 
         <!-- Create a new RFQ action to filter My Purchases by default -->
