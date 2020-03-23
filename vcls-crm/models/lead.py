@@ -99,6 +99,8 @@ class Leads(models.Model):
         default='default_am',
         )
 
+    date_closed = fields.Datetime('Closed Date', readonly=False, copy=False)
+
     #################
     # CUSTOM FIELDS #
     #################
@@ -123,7 +125,6 @@ class Leads(models.Model):
         )
 
     ### CUSTOM FIELDS RELATED TO MARKETING PURPOSES ###
-    
     
     company_id = fields.Many2one(default = '')
 
