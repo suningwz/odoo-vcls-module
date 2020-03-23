@@ -513,7 +513,7 @@ class AnalyticLine(models.Model):
             else:
                 parent_project_id = task.project_id
 
-            task_ts = timesheets.filtered(lambda t: t.task_id.id == task.id and t.task_id.allow_timesheets)
+            task_ts = timesheets.filtered(lambda t: t.task_id.id == task.id and t.task_id.stage_allow_ts)
             for employee in task_ts.mapped('employee_id'):
                 #_logger.info("SMART TIMESHEETING: {} on {}".format(task.name,employee.name))
                 #we finally create the ts
