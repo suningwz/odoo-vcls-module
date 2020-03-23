@@ -483,6 +483,8 @@ class SFProjectSync(models.Model):
 
                         project.write({'so_ids':[(4, so.id, 0)]})
                         so.name = "{} | {}".format(vals['internal_ref'],vals['name'])
+                        #we force the fiscal position
+                        so.onchange_partner_shipping_id()
                         #we prepare line content
                         services_lines = project.prepare_services(quote['elements'],so,milestone_data)
                         rates_lines = project.prepare_rates(quote['elements'],activity_data,assignment_data)
@@ -559,7 +561,11 @@ class SFProjectSync(models.Model):
                 for so in project.so_ids:
                     so.action_sync()
                     so.action_confirm()
-                    _logger.info("Confirming SO {}".format(so.name) )
+                    _logger.info("Confirming SO {}".format(so.name))
+
+                    #we update the subscriptions date
+                    subscriptions = self.env['sale.subscription'].search([('analytic_account_id','=',so.analytic_account_id)])
+                    subscriptions.force_start_date()
 
                 project.process_forecasts(activity_data,assignment_data)
                 project.migration_status = 'structure'
