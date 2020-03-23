@@ -383,9 +383,12 @@ class Leads(models.Model):
                     lead_vals['probability']=lead.probability
 
             #_logger.info("{} Manual={}".format(lead_vals,lead.manual_probability))
-
-            if not super(Leads, lead).write(lead_vals):
-                return False
+            if self.env.user.context_data_integration:
+                if not super(models.Model, lead).write(lead_vals):
+                    return False
+            else:
+                if not super(Leads, lead).write(lead_vals):
+                    return False
 
         return True
 
