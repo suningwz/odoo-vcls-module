@@ -832,6 +832,7 @@ class SFProjectSync(models.Model):
                 'product_category_id':bl,
                 'fp_delivery_mode': 'manual',
                 'merge_subtask':False,
+                'communication_rate': o_opp.partner_id.communication_rate,
             }
             quote_data.append({'index':item['min_index'],'quote_vals':quote_vals, 'elements':item['elements']})  
             index += 1
