@@ -181,6 +181,7 @@ class SaleOrder(models.Model):
     def create(self, vals):
         result = super(SaleOrder, self).create(vals)
         result.check_risk()
+        result.get_partner_financial_config()
         return result
     
     @api.multi
