@@ -93,7 +93,7 @@ class Leads(models.Model):
 
                 #_logger.info("OPP MIGRATION: New vals {}".format(lead_vals))
                 lead_vals['planned_revenue']=lead.get_revenue_in_company_currency()
-                if not super(Leads, lead).write(lead_vals):
+                if not super(models.Model, lead).write(lead_vals):
                     return False
             return True
         

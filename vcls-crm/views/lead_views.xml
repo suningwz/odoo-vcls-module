@@ -137,7 +137,6 @@
                                 <field name="priority" widget="priority"/>
                                 <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True, 'no_quick_create': True}"/>
                                 <field name="lost_reason" attrs="{'invisible': ['|', ('active', '=', True), ('probability', '=', 100)]}"/>
-                                
                                 <field name="date_conversion" invisible="1"/>
                             </group>
                         </group>
