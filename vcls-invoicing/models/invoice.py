@@ -655,7 +655,7 @@ class Invoice(models.Model):
                         timesheet.stage_id = 'invoiceable'
             
             #communication rate
-            if inv.communication_rate > 0 and not self.env.context.get('communication_rate'):
+            if inv.communication_rate > 0 and not self.env.context.get('communication_rate') and vals.get('state',inv.state)=='draft':
                 total_amount = inv.get_communication_amount()
                 #try:
                 #    total_amount = inv.get_communication_amount()
@@ -678,19 +678,8 @@ class Invoice(models.Model):
                     })
                     invoice_line_obj.with_context(create_communication=True)\
                         .create(line_values)
-                    _logger.info("COM RATE LINE {}".format(line_values))
+                    #_logger.info("COM RATE LINE {}".format(line_values))
         return ret
-
-    """@api.depends('invoice_line_ids')
-    def compute_parent_quotation_timesheet_limite_date(self):
-        for invoice in self:
-            so_with_timesheet_limit_date = invoice._get_parents_quotations().filtered(
-                lambda so: so.timesheet_limit_date)
-            if so_with_timesheet_limit_date:
-                invoice.parent_quotation_timesheet_limite_date = so_with_timesheet_limit_date[0].timesheet_limit_date"""
-
-    """def _get_parents_quotations(self):
-        return self.mapped('invoice_line_ids.sale_line_ids.order_id')"""
 
     @api.depends('payment_term_id', 'invoice_sending_date')
     def _compute_vcls_due_date(self):
@@ -863,12 +852,3 @@ class Invoice(models.Model):
         action['domain'] = [('res_id', '=', self.id), ('name', 'like', DRAFTINVOICE)]
         return action
 
-
-class AccountInvoiceLine(models.Model):
-    _inherit = 'account.invoice.line'
-
-    @api.multi
-    def unlink(self):
-        if self.filtered(lambda r: r.invoice_id and r.invoice_id.state != 'draft'):
-            _logger.info("UNLINK INVOICE LINES {} {} {}".format(self.mapped('invoice_id.name'),self.mapped('invoice_id.state'),self.mapped('name')))
-        return super(AccountInvoiceLine, self).unlink()
