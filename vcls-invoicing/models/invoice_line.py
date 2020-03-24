@@ -56,3 +56,9 @@ class InvoiceLine(models.Model):
         domain = expression.AND([domain, [('stage_id', '=', 'invoiceable')]])
         #_logger.info("TS DOMAIN {}".format(domain))
         return domain
+    
+    """@api.multi
+    def unlink(self):
+        if self.filtered(lambda r: r.invoice_id and r.invoice_id.state != 'draft'):
+            _logger.info("UNLINK INVOICE LINES {} {} {}".format(self.mapped('invoice_id.name'),self.mapped('invoice_id.state'),self.mapped('name')))
+        return super(InvoiceLine, self).unlink()"""
