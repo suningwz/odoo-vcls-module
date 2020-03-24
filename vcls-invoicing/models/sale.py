@@ -218,6 +218,8 @@ class SaleOrder(models.Model):
             invoice_vals['payment_term_id'] = self.payment_term_id.id
         if self.fiscal_position_id:
             invoice_vals['fiscal_position_id'] = self.fiscal_position_id.id
+        if self.analytic_account_id and not self.parent_id: #if this is the parent quotation
+            invoice_vals['parent_analytic_account_id'] = self.analytic_account_id.id
 
         #other values
         invoice_vals['communication_rate'] = float(self.communication_rate)

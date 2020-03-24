@@ -99,6 +99,8 @@ class Leads(models.Model):
         default='default_am',
         )
 
+    date_closed = fields.Datetime('Closed Date', readonly=False, copy=False)
+
     #################
     # CUSTOM FIELDS #
     #################
@@ -123,7 +125,6 @@ class Leads(models.Model):
         )
 
     ### CUSTOM FIELDS RELATED TO MARKETING PURPOSES ###
-    
     
     company_id = fields.Many2one(default = '')
 
@@ -382,9 +383,12 @@ class Leads(models.Model):
                     lead_vals['probability']=lead.probability
 
             #_logger.info("{} Manual={}".format(lead_vals,lead.manual_probability))
-
-            if not super(Leads, lead).write(lead_vals):
-                return False
+            if self.env.user.context_data_integration:
+                if not super(models.Model, lead).write(lead_vals):
+                    return False
+            else:
+                if not super(Leads, lead).write(lead_vals):
+                    return False
 
         return True
 
