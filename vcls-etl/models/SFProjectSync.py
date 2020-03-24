@@ -369,12 +369,15 @@ class SFProjectSync(models.Model):
                 # VCLS status treatment
                 if 'Draft' in timesheet['VCLS_Status__c']:
                     temp_stage = 'draft'
+                    
                 elif 'ReadyForApproval' in timesheet['VCLS_Status__c']:
                     temp_stage = 'lc_review'
                 elif 'Approved' in timesheet['VCLS_Status__c']:
                     temp_stage = 'invoiceable'
                 else:
                     temp_stage = False
+
+                _logger.info("MIGRATED TS {} from VCLS status".format(temp_stage))
 
                 #invoicing Status treatment
                 if status.name == 'WrittenOff' or not temp_stage:
