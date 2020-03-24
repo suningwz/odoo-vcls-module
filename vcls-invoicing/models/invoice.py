@@ -86,6 +86,10 @@ class Invoice(models.Model):
 
     merge_subtask = fields.Boolean()
 
+    parent_analytic_account_id = fields.Many2one(
+        'account.analytic.account',
+    )
+
     @api.multi
     def get_last_report(self):
         self.ensure_one()
