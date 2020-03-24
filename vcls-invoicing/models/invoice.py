@@ -86,6 +86,10 @@ class Invoice(models.Model):
 
     merge_subtask = fields.Boolean()
 
+    parent_analytic_account_id = fields.Many2one(
+        'account.analytic.account',
+    )
+
     @api.multi
     def get_last_report(self):
         self.ensure_one()
@@ -175,13 +179,6 @@ class Invoice(models.Model):
         #we initiate variables
         laius = ""
         sow = ""
-        """timesheet_limit_date = False
-        period_start = False
-        delta = 0
-        communication_rate = 0.0
-        invoice_template = None #self.env['ir.actions.report']
-        activity_report_template = None #self.env['ir.actions.report']
-        po_id = None #self.env['invoicing.po']"""
 
         #loop in projects
         for project in self.project_ids:
@@ -203,72 +200,6 @@ class Invoice(models.Model):
                     sow += "{}\n".format(self.html_to_string(project.scope_of_work))
             else:
                 sow = vals.get('scope_of_work', self.scope_of_work)
-
-            """#sales.order info
-            so = project.sale_order_id
-            #Timesheet limit date"""
-            
-            """if not vals.get('timesheet_limit_date', self.timesheet_limit_date):
-                if so.timesheet_limit_date:
-                    if timesheet_limit_date:
-                        if so.timesheet_limit_date < timesheet_limit_date:
-                            timesheet_limit_date = so.timesheet_limit_date
-                    else:
-                        timesheet_limit_date = so.timesheet_limit_date
-            else:
-                timesheet_limit_date = vals.get('timesheet_limit_date',self.timesheet_limit_date)"""
-            
-            """if not vals.get('period_start',self.period_start) and timesheet_limit_date:
-                if so.invoicing_frequency == 'month' and delta < 1:
-                    delta = 1
-                if so.invoicing_frequency == 'trimester' and delta < 3:
-                    delta = 3
-                period_start = timesheet_limit_date + relativedelta(months=-1*delta,days=1)
-            else:
-                period_start = vals.get('period_start',self.period_start)"""
-
-            """#_logger.info("SO DATA {} rate {}".format(so.name,so.communication_rate))
-            #PO id
-            if not vals.get('po_id',self.po_id):
-                if not po_id and so.po_id:
-                    po_id = so.po_id.id
-            else:
-                po_id = vals.get('po_id',self.po_id.id)
-
-            #Invoice Template
-            if not vals.get('invoice_template',self.invoice_template):
-                if not invoice_template and so.invoice_template:
-                    invoice_template = so.invoice_template.id
-            else:
-                invoice_template = vals.get('invoice_template',self.invoice_template.id)
-
-            #Activity Report template
-            if not vals.get('activity_report_template',self.activity_report_template):
-                if not activity_report_template and so.activity_report_template:
-                    activity_report_template = so.activity_report_template.id
-            else:
-                activity_report_template = vals.get('activity_report_template',self.activity_report_template.id)"""
-            
-            """#Communication  Rate
-            if not vals.get('communication_rate',self.communication_rate):
-                if communication_rate < float(so.communication_rate):
-                    communication_rate = float(so.communication_rate) 
-            else:
-                communication_rate = vals.get('communication_rate',self.communication_rate)""" 
-
-        vals.update({   'lc_laius': laius,
-                        'scope_of_work': sow,
-                        #'timesheet_limit_date': timesheet_limit_date,
-                        #'period_start': period_start,
-                        #'communication_rate': communication_rate,
-                        })
-        
-        """if po_id:
-            vals.update({'po_id': po_id})
-        if invoice_template:
-            vals.update({'invoice_template': invoice_template})
-        if activity_report_template:
-            vals.update({'activity_report_template': activity_report_template})"""
 
         return vals
 
@@ -623,14 +554,19 @@ class Invoice(models.Model):
             subtype_ids, customer_ids
         )
 
+   
+
     @api.multi
     def write(self, vals):
+       
         if self._context.get('create_communication'):
             self._message_subscribe_account_payable()
             return super(Invoice, self).write(vals)
         ret = False
         _logger.info("INVOICE WRITE IDS {} VALS {}".format(self.ids,vals))
         for inv in self:
+            self = self.with_context(force_company=inv.company_id.id)
+            inv = inv.with_context(force_company=inv.company_id.id)
             inv._message_subscribe_account_payable()
 
             if vals.get('sent'):
@@ -649,17 +585,13 @@ class Invoice(models.Model):
                         timesheet.stage_id = 'invoiceable'
             
             #communication rate
-            if inv.communication_rate > 0 and not self.env.context.get('communication_rate'):
+            if inv.communication_rate > 0 and not self.env.context.get('communication_rate') and vals.get('state',inv.state)=='draft':
                 total_amount = inv.get_communication_amount()
-                #try:
-                #    total_amount = inv.get_communication_amount()
-                #except:
-                #    total_amount = False
-                    #_logger.info("COM RATE ERROR")
                 if total_amount:
                     invoice_line_obj = self.env['account.invoice.line']
                     line_cache = invoice_line_obj.new()
                     line_cache.invoice_id = inv.id
+                    line_cache.account_analytic_id = inv.parent_analytic_account_id.id
                     line_cache.product_id = self.env.ref('vcls-invoicing.product_communication_rate').id
                     line_cache._onchange_product_id()
                     line_cache.price_unit = total_amount * inv.communication_rate
@@ -671,18 +603,8 @@ class Invoice(models.Model):
                     })
                     invoice_line_obj.with_context(create_communication=True)\
                         .create(line_values)
+                    #_logger.info("COM RATE LINE {}".format(line_values))
         return ret
-
-    """@api.depends('invoice_line_ids')
-    def compute_parent_quotation_timesheet_limite_date(self):
-        for invoice in self:
-            so_with_timesheet_limit_date = invoice._get_parents_quotations().filtered(
-                lambda so: so.timesheet_limit_date)
-            if so_with_timesheet_limit_date:
-                invoice.parent_quotation_timesheet_limite_date = so_with_timesheet_limit_date[0].timesheet_limit_date"""
-
-    """def _get_parents_quotations(self):
-        return self.mapped('invoice_line_ids.sale_line_ids.order_id')"""
 
     @api.depends('payment_term_id', 'invoice_sending_date')
     def _compute_vcls_due_date(self):
@@ -693,12 +615,6 @@ class Invoice(models.Model):
                     pterm.with_context(currency_id=rec.company_id.currency_id.id).compute(value=1,
                                                                                           date_ref=date.today())[0]
                 rec.vcls_due_date = max(line[0] for line in pterm_list)
-
-    """@api.depends('invoice_line_ids')
-    def compute_origin_sale_orders(self):
-        for rec in self:
-            sale_orders = rec._get_parents_quotations()
-            rec.origin_sale_orders = ','.join(sale_orders.mapped('name'))"""
 
     @api.multi
     def unlink(self):
@@ -716,29 +632,6 @@ class Invoice(models.Model):
         self.ensure_one()
         return lxml.html.document_fromstring(html_format).text_content()
 
-    """def parent_quotation_informations(self):
-
-        if not self.origin:
-            return []
-        names = self.origin.split(', ')
-        customer_precedent_invoice = ""
-        quotation = self.env['sale.order'].search([('name', 'in', names)], limit=1)
-        if not quotation:
-            return []
-        parent_order = quotation.parent_id or quotation
-        while parent_order.parent_id:
-            parent_order = parent_order.parent_id
-
-
-
-        return [
-            ('name', parent_order.name),
-            ('scope_work', self.html_to_string(parent_order.scope_of_work) or ''),
-            ('po_id', parent_order.po_id.name or ''),
-            ('From', self.timesheet_limit_date and self.timesheet_limit_date.strftime("%d/%m/%Y") or ''),
-            ('To', self.timesheet_limit_date and self.timesheet_limit_date.strftime("%d/%m/%Y") or '')
-        ]
-    """
 
     def get_analytic_accounts_lines(self):
         so_names = self.origin.split(', ')
@@ -854,3 +747,4 @@ class Invoice(models.Model):
         action = self.env.ref('vcls-invoicing.action_invoice_attachment').read()[0]
         action['domain'] = [('res_id', '=', self.id), ('name', 'like', DRAFTINVOICE)]
         return action
+
