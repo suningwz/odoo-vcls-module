@@ -574,7 +574,7 @@ class SFProjectSync(models.Model):
                     _logger.info("Confirming SO {}".format(so.name))
 
                     #we update the subscriptions date
-                    subscriptions = self.env['sale.subscription'].search([('analytic_account_id','=',so.analytic_account_id)])
+                    subscriptions = self.env['sale.subscription'].search([('analytic_account_id','=',so.analytic_account_id.id)])
                     subscriptions.force_start_date()
 
                 project.process_forecasts(activity_data,assignment_data)
