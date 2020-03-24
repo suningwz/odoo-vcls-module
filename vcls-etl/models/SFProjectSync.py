@@ -375,11 +375,11 @@ class SFProjectSync(models.Model):
                     temp_stage = False
 
                 #invoicing Status treatment
-                if status.name == 'WrittenOff':
+                if status.name == 'WrittenOff' or not temp_stage:
                     vals.update({
                         'unit_amount_rounded': 0,
                         'lc_comment': 'Migration - Rejected',
-                        'stage_id': 'invoiced',
+                        'stage_id': 'historical',
                     })
                 elif status.name == 'Invoiced':
                     vals.update({
