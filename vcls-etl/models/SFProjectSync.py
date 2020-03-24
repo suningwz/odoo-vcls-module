@@ -3,6 +3,8 @@ from . import generalSync
 from . import SFProjectSync_constants
 from . import SFProjectSync_mapping
 
+from odoo.exceptions import ValidationError
+
 import pytz
 from simple_salesforce import Salesforce
 from simple_salesforce.exceptions import SalesforceMalformedRequest
@@ -441,6 +443,11 @@ class SFProjectSync(models.Model):
         if not instance:
             return False
 
+        #get some non-project depnedent variables
+        invoice_template = self.env.ref('account.account_invoices')
+        if not invoice_template:
+            raise ValidationError("Default Invoice Template not found.")
+
         #We get all the source data required for the projects in self
         project_string = self.list_to_filter_string(self.mapped('project_sfid'))
         element_data = self._get_element_data(instance,project_string)
@@ -471,7 +478,7 @@ class SFProjectSync(models.Model):
                     parent_id = False
                     for quote in sorted(quote_data,key=lambda q: q['index']):
                         vals = quote['quote_vals']
-                        vals.update({'core_team_id':core_team.id})
+                        vals.update({'core_team_id':core_team.id,'invoice_template':invoice_template.id})
                         if not parent_id:
                             _logger.info("PARENT SO CREATION VALS:\n{}".format(vals))
                             so = project.so_create_with_changes(vals)
