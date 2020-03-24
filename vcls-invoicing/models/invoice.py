@@ -627,6 +627,8 @@ class Invoice(models.Model):
             subtype_ids, customer_ids
         )
 
+   
+
     @api.multi
     def write(self, vals):
         if self._context.get('create_communication'):
@@ -860,3 +862,13 @@ class Invoice(models.Model):
         action = self.env.ref('vcls-invoicing.action_invoice_attachment').read()[0]
         action['domain'] = [('res_id', '=', self.id), ('name', 'like', DRAFTINVOICE)]
         return action
+
+
+class AccountInvoiceLine(models.Model):
+    _inherit = 'account.invoice.line'
+
+    @api.multi
+    def unlink(self):
+        if self.filtered(lambda r: r.invoice_id and r.invoice_id.state != 'draft'):
+            _logger.info("UNLINK INVOICE LINES {} {} {}".format(self.mapped('invoice_id.name'),self.mapped('invoice_id.state'),self.mapped('name')))
+        return super(AccountInvoiceLine, self).unlink()
