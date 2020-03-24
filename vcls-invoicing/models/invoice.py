@@ -598,7 +598,7 @@ class Invoice(models.Model):
                         name: line_cache[name]
                         for name in line_cache._cache
                     })
-                    invoice_line_obj.with_context(create_communication=True)\
+                    invoice_line_obj.with_context(create_communication=True,force_company=inv.company_id.id)\
                         .create(line_values)
                     #_logger.info("COM RATE LINE {}".format(line_values))
         return ret
