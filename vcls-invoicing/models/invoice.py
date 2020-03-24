@@ -664,6 +664,7 @@ class Invoice(models.Model):
                     invoice_line_obj = self.env['account.invoice.line']
                     line_cache = invoice_line_obj.new()
                     line_cache.invoice_id = inv.id
+                    line_cache.account_analytic_id = inv.parent_analytic_account_id.id
                     line_cache.product_id = self.env.ref('vcls-invoicing.product_communication_rate').id
                     line_cache._onchange_product_id()
                     line_cache.price_unit = total_amount * inv.communication_rate
@@ -675,6 +676,7 @@ class Invoice(models.Model):
                     })
                     invoice_line_obj.with_context(create_communication=True)\
                         .create(line_values)
+                    _logger.info("COM RATE LINE {}".format(line_values))
         return ret
 
     """@api.depends('invoice_line_ids')
