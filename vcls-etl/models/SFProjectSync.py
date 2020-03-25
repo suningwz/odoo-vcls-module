@@ -336,11 +336,11 @@ class SFProjectSync(models.Model):
                 if map_vals['sale_line_id']:
                     self.env['project.sale.line.employee.map'].create(map_vals)
                     rate_id = rate_lines[0].product_id
-                    _logger.info("EMPLOYEE MAP CREATED {}".format(map_vals))
+                    _logger.info("EMPLOYEE MAP CREATED {} {}".format(employee.id, rate_id.name))
             else:
                 map_line = project_id.sale_line_employee_ids.filtered(lambda l: l.employee_id == employee)
                 rate_id = map_line.sale_line_id.product_id
-                _logger.info("EMPLOYEE MAP FOUND {} {}".format(employee_id.name,rate_id.name))
+                _logger.info("EMPLOYEE MAP FOUND {} {}".format(employee.name,rate_id.name))
 
             #we finally loop in TS
             for ts in a_ts:
