@@ -12,10 +12,10 @@ class ResPartnerBank(models.Model):
     iban = fields.Char('Iban')
     bank_account_notes = fields.Text(string='Notes', translate=True)
 
-    @api.multi
-    def name_get(self, context=None):
+    @api.depends('journal_id', 'acc_number')
+    def name_get(self):
         result = []
         for account in self:
-            tmp_name = "{} | {}".format(account.account_name, account.acc_number)
+            tmp_name = "{} | {}".format(account.journal_id.name, account.acc_number)
             result.append((account.id, tmp_name))
             return result
