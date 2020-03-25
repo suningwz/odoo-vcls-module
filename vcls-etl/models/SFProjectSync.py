@@ -324,8 +324,9 @@ class SFProjectSync(models.Model):
                 if product:
                     employee = product.forecast_employee_id
 
+            rate_id = employee.default_rate_ids[0] if  employee.default_rate_ids else False
             #we check if this employee is already mapped in the project
-            if employee not in project_id.sale_line_employee_ids.mapped('employee_id'):
+            """if employee not in project_id.sale_line_employee_ids.mapped('employee_id'):
                 product = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
                 #_logger.info("EMPLOYEE MAP {} SO Lines {}".format(product.name,so_line.order_id.order_line.mapped('name')))
                 rate_lines = so_line.order_id.order_line.filtered(lambda l: l.name in product.name)
@@ -343,7 +344,7 @@ class SFProjectSync(models.Model):
                 map_line = project_id.sale_line_employee_ids.filtered(lambda l: l.employee_id == employee)
                 #_logger.info("EMPLOYEE MAP {} map Lines {}".format(employee.name,project_id.sale_line_employee_ids.mapped('employee_id.name')))
                 rate_id = map_line[0].sale_line_id.product_id if map_line else False
-                _logger.info("EMPLOYEE MAP FOUND {} {}".format(employee.name,rate_id.name if rate_id else False))
+                _logger.info("EMPLOYEE MAP FOUND {} {}".format(employee.name,rate_id.name if rate_id else False))"""
 
             #we finally loop in TS
             for ts in a_ts:
