@@ -125,7 +125,7 @@ class SaleOrderLine(models.Model):
                 domain,
                 [('stage_id', 'in', ['invoiceable','invoiced','historical'])]]
             )
-
+        _logger.info("Delivered QTY Domain {}".format(domain))
         return domain
 
     def _get_timesheet_for_amount_calculation(self, only_invoiced=False):

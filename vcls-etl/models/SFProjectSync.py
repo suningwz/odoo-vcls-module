@@ -321,6 +321,7 @@ class SFProjectSync(models.Model):
                 product = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
                 if product:
                     employee = product.forecast_employee_id
+            rate_id = employee.default_rate_ids[0] if employee.default_rate_ids else False
 
             #we finally loop in TS
             for ts in a_ts:
@@ -341,6 +342,7 @@ class SFProjectSync(models.Model):
                     'is_timesheet': True,
                     'name': " | ".join(stack) if len(stack)>0 else "N/A",
                     'employee_id': employee.id if employee else False,
+                    'rate_id': rate_id.id,
                     'main_project_id': main_project_id.id,
                     'project_id': project_id.id,
                     'task_id': task_id,
