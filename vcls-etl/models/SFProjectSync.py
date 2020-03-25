@@ -399,8 +399,8 @@ class SFProjectSync(models.Model):
                         'stage_id': temp_stage,
                     })
                 break
-            else:
-                _logger.info("MIGRATED TS STATUS NOT FOUND {}".format(temp_stage))
+            #else:
+                #_logger.info("MIGRATED TS STATUS NOT FOUND {}".format(temp_stage))
         return vals
         
     
