@@ -328,6 +328,7 @@ class SFProjectSync(models.Model):
             if employee not in project_id.sale_line_employee_ids.mapped('employee_id'):
                 product = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
                 rate_lines = so_line.order_id.order_line.filtered(lambda l: l.product_id == product)
+                _logger.info("EMPLOYEE MAP Rate Lines {}".format(rate_lines.mapped('name')))
                 map_vals = {
                     'employee_id': employee.id,
                     'project_id': project_id.id,

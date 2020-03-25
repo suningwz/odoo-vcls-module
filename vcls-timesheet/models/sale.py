@@ -269,7 +269,7 @@ class SaleOrderLine(models.Model):
         for line in self.filtered(lambda l: l.vcls_type=='rate' and l.order_id.invoicing_mode == 'tm'):
             ts = self.env['account.analytic.line'].search([('stage_id','=','historical'),('so_line','=',line.id)])
             if ts:
-                line.untaxed_amount_invoiced += sum(ts.mapped('unit_amount_rounded'))
+                line.untaxed_amount_invoiced += sum(ts.mapped(lambda r: r.unit_amount_rounded*r.so_line_unit_price))
 
         for line in self.filtered(lambda l: l.historical_invoiced_amount>0):
             line.untaxed_amount_invoiced += line.historical_invoiced_amount
