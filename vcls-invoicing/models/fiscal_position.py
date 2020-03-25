@@ -6,4 +6,4 @@ from odoo import api, fields, models, tools, _
 class AccountFiscalPosition(models.Model):
     _inherit = 'account.fiscal.position'
 
-    report_note = fields.Text('Report note')
+    report_note = fields.Text('Report note', translate=True)
