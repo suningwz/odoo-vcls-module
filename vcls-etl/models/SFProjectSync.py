@@ -366,12 +366,15 @@ class SFProjectSync(models.Model):
                     _logger.info("IMPOSSIBLE TO CREATE TS {}".format(vals))
     
     def get_status_vals(self,vals,timesheet,inv_status):
+        temp_stage = False
+        is_validated = True
         for status in inv_status:
+            
             if status.externalId == timesheet['KimbleOne__InvoiceItemStatus__c']:
                 # VCLS status treatment
                 if 'Draft' in timesheet['VCLS_Status__c']:
                     temp_stage = 'draft'
-                    
+                    is_validated = False
                 elif 'ReadyForApproval' in timesheet['VCLS_Status__c']:
                     temp_stage = 'lc_review'
                 elif 'Approved' in timesheet['VCLS_Status__c']:
@@ -379,7 +382,10 @@ class SFProjectSync(models.Model):
                 else:
                     temp_stage = False
 
-                _logger.info("MIGRATED TS {} from VCLS status".format(temp_stage))
+                #_logger.info("MIGRATED TS {} from VCLS status".format(temp_stage))
+                vals.update({
+                        'validated': is_validated,
+                    })
 
                 #invoicing Status treatment
                 if status.name == 'WrittenOff' or not temp_stage:
