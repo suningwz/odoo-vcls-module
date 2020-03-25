@@ -140,6 +140,8 @@ class SFProjectSync(models.Model):
                 historical._get_invoice_qty()
             
             lines._compute_qty_delivered()
+            lines._compute_untaxed_amount_invoiced()
+            lines._compute_untaxed_amount_to_invoice()
                 
 
     
@@ -321,7 +323,22 @@ class SFProjectSync(models.Model):
                 product = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
                 if product:
                     employee = product.forecast_employee_id
-            rate_id = employee.default_rate_ids[0] if employee.default_rate_ids else False
+
+            #we check if this employee is already mapped in the project
+            if employee not in project_id.sale_line_employee_ids.mapped('employee_id'):
+                product = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
+                rate_lines = so_line.order_id.order_line.filtered(lambda l: l.product_id == product)
+                map_vals = {
+                    'employee_id': employee.id,
+                    'project_id': project_id.id,
+                    'sale_line_id': rate_lines[0].id if rate_lines else False,
+                }
+                if map_vals['sale_line_id']:
+                    self.env['project.sale.line.employee.map'].create(map_vals)
+                    rate_id = rate_lines[0].product_id
+            else:
+                map_line = project_id.sale_line_employee_ids.filtered(lambda l: l.employee_id == employee)
+                rate_id = map_line.sale_line_id.product_id
 
             #we finally loop in TS
             for ts in a_ts:
@@ -588,7 +605,12 @@ class SFProjectSync(models.Model):
                     subscriptions.force_start_date()
 
                 project.process_forecasts(activity_data,assignment_data)
+                #project.build_mapping()
                 project.migration_status = 'structure'
+    
+    """def build_mapping(self,assignment_data):
+        for 
+        pass"""
     
     def so_line_create_with_changes(self,vals):
         line = self.env['sale.order.line'].create(vals)

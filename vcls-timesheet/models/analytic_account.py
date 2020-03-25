@@ -276,8 +276,7 @@ class AnalyticLine(models.Model):
                     orders |= line.so_line.order_id
 
                 # if the sale order line price as not been captured yet
-                if vals.get('so_line',
-                            line.so_line.id) and line.so_line_unit_price == 0.0:
+                if vals.get('so_line',line.so_line.id) and line.so_line_unit_price == 0.0:
                     task = self.env['project.task'].browse(
                         vals.get('task_id', line.task_id.id))
                     so_line = self.env['sale.order.line'].browse(

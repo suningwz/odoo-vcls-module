@@ -262,6 +262,21 @@ class SaleOrderLine(models.Model):
                 total * line.order_id.currency_rate
             )
 
+    @api.depends('invoice_lines', 'invoice_lines.price_total', 'invoice_lines.invoice_id.state', 'invoice_lines.invoice_id.type')
+    def _compute_untaxed_amount_invoiced(self):
+        super()._compute_untaxed_amount_invoiced()
+        
+        """for line in self:
+            amount_invoiced = 0.0
+            for invoice_line in line.invoice_lines:
+                if invoice_line.invoice_id.state in ['open', 'in_payment', 'paid']:
+                    invoice_date = invoice_line.invoice_id.date_invoice or fields.Date.today()
+                    if invoice_line.invoice_id.type == 'out_invoice':
+                        amount_invoiced += invoice_line.currency_id._convert(invoice_line.price_subtotal, line.currency_id, line.company_id, invoice_date)
+                    elif invoice_line.invoice_id.type == 'out_refund':
+                        amount_invoiced -= invoice_line.currency_id._convert(invoice_line.price_subtotal, line.currency_id, line.company_id, invoice_date)
+            line.untaxed_amount_invoiced = amount_invoiced"""
+
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
