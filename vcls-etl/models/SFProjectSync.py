@@ -342,7 +342,7 @@ class SFProjectSync(models.Model):
                     'is_timesheet': True,
                     'name': " | ".join(stack) if len(stack)>0 else "N/A",
                     'employee_id': employee.id if employee else False,
-                    'rate_id': rate_id.id,
+                    'rate_id': rate_id.id if rate_id else False,
                     'main_project_id': main_project_id.id,
                     'project_id': project_id.id,
                     'task_id': task_id,
