@@ -265,6 +265,16 @@ class SaleOrderLine(models.Model):
     @api.depends('invoice_lines', 'invoice_lines.price_total', 'invoice_lines.invoice_id.state', 'invoice_lines.invoice_id.type')
     def _compute_untaxed_amount_invoiced(self):
         super()._compute_untaxed_amount_invoiced()
+
+        for line in self.filtered(lambda l: l.vcls_type=='rate' and l.order_id.invoicing_mode == 'tm'):
+            ts = self.env['account.analytic.line'].search([('stage_id','=','historical'),('so_line','=',line.id)])
+            if ts:
+                line.untaxed_amount_invoiced += sum(ts.mapped('unit_amount_rounded'))
+
+        for line in self.filtered(lambda l: l.historical_invoiced_amount>0):
+            line.untaxed_amount_invoiced += line.historical_invoiced_amount
+        
+
         
         """for line in self:
             amount_invoiced = 0.0
