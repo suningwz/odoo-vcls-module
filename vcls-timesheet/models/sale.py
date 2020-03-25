@@ -163,7 +163,7 @@ class SaleOrderLine(models.Model):
     def _compute_qty_delivered(self):
         """Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type"""
 
-        self = self.with_context(timesheet_rounding=True)
+        #self = self.with_context(timesheet_rounding=True)
         super()._compute_qty_delivered()
         for line in self:
             # In Time & Material, we invoice the rate product lines and set the other services to 0
