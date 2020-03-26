@@ -623,7 +623,6 @@
             </xpath>
 
             <xpath expr="//filter[@name='lost']" position="after">
-                <filter string="Open Opportunities" name="open_opportunities" domain="[('probability', '&lt;', 100), ('type', '=', 'opportunity')]" help="Open Opportunities"/>
                 <separator/>
                 <filter name="sig_opp" string="Significant" domain="[('sig_opp','=',True)]"/>
                 <field name="sig_opp" string="Significant"/>
