@@ -65,19 +65,28 @@
                         }"
                     />
                 </button>
+                <xpath expr="//field[@name='progress']" position="replace">
+                    <field name="budget_consumed" widget="progressbar" string="Budget Consumed"/>
+                </xpath>
 
                 <field name="consummed_completed_ratio" position="after">
                     <br/>
                     <field name="valuation_ratio" widget="percentpie" nolabel="1"/>
+                    <!-- TEST TODO remove it -->
+                    <button type="object" class = 'btn btn-primary' name="button_get_kpi" string="Refresh KPI"/>
                 </field>
 
                 <field name="parent_id" position="attributes">
                     <attribute name="domain">[('project_id','=',project_id),('parent_id','=',False)]</attribute>
                 </field>
-                
+                <xpath expr="//page//field[@name='progress']" position="replace">
+                    <field name="progress" string="Consumed Hours" widget="progressbar"/>
+                </xpath>
                 <xpath expr="//page[last()]" position="after">
-                    <page string="KPI" name="kpi">
+                    <!-- HERE FOLOOWING IS THE GOOD LINE -->
+                    <page string="KPI" name="kpi" attrs="{'invisible': [('allow_budget_modification', '!=', True)]}">
                     <group>
+                    <field name="allow_budget_modification" invisible="1"/>
                         <group string="Hours">
                             <field name="forecasted_hours"/>
                             <field name="realized_hours"/>
@@ -159,7 +168,7 @@
                     <field name="risk_score"/>
                     <field name="risk_ids"  widget="many2many_tags"/>
                     <field name="completion_ratio"/>
-                    <field name="consumed_value" widget="integer"/>
+                    <!-- <field name="consumed_value" widget="integer"/> -->
                     <field name="consummed_completed_ratio" widget="integer"/>
                     <field name="valuation_ratio"/>
                     <field name="invoicing_mode"/>

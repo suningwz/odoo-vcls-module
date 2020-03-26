@@ -56,7 +56,7 @@ class Project(models.Model):
     #consultant_ids = fields.Many2many('hr.employee', string='Consultants')
     #ta_ids = fields.Many2many('hr.employee', string='Ta')
     completion_ratio = fields.Float('Task Complete', compute='compute_project_completion_ratio', store=True)
-    consumed_value = fields.Float('Budget Consumed', compute='compute_project_consumed_value', store=True)
+    # consumed_value = fields.Float('Budget Consumed', compute='compute_project_consumed_value', store=True)
     consummed_completed_ratio = fields.Float('BC / TC',
                                              compute='compute_project_consummed_completed_ratio', store=True)
     summary_ids = fields.One2many(
@@ -449,14 +449,14 @@ class Project(models.Model):
             tasks = project.get_tasks_for_project_sub_project()
             project.completion_ratio = sum(tasks.mapped('completion_ratio')) / len(tasks) if tasks else sum(tasks.mapped('completion_ratio'))
 
-    @api.multi
-    @api.depends('task_ids.progress')
-    def compute_project_consumed_value(self):
-        for project in self:
-            tasks = project.get_tasks_for_project_sub_project()
-            #_logger.info("TASK FOUND {} with {}".format(tasks.mapped('name'),tasks.mapped('progress')))
-            project.consumed_value = sum(tasks.mapped('progress')) / len(tasks) if tasks \
-                else sum(tasks.mapped('progress'))
+    # @api.multi
+    # @api.depends('task_ids.progress')
+    # def compute_project_consumed_value(self):
+    #     for project in self:
+    #         tasks = project.get_tasks_for_project_sub_project()
+    #         #_logger.info("TASK FOUND {} with {}".format(tasks.mapped('name'),tasks.mapped('progress')))
+    #         project.consumed_value = sum(tasks.mapped('progress')) / len(tasks) if tasks \
+    #             else sum(tasks.mapped('progress'))
 
     @api.multi
     @api.depends('task_ids.consummed_completed_ratio')

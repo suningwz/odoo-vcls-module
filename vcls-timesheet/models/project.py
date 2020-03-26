@@ -25,6 +25,18 @@ class Project(models.Model):
     pc_hours = fields.Float(string="PC Review Hours",readonly=True)
     cf_hours = fields.Float(string="Carry Forward Hours",readonly=True)
 
+    budget_consumed = fields.Float(
+        string="Budget Consumed new",
+        readonly=True,
+        compute='compute_budget_consumed',
+        )
+
+    @api.multi
+    @api.depends("realized_budget", "contractual_budget")
+    def compute_budget_consumed(self):
+        for project in self:
+            self.budget_consumed = project.realized_budget / project.contractual_budget
+
     @api.multi
     def _get_kpi(self):
         for project in self:
