@@ -123,6 +123,12 @@ class Leads(models.Model):
         string = 'Lead Stage',
         default = _default_lead_stage,
         )
+    
+    sig_opp = fields.Boolean(
+        store = True,
+        default = 'False',
+        compute = '_compute_sig_opp',
+    )
 
     ### CUSTOM FIELDS RELATED TO MARKETING PURPOSES ###
     
@@ -395,6 +401,14 @@ class Leads(models.Model):
     ###################
     # COMPUTE METHODS #
     ###################
+
+    @api.depends('tag_ids')
+    def _compute_sig_opp(self):
+        for opp in self:
+            if ('Value>300K' in opp.tag_ids.mapped('name')) or ('Atypical Opportunity' in opp.tag_ids.mapped('name')) or ('Go_or_No_Go_Decision_Required' in opp.tag_ids.mapped('name')):
+                opp.sig_opp = True
+            else:
+                opp.sig_opp = False
 
     @api.model
     def build_lead_name(self,vals):
