@@ -590,8 +590,6 @@
             </field>
         </record>
 
-         
-
         <!-- We Override the search view for reporting -->
         <record model="ir.ui.view" id="crm_opportunity_view_search">
             <field name="name">crm_opportunity_view_search</field>
@@ -600,6 +598,7 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//filter[@name='lost']" position="after">
+                    <filter string="Open Opportunities" name="open_opportunities" domain="[('probability', '&lt;', 100), ('type', '=', 'opportunity')]" help="Open Opportunities"/>
                     <separator/>
                     <filter name="sig_opp" string="Significant" domain="[('sig_opp','=',True)]"/>
                     <field name="sig_opp" string="Significant"/>
@@ -608,7 +607,7 @@
             </field>
         </record>
 
-        <!-- Override the search view -->
+        <!-- Override the search view crm_enterprise.crm_opportunity_action_dashboard-->
         <record id="view_crm_case_opportunities_filter_inherit" model="ir.ui.view">
         <field name="name">crm.lead.search.opportunity.inherit</field>
         <field name="model">crm.lead</field>
@@ -621,6 +620,13 @@
 
             <xpath expr="//filter[@name='won']" position="before">
                 <filter string="Open" name="open" domain="['&amp;', ('active', '=', True), ('stage_id.probability','not in',[0,100])]"/>
+            </xpath>
+
+            <xpath expr="//filter[@name='lost']" position="after">
+                <filter string="Open Opportunities" name="open_opportunities" domain="[('probability', '&lt;', 100), ('type', '=', 'opportunity')]" help="Open Opportunities"/>
+                <separator/>
+                <filter name="sig_opp" string="Significant" domain="[('sig_opp','=',True)]"/>
+                <field name="sig_opp" string="Significant"/>
             </xpath>
             
         </field>
@@ -639,6 +645,20 @@
             <field name="name">Pipeline</field>
             <field name="res_model">crm.lead</field>
             <field name="view_mode">kanban,tree,graph,pivot,form,calendar,activity</field>
+            <field name="context">{
+                    'default_type': 'opportunity',
+                    'search_default_assigned_to_me': 1,
+                    'search_default_open': 1,
+                    }
+            </field>
+        </record>
+
+        <!-- we override the reporting action -->
+        <record model="ir.actions.act_window" id="crm_enterprise.crm_opportunity_action_dashboard">
+            <field name="name">Pipeline Analysis</field>
+            <field name="res_model">crm.lead</field>
+            <field name="view_mode">dashboard,pivot,graph,cohort</field>
+            <field name="search_view_id" ref="vcls-crm.view_crm_case_opportunities_filter_inherit"/>
             <field name="context">{
                     'default_type': 'opportunity',
                     'search_default_assigned_to_me': 1,

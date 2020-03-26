@@ -20,6 +20,7 @@
     'depends': [
         'base',
         'crm',
+        'crm_enterprise',
         'website',
         'website_crm',
         'partner_firstname',
