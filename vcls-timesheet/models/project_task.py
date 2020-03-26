@@ -117,13 +117,8 @@ class ProjectTask(models.Model):
     @api.multi
     def _get_kpi(self):
         for task in self.filtered(lambda s: not s.parent_id):
-            # analyzed_timesheet(account.analytic.line , is_timesheet= True)
-            # reporting_task_id(champ du timesheet) => pour chaque tache timesheet a prendre en compte. Valeur de la tache sur laquelle le reporting va etre effectué
-            
             analyzed_timesheet = task.project_id.timesheet_ids.filtered(lambda t: t.reporting_task_id == task)
-            # task.project_id.timesheet_ids.filtered(lambda t: t.reporting_task_id == task.id)
-            # ça va donner un pool de task a traiter ensuite comme avant ou quasiment en remplacant dans le sum: task. par analyzed_timesheet. 
-        
+
             task.contractual_budget = task.sale_line_id.price_unit * task.sale_line_id.product_uom_qty
             task.forecasted_budget = sum([
                 hourly_rate * resource_hours for hourly_rate, resource_hours in

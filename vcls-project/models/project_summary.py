@@ -23,7 +23,6 @@ class ProjectSummary(models.Model):
         'External summary'
     )
     completion_ratio = fields.Float('Task Complete')
-    # consumed_value = fields.Float('Budget Consumed')
     consumed_completed_ratio = fields.Float('BC/TC')
 
     @api.multi

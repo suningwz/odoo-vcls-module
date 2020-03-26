@@ -68,10 +68,8 @@
                             <field name="scope_of_work"/>
                         </group>
                         <group string="Project KPIs">
-                            <group>
+                            <group name="project_kpis">
                                 <field name="completion_ratio" widget="percentpie" nolabel="1"/>
-                                <!-- <br/>
-                                <field name="consumed_value" widget="percentpie" nolabel="1"/> -->
                             </group>
                             <group>
                                 <br/>
@@ -165,18 +163,11 @@
                                     'default_consumed_completed_ratio': consummed_completed_ratio,
                                 }"                                
                             />
-                                <!-- context="{
-                                    'default_project_id': active_id,
-                                    'default_completion_ratio': completion_ratio,
-                                    'default_consumed_value': consumed_value,
-                                    'default_consumed_completed_ratio': consummed_completed_ratio,
-                                }" -->
 
                             <field name="summary_ids" mode="kanban">
                                 <kanban create="0">
                                     <field name="completion_ratio"/>
                                     <field name="consumed_completed_ratio"/>
-                                    <!-- <field name="consumed_value"/> -->
                                     <field name="create_date"/>
                                     <templates>
                                         <t t-name="kanban-box">
@@ -187,9 +178,6 @@
                                                     </strong>
                                                     <div>
                                                         <field name="completion_ratio" widget="percentage" nolabel="0"/>
-                                                    </div>
-                                                    <div>
-                                                        <!-- <field name="consumed_value" widget="percentage" nolabel="0"/> -->
                                                     </div>
                                                     <div>
                                                         <field name="consumed_completed_ratio" string= "BC / TC" widget="percentage"
@@ -389,7 +377,6 @@
                         <field name="partner_id" string="Client"/>
                         <field name="task_ids"/>
                         <field name="completion_ratio" string="Task Complete"/>
-                        <!-- <field name="consumed_value" string="Budget Consumed"/> -->
                         <field name="consummed_completed_ratio" string="BC/TC"/>
                     </tree>
                 </field>

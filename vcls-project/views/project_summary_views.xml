@@ -12,7 +12,6 @@
                             </group>
                             <group colspan="6" col="6">
                                 <field name="completion_ratio" widget="percentpie" nolabel="1"/>
-                                <!-- <field name="consumed_value" widget="percentpie" nolabel="1"/> -->
                                 <field name="consumed_completed_ratio" widget="percentpie" nolabel="1"/>
                             </group>
                         <group>

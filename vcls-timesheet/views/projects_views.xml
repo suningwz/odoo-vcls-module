@@ -83,7 +83,6 @@
                     <field name="progress" string="Consumed Hours" widget="progressbar"/>
                 </xpath>
                 <xpath expr="//page[last()]" position="after">
-                    <!-- HERE FOLOOWING IS THE GOOD LINE -->
                     <page string="KPI" name="kpi" attrs="{'invisible': [('allow_budget_modification', '!=', True)]}">
                     <group>
                     <field name="allow_budget_modification" invisible="1"/>
@@ -147,6 +146,10 @@
                             </group>
                         </page>
                     </page>
+                    <xpath expr="//group[@name='project_kpis']" position="inside">
+                        <br/>
+                        <field name="budget_consumed" widget="percentpie" nolabel="1"/>
+                    </xpath>
                     <field name="consummed_completed_ratio" position="after">
                         <br/>
                         <field name="valuation_ratio" widget="percentpie" nolabel="1"/>
@@ -168,7 +171,6 @@
                     <field name="risk_score"/>
                     <field name="risk_ids"  widget="many2many_tags"/>
                     <field name="completion_ratio"/>
-                    <!-- <field name="consumed_value" widget="integer"/> -->
                     <field name="consummed_completed_ratio" widget="integer"/>
                     <field name="valuation_ratio"/>
                     <field name="invoicing_mode"/>
