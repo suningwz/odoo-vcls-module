@@ -72,8 +72,6 @@
                 <field name="consummed_completed_ratio" position="after">
                     <br/>
                     <field name="valuation_ratio" widget="percentpie" nolabel="1"/>
-                    <!-- TEST TODO remove it -->
-                    <button type="object" class = 'btn btn-primary' name="button_get_kpi" string="Refresh KPI"/>
                 </field>
 
                 <field name="parent_id" position="attributes">
@@ -100,8 +98,9 @@
                             <field name="realized_budget"/>
                             <field name="valued_budget"/>
                             <field name="invoiced_budget"/>
-                            <field name="pc_budget"/>
-                            <field name="cf_budget"/>
+                            <field name="invoicing_mode" invisible="1"/>
+                            <field name="pc_budget" attrs="{'invisible': [('invoicing_mode', '=', 'fixed_price')]}"/>
+                            <field name="cf_budget" attrs="{'invisible': [('invoicing_mode', '=', 'fixed_price')]}"/>
                         </group>
                     </group>
                     </page>
@@ -140,8 +139,9 @@
                                 <field name="realized_budget"/>
                                 <field name="valued_budget"/>
                                 <field name="invoiced_budget"/>
-                                <field name="pc_budget"/>
-                                <field name="cf_budget"/>
+                                <field name="invoicing_mode" invisible="1"/>
+                                <field name="pc_budget" attrs="{'invisible': [('invoicing_mode', '=', 'fixed_price')]}"/>
+                                <field name="cf_budget" attrs="{'invisible': [('invoicing_mode', '=', 'fixed_price')]}"/>
                             </group>
                             </group>
                         </page>

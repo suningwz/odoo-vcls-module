@@ -29,13 +29,16 @@ class Project(models.Model):
         string="Budget Consumed new",
         readonly=True,
         compute='compute_budget_consumed',
-        )
+    )
 
     @api.multi
     @api.depends("realized_budget", "contractual_budget")
     def compute_budget_consumed(self):
         for project in self:
-            self.budget_consumed = project.realized_budget / project.contractual_budget
+            if project.contractual_budget:
+                self.budget_consumed = project.realized_budget / project.contractual_budget
+            else:
+                self.budget_consumed = False
 
     @api.multi
     def _get_kpi(self):

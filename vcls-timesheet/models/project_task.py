@@ -49,6 +49,12 @@ class ProjectTask(models.Model):
     cf_budget = fields.Float(string="Carry Forward Budget",readonly=True)
     pc_hours = fields.Float(string="PC Review Hours",readonly=True)
     cf_hours = fields.Float(string="Carry Forward Hours",readonly=True)
+    invoicing_mode = fields.Selection([
+        ('tm', 'Time & Material'), 
+        ('fixed_price', 'Fixed Price'), 
+        ], default='tm',
+        compute='compute_invoicing_mode',
+        string="Invoicing Mode")
 
     allow_budget_modification = fields.Boolean(default="False")
     recompute_kpi = fields.Boolean(default="False")
@@ -57,7 +63,13 @@ class ProjectTask(models.Model):
         string="Budget Consumed new",
         readonly=True,
         compute='compute_budget_consumed',
-        )
+    )
+
+    @api.multi
+    @api.depends("project_id.invoicing_mode")
+    def compute_invoicing_mode(self):
+        for task in self:
+            self.invoicing_mode = task.project_id.invoicing_mode
 
     @api.multi
     @api.depends("realized_budget", "contractual_budget")
@@ -124,10 +136,6 @@ class ProjectTask(models.Model):
                 hourly_rate * resource_hours for hourly_rate, resource_hours in
                 zip(task.forecast_ids.mapped('hourly_rate'), task.forecast_ids.mapped('resource_hours'))
             ])
-            task.realized_budget = sum(
-                analyzed_timesheet.filtered(lambda t: t.stage_id not in ('draft', 'outofscope'))
-                    .mapped(lambda t:t.unit_amount * t.so_line_unit_price)
-            )
             task.valued_budget = sum(
                 analyzed_timesheet.filtered(lambda t: t.stage_id not in ('draft', 'outofscope'))
                     .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
@@ -140,10 +148,24 @@ class ProjectTask(models.Model):
                 analyzed_timesheet.filtered(lambda t: t.stage_id in ('carry_forward'))
                     .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
             )
-            task.invoiced_budget = sum(
-                analyzed_timesheet.filtered(lambda t: t.stage_id == 'invoiced')
-                    .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
-            )
+            if task.project_id.invoicing_mode != 'tm':
+                task.realized_budget = sum(
+                    task.sale_line_id.mapped(lambda l: l.qty_delivered * l.price_unit)
+                )
+                task.invoiced_budget = sum(
+                    task.sale_line_id.mapped(lambda l: l.qty_invoiced * l.price_unit)
+                )
+
+            else:
+                task.realized_budget = sum(
+                    analyzed_timesheet.filtered(lambda t: t.stage_id not in ('draft', 'outofscope'))
+                        .mapped(lambda t:t.unit_amount * t.so_line_unit_price)
+                )
+                task.invoiced_budget = sum(
+                    analyzed_timesheet.filtered(lambda t: t.stage_id == 'invoiced')
+                        .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
+                )
+
             task.forecasted_hours = sum(task.forecast_ids.mapped('resource_hours'))
             task.realized_hours = sum(analyzed_timesheet.filtered(
                 lambda t: t.stage_id not in ('draft', 'outofscope')
@@ -171,13 +193,6 @@ class ProjectTask(models.Model):
                 task.invoiced_budget = False
                 task.pc_budget = False
                 task.cf_budget = False
-                # task.forecasted_hours = False
-                # task.realized_hours = False
-                # task.valued_hours = False
-                # task.pc_hours = False
-                # task.cf_hours = False
-                # task.invoiced_hours = False
-                # task.valuation_ratio = False
 
     @api.onchange('parent_id')
     def onchange_allow_budget_modification(self):
@@ -247,6 +262,7 @@ class ProjectTask(models.Model):
             task.allow_budget_modification = False
         else:
             task.allow_budget_modification = True
+        task.invoicing_mode = task.project_id.invoicing_mode
         return task
 
     @api.one
