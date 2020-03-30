@@ -65,6 +65,9 @@
                         }"
                     />
                 </button>
+                <xpath expr="//field[@name='progress']" position="replace">
+                    <field name="budget_consumed" widget="progressbar" string="Budget Consumed"/>
+                </xpath>
 
                 <field name="consummed_completed_ratio" position="after">
                     <br/>
@@ -74,10 +77,13 @@
                 <field name="parent_id" position="attributes">
                     <attribute name="domain">[('project_id','=',project_id),('parent_id','=',False)]</attribute>
                 </field>
-                
+                <xpath expr="//page//field[@name='progress']" position="replace">
+                    <field name="progress" string="Consumed Hours" widget="progressbar"/>
+                </xpath>
                 <xpath expr="//page[last()]" position="after">
-                    <page string="KPI" name="kpi">
+                    <page string="KPI" name="kpi" attrs="{'invisible': [('allow_budget_modification', '!=', True)]}">
                     <group>
+                    <field name="allow_budget_modification" invisible="1"/>
                         <group string="Hours">
                             <field name="forecasted_hours"/>
                             <field name="realized_hours"/>
@@ -92,8 +98,9 @@
                             <field name="realized_budget"/>
                             <field name="valued_budget"/>
                             <field name="invoiced_budget"/>
-                            <field name="pc_budget"/>
-                            <field name="cf_budget"/>
+                            <field name="invoicing_mode" invisible="1"/>
+                            <field name="pc_budget" attrs="{'invisible': [('invoicing_mode', '=', 'fixed_price')]}"/>
+                            <field name="cf_budget" attrs="{'invisible': [('invoicing_mode', '=', 'fixed_price')]}"/>
                         </group>
                     </group>
                     </page>
@@ -132,12 +139,17 @@
                                 <field name="realized_budget"/>
                                 <field name="valued_budget"/>
                                 <field name="invoiced_budget"/>
-                                <field name="pc_budget"/>
-                                <field name="cf_budget"/>
+                                <field name="invoicing_mode" invisible="1"/>
+                                <field name="pc_budget" attrs="{'invisible': [('invoicing_mode', '=', 'fixed_price')]}"/>
+                                <field name="cf_budget" attrs="{'invisible': [('invoicing_mode', '=', 'fixed_price')]}"/>
                             </group>
                             </group>
                         </page>
                     </page>
+                    <xpath expr="//group[@name='project_kpis']" position="inside">
+                        <br/>
+                        <field name="budget_consumed" widget="percentpie" nolabel="1"/>
+                    </xpath>
                     <field name="consummed_completed_ratio" position="after">
                         <br/>
                         <field name="valuation_ratio" widget="percentpie" nolabel="1"/>
@@ -158,8 +170,10 @@
                     <field name="cf_budget" widget="integer"/>
                     <field name="risk_score"/>
                     <field name="risk_ids"  widget="many2many_tags"/>
+
                     <field name="completion_ratio"  widget="integer"/>
                     <field name="consumed_value" widget="integer"/>
+
                     <field name="consummed_completed_ratio" widget="integer"/>
                     <field name="valuation_ratio" widget="integer"/>
                     <field name="invoicing_mode"/>
