@@ -125,7 +125,7 @@ class SaleOrderLine(models.Model):
                 domain,
                 [('stage_id', 'in', ['invoiceable','invoiced','historical'])]]
             )
-
+        #_logger.info("Delivered QTY Domain {}".format(domain))
         return domain
 
     def _get_timesheet_for_amount_calculation(self, only_invoiced=False):
@@ -163,6 +163,7 @@ class SaleOrderLine(models.Model):
     def _compute_qty_delivered(self):
         """Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type"""
 
+        #self = self.with_context(timesheet_rounding=True)
         super()._compute_qty_delivered()
         for line in self:
             # In Time & Material, we invoice the rate product lines and set the other services to 0
@@ -260,6 +261,31 @@ class SaleOrderLine(models.Model):
             line.amount_invoiced_from_task_company_currency = (
                 total * line.order_id.currency_rate
             )
+
+    @api.depends('invoice_lines', 'invoice_lines.price_total', 'invoice_lines.invoice_id.state', 'invoice_lines.invoice_id.type')
+    def _compute_untaxed_amount_invoiced(self):
+        super()._compute_untaxed_amount_invoiced()
+
+        for line in self.filtered(lambda l: l.vcls_type=='rate' and l.order_id.invoicing_mode == 'tm'):
+            ts = self.env['account.analytic.line'].search([('stage_id','=','historical'),('so_line','=',line.id)])
+            if ts:
+                line.untaxed_amount_invoiced += sum(ts.mapped(lambda r: r.unit_amount_rounded*r.so_line_unit_price))
+
+        for line in self.filtered(lambda l: l.historical_invoiced_amount>0):
+            line.untaxed_amount_invoiced += line.historical_invoiced_amount
+        
+
+        
+        """for line in self:
+            amount_invoiced = 0.0
+            for invoice_line in line.invoice_lines:
+                if invoice_line.invoice_id.state in ['open', 'in_payment', 'paid']:
+                    invoice_date = invoice_line.invoice_id.date_invoice or fields.Date.today()
+                    if invoice_line.invoice_id.type == 'out_invoice':
+                        amount_invoiced += invoice_line.currency_id._convert(invoice_line.price_subtotal, line.currency_id, line.company_id, invoice_date)
+                    elif invoice_line.invoice_id.type == 'out_refund':
+                        amount_invoiced -= invoice_line.currency_id._convert(invoice_line.price_subtotal, line.currency_id, line.company_id, invoice_date)
+            line.untaxed_amount_invoiced = amount_invoiced"""
 
 
 class ProductTemplate(models.Model):

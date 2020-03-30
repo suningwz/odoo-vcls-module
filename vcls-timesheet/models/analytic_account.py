@@ -41,6 +41,13 @@ class AnalyticLine(models.Model):
     reporting_task_id = fields.Many2one(
         comodel_name = 'project.task',
         compute = '_compute_reporting_task',
+        store=True,
+    )
+
+    reporting_task_id = fields.Many2one(
+        comodel_name = 'project.task',
+        compute = '_compute_reporting_task',
+        store = True,
     )
 
     # Used in order to group by client
@@ -107,6 +114,11 @@ class AnalyticLine(models.Model):
         store = True,
         default = 'na',
         )
+    
+    @api.depends('task_id','task_id.parent_id')
+    def _compute_reporting_task(self):
+        for ts in self:
+            ts.reporting_task_id = ts.task_id.parent_id if ts.task_id.parent_id else ts.task_id
 
     @api.depends('task_id','task_id.parent_id')
     def _compute_reporting_task(self):
@@ -286,8 +298,7 @@ class AnalyticLine(models.Model):
                     orders |= line.so_line.order_id
 
                 # if the sale order line price as not been captured yet
-                if vals.get('so_line',
-                            line.so_line.id) and line.so_line_unit_price == 0.0:
+                if vals.get('so_line',line.so_line.id) and line.so_line_unit_price == 0.0:
                     task = self.env['project.task'].browse(
                         vals.get('task_id', line.task_id.id))
                     so_line = self.env['sale.order.line'].browse(

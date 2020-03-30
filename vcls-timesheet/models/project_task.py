@@ -128,6 +128,7 @@ class ProjectTask(models.Model):
 
     @api.multi
     def _get_kpi(self):
+
         for task in self.filtered(lambda s: not s.parent_id):
             analyzed_timesheet = task.project_id.timesheet_ids.filtered(lambda t: t.reporting_task_id == task)
 
@@ -136,18 +137,27 @@ class ProjectTask(models.Model):
                 hourly_rate * resource_hours for hourly_rate, resource_hours in
                 zip(task.forecast_ids.mapped('hourly_rate'), task.forecast_ids.mapped('resource_hours'))
             ])
+            
             task.valued_budget = sum(
                 analyzed_timesheet.filtered(lambda t: t.stage_id not in ('draft', 'outofscope'))
                     .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
             )
+            
             task.pc_budget = sum(
                 analyzed_timesheet.filtered(lambda t: t.stage_id in ('pc_review'))
                     .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
             )
+            
             task.cf_budget = sum(
                 analyzed_timesheet.filtered(lambda t: t.stage_id in ('carry_forward'))
                     .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
             )
+            
+            task.invoiced_budget = sum(
+                analyzed_timesheet.filtered(lambda t: t.stage_id in ('invoiced','historical'))
+                    .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
+            )
+            
             if task.project_id.invoicing_mode != 'tm':
                 task.realized_budget = sum(
                     task.sale_line_id.mapped(lambda l: l.qty_delivered * l.price_unit)
@@ -167,9 +177,11 @@ class ProjectTask(models.Model):
                 )
 
             task.forecasted_hours = sum(task.forecast_ids.mapped('resource_hours'))
+            
             task.realized_hours = sum(analyzed_timesheet.filtered(
                 lambda t: t.stage_id not in ('draft', 'outofscope')
             ).mapped('unit_amount'))
+            
             task.valued_hours = sum(analyzed_timesheet.filtered(
                 lambda t: t.stage_id not in ('draft', 'outofscope')
             ).mapped('unit_amount_rounded'))
@@ -179,9 +191,10 @@ class ProjectTask(models.Model):
             task.cf_hours = sum(analyzed_timesheet.filtered(
                 lambda t: t.stage_id in ('carry_forward')
             ).mapped('unit_amount_rounded'))
-    
-            task.invoiced_hours = sum(analyzed_timesheet.filtered(
-                lambda t: t.stage_id == 'invoiced'
+
+            task.invoiced_hours = sum((analyzed_timesheet.filtered(
+                lambda t: t.stage_id in ('invoiced','historical')
+
             ).mapped('unit_amount_rounded'))
             task.valuation_ratio = 100.0*(task.valued_hours / task.realized_hours) if task.realized_hours else False
 

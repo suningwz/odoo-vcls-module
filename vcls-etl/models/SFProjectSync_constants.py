@@ -136,8 +136,11 @@ SELECT_GET_ANNUITY_DATA = """
     SELECT 
         Id,
         Name,
+        KimbleOne__StartDate__c,
+        KimbleOne__EndDate__c,
         KimbleOne__DeliveryElement__c,
-        KimbleOne__InvoicingCurrencyRevenueRate__c
+        KimbleOne__InvoicingCurrencyRevenueRate__c,
+        KimbleOne__InitialNumberOfUnits__c
 
         FROM KimbleOne__Annuity__c
 """
