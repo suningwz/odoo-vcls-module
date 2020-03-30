@@ -41,6 +41,7 @@ class AnalyticLine(models.Model):
     reporting_task_id = fields.Many2one(
         comodel_name = 'project.task',
         compute = '_compute_reporting_task',
+        store = True,
     )
 
     # Used in order to group by client
