@@ -92,7 +92,7 @@ class TimesheetForecastReport(models.Model):
                             limit 1
                         ) AS employee_seniority_level_id,
                         E.id AS employee_id,
-                        A.task_id AS task_id,
+                        A.reporting_task_id AS task_id,
                         A.project_id AS project_id,
                         -A.unit_amount_rounded AS number_hours,
                         null AS date,
