@@ -247,6 +247,11 @@
         <field name="inherit_id" ref="sale.view_order_product_search"/>
         <field name="arch" type="xml">
 
+            <xpath expr="//field[@name='country_id']" position="after">
+                <field name="expected_start_date"/>
+                <field name="expected_end_date"/>
+            </xpath>
+
             <xpath expr="//filter[@name='date']" position="after">
                 <filter string="Expected Start Date" name="start_date" context="{'group_by':'expected_start_date'}"/>
                 <filter string="Expected End Date" name="end_date" context="{'group_by':'expected_end_date'}"/>
