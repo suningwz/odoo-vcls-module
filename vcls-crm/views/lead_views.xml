@@ -591,123 +591,24 @@
             </field>
         </record>
 
-         <!-- record id="view_lead_new_ci_form" model="ir.ui.view">
-            <field name="name">view_lead_new_ci_form</field>
+        <!-- We Override the search view for reporting -->
+        <record model="ir.ui.view" id="crm_opportunity_view_search">
+            <field name="name">crm_opportunity_view_search</field>
             <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm_enterprise.crm_opportunity_view_search"/>
             <field name="arch" type="xml">
-                <form string="Leads Form">
-                    <sheet>
-                        <field name="active" invisible="1"/>
-                        <div class="oe_title">
-                            <label for="name" class="oe_edit_only" string="Lead"/>
-                            <h1><field name="name" placeholder="Describe the lead..."/></h1>
-                        </div>
-                        <group>
-                            <group>
-                                Preload all the partner's information
-                                <field name="partner_id" string="Existing Client" options='"no_create_edit": True}'
-                                        widget="res_partner_many2one"
-                                        context="{'default_user_id': user_id,'default_name': contact_name, 'default_street': street, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_function': function, 'default_phone': phone, 'default_mobile': mobile, 'default_email': email_from, 'default_user_id': user_id, 'default_team_id': team_id, 'default_website': website, 'show_vat': True}"
-                                        domain = "[('is_internal','=',False)]"
-                                        />
-                                <field name="partner_name" string="Company Name" required="True"/>
-                                <label for="street" string="Address"/>
-                                <div class="o_address_format">
-                                    <field name="street" placeholder="Street..." class="o_address_street"/>
-                                    <field name="street2" placeholder="Street 2..." class="o_address_street"/>
-                                    <field name="city" placeholder="City" class="o_address_city"/>
-                                    <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}'/>
-                                    <field name="zip" placeholder="ZIP" class="o_address_zip"/>
-                                    <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
-                                </div>
-                                <field name="website" widget="url" placeholder="e.g. www.voisinconsulting.com"/>
-                            </group>
-                            <group>
-                                <label for="contact_name"/>
-                                <div class="o_row">
-                                    <field name="contact_name" required="True"/>
-                                    <field name="title" placeholder="Salutation" domain="[]" options='{"no_open": True,"no_create_edit": True}'/>
-                                </div>
-                                <field name="is_blacklisted" invisible="1"/>
-                                <label for="email_from" class="oe_inline" required="True"/>
-                                <div class="o_row o_row_readonly">
-                                    <i class="fa fa-ban" style="color: red;" role="img" title="This email is blacklisted for mass mailing"
-                                        aria-label="Blacklisted" attrs="{'invisible': [('is_blacklisted', '=', False)]}" groups="base.group_user"></i>
-                                    <field name="email_from" widget="email"/>
-                                </div>
-                                <field name="partner_seniority_id" options='"no_create_edit": True}'/>
-                                <field name="function" string="Job Title" required="True"/>
-                                <field name="functional_focus_id" options='"no_create_edit": True}'/>
-                                <field name="phone" widget="phone"/>
-                                <field name="mobile"/>
-                                
-                            </group>
-                            <group>
-                                
-                                <field name="user_id" domain="[('share', '=', False),('is_internal','=',True)]" options='{"no_open": True}' string="Account Manager" groups="base.group_no_one"/>
-                                
-    
-                                <field name="user_id" domain="[('share', '=', False)]" options='{"no_open": True}' string="Account Manager" readonly='1' groups="base.group_no_one"
-                                    context="{'default_groups_ref': ['base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}"/>
-                                
-                                <field name="team_id" widget="selection" domain="[('use_leads','=',True)]"/>
-                                <field name="type" invisible="1"/> 
-                                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
-                                <field name="date_deadline" string="Proposale Sending Deadline"/>
-                            </group>
-                            <group>
-                                <field name="priority" widget="priority"/>
-                                <field name="score"/>
-                                <field name="expected_start_date"/>
-                            </group>
-                        </group>
-                        <notebook>
-                            <page string="Internal Notes">
-                                <field name="description"/>
-                            </page>
-                            <page name="segmentation" string="Business Segmentation">
-                                        <group>
-                                            <group>
-                                                <field name="country_group_id"/>
-                                                <field name="industry_id"/>
-                                            </group>
-                                            <group>
-                                                <field name="client_activity_ids" widget="many2many_tags"/>
-                                                <field name="client_product_ids" widget="many2many_tags"/>
-                                            </group>
-                                        </group>
-                                    </page>
-                            <page name="extra" string="Extra Info">
-                                <group>
-                                    <group string="Tracking" name="categorization">
-                                        <field name="campaign_id"/>
-                                        <field name="source_id"/>
-                                        <field name="referent_id"/>
-                                    </group>
-                                    <group string="Analysis">
-                                        <field name="date_open"/>
-                                        <field name="date_closed"/>
-                                        <field name="probability"/>
-                                    </group>
-                                    <group string="Email" groups="base.group_no_one">
-                                        <field name="message_bounce" readonly="1"/>
-                                    </group>
-                                </group>
-                            </page>
-                        </notebook>
-                    </sheet>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids" widget="mail_followers"/>
-                        <field name="activity_ids" widget="mail_activity"/>
-                        <field name="message_ids" widget="mail_thread" options="{'post_refresh': 'recipients'}"/>
-                    </div>
-                </form>
+
+                <xpath expr="//filter[@name='lost']" position="after">
+                    <filter string="Open Opportunities" name="open_opportunities" domain="[('probability', '&lt;', 100), ('type', '=', 'opportunity')]" help="Open Opportunities"/>
+                    <separator/>
+                    <filter name="sig_opp" string="Significant" domain="[('sig_opp','=',True)]"/>
+                    <field name="sig_opp" string="Significant"/>
+                </xpath>
+
             </field>
-        </record -->
+        </record>
 
-         <!-- therapeutic_area_tree_view -->
-
-        <!-- Override the search view -->
+        <!-- Override the search view crm_enterprise.crm_opportunity_action_dashboard-->
         <record id="view_crm_case_opportunities_filter_inherit" model="ir.ui.view">
         <field name="name">crm.lead.search.opportunity.inherit</field>
         <field name="model">crm.lead</field>
@@ -720,6 +621,12 @@
 
             <xpath expr="//filter[@name='won']" position="before">
                 <filter string="Open" name="open" domain="['&amp;', ('active', '=', True), ('stage_id.probability','not in',[0,100])]"/>
+            </xpath>
+
+            <xpath expr="//filter[@name='lost']" position="after">
+                <separator/>
+                <filter name="sig_opp" string="Significant" domain="[('sig_opp','=',True)]"/>
+                <field name="sig_opp" string="Significant"/>
             </xpath>
             
         </field>
@@ -738,6 +645,20 @@
             <field name="name">Pipeline</field>
             <field name="res_model">crm.lead</field>
             <field name="view_mode">kanban,tree,graph,pivot,form,calendar,activity</field>
+            <field name="context">{
+                    'default_type': 'opportunity',
+                    'search_default_assigned_to_me': 1,
+                    'search_default_open': 1,
+                    }
+            </field>
+        </record>
+
+        <!-- we override the reporting action -->
+        <record model="ir.actions.act_window" id="crm_enterprise.crm_opportunity_action_dashboard">
+            <field name="name">Pipeline Analysis</field>
+            <field name="res_model">crm.lead</field>
+            <field name="view_mode">dashboard,pivot,graph,cohort</field>
+            <field name="search_view_id" ref="vcls-crm.view_crm_case_opportunities_filter_inherit"/>
             <field name="context">{
                     'default_type': 'opportunity',
                     'search_default_assigned_to_me': 1,

@@ -244,3 +244,20 @@ class SaleOrder(models.Model):
             for invoice in invoice_ids:
                 invoice._message_subscribe(partner_ids=orders_follower_ids.ids)
         return invoices
+    
+    @api.multi
+    def action_view_invoice(self):
+        invoices = self.mapped('invoice_ids')
+        action = self.env.ref('account.action_invoice_tree1').read()[0]
+        if len(invoices) > 1:
+            action['domain'] = [('id', 'in', invoices.ids)]
+        elif len(invoices) == 1:
+            form_view = [(self.env.ref('vcls-invoicing.view_invoice_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state,view) for state,view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = invoices.ids[0]
+        else:
+            action = {'type': 'ir.actions.act_window_close'}
+        return action

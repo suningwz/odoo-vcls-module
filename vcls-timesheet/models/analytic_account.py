@@ -37,6 +37,12 @@ class AnalyticLine(models.Model):
         related='task_id.sale_line_id.product_id.deliverable_id',
         store=True,
     )
+    
+    reporting_task_id = fields.Many2one(
+        comodel_name = 'project.task',
+        compute = '_compute_reporting_task',
+        store=True,
+    )
 
     reporting_task_id = fields.Many2one(
         comodel_name = 'project.task',
@@ -109,6 +115,11 @@ class AnalyticLine(models.Model):
         default = 'na',
         )
     
+    @api.depends('task_id','task_id.parent_id')
+    def _compute_reporting_task(self):
+        for ts in self:
+            ts.reporting_task_id = ts.task_id.parent_id if ts.task_id.parent_id else ts.task_id
+
     @api.depends('task_id','task_id.parent_id')
     def _compute_reporting_task(self):
         for ts in self:
