@@ -86,7 +86,7 @@ class ProjectTask(models.Model):
 
     @api.multi
     def _get_kpi(self):
-        for task in self:
+        for task in self.filtered(lambda ta: ta.stage_id):
             task.contractual_budget = task.sale_line_id.price_unit * task.sale_line_id.product_uom_qty
             task.forecasted_budget = sum([
                 hourly_rate * resource_hours for hourly_rate, resource_hours in
@@ -109,7 +109,7 @@ class ProjectTask(models.Model):
                     .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
             )
             task.invoiced_budget = sum(
-                task.timesheet_ids.filtered(lambda t: t.stage_id == 'invoiced')
+                task.timesheet_ids.filtered(lambda t: t.stage_id in ('invoiced','historical'))
                     .mapped(lambda t:t.unit_amount_rounded * t.so_line_unit_price)
             )
             task.forecasted_hours = sum(task.forecast_ids.mapped('resource_hours'))
@@ -126,7 +126,7 @@ class ProjectTask(models.Model):
                 lambda t: t.stage_id in ('carry_forward')
             ).mapped('unit_amount_rounded'))
             task.invoiced_hours = sum(task.timesheet_ids.filtered(
-                lambda t: t.stage_id == 'invoiced'
+                lambda t: t.stage_id in ('invoiced','historical')
             ).mapped('unit_amount_rounded'))
 
             task.valuation_ratio = 100.0*(task.valued_hours / task.realized_hours) if task.realized_hours else False
