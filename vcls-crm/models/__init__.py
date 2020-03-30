@@ -15,3 +15,4 @@ from . import sale_order_template
 from . import lead2opp
 from . import core_team
 from . import project
+from . import sale_report

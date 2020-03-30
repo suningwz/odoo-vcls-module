@@ -14,12 +14,13 @@
     'category': 'Uncategorized',
 
 
-    'version': '1.3.15',
+    'version': '1.3.18',
 
     # any module necessary for this one to work correctly
     'depends': [
         'base',
         'crm',
+        'crm_enterprise',
         'website',
         'website_crm',
         'partner_firstname',

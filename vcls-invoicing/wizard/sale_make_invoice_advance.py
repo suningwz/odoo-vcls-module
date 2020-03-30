@@ -18,6 +18,13 @@ class SaleAdvancePaymentInv(models.TransientModel):
 
     @api.multi
     def create_invoices(self):
+        sale_orders = self.env['sale.order'].browse(self._context.get('active_ids', []))
+
+        self = self.with_context(
+            default_company_id=sale_orders[0].company_id.id,
+            force_company=sale_orders[0].company_id.id,
+        )
+
         if self.advance_payment_method in ('percentage', 'fixed'):
             return super(SaleAdvancePaymentInv, self).create_invoices()
         context = self._context.copy()
