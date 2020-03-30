@@ -192,10 +192,9 @@ class ProjectTask(models.Model):
                 lambda t: t.stage_id in ('carry_forward')
             ).mapped('unit_amount_rounded'))
 
-            task.invoiced_hours = sum((analyzed_timesheet.filtered(
-                lambda t: t.stage_id in ('invoiced','historical')
+            task.invoiced_hours = sum(analyzed_timesheet.filtered(
+                lambda t: t.stage_id in ('invoiced','historical')).mapped('unit_amount_rounded'))
 
-            ).mapped('unit_amount_rounded'))
             task.valuation_ratio = 100.0*(task.valued_hours / task.realized_hours) if task.realized_hours else False
 
             if task.allow_budget_modification is False:
