@@ -17,7 +17,7 @@ class ResPartnerBank(models.Model):
         result = []
         for account in self:
             if account.journal_id and account.acc_number:
-                tmp_name = "{} | {}".format(account.journal_id.name, account.acc_number)
+                tmp_name = "{} | {}".format(account.journal_id.mapped('name'), account.acc_number)
             else:
                 tmp_name = account.acc_number
             
