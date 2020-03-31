@@ -565,8 +565,8 @@ class Invoice(models.Model):
         ret = False
         _logger.info("INVOICE WRITE IDS {} VALS {}".format(self.ids,vals))
         for inv in self:
-            self = self.with_context(force_company=inv.company_id.id)
-            inv = inv.with_context(force_company=inv.company_id.id)
+            self = self.with_context(force_company=inv.company_id.id,company_id=inv.company_id.id)
+            inv = inv.with_context(force_company=inv.company_id.id,company_id=inv.company_id.id)
             inv._message_subscribe_account_payable()
 
             if vals.get('sent'):
