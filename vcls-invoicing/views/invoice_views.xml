@@ -74,7 +74,7 @@
                                 <field name="company_currency_id" invisible="1"/>
                             </div>
                             <field name='po_id'/>
-                            <field name='partner_bank_id' string="Bank Account" options="{'no_create': True, 'no_open': True}"/>
+                            <field name='partner_bank_id' string="Bank Account" options="{'no_create': True, 'no_open': True}" domain="[('company_id','=',company_id)]"/>
                             <field name='ready_for_approval' invisible="1"/>
                             <button name='get_last_report' type="object"
                                 string="PDF" class="btn-primary"
