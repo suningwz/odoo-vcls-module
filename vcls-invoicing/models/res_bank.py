@@ -18,4 +18,4 @@ class ResPartnerBank(models.Model):
         for account in self:
             tmp_name = "{} | {}".format(account.journal_id.name, account.acc_number)
             result.append((account.id, tmp_name))
-            return result
+        return result
