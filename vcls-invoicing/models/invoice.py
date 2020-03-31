@@ -75,10 +75,10 @@ class Invoice(models.Model):
 
     communication_rate = fields.Float()
 
-    bank_account_id = fields.Many2one(
+    """bank_account_id = fields.Many2one(
         'res.partner.bank', string='Bank Account',
         help='Company Bank Account Number to which the invoice will be paid.',
-    )
+    )"""
 
     partner_bank_id = fields.Many2one(
         'res.partner.bank', string='Partner Bank Account',
@@ -112,7 +112,7 @@ class Invoice(models.Model):
             self.action_generate_draft_invoice()
         return result
 
-    @api.model
+    """@api.model
     def default_get(self, fields_list):
         result = super(Invoice, self).default_get(fields_list)
         company = self.env['res.company']._company_default_get()
@@ -127,7 +127,7 @@ class Invoice(models.Model):
             bank_accounts = self.company_id.bank_ids.filtered(
                 lambda b: not b.currency_id or b.currency_id == self.currency_id
             )
-            self.bank_account_id = bank_accounts and bank_accounts[0] or False
+            self.bank_account_id = bank_accounts and bank_accounts[0] or False"""
 
     @api.depends('timesheet_limit_date', 'period_start')
     def compute_temp_name(self):
@@ -565,8 +565,8 @@ class Invoice(models.Model):
         ret = False
         _logger.info("INVOICE WRITE IDS {} VALS {}".format(self.ids,vals))
         for inv in self:
-            self = self.with_context(force_company=inv.company_id.id)
-            inv = inv.with_context(force_company=inv.company_id.id)
+            self = self.with_context(force_company=inv.company_id.id,company_id=inv.company_id.id)
+            inv = inv.with_context(force_company=inv.company_id.id,company_id=inv.company_id.id)
             inv._message_subscribe_account_payable()
 
             if vals.get('sent'):

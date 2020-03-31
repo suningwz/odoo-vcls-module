@@ -240,25 +240,6 @@
             </field>
         </record>
 
-        <!-- Override the search view sale.view_order_product_search -->
-        <record id="view_order_product_search" model="ir.ui.view">
-        <field name="name">view_order_product_search</field>
-        <field name="model">sale.report</field>
-        <field name="inherit_id" ref="sale.view_order_product_search"/>
-        <field name="arch" type="xml">
-
-            <xpath expr="//field[@name='country_id']" position="after">
-                <field name="expected_start_date"/>
-                <field name="expected_end_date"/>
-            </xpath>
-
-            <xpath expr="//filter[@name='date']" position="after">
-                <filter string="Expected Start Date" name="start_date" context="{'group_by':'expected_start_date'}"/>
-                <filter string="Expected End Date" name="end_date" context="{'group_by':'expected_end_date'}"/>
-            </xpath>
-            
-        </field>
-        </record>
 
     </data>
 </odoo>

@@ -298,39 +298,39 @@
                     </div>
                     </div>
 
-                    <t t-set="bank_account_id" t-value="o.sudo().bank_account_id"/>
+                    <t t-set="partner_bank_id" t-value="o.sudo().partner_bank_id"/>
                     <div name="payment_informations"
                          class="mt32" style="page-break-inside: avoid;"
-                         t-if="bank_account_id">
+                         t-if="partner_bank_id">
                         <h6 class="font-weight-bold">Please make payment to:</h6>
                         <table class="table-borderless" style="border: none;">
-                            <tr t-if="bank_account_id.account_name">
+                            <tr t-if="partner_bank_id.account_name">
                                 <td style="border: none;">Account name:</td>
-                                <td style="border: none;"><span class="ml16" t-field="bank_account_id.account_name"/></td>
+                                <td style="border: none;"><span class="ml16" t-field="partner_bank_id.account_name"/></td>
                             </tr>
-                            <tr t-if="bank_account_id.bank_id.name">
+                            <tr t-if="partner_bank_id.bank_id.name">
                                 <td style="border: none;">Bank:</td>
-                                <td style="border: none;"><span class="ml16" t-field="bank_account_id.bank_id.name"/></td>
+                                <td style="border: none;"><span class="ml16" t-field="partner_bank_id.bank_id.name"/></td>
                             </tr>
-                            <tr t-if="bank_account_id.acc_number">
+                            <tr t-if="partner_bank_id.acc_number">
                                 <td style="border: none;">Account number:</td>
-                                <td style="border: none;"><span class="ml16" t-field="bank_account_id.acc_number"/></td>
+                                <td style="border: none;"><span class="ml16" t-field="partner_bank_id.acc_number"/></td>
                             </tr>
-                            <tr t-if="bank_account_id.iban">
+                            <tr t-if="partner_bank_id.iban">
                                 <td style="border: none;">IBAN Code:</td>
-                                <td style="border: none;"><span class="ml16" t-field="bank_account_id.iban"/></td>
+                                <td style="border: none;"><span class="ml16" t-field="partner_bank_id.iban"/></td>
                             </tr>
-                            <tr t-if="bank_account_id.swift">
+                            <tr t-if="partner_bank_id.swift">
                                 <td style="border: none;">Swift Code:</td>
-                                <td style="border: none;"><span class="ml16" t-field="bank_account_id.swift"/></td>
+                                <td style="border: none;"><span class="ml16" t-field="partner_bank_id.swift"/></td>
                             </tr>
                             <tr t-if="o.company_id.vat">
                                 <td style="border: none;">VAT Number:</td>
                                 <td style="border: none;"><span class="ml16" t-field="o.company_id.vat"/></td>
                             </tr>
-                            <tr t-if="bank_account_id.bank_account_notes">
+                            <tr t-if="partner_bank_id.bank_account_notes">
                                 <td style="border: none;">Notes:</td>
-                                <td style="border: none;"><span class="ml16" t-field="bank_account_id.bank_account_notes"/></td>
+                                <td style="border: none;"><span class="ml16" t-field="partner_bank_id.bank_account_notes"/></td>
                             </tr>
                         </table>
                         <div t-if="o.fiscal_position_id">

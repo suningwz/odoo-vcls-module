@@ -69,6 +69,10 @@ class SaleAdvancePaymentInv(models.TransientModel):
         return projects
 
     def _create_invoice(self, order, so_line, amount):
+        self = self.with_context(
+            force_company=order.company_id.id,
+            company_id=order.company_id.id,
+            default_currency_id=order.currency_id.id)
         invoice = super(SaleAdvancePaymentInv, self)._create_invoice(order, so_line, amount)
         # Add the same followers to from the order to the invoice
         order_follower_partner_ids = order.message_partner_ids
