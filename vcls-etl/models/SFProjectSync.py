@@ -327,18 +327,15 @@ class SFProjectSync(models.Model):
                     employee = product.forecast_employee_id
 
             rate_id = employee.default_rate_ids[0] if  employee.default_rate_ids else False
-            _logger.info("EMPLOYEE MAP assignment role {} for employee {} at {}".format(assignment['KimbleOne__ActivityRole__c'],employee.name,assignment['KimbleOne__InvoicingCurrencyForecastRevenueRate__c']))
+            #_logger.info("EMPLOYEE MAP assignment role {} for employee {} at {}".format(assignment['KimbleOne__ActivityRole__c'],employee.name,assignment['KimbleOne__InvoicingCurrencyForecastRevenueRate__c']))
 
             #we check if this employee is already mapped in the project
             if employee not in project_id.sale_line_employee_ids.mapped('employee_id'):
 
                 product_template = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
-
                 rate_lines = so_lines.filtered(lambda l: l.vcls_type == 'rate' and l.product_id.product_tmpl_id == product_template)
-                _logger.info("EMPLOYEE MAP | Employee {} not mapped | Product_tmpl from role {} id {}".format(employee.name,product_template.name,product_template.id))
-
-                #rate_lines = so_line.order_id.order_line.filtered(lambda l: l.name == product.name.split(' (copy)')[0])
-                _logger.info("EMPLOYEE MAP Rate Lines Found {}".format(rate_lines.mapped('name')))
+                #_logger.info("EMPLOYEE MAP | Employee {} not mapped | Product_tmpl from role {} id {}".format(employee.name,product_template.name,product_template.id))
+                #_logger.info("EMPLOYEE MAP Rate Lines Found {}".format(rate_lines.mapped('name')))
                 map_vals = {
                     'employee_id': employee.id,
                     'project_id': project_id.id,
@@ -347,14 +344,14 @@ class SFProjectSync(models.Model):
                 if map_vals['sale_line_id']:
                     self.env['project.sale.line.employee.map'].create(map_vals)
                     rate_id = rate_lines[0].product_id
-                    _logger.info("EMPLOYEE MAP CREATED {} {}".format(employee.name, rate_id.name))
+                    #_logger.info("EMPLOYEE MAP CREATED {} {}".format(employee.name, rate_id.name))
                 else:
                     _logger.info("EMPLOYEE MAP FAILED {}".format(employee.name))
             else:
                 map_line = project_id.sale_line_employee_ids.filtered(lambda l: l.employee_id == employee)
                 #_logger.info("EMPLOYEE MAP {} map Lines {}".format(employee.name,project_id.sale_line_employee_ids.mapped('employee_id.name')))
                 rate_id = map_line[0].sale_line_id.product_id.product_tmpl_id if map_line else False
-                _logger.info("EMPLOYEE MAP FOUND {} {}".format(employee.name,rate_id.name if rate_id else False))
+                #_logger.info("EMPLOYEE MAP FOUND {} {}".format(employee.name,rate_id.name if rate_id else False))
 
             #we finally loop in TS
             for ts in a_ts:
