@@ -65,6 +65,11 @@ class ProjectTask(models.Model):
         compute='compute_budget_consumed',
     )
 
+    currency_id = fields.Many2one(
+        comodel_name = 'res.currency',
+        related = 'project_id.currency_id',
+    )
+
     @api.multi
     @api.depends("project_id.invoicing_mode")
     def compute_invoicing_mode(self):
