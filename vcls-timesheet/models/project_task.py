@@ -65,6 +65,11 @@ class ProjectTask(models.Model):
         compute='compute_budget_consumed',
     )
 
+    currency_id = fields.Many2one(
+        comodel_name = 'res.currency',
+        related = 'project_id.currency_id',
+    )
+
     completion_elligible = fields.Boolean(string='Completion eligibility')
     @api.onchange('sale_line_id')
     def onchange_sale_line_id(self):
