@@ -618,13 +618,18 @@ class Invoice(models.Model):
 
     @api.multi
     def unlink(self):
+        orders = self.env['sale.order']
         for invoice in self:
             if invoice.timesheet_ids:
-                for timesheet in invoice.timesheet_ids:
+                invoice.timesheet_ids.write({'stage_id':'invoiceable'})
+                orders |= invoice.timesheet_ids.mapped('so_line.order_id')
+                """for timesheet in invoice.timesheet_ids:
                     timesheet.stage_id = 'invoiceable'
+                    orders |= timesheet.so_line.order_id"""
         
             ret = super(Invoice, invoice).unlink()
-
+            
+        orders.mapped('order_line')._compute_qty_delivered()
         return ret
 
     @api.multi
