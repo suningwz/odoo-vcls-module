@@ -379,6 +379,7 @@ class SFProjectSync(models.Model):
                     'time_category_id': time_category.id if time_category else False,
                     'date': date,
                     'unit_amount': ts['KimbleOne__EntryUnits__c'],
+                    'lc_comment': ts['KimbleOne__Category4__c'],
                 }
 
                 vals = self.get_status_vals(vals,ts,inv_status)
