@@ -3,6 +3,8 @@ from . import generalSync
 from . import SFProjectSync_constants
 from . import SFProjectSync_mapping
 
+from odoo.exceptions import ValidationError
+
 import pytz
 from simple_salesforce import Salesforce
 from simple_salesforce.exceptions import SalesforceMalformedRequest
@@ -138,6 +140,8 @@ class SFProjectSync(models.Model):
                 historical._get_invoice_qty()
             
             lines._compute_qty_delivered()
+            lines._compute_untaxed_amount_invoiced()
+            lines._compute_untaxed_amount_to_invoice()
                 
 
     
@@ -229,13 +233,14 @@ class SFProjectSync(models.Model):
             so_lines = self.env['sale.order.line'].browse(line_ids)
             _logger.info("FOUND Order Lines {} {}".format(so_lines.mapped('name'),so_lines.mapped('ts_migrated')))
             
-            lines_to_migrate = so_lines.filtered(lambda l: l.ts_migrated==False and l.task_id)
+            lines_to_migrate = so_lines.filtered(lambda l: l.ts_migrated==False and l.task_id and l.product_id.vcls_type!='subscription')
             _logger.info("Lines to migrate {}".format(lines_to_migrate.mapped('name')))
             
             if lines_to_migrate:
                 migrating_line = lines_to_migrate[0]
                 #get required source data
                 keys = self.env['etl.sync.keys'].search([('odooId','=',str(migrating_line.id)),('odooModelName','=','sale.order.line'),('externalObjName','=','KimbleOne__DeliveryElement__c'),('search_value','=',False)])
+                _logger.info("KEYS to migrate {} for line {}".format(keys.mapped('name'),migrating_line.id))
                 if keys:
                     #get timesheets
                     element_string = project.list_to_filter_string(keys.mapped('externalId'))
@@ -256,6 +261,8 @@ class SFProjectSync(models.Model):
 
                     else:
                         migrating_line.ts_migrated = True
+                else:
+                    migrating_line.ts_migrated = True
 
                 #we recheck if remaining lines
                 lines_to_migrate = so_lines.filtered(lambda l: l.ts_migrated==False and l.task_id) 
@@ -317,6 +324,28 @@ class SFProjectSync(models.Model):
                 if product:
                     employee = product.forecast_employee_id
 
+            rate_id = employee.default_rate_ids[0] if  employee.default_rate_ids else False
+            #we check if this employee is already mapped in the project
+            """if employee not in project_id.sale_line_employee_ids.mapped('employee_id'):
+                product = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
+                #_logger.info("EMPLOYEE MAP {} SO Lines {}".format(product.name,so_line.order_id.order_line.mapped('name')))
+                rate_lines = so_line.order_id.order_line.filtered(lambda l: l.name in product.name)
+                _logger.info("EMPLOYEE MAP Rate Lines {}".format(rate_lines.mapped('name')))
+                map_vals = {
+                    'employee_id': employee.id,
+                    'project_id': project_id.id,
+                    'sale_line_id': rate_lines[0].id if rate_lines else False,
+                }
+                if map_vals['sale_line_id']:
+                    self.env['project.sale.line.employee.map'].create(map_vals)
+                    rate_id = rate_lines[0].product_id
+                    _logger.info("EMPLOYEE MAP CREATED {} {}".format(employee.id, rate_id.name))
+            else:
+                map_line = project_id.sale_line_employee_ids.filtered(lambda l: l.employee_id == employee)
+                #_logger.info("EMPLOYEE MAP {} map Lines {}".format(employee.name,project_id.sale_line_employee_ids.mapped('employee_id.name')))
+                rate_id = map_line[0].sale_line_id.product_id if map_line else False
+                _logger.info("EMPLOYEE MAP FOUND {} {}".format(employee.name,rate_id.name if rate_id else False))"""
+
             #we finally loop in TS
             for ts in a_ts:
                 #timesheet values
@@ -336,6 +365,7 @@ class SFProjectSync(models.Model):
                     'is_timesheet': True,
                     'name': " | ".join(stack) if len(stack)>0 else "N/A",
                     'employee_id': employee.id if employee else False,
+                    'rate_id': rate_id.id if rate_id else False,
                     'main_project_id': main_project_id.id,
                     'project_id': project_id.id,
                     'task_id': task_id,
@@ -359,11 +389,15 @@ class SFProjectSync(models.Model):
                     _logger.info("IMPOSSIBLE TO CREATE TS {}".format(vals))
     
     def get_status_vals(self,vals,timesheet,inv_status):
+        temp_stage = False
+        is_validated = True
         for status in inv_status:
+            
             if status.externalId == timesheet['KimbleOne__InvoiceItemStatus__c']:
                 # VCLS status treatment
                 if 'Draft' in timesheet['VCLS_Status__c']:
                     temp_stage = 'draft'
+                    is_validated = False
                 elif 'ReadyForApproval' in timesheet['VCLS_Status__c']:
                     temp_stage = 'lc_review'
                 elif 'Approved' in timesheet['VCLS_Status__c']:
@@ -371,12 +405,17 @@ class SFProjectSync(models.Model):
                 else:
                     temp_stage = False
 
+                #_logger.info("MIGRATED TS {} from VCLS status".format(temp_stage))
+                vals.update({
+                        'validated': is_validated,
+                    })
+
                 #invoicing Status treatment
-                if status.name == 'WrittenOff':
+                if status.name == 'WrittenOff' or not temp_stage:
                     vals.update({
                         'unit_amount_rounded': 0,
                         'lc_comment': 'Migration - Rejected',
-                        'stage_id': 'invoiced',
+                        'stage_id': 'historical',
                     })
                 elif status.name == 'Invoiced':
                     vals.update({
@@ -389,6 +428,8 @@ class SFProjectSync(models.Model):
                         'stage_id': temp_stage,
                     })
                 break
+            #else:
+                #_logger.info("MIGRATED TS STATUS NOT FOUND {}".format(temp_stage))
         return vals
         
     
@@ -438,6 +479,11 @@ class SFProjectSync(models.Model):
         if not instance:
             return False
 
+        #get some non-project depnedent variables
+        invoice_template = self.env.ref('account.account_invoices')
+        if not invoice_template:
+            raise ValidationError("Default Invoice Template not found.")
+
         #We get all the source data required for the projects in self
         project_string = self.list_to_filter_string(self.mapped('project_sfid'))
         element_data = self._get_element_data(instance,project_string)
@@ -468,7 +514,7 @@ class SFProjectSync(models.Model):
                     parent_id = False
                     for quote in sorted(quote_data,key=lambda q: q['index']):
                         vals = quote['quote_vals']
-                        vals.update({'core_team_id':core_team.id})
+                        vals.update({'core_team_id':core_team.id,'invoice_template':invoice_template.id})
                         if not parent_id:
                             _logger.info("PARENT SO CREATION VALS:\n{}".format(vals))
                             so = project.so_create_with_changes(vals)
@@ -480,10 +526,13 @@ class SFProjectSync(models.Model):
 
                         project.write({'so_ids':[(4, so.id, 0)]})
                         so.name = "{} | {}".format(vals['internal_ref'],vals['name'])
+                        #we force the fiscal position
+                        so.onchange_partner_shipping_id()
                         #we prepare line content
                         services_lines = project.prepare_services(quote['elements'],so,milestone_data)
                         rates_lines = project.prepare_rates(quote['elements'],activity_data,assignment_data)
                         milestones_lines = project.prepare_milestones(quote['elements'],milestone_data)
+                        subscription_lines = project.prepare_subscriptions(quote['elements'],annuity_data)
 
                         #create lines
                         if services_lines:
@@ -518,6 +567,17 @@ class SFProjectSync(models.Model):
                             else:
                                 milestone.update({'section_line_id':element_section.id if element_section else False})
                                 project.so_line_create_with_changes(milestone)
+                        
+                        #Subscriptions Lines creation
+                        sub_section = False
+                        for sub in subscription_lines:
+                            sub.update({'order_id':so.id})
+                            if sub.get('display_type','') == 'line_section':
+                                sub_section = self.env['sale.order.line'].create(sub)
+                            else:
+                                sub.update({'section_line_id':sub_section.id if sub_section else False})
+                                project.so_line_create_with_changes(sub)
+                                
                             
                         
                         if rates_lines:
@@ -544,10 +604,19 @@ class SFProjectSync(models.Model):
                 for so in project.so_ids:
                     so.action_sync()
                     so.action_confirm()
-                    _logger.info("Confirming SO {}".format(so.name) )
+                    _logger.info("Confirming SO {}".format(so.name))
+
+                    #we update the subscriptions date
+                    subscriptions = self.env['sale.subscription'].search([('analytic_account_id','=',so.analytic_account_id.id)])
+                    subscriptions.force_start_date()
 
                 project.process_forecasts(activity_data,assignment_data)
+                #project.build_mapping()
                 project.migration_status = 'structure'
+    
+    """def build_mapping(self,assignment_data):
+        for 
+        pass"""
     
     def so_line_create_with_changes(self,vals):
         line = self.env['sale.order.line'].create(vals)
@@ -593,7 +662,31 @@ class SFProjectSync(models.Model):
             else:
                 pass
 
-    
+    def prepare_subscriptions(self,elements,annuity_data):
+        output=[]
+        subscriptions = list(filter(lambda a: a['prod_info']['type']=='subscription',elements))
+        for line in subscriptions:
+            o_product = self.sf_id_to_odoo_rec(line['KimbleOne__Product__c'],line['Activity__c'])
+            if not o_product:
+                _logger.error("PRODUCT NOT FOUND FOR {} {}".format(line['KimbleOne__Product__c'],line['Activity__c']))
+                #continue
+            #we create one section per element, then one so line per milestone
+            output.append({
+                'display_type': 'line_section',
+                'name':line['Name'],
+                })
+
+            annuities = list(filter(lambda a: a['KimbleOne__DeliveryElement__c']==line['Id'],annuity_data))
+            for sub in annuities:
+                output.append({
+                        'name':sub['Name'],
+                        'product_id':o_product.id,
+                        'product_uom_qty':sub['KimbleOne__InitialNumberOfUnits__c'] or 1.0,
+                        'price_unit':sub['KimbleOne__InvoicingCurrencyRevenueRate__c'],
+                    })
+        return output
+        
+
     def prepare_milestones(self,elements,milestone_data):
         output=[]
         milestones = list(filter(lambda a: a['prod_info']['type']=='milestone',elements))
@@ -783,6 +876,7 @@ class SFProjectSync(models.Model):
                 'opportunity_id':o_opp.id,
                 'internal_ref':("{}.{}".format(my_project['KimbleOne__Reference__c'],index) if index>0 else my_project['KimbleOne__Reference__c']).upper(),
                 'name': (my_project['Name'] + (' -FP' if item['mode']=='fixed_price' else ' -TM')) if index>0 else my_project['Name'],
+                'unrevisioned_name':self.env['ir.sequence'].with_context(force_company=o_company.id).next_by_code('sale.order'),
                 'invoicing_mode':item['mode'] if item['mode'] else False,
                 'pricelist_id':o_pricelist.id,
                 'scope_of_work': my_project['Scope_of_Work_Description__c'],
@@ -792,6 +886,7 @@ class SFProjectSync(models.Model):
                 'product_category_id':bl,
                 'fp_delivery_mode': 'manual',
                 'merge_subtask':False,
+                'communication_rate': o_opp.partner_id.communication_rate,
             }
             quote_data.append({'index':item['min_index'],'quote_vals':quote_vals, 'elements':item['elements']})  
             index += 1

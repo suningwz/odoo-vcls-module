@@ -181,6 +181,7 @@ class SaleOrder(models.Model):
     def create(self, vals):
         result = super(SaleOrder, self).create(vals)
         result.check_risk()
+        result.get_partner_financial_config()
         return result
     
     @api.multi
@@ -228,11 +229,17 @@ class SaleOrder(models.Model):
 
     @api.onchange('partner_id')
     def get_partner_financial_config(self):
+        #We look for default values
+        default_pterm = self.env['account.payment.term'].search([('name','ilike','30 days following the invoice receipt')],limit=1)
+        default_inv_template = self.env.ref('vcls-invoicing.project_invoice_aggregated')
+
+
         self.invoicing_frequency = self.partner_id.invoicing_frequency
-        self.invoice_template = self.partner_id.invoice_template
+        self.invoice_template = self.partner_id.invoice_template or default_inv_template
         self.activity_report_template = self.partner_id.activity_report_template
         self.communication_rate = self.partner_id.communication_rate
         self.pricelist_id = self.partner_id.property_product_pricelist
+        self.payment_term_id = self.partner_id.property_payment_term_id or default_pterm
 
     @api.multi
     def action_invoice_create(self, grouped=False, final=False):
