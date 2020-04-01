@@ -17,7 +17,7 @@ class Employee(models.Model):
     def approve_timesheets(self,hours_offset_from_now=0):
         validation_date = (datetime.datetime.now() - datetime.timedelta(hours=hours_offset_from_now)).date()
         _logger.info('New Timesheet Validation Date {}'.format(validation_date))
-        employees = self.search([])
+        employees = self.with_context(active_test=False).search([('user_id','!=',self._uid)])
         employees.write({'timesheet_validated':validation_date})
 
         # Update timesheet stage_id
