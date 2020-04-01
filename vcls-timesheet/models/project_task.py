@@ -65,6 +65,29 @@ class ProjectTask(models.Model):
         compute='compute_budget_consumed',
     )
 
+    completion_elligible = fields.Boolean(string='Completion eligibility')
+    @api.onchange('sale_line_id')
+    def onchange_sale_line_id(self):
+        if self.sale_line_id:
+            self.completion_elligible = self.sale_line_id.product_id.completion_elligible
+
+    consummed_completed_ratio = fields.Float(compute='compute_consummed_completed_ratio', store=True, string="BC/TC")
+
+    @api.depends('completion_elligible', 'stage_id','progress')
+    def compute_consummed_completed_ratio(self):
+        task_not_started = self.env['project.task.type'].search(
+            [('status', '=', 'not_started')])
+        task_0_progres = self.env['project.task.type'].search(
+            [('status', '=', 'progress_0')])
+        for task in self:
+            if not task.completion_elligible or task.stage_id in task_not_started:
+                task.consummed_completed_ratio = 0.0
+            elif task.stage_id in task_0_progres:
+                task.consummed_completed_ratio = 100
+            else:
+                task.consummed_completed_ratio = 100*(task.progress/task.completion_ratio if task.completion_ratio else \
+                    task.progress)
+
     @api.multi
     @api.depends("project_id.invoicing_mode")
     def compute_invoicing_mode(self):

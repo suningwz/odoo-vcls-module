@@ -26,7 +26,7 @@ class Project(models.Model):
     cf_hours = fields.Float(string="Carry Forward Hours",readonly=True)
 
     budget_consumed = fields.Float(
-        string="Budget Consumed new",
+        string="Budget Consumed",
         readonly=True,
         compute='compute_budget_consumed',
     )
@@ -36,28 +36,31 @@ class Project(models.Model):
     def compute_budget_consumed(self):
         for project in self:
             if project.contractual_budget:
-                self.budget_consumed = project.realized_budget / project.contractual_budget
+                self.budget_consumed = 100*(project.realized_budget / project.contractual_budget)
             else:
                 self.budget_consumed = False
 
     @api.multi
     def _get_kpi(self):
         for project in self:
-            project.contractual_budget = sum(project.task_ids.mapped('contractual_budget'))
-            project.forecasted_budget = sum(project.task_ids.mapped('forecasted_budget'))
-            project.realized_budget = sum(project.task_ids.mapped('realized_budget'))
-            project.valued_budget = sum(project.task_ids.mapped('valued_budget'))
-            project.invoiced_budget = sum(project.task_ids.mapped('invoiced_budget'))
+            #we take parent_tasks only,
+            analysed_tasks = project.task_ids.filtered(lambda t: not t.parent_id)
 
-            project.forecasted_hours = sum(project.task_ids.mapped('forecasted_hours'))
-            project.realized_hours = sum(project.task_ids.mapped('realized_hours'))
-            project.valued_hours = sum(project.task_ids.mapped('valued_hours'))
-            project.invoiced_hours = sum(project.task_ids.mapped('invoiced_hours'))
+            project.contractual_budget = sum(analysed_tasks.mapped('contractual_budget'))
+            project.forecasted_budget = sum(analysed_tasks.mapped('forecasted_budget'))
+            project.realized_budget = sum(analysed_tasks.mapped('realized_budget'))
+            project.valued_budget = sum(analysed_tasks.mapped('valued_budget'))
+            project.invoiced_budget = sum(analysed_tasks.mapped('invoiced_budget'))
 
-            project.pc_budget = sum(project.task_ids.mapped('pc_budget'))
-            project.cf_budget = sum(project.task_ids.mapped('cf_budget'))
-            project.pc_hours = sum(project.task_ids.mapped('pc_hours'))
-            project.cf_hours = sum(project.task_ids.mapped('cf_hours'))
+            project.forecasted_hours = sum(analysed_tasks.mapped('forecasted_hours'))
+            project.realized_hours = sum(analysed_tasks.mapped('realized_hours'))
+            project.valued_hours = sum(analysed_tasks.mapped('valued_hours'))
+            project.invoiced_hours = sum(analysed_tasks.mapped('invoiced_hours'))
+
+            project.pc_budget = sum(analysed_tasks.mapped('pc_budget'))
+            project.cf_budget = sum(analysed_tasks.mapped('cf_budget'))
+            project.pc_hours = sum(analysed_tasks.mapped('pc_hours'))
+            project.cf_hours = sum(analysed_tasks.mapped('cf_hours'))
 
             project.valuation_ratio = 100.0*(project.valued_hours / project.realized_hours) if project.realized_hours else False
 

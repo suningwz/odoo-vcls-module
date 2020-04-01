@@ -254,7 +254,7 @@ class Project(models.Model):
         self.ensure_one()
         tasks = self.task_ids + self.child_id.mapped('task_ids')
         all_tasks = tasks + tasks.mapped('child_ids')
-        return all_tasks.filtered(lambda task: task.sale_line_id.product_id.completion_elligible and
+        return all_tasks.filtered(lambda task: task.sale_line_id.product_id.completion_elligible and (not task.parent_id) and 
                                   task.stage_id.status not in  ['not_started','cancelled'])
 
     @api.multi

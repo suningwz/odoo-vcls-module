@@ -65,14 +65,33 @@
                         }"
                     />
                 </button>
+
+                <xpath expr="//group" position="after">
+                    <group>
+                        <group>
+                            <field name="budget_consumed" string="Budget Consumed" widget="progressbar" attrs="{'invisible': [('allow_budget_modification', '!=', True)]}"/>
+                        </group>
+                        <group>
+                            <field name="completion_elligible" invisible="1"/>
+                            <field name="completion_ratio" string="Task Complete" widget="progressbar" attrs="{'invisible': [('completion_elligible', '!=', True)]}"/>
+                        </group>
+                        <group>
+                            <field name="consummed_completed_ratio" string="" widget="percentpie" attrs="{'invisible': ['|',('completion_elligible', '!=', True),('allow_budget_modification', '!=', True)]}"/>
+                            <br/>
+                            <field name="valuation_ratio" widget="percentpie" nolabel="1"/>
+                            
+                        </group>
+                    </group>
+                </xpath>
+
+                <!--
                 <xpath expr="//field[@name='progress']" position="replace">
                     <field name="budget_consumed" widget="progressbar" string="Budget Consumed"/>
                 </xpath>
 
                 <field name="consummed_completed_ratio" position="after">
-                    <br/>
-                    <field name="valuation_ratio" widget="percentpie" nolabel="1"/>
-                </field>
+                    
+                </field>-->
 
                 <field name="parent_id" position="attributes">
                     <attribute name="domain">[('project_id','=',project_id),('parent_id','=',False)]</attribute>

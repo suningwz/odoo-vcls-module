@@ -47,6 +47,7 @@
                     </button>
                 </xpath>
                 <button name="action_assign_to_me" position="after">
+                    <field name="stage_allow_ts" invisible="1"/>
                     <button name="action_log_time" string="LOG TIME" type="object" class="oe_highlight" attrs="{'invisible': [('stage_allow_ts', '=', False)]}"/>
                 </button>
                 <field name="user_id" position="attributes">
@@ -67,22 +68,6 @@
                     <field name="date_start" widget="date"/>
                     <field name="date_end" widget="date"/>
                 </field>
-
-                <xpath expr="//group" position="after">
-                    <group>
-                        <group>
-                            <field name="progress" string="Budget Consumed" widget="progressbar"/>
-                        </group>
-                        <group>
-                            <field name="completion_ratio" string="Task Complete" widget="progressbar"/>
-                        </group>
-                        <group>
-                            <field name="consummed_completed_ratio" string="" widget="percentpie"/>
-                            <field name="stage_allow_ts" invisible="1"/>
-                            <field name="completion_elligible" invisible="1"/>
-                        </group>
-                    </group>
-                </xpath>
 
                 <xpath expr="//page[last()]" position="before">
                     <page string="Description Evolutions">
