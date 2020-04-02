@@ -82,7 +82,7 @@ class AnalyticLine(models.Model):
     required_lc_comment = fields.Boolean(compute='get_required_lc_comment')
 
     rate_id = fields.Many2one(
-        comodel_name='product.product',
+        comodel_name='product.template',
         default = False,
         readonly = True,
     )
@@ -590,3 +590,16 @@ class AnalyticLine(models.Model):
                       'timesheets (linked to a Sales order '
                       'items invoiced on Time and material).')
                 )
+
+    @api.model
+    def _force_rate_id(self):
+        timesheets = self.search([('is_timesheet','=',True),('employee_id','!=',False),('project_id','!=',False)])
+
+        for project in timesheets.mapped('project_id'):
+            _logger.info("Processing Rate_id for project {}".format(project.name))
+            for map_line in project.sale_line_employee_ids:
+                rate_id = map_line.sale_line_id.product_id.product_tmpl_id
+                ts = timesheets.filtered(lambda t: t.so_line == map_line.sale_line_id)
+                if ts:
+                    _logger.info("Processing Rate_id for map line for {} as {} with {} timesheets".format(map_line.employee_id.name,rate_id.name,len(ts)))
+                    ts.write({'rate_id':rate_id.id})

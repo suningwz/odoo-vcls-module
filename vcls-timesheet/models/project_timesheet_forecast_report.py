@@ -99,7 +99,7 @@ class TimesheetForecastReport(models.Model):
                         'timesheet' AS type,
                         A.stage_id AS stage_id,
                         (-A.so_line_unit_price * A.unit_amount_rounded) AS revenue,
-                        P.id AS rate_product_id,
+                        A.rate_id AS rate_product_id,
                         -A.id AS id,
                         (select deliverable.id 
                             from product_deliverable deliverable
