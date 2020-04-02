@@ -866,6 +866,9 @@ class SFProjectSync(models.Model):
         tag = o_tag.id if o_tag else False
         currency_code = my_project['KimbleOne__InvoicingCurrencyIsoCode__c'] or o_company.currency_id.name
         o_pricelist = self.env['product.pricelist'].search([('name','=',"Standard {}".format(currency_code))],limit=1)
+        o_invoice_template = self.env.ref('account.account_invoices')
+        o_activity_template = self.env.ref('vcls-invoicing.invoice_activity_simple_report')
+
         if not o_pricelist:
             _logger.error("Pricelist not found {}".format(my_project['KimbleOne__InvoicingCurrencyIsoCode__c']))
             return False
@@ -893,8 +896,10 @@ class SFProjectSync(models.Model):
                 'tag_ids':[(4, tag, 0)],
                 'product_category_id':bl,
                 'fp_delivery_mode': 'manual',
-                'merge_subtask':False,
+                'merge_subtask':True,
                 'communication_rate': o_opp.partner_id.communication_rate,
+                'invoice_template': o_invoice_template.id,
+                'activity_report_template': o_activity_template.id,
             }
             quote_data.append({'index':item['min_index'],'quote_vals':quote_vals, 'elements':item['elements']})  
             index += 1
