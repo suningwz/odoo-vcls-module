@@ -318,6 +318,7 @@ class SFProjectSync(models.Model):
             if not a_ts:
                 continue
             #assignment level values
+            product_template = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
             hourly_rate = assignment['KimbleOne__InvoicingCurrencyForecastRevenueRate__c']
             employee = self.sf_id_to_odoo_rec(assignment['KimbleOne__Resource__c'])
             if not employee: 
@@ -326,11 +327,36 @@ class SFProjectSync(models.Model):
                 if product:
                     employee = product.forecast_employee_id
 
-            rate_id = employee.default_rate_ids[0] if  employee.default_rate_ids else False
-            #_logger.info("EMPLOYEE MAP assignment role {} for employee {} at {}".format(assignment['KimbleOne__ActivityRole__c'],employee.name,assignment['KimbleOne__InvoicingCurrencyForecastRevenueRate__c']))
+            #we check if this employee is already mapped in the project, and if the mapping as the proper seniority
+            map_create = True
+            if employee in project_id.sale_line_employee_ids.mapped('employee_id'):
+                map_line = project_id.sale_line_employee_ids.filtered(lambda l: l.employee_id == employee)[0]
+                if product_template.seniority_level_id == map_line.sale_line_id.product_id.seniority_level_id:
+                    #we have found an adequate mapping, i.e. the product_template seniority and the mapping seniority are equivalent
+                    _logger.info("MAP.OK | {} on {}".format(employee.name,map_line.sale_line_id.name))
+                    map_create = False
+                    rate_id = map_line.sale_line_id.product_id.product_tmpl_id
+                else:
+                    #the mapping does not have the proper seniority, we delete
+                    _logger.info("MAP.BAD | {} on {}".format(employee.name,map_line.sale_line_id.name))
+                    map_line.unlink()
+            
+            if map_create:
+                rate_lines = so_lines.filtered(lambda l: l.vcls_type == 'rate' and l.product_id.product_tmpl_id == product_template)
+                map_vals = {
+                    'employee_id': employee.id,
+                    'project_id': project_id.id,
+                    'sale_line_id': rate_lines[0].id if rate_lines else False,
+                }
+                if map_vals['sale_line_id']:
+                    self.env['project.sale.line.employee.map'].create(map_vals)
+                    rate_id = rate_lines[0].product_id.product_tmpl_id
+                    _logger.info("MAP.CREATED {} {}".format(employee.name, rate_id.name))
+                else:
+                    _logger.info("MAP.FAILED {}".format(employee.name))
 
-            #we check if this employee is already mapped in the project
-            if employee not in project_id.sale_line_employee_ids.mapped('employee_id'):
+
+            """if employee not in project_id.sale_line_employee_ids.mapped('employee_id'):
 
                 product_template = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
                 rate_lines = so_lines.filtered(lambda l: l.vcls_type == 'rate' and l.product_id.product_tmpl_id == product_template)
@@ -347,11 +373,12 @@ class SFProjectSync(models.Model):
                     #_logger.info("EMPLOYEE MAP CREATED {} {}".format(employee.name, rate_id.name))
                 else:
                     _logger.info("EMPLOYEE MAP FAILED {}".format(employee.name))
+
             else:
                 map_line = project_id.sale_line_employee_ids.filtered(lambda l: l.employee_id == employee)
                 #_logger.info("EMPLOYEE MAP {} map Lines {}".format(employee.name,project_id.sale_line_employee_ids.mapped('employee_id.name')))
                 rate_id = map_line[0].sale_line_id.product_id.product_tmpl_id if map_line else False
-                #_logger.info("EMPLOYEE MAP FOUND {} {}".format(employee.name,rate_id.name if rate_id else False))
+                #_logger.info("EMPLOYEE MAP FOUND {} {}".format(employee.name,rate_id.name if rate_id else False))"""
 
             #we finally loop in TS
             for ts in a_ts:
