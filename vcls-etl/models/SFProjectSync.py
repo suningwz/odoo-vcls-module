@@ -424,7 +424,7 @@ class SFProjectSync(models.Model):
 
                 #we finally check if we have enough to create the timesheet
                 if employee and date:
-                    self.env['account.analytic.line'].create(vals)
+                    self.env['account.analytic.line'].with_context(migration_mode = True).create(vals)
                     count += 1
                     _logger.info("Timesheet Created {}/{}".format(count,len(e_ts)))
                 else:

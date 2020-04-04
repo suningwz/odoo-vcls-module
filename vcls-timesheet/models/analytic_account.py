@@ -232,21 +232,24 @@ class AnalyticLine(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get('employee_id', False) and vals.get('project_id', False):
-            # rounding to 15 mins
-            if vals['unit_amount'] % 0.25 != 0:
-                old = vals.get('unit_amount', 0)
-                vals['unit_amount'] = math.ceil(old * 4) / 4
+        if not self._context.get('migration_mode',False):
+            if vals.get('employee_id', False) and vals.get('project_id', False):
+                # rounding to 15 mins
+                if vals['unit_amount'] % 0.25 != 0:
+                    old = vals.get('unit_amount', 0)
+                    vals['unit_amount'] = math.ceil(old * 4) / 4
 
-            # check if this is a timesheet at risk
-            vals['at_risk'] = self.sudo()._get_at_risk_values(vals.get('project_id'),
-                                                       vals.get('employee_id'))
+                # check if this is a timesheet at risk
+                vals['at_risk'] = self.sudo()._get_at_risk_values(vals.get('project_id'),
+                                                        vals.get('employee_id'))
 
-        if vals.get('time_category_id') == self.env.ref('vcls-timesheet.travel_time_category').id:
-            task = self.env['project.task'].browse(vals['task_id'])
-            if task.sale_line_id:
-                unit_amount_rounded = vals['unit_amount'] * task.sale_line_id.order_id.travel_invoicing_ratio
-                vals.update({'unit_amount_rounded': unit_amount_rounded})
+            if vals.get('time_category_id') == self.env.ref('vcls-timesheet.travel_time_category').id:
+                task = self.env['project.task'].browse(vals['task_id'])
+                if task.sale_line_id:
+                    unit_amount_rounded = vals['unit_amount'] * task.sale_line_id.order_id.travel_invoicing_ratio
+                    vals.update({'unit_amount_rounded': unit_amount_rounded})
+        else:
+            _logger.info("TS FAST create")
                 
         if not vals.get('main_project_id') and vals.get('project_id'):
             project_id = self.env['project.project'].browse(vals['project_id'])
@@ -260,7 +263,7 @@ class AnalyticLine(models.Model):
         # we automatically update the stage if the ts is validated and stage = draft
         so_update = False
         orders = self.env['sale.order']
-        #_logger.info("ANALYTIC WRITE {}".format(vals))
+        _logger.info("ANALYTIC WRITE {}".format(vals))
 
         # we loop the lines to manage specific usecases
         for line in self:
