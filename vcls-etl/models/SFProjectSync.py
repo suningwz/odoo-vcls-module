@@ -149,22 +149,29 @@ class SFProjectSync(models.Model):
     def migrate_structure(self):
         #we promote timesheet migrations of ongoing projects
         #If timesheets to migrate, we launch the CRON
-        ts_projects = self.search([('migration_status','in',['so','structure'])])
-        if not ts_projects:
+        launch_ts = False
+
+        if self.search([('migration_status','in',['so','structure'])]):
+            launch_ts = True 
+        #we look for other projects to migrate
+        else:
             instance = self.getSFInstance()
             projects = self.search([('migration_status','=','todo')]).sorted(key=lambda r: r.create_date)
             if projects:
+                #we migrate the structure then trigger the timesheet migration
                 _logger.info("PROJECT MIGRATION | Structure of {}".format(projects[0].project_sfname))
                 projects[0].build_quotations(instance)
-        
-        #we call the timesheet migration job
-        _logger.info("Timesheet Migration Callback!")
-        cron = self.env.ref('vcls-etl.cron_project_timesheets_ping')
-        cron.write({
-            'active': True,
-            'nextcall': datetime.now() + timedelta(seconds=3),
-            'numbercall': 1,
-        })
+                launch_ts = True
+
+        if launch_ts:
+            #we call the timesheet migration job
+            _logger.info("Timesheet Migration Callback!")
+            cron = self.env.ref('vcls-etl.cron_project_timesheets_ping')
+            cron.write({
+                'active': True,
+                'nextcall': datetime.now() + timedelta(seconds=3),
+                'numbercall': 1,
+            })
         
         
     
@@ -186,7 +193,7 @@ class SFProjectSync(models.Model):
             })
         
         else:
-            #we call back the structure migration job to process remining projects
+            #we call back the structure migration job to process remaining projects
             cron = self.env.ref('vcls-etl.cron_project_structure')
             cron.write({
                 'active': True,
