@@ -60,9 +60,7 @@ class TimesheetForecastReport(models.Model):
                         'forecast' AS type,
                         'forecast' AS stage_id,
                         F.resource_hours*F.hourly_rate AS revenue,
-                        (SELECT id from product_template Z 
-                        where Z.forecast_employee_id = F.employee_id limit 1
-                        ) AS rate_product_id,
+                        F.rate_id AS rate_product_id,
                         F.id AS id,
                         (select deliverable.id 
                             from product_deliverable deliverable

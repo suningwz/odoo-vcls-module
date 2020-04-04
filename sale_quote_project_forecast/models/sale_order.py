@@ -43,7 +43,8 @@ class SaleOrder(models.Model):
                     self.env['project.forecast'].create({
                         'project_id': task.project_id.id,
                         'task_id': task.id,
-                        'employee_id': employee.id
+                        'employee_id': employee.id,
+                        'rate_id': order_line.product_id.product_tmpl_id
                     })
             employee = order_line.product_id.forecast_employee_id
             project = self.mapped('tasks_ids.project_id')
@@ -88,4 +89,14 @@ class SaleOrderLine(models.Model):
         'Service Policy',
         related='product_id.service_policy',
         readonly=True,
+    )
+
+class Forecast(models.Model):
+
+    _inherit = "project.forecast"
+
+    rate_id = fields.Many2one(
+        comodel_name='product.template',
+        default = False,
+        readonly = True,
     )
