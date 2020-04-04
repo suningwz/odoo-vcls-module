@@ -44,7 +44,7 @@ class SaleOrder(models.Model):
                         'project_id': task.project_id.id,
                         'task_id': task.id,
                         'employee_id': employee.id,
-                        'rate_id': order_line.product_id.product_tmpl_id
+                        'rate_id': order_line.product_id.product_tmpl_id.id,
                     })
             employee = order_line.product_id.forecast_employee_id
             project = self.mapped('tasks_ids.project_id')
