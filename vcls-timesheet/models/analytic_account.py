@@ -248,8 +248,8 @@ class AnalyticLine(models.Model):
                 if task.sale_line_id:
                     unit_amount_rounded = vals['unit_amount'] * task.sale_line_id.order_id.travel_invoicing_ratio
                     vals.update({'unit_amount_rounded': unit_amount_rounded})
-        else:
-            _logger.info("TS FAST create")
+        #else:
+            #_logger.info("TS FAST create")
                 
         if not vals.get('main_project_id') and vals.get('project_id'):
             project_id = self.env['project.project'].browse(vals['project_id'])
@@ -263,7 +263,7 @@ class AnalyticLine(models.Model):
         # we automatically update the stage if the ts is validated and stage = draft
         so_update = False
         orders = self.env['sale.order']
-        _logger.info("ANALYTIC WRITE {}".format(vals))
+        #_logger.info("ANALYTIC WRITE {}".format(vals))
 
         # we loop the lines to manage specific usecases
         for line in self:
@@ -309,7 +309,7 @@ class AnalyticLine(models.Model):
 
                     if task.sale_line_id != so_line:  # if we map to a rate based product
                         vals['so_line_unit_price'] = so_line.price_unit
-                        vals['rate_id'] = so_line.product_id.id
+                        vals['rate_id'] = so_line.product_id.product_tmpl_id.id
                         so_update = True
                         orders |= line.so_line.order_id
 
@@ -327,6 +327,7 @@ class AnalyticLine(models.Model):
         if ok and so_update:
             orders._compute_timesheet_ids()
             # force recompute
+            _logger.info("SO UPDATE {} CONTEXT MIG {}".format(orders.mapped('name'),self._context.get('migration_mode',False)))
             for order in orders:
                 order.timesheet_limit_date = order.timesheet_limit_date
 
