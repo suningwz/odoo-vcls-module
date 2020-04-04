@@ -327,7 +327,7 @@ class AnalyticLine(models.Model):
         if ok and so_update:
             orders._compute_timesheet_ids()
             # force recompute
-            _logger.info("SO UPDATE {} CONTEXT MIG {}".format(orders.mapped('name'),self._context.get('migration_mode',False)))
+            #_logger.info("SO UPDATE {} CONTEXT MIG {}".format(orders.mapped('name'),self._context.get('migration_mode',False)))
             for order in orders:
                 order.timesheet_limit_date = order.timesheet_limit_date
 

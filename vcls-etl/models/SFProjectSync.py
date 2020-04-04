@@ -360,7 +360,7 @@ class SFProjectSync(models.Model):
                     rate_id = rate_lines[0].product_id.product_tmpl_id
                     _logger.info("MAP.CREATED {} {}".format(employee.name, rate_id.name))
                 else:
-                    _logger.info("MAP.FAILED {}".format(employee.name))
+                    _logger.info("MAP.FAILED {} {} Product T {} {} in so lines {}".format(employee.name,employee.default_rate_ids[0].name,product_template.name,product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
                     rate_id = False
 
 
