@@ -361,6 +361,7 @@ class SFProjectSync(models.Model):
                     _logger.info("MAP.CREATED {} {}".format(employee.name, rate_id.name))
                 else:
                     _logger.info("MAP.FAILED {}".format(employee.name))
+                    rate_id = False
 
 
             """if employee not in project_id.sale_line_employee_ids.mapped('employee_id'):
