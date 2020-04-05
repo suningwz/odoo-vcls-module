@@ -82,7 +82,7 @@ class AnalyticLine(models.Model):
     required_lc_comment = fields.Boolean(compute='get_required_lc_comment')
 
     rate_id = fields.Many2one(
-        comodel_name='product.product',
+        comodel_name='product.template',
         default = False,
         readonly = True,
     )
@@ -232,21 +232,24 @@ class AnalyticLine(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get('employee_id', False) and vals.get('project_id', False):
-            # rounding to 15 mins
-            if vals['unit_amount'] % 0.25 != 0:
-                old = vals.get('unit_amount', 0)
-                vals['unit_amount'] = math.ceil(old * 4) / 4
+        if not self._context.get('migration_mode',False):
+            if vals.get('employee_id', False) and vals.get('project_id', False):
+                # rounding to 15 mins
+                if vals['unit_amount'] % 0.25 != 0:
+                    old = vals.get('unit_amount', 0)
+                    vals['unit_amount'] = math.ceil(old * 4) / 4
 
-            # check if this is a timesheet at risk
-            vals['at_risk'] = self.sudo()._get_at_risk_values(vals.get('project_id'),
-                                                       vals.get('employee_id'))
+                # check if this is a timesheet at risk
+                vals['at_risk'] = self.sudo()._get_at_risk_values(vals.get('project_id'),
+                                                        vals.get('employee_id'))
 
-        if vals.get('time_category_id') == self.env.ref('vcls-timesheet.travel_time_category').id:
-            task = self.env['project.task'].browse(vals['task_id'])
-            if task.sale_line_id:
-                unit_amount_rounded = vals['unit_amount'] * task.sale_line_id.order_id.travel_invoicing_ratio
-                vals.update({'unit_amount_rounded': unit_amount_rounded})
+            if vals.get('time_category_id') == self.env.ref('vcls-timesheet.travel_time_category').id:
+                task = self.env['project.task'].browse(vals['task_id'])
+                if task.sale_line_id:
+                    unit_amount_rounded = vals['unit_amount'] * task.sale_line_id.order_id.travel_invoicing_ratio
+                    vals.update({'unit_amount_rounded': unit_amount_rounded})
+        #else:
+            #_logger.info("TS FAST create")
                 
         if not vals.get('main_project_id') and vals.get('project_id'):
             project_id = self.env['project.project'].browse(vals['project_id'])
@@ -306,7 +309,7 @@ class AnalyticLine(models.Model):
 
                     if task.sale_line_id != so_line:  # if we map to a rate based product
                         vals['so_line_unit_price'] = so_line.price_unit
-                        vals['rate_id'] = so_line.product_id.id
+                        vals['rate_id'] = so_line.product_id.product_tmpl_id.id
                         so_update = True
                         orders |= line.so_line.order_id
 
@@ -324,6 +327,7 @@ class AnalyticLine(models.Model):
         if ok and so_update:
             orders._compute_timesheet_ids()
             # force recompute
+            #_logger.info("SO UPDATE {} CONTEXT MIG {}".format(orders.mapped('name'),self._context.get('migration_mode',False)))
             for order in orders:
                 order.timesheet_limit_date = order.timesheet_limit_date
 
@@ -590,3 +594,16 @@ class AnalyticLine(models.Model):
                       'timesheets (linked to a Sales order '
                       'items invoiced on Time and material).')
                 )
+
+    @api.model
+    def _force_rate_id(self):
+        timesheets = self.search([('is_timesheet','=',True),('employee_id','!=',False),('project_id','!=',False)])
+
+        for project in timesheets.mapped('project_id'):
+            _logger.info("Processing Rate_id for project {}".format(project.name))
+            for map_line in project.sale_line_employee_ids:
+                rate_id = map_line.sale_line_id.product_id.product_tmpl_id
+                ts = timesheets.filtered(lambda t: t.so_line == map_line.sale_line_id)
+                if ts:
+                    _logger.info("Processing Rate_id for map line for {} as {} with {} timesheets".format(map_line.employee_id.name,rate_id.name,len(ts)))
+                    ts.write({'rate_id':rate_id.id})
