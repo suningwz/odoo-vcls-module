@@ -333,6 +333,7 @@ class SFProjectSync(models.Model):
                 product = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
                 if product:
                     employee = product.forecast_employee_id
+                #if not we look for the price, and DESCRIPTION OF THE SO LINE TO BE THE NAME OF THE ROLE IN KIMBLE
 
             #we check if this employee is already mapped in the project, and if the mapping as the proper seniority
             map_create = True
@@ -360,7 +361,11 @@ class SFProjectSync(models.Model):
                     rate_id = rate_lines[0].product_id.product_tmpl_id
                     _logger.info("MAP.CREATED {} {}".format(employee.name, rate_id.name))
                 else:
-                    _logger.info("MAP.FAILED {}".format(employee.name))
+                    if employee:
+                        _logger.error("MAP.FAILED {} {} Product T {} {} in so lines {}".format(employee.name,employee.default_rate_ids[0].name,product_template.name,product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
+                    else:
+                        _logger.error("MAP.FAILED No employee Found for {} {} in so lines {}".format(product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
+                    rate_id = False
 
 
             """if employee not in project_id.sale_line_employee_ids.mapped('employee_id'):
@@ -424,7 +429,7 @@ class SFProjectSync(models.Model):
 
                 #we finally check if we have enough to create the timesheet
                 if employee and date:
-                    self.env['account.analytic.line'].create(vals)
+                    self.env['account.analytic.line'].with_context(migration_mode = True).create(vals)
                     count += 1
                     _logger.info("Timesheet Created {}/{}".format(count,len(e_ts)))
                 else:
@@ -844,7 +849,8 @@ class SFProjectSync(models.Model):
                                     pass
                             else:
                                 #we add a rate
-                                rates.append({'name':o_rate_product.name,'product_id':o_rate_product.id,'price':assignment['KimbleOne__InvoicingCurrencyRevenueRate__c']})
+                                product_key = self.env['etl.sync.keys'].search([('externalId','=',assignment['KimbleOne__ActivityRole__c']),('odooId','!=',False)],limit=1)
+                                rates.append({'name':product_key.name,'product_id':o_rate_product.id,'price':assignment['KimbleOne__InvoicingCurrencyRevenueRate__c']})
 
         return sorted(rates,key=lambda r: r['price'],reverse = True)
                
