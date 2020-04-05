@@ -149,22 +149,29 @@ class SFProjectSync(models.Model):
     def migrate_structure(self):
         #we promote timesheet migrations of ongoing projects
         #If timesheets to migrate, we launch the CRON
-        ts_projects = self.search([('migration_status','in',['so','structure'])])
-        if not ts_projects:
+        launch_ts = False
+
+        if self.search([('migration_status','in',['so','structure'])]):
+            launch_ts = True 
+        #we look for other projects to migrate
+        else:
             instance = self.getSFInstance()
             projects = self.search([('migration_status','=','todo')]).sorted(key=lambda r: r.create_date)
             if projects:
+                #we migrate the structure then trigger the timesheet migration
                 _logger.info("PROJECT MIGRATION | Structure of {}".format(projects[0].project_sfname))
                 projects[0].build_quotations(instance)
-        
-        #we call the timesheet migration job
-        _logger.info("Timesheet Migration Callback!")
-        cron = self.env.ref('vcls-etl.cron_project_timesheets_ping')
-        cron.write({
-            'active': True,
-            'nextcall': datetime.now() + timedelta(seconds=3),
-            'numbercall': 1,
-        })
+                launch_ts = True
+
+        if launch_ts:
+            #we call the timesheet migration job
+            _logger.info("Timesheet Migration Callback!")
+            cron = self.env.ref('vcls-etl.cron_project_timesheets_ping')
+            cron.write({
+                'active': True,
+                'nextcall': datetime.now() + timedelta(seconds=3),
+                'numbercall': 1,
+            })
         
         
     
@@ -186,7 +193,7 @@ class SFProjectSync(models.Model):
             })
         
         else:
-            #we call back the structure migration job to process remining projects
+            #we call back the structure migration job to process remaining projects
             cron = self.env.ref('vcls-etl.cron_project_structure')
             cron.write({
                 'active': True,
@@ -318,6 +325,7 @@ class SFProjectSync(models.Model):
             if not a_ts:
                 continue
             #assignment level values
+            product_template = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
             hourly_rate = assignment['KimbleOne__InvoicingCurrencyForecastRevenueRate__c']
             employee = self.sf_id_to_odoo_rec(assignment['KimbleOne__Resource__c'])
             if not employee: 
@@ -325,12 +333,42 @@ class SFProjectSync(models.Model):
                 product = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
                 if product:
                     employee = product.forecast_employee_id
+                #if not we look for the price, and DESCRIPTION OF THE SO LINE TO BE THE NAME OF THE ROLE IN KIMBLE
 
-            rate_id = employee.default_rate_ids[0] if  employee.default_rate_ids else False
-            #_logger.info("EMPLOYEE MAP assignment role {} for employee {} at {}".format(assignment['KimbleOne__ActivityRole__c'],employee.name,assignment['KimbleOne__InvoicingCurrencyForecastRevenueRate__c']))
+            #we check if this employee is already mapped in the project, and if the mapping as the proper seniority
+            map_create = True
+            if employee in project_id.sale_line_employee_ids.mapped('employee_id'):
+                map_line = project_id.sale_line_employee_ids.filtered(lambda l: l.employee_id == employee)[0]
+                if product_template.seniority_level_id == map_line.sale_line_id.product_id.seniority_level_id:
+                    #we have found an adequate mapping, i.e. the product_template seniority and the mapping seniority are equivalent
+                    _logger.info("MAP.OK | {} on {}".format(employee.name,map_line.sale_line_id.name))
+                    map_create = False
+                    rate_id = map_line.sale_line_id.product_id.product_tmpl_id
+                else:
+                    #the mapping does not have the proper seniority, we delete
+                    _logger.info("MAP.BAD | {} on {}".format(employee.name,map_line.sale_line_id.name))
+                    map_line.unlink()
+            
+            if map_create:
+                rate_lines = so_lines.filtered(lambda l: l.vcls_type == 'rate' and l.product_id.product_tmpl_id == product_template)
+                map_vals = {
+                    'employee_id': employee.id,
+                    'project_id': project_id.id,
+                    'sale_line_id': rate_lines[0].id if rate_lines else False,
+                }
+                if map_vals['sale_line_id']:
+                    self.env['project.sale.line.employee.map'].create(map_vals)
+                    rate_id = rate_lines[0].product_id.product_tmpl_id
+                    _logger.info("MAP.CREATED {} {}".format(employee.name, rate_id.name))
+                else:
+                    if employee:
+                        _logger.error("MAP.FAILED {} {} Product T {} {} in so lines {}".format(employee.name,employee.default_rate_ids[0].name,product_template.name,product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
+                    else:
+                        _logger.error("MAP.FAILED No employee Found for {} {} in so lines {}".format(product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
+                    rate_id = False
 
-            #we check if this employee is already mapped in the project
-            if employee not in project_id.sale_line_employee_ids.mapped('employee_id'):
+
+            """if employee not in project_id.sale_line_employee_ids.mapped('employee_id'):
 
                 product_template = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
                 rate_lines = so_lines.filtered(lambda l: l.vcls_type == 'rate' and l.product_id.product_tmpl_id == product_template)
@@ -347,11 +385,12 @@ class SFProjectSync(models.Model):
                     #_logger.info("EMPLOYEE MAP CREATED {} {}".format(employee.name, rate_id.name))
                 else:
                     _logger.info("EMPLOYEE MAP FAILED {}".format(employee.name))
+
             else:
                 map_line = project_id.sale_line_employee_ids.filtered(lambda l: l.employee_id == employee)
                 #_logger.info("EMPLOYEE MAP {} map Lines {}".format(employee.name,project_id.sale_line_employee_ids.mapped('employee_id.name')))
                 rate_id = map_line[0].sale_line_id.product_id.product_tmpl_id if map_line else False
-                #_logger.info("EMPLOYEE MAP FOUND {} {}".format(employee.name,rate_id.name if rate_id else False))
+                #_logger.info("EMPLOYEE MAP FOUND {} {}".format(employee.name,rate_id.name if rate_id else False))"""
 
             #we finally loop in TS
             for ts in a_ts:
@@ -390,7 +429,7 @@ class SFProjectSync(models.Model):
 
                 #we finally check if we have enough to create the timesheet
                 if employee and date:
-                    self.env['account.analytic.line'].create(vals)
+                    self.env['account.analytic.line'].with_context(migration_mode = True).create(vals)
                     count += 1
                     _logger.info("Timesheet Created {}/{}".format(count,len(e_ts)))
                 else:
@@ -810,7 +849,8 @@ class SFProjectSync(models.Model):
                                     pass
                             else:
                                 #we add a rate
-                                rates.append({'name':o_rate_product.name,'product_id':o_rate_product.id,'price':assignment['KimbleOne__InvoicingCurrencyRevenueRate__c']})
+                                product_key = self.env['etl.sync.keys'].search([('externalId','=',assignment['KimbleOne__ActivityRole__c']),('odooId','!=',False)],limit=1)
+                                rates.append({'name':product_key.name,'product_id':o_rate_product.id,'price':assignment['KimbleOne__InvoicingCurrencyRevenueRate__c']})
 
         return sorted(rates,key=lambda r: r['price'],reverse = True)
                
@@ -866,6 +906,9 @@ class SFProjectSync(models.Model):
         tag = o_tag.id if o_tag else False
         currency_code = my_project['KimbleOne__InvoicingCurrencyIsoCode__c'] or o_company.currency_id.name
         o_pricelist = self.env['product.pricelist'].search([('name','=',"Standard {}".format(currency_code))],limit=1)
+        o_invoice_template = self.env.ref('account.account_invoices')
+        o_activity_template = self.env.ref('vcls-invoicing.invoice_activity_simple_report')
+
         if not o_pricelist:
             _logger.error("Pricelist not found {}".format(my_project['KimbleOne__InvoicingCurrencyIsoCode__c']))
             return False
@@ -893,8 +936,10 @@ class SFProjectSync(models.Model):
                 'tag_ids':[(4, tag, 0)],
                 'product_category_id':bl,
                 'fp_delivery_mode': 'manual',
-                'merge_subtask':False,
+                'merge_subtask':True,
                 'communication_rate': o_opp.partner_id.communication_rate,
+                'invoice_template': o_invoice_template.id,
+                'activity_report_template': o_activity_template.id,
             }
             quote_data.append({'index':item['min_index'],'quote_vals':quote_vals, 'elements':item['elements']})  
             index += 1

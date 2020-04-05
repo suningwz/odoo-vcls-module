@@ -86,7 +86,7 @@
                     </div>
                     </div>
 
-                    <div style="page-break-inside: avoid;" t-if="rate_data">
+                    <div t-if="rate_data">
                     <h5 class="mb8">Consulting Services | Time &amp; Material</h5>
                     <t t-set="display_discount" t-value="any([l.discount for l in o.invoice_line_ids])"/>
                     <table class="table table-sm o_main_table" name="invoice_detailed_table">
@@ -142,7 +142,7 @@
                     </div>
 
 
-                    <div style="page-break-inside: avoid;" t-if="fixed_price_data">
+                    <div t-if="fixed_price_data">
                     <h5 class="mb8 mt16">Consulting Services | Fixed Price</h5>
                     <table class="table table-sm o_main_table" name="invoice_detailed_fixed_price_table">
                     <thead>
@@ -177,7 +177,7 @@
                     </div>
 
 
-                    <div style="page-break-inside: avoid;" t-if="any([l for l in o.invoice_line_ids if (l.product_id.vcls_type in ('subscription', 'invoice'))])">
+                    <div t-if="any([l for l in o.invoice_line_ids if (l.product_id.vcls_type in ('subscription', 'invoice'))])">
                     <h5 class="mb8 mt16">Fixed Fees</h5>
                     <table class="table table-sm o_main_table" name="invoice_fixed_fees">
                         <thead>
@@ -212,7 +212,7 @@
                     </div>
 
 
-                    <div style="page-break-inside: avoid;" t-if="expenses_and_communication_data">
+                    <div t-if="expenses_and_communication_data">
                     <h5 class="mb8 mt16">Expense</h5>
                     <table class="table table-sm o_main_table" name="invoice_expenses">
                         <thead>
@@ -300,7 +300,7 @@
 
                     <t t-set="partner_bank_id" t-value="o.sudo().partner_bank_id"/>
                     <div name="payment_informations"
-                         class="mt32" style="page-break-inside: avoid;"
+                         class="mt32"
                          t-if="partner_bank_id">
                         <h6 class="font-weight-bold">Please make payment to:</h6>
                         <table class="table-borderless" style="border: none;">
