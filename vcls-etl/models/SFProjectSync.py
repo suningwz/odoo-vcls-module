@@ -362,9 +362,9 @@ class SFProjectSync(models.Model):
                     _logger.info("MAP.CREATED {} {}".format(employee.name, rate_id.name))
                 else:
                     if employee:
-                        _logger.error("MAP.FAILED {} {} Product T {} {} in so lines {}".format(employee.name,employee.default_rate_ids[0].name,product_template.name,product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
+                        _logger.error("MAP.FAILED {} Product T {} {} in so lines {}".format(employee,product_template.name,product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
                     else:
-                        _logger.error("MAP.FAILED No employee Found for {} {} in so lines {}".format(product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
+                        _logger.error("MAP.FAILED No employee Found for {} in so lines {}".format(product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
                     rate_id = False
 
 
