@@ -362,7 +362,7 @@ class SFProjectSync(models.Model):
                     _logger.info("MAP.CREATED {} {}".format(employee.name, rate_id.name))
                 else:
                     if not product_template:
-                        _logger.error("MAP.FAILED | No template found for {} {} with so lines {}".format(employee.name,employee.default_rate_ids[0].name,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
+                        _logger.error("MAP.FAILED | No template found for {} {} for role {} in so lines {}".format(employee.name,employee.default_rate_ids[0].name,assignment['KimbleOne__ActivityRole__c'],so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
                     elif employee:
                         _logger.error("MAP.FAILED {} {} Product T {} {} in so lines {}".format(employee.name,employee.default_rate_ids[0].name,product_template.name,product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
                     else:
