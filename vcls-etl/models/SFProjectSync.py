@@ -361,8 +361,10 @@ class SFProjectSync(models.Model):
                     rate_id = rate_lines[0].product_id.product_tmpl_id
                     _logger.info("MAP.CREATED {} {}".format(employee.name, rate_id.name))
                 else:
-                    if employee:
-                        _logger.error("MAP.FAILED {} Product T {} {} in so lines {}".format(employee,product_template.name,product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
+                    if not product_template:
+                        _logger.error("MAP.FAILED | No template found for {} {} with so lines {}".format(employee.name,employee.default_rate_ids[0].name,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
+                    elif employee:
+                        _logger.error("MAP.FAILED {} {} Product T {} {} in so lines {}".format(employee.name,employee.default_rate_ids[0].name,product_template.name,product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
                     else:
                         _logger.error("MAP.FAILED No employee Found for {} in so lines {}".format(product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
                     rate_id = False
