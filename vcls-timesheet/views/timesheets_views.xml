@@ -267,7 +267,11 @@
             <field name="view_mode">tree</field>
             <field name="search_view_id" ref="view_timesheet_pc_review_search" />
             <field name="domain">[('stage_id', '=', 'pc_review')]</field>
-            <field name="context">{'search_default_comment': 1,'search_default_groupby_project':1}</field>
+            <field name="context">{
+                'search_default_comment': 1,
+                'search_default_groupby_project':1,
+                'grid_anchor': '3000-01-01'}
+            </field>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-timesheet.vcls_timesheet_pc_view_tree')}),
             ]"/>
@@ -295,7 +299,10 @@
             <field name="name">All Timesheets</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.analytic.line</field>
-            <field name="context">{'group_by':['partner_id','stage_id','project_id']}</field>
+            <field name="context">{
+                'group_by':['partner_id','stage_id','project_id'],
+                'grid_anchor': '3000-01-01'}
+            </field>
             <field name="view_mode">tree</field>
             <field name="view_id" ref="vcls_timesheet_read_view" />
             <field name="domain">[('project_id.project_type','=', 'client')]</field>
@@ -305,7 +312,10 @@
             <field name="name">Carry Forward</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.analytic.line</field>
-            <field name="context">{'group_by':['partner_id','project_id']}</field>
+            <field name="context">{
+                'group_by':['partner_id','project_id'],
+                'grid_anchor': '3000-01-01'}
+            </field>
             <field name="view_mode">tree</field>
             <field name="view_id" ref="vcls-timesheet.vcls_timesheet_pc_view_tree" />
             <field name="domain">[('project_id.project_type','=', 'client'),('stage_id','=','carry_forward')]</field>
@@ -315,7 +325,10 @@
             <field name="name">Out of Scope</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.analytic.line</field>
-            <field name="context">{'group_by':['partner_id','project_id']}</field>
+            <field name="context">{
+                'group_by':['partner_id','project_id'],
+                'grid_anchor': '3000-01-01'}
+            </field>
             <field name="view_mode">tree</field>
             <field name="view_id" ref="vcls-timesheet.vcls_timesheet_pc_view_tree" />
             <field name="domain">[('project_id.project_type','=', 'client'),('stage_id','=','outofscope')]</field>
