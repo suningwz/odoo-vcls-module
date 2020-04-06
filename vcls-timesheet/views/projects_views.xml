@@ -167,6 +167,7 @@
                     <field name="name"/>
                     <field name="partner_id"/>
                     <field name="user_id"/>
+                    <field name="currency_id" readonly="1"/>
                     <field name="invoiceable_amount" widget="integer"/>
                     <field name="pc_budget" widget="integer"/>
                     <field name="cf_budget" widget="integer"/>
