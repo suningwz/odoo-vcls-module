@@ -617,8 +617,16 @@ class Invoice(models.Model):
                 rec.vcls_due_date = max(line[0] for line in pterm_list)
 
     @api.multi
+    @api.returns('self')
+    def refund(self, date_invoice=None, date=None, description=None, journal_id=None):
+        ret = super(Invoice,self).refund(date_invoice,date,description,journal_id)
+        for inv in self:
+            inv.release_timesheets()
+        return ret
+
+    @api.multi
     def unlink(self):
-        orders = self.env['sale.order']
+        """orders = self.env['sale.order']
         for invoice in self:
             if invoice.timesheet_ids:
                 invoice.timesheet_ids.write({'stage_id':'invoiceable'})
@@ -626,28 +634,23 @@ class Invoice(models.Model):
             ret = super(Invoice, invoice).unlink()
             
         orders.mapped('order_line')._compute_qty_delivered()
-        return 
+        return ret"""
+        self.release_timesheets()
+        return super(Invoice,self).unlink()
     
     @api.multi
-    def action_cancel(self):
-        _logger.info("INVOICE ACTION CANCEL")
-        """moves = self.env['account.move']
-        for inv in self:
-            if inv.move_id:
-                moves += inv.move_id
-            #unreconcile all journal items of the invoice, since the cancellation will unlink them anyway
-            inv.move_id.line_ids.filtered(lambda x: x.account_id.reconcile).remove_move_reconcile()
+    def release_timesheets(self):
+        orders = self.env['sale.order']
+        for invoice in self:
+            if invoice.timesheet_ids:
+                _logger.info("{} timesheets released from invoice {}".format(len(invoice.timesheet_ids),invoice.id))
+                invoice.timesheet_ids.write({
+                    'stage_id':'invoiceable',
+                    'timesheet_invoice_id': False,
+                    })
+                orders |= invoice.timesheet_ids.mapped('so_line.order_id')
+        orders.mapped('order_line')._compute_qty_delivered()
 
-        # First, set the invoices as cancelled and detach the move ids
-        self.write({'state': 'cancel', 'move_id': False})
-        if moves:
-            # second, invalidate the move(s)
-            moves.button_cancel()
-            # delete the move this invoice was pointing to
-            # Note that the corresponding move_lines and move_reconciles
-            # will be automatically deleted too
-            moves.unlink()"""
-        return super(Invoice, self).action_cancel()
 
     @api.multi
     def html_to_string(self, html_format):

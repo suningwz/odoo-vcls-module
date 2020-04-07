@@ -202,8 +202,10 @@ class SaleOrderLine(models.Model):
         'historical_invoiced_amount',
         'amount_invoiced_from_task',
         'task_id.stage_id',
-        'order_id.invoicing_mode')
-
+        'order_id.invoicing_mode',
+        'invoice_lines.invoice_id.state',
+        'invoice_lines.quantity')
+        
     def _get_invoice_qty(self):
         #Change qantity delivered for lines according to order.invoicing_mode and the line.vcls_type
         super()._get_invoice_qty()
