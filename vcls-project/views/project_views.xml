@@ -84,6 +84,8 @@
                                 <field name="lead_consultant" string="Lead Consultant"/>
                                 <field name="lead_backup"/>
                                 <field name="assistant_id"/>
+                                <field name="controller_id"/>
+                                <field name="invoice_admin_id"/>
                             </group>
                             <group string="Operations">
                                 <field name="date_start" string="Est. Start Date"/>
