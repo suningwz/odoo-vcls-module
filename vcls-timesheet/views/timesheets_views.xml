@@ -268,6 +268,7 @@
             <field name="search_view_id" ref="view_timesheet_pc_review_search" />
             <field name="domain">[('stage_id', '=', 'pc_review')]</field>
             <field name="context">{
+                'search_default_my_pc': 1,
                 'search_default_comment': 1,
                 'search_default_groupby_project':1,
                 'grid_anchor': '3000-01-01'}
@@ -300,6 +301,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.analytic.line</field>
             <field name="context">{
+                'search_default_my_pc': 1,
                 'group_by':['partner_id','stage_id','project_id'],
                 'grid_anchor': '3000-01-01'}
             </field>
@@ -313,6 +315,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.analytic.line</field>
             <field name="context">{
+                'search_default_my_pc': 1,
                 'group_by':['partner_id','project_id'],
                 'grid_anchor': '3000-01-01'}
             </field>
@@ -326,6 +329,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">account.analytic.line</field>
             <field name="context">{
+                'search_default_my_pc': 1,
                 'group_by':['partner_id','project_id'],
                 'grid_anchor': '3000-01-01'}
             </field>
@@ -386,6 +390,7 @@
                     <filter name="pc_review" string="PC Review" domain="[('stage_id', '=', 'pc_review')]" />
                     <filter name="carry_forward" string="Carry Forward" domain="[('stage_id', '=', 'carry_forward')]" />
                     <filter name="invoiceable" string="Invoiceable" domain="[('stage_id', '=', 'invoiceable')]" />
+                    <filter name="my_pc" string="My PC Timesheets" domain="[('project_id.controller_id', '=', uid)]" />
                     <separator />
                 </xpath>
                 <xpath expr="//filter[@name='groupby_task']" position="before">
