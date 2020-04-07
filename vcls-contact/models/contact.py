@@ -110,6 +110,17 @@ class ResPartner(models.Model):
         string='Client Product',
     )
 
+    number_of_employee = fields.Selection(
+        selection = [
+            ('1_10', '1-10'),
+            ('11_50', '11-50'),
+            ('51_200', '51-200'),
+            ('201_500', '201-500'),
+            ('501_2000', '501-2000'),
+            ('2000', '+2000'),
+            ]
+    )
+
     
     
     #project management fields
