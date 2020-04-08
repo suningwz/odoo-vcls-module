@@ -48,8 +48,7 @@ class SaleOrder(models.Model):
                         'employee_id': employee.id,
                         'rate_id': order_line.product_id.product_tmpl_id.id,
                     })
-                    _logger.info("SYNC | Forecast created in task {}".format(task.name))
-            #employee = order_line.product_id.forecast_employee_id
+                    #_logger.info("SYNC | Forecast created in task {}".format(task.name))
             project = self.mapped('tasks_ids.project_id')
             if len(project) == 1:
                 existing_mapping = self.env['project.sale.line.employee.map'].search([
@@ -57,13 +56,16 @@ class SaleOrder(models.Model):
                     #('sale_line_id', '=', order_line.id),
                     ('employee_id', '=', employee.id)
                 ], limit=1)
-                _logger.info("SYNC | Mapping For Product {} Employee {} Line {}".format(order_line.product_id.name,employee.name,order_line.name))
+                
                 if not existing_mapping:
+                    _logger.info("SYNC | MAP CREATE For Product {} Employee {} Line {} in project {}".format(order_line.product_id.name,employee.name,order_line.name,project.name))
                     self.env['project.sale.line.employee.map'].sudo().create({
                         'project_id': project.id,
                         'sale_line_id': order_line.id,
                         'employee_id': employee.id,
                     })
+                else:
+                    _logger.info("SYNC | MAP FOUND For Product {} Employee {} Line {} in project {}".format(order_line.product_id.name,employee.name,order_line.name,project.name))
 
     @api.multi
     def get_milestone_tasks(self):
