@@ -23,17 +23,19 @@ class SaleOrder(models.Model):
         milestone_tasks = self.get_milestone_tasks()
         rate_order_lines = self.get_rate_tasks()
         for order_line in rate_order_lines:
-            for task in milestone_tasks:
-                employee = order_line.product_id.forecast_employee_id
-                sen_level = order_line.product_id.seniority_level_id
-                if not employee:
+            employee = order_line.product_id.forecast_employee_id
+            _logger.info("SYNC | Forecast for line {} with employee {}".format(order_line.product_id.name,employee.name))
+            """if not employee:
                     employee = self.env['hr.employee'].search(
-                        [('seniority_level_id', '=', sen_level)], limit=1)
-                if not employee:
-                    raise UserError(
-                        _("No Employee available for Seniority level \
-                        {}").format(sen_level.name)
-                    )
+                        [('seniority_level_id', '=', sen_level)], limit=1)"""
+            if not employee:
+                sen_level = order_line.product_id.seniority_level_id
+                raise UserError(
+                    _("No Employee available for Seniority level \
+                    {}").format(sen_level.name)
+                )
+
+            for task in milestone_tasks:
                 existing_forecast = self.env['project.forecast'].search([
                     ('project_id', '=', task.project_id.id),
                     ('task_id', '=', task.id),
@@ -46,7 +48,8 @@ class SaleOrder(models.Model):
                         'employee_id': employee.id,
                         'rate_id': order_line.product_id.product_tmpl_id.id,
                     })
-            employee = order_line.product_id.forecast_employee_id
+                    _logger.info("SYNC | Forecast created in task {}".format(task.name))
+            #employee = order_line.product_id.forecast_employee_id
             project = self.mapped('tasks_ids.project_id')
             if len(project) == 1:
                 existing_mapping = self.env['project.sale.line.employee.map'].search([
@@ -54,7 +57,7 @@ class SaleOrder(models.Model):
                     #('sale_line_id', '=', order_line.id),
                     ('employee_id', '=', employee.id)
                 ], limit=1)
-                _logger.info("Mapping For Product {} Employee {} Line {}".format(order_line.product_id.name,employee.name,order_line.name))
+                _logger.info("SYNC | Mapping For Product {} Employee {} Line {}".format(order_line.product_id.name,employee.name,order_line.name))
                 if not existing_mapping:
                     self.env['project.sale.line.employee.map'].sudo().create({
                         'project_id': project.id,
