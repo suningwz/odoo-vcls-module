@@ -54,6 +54,7 @@ class SaleOrder(models.Model):
                     ('sale_line_id', '=', order_line.id),
                     ('employee_id', '=', employee.id)
                 ], limit=1)
+                _logger.info("Mapping For Product {} Employee {} Line {}".format(order_line.product_id.name,employee.name,order_line.name))
                 if not existing_mapping:
                     self.env['project.sale.line.employee.map'].sudo().create({
                         'project_id': project.id,
