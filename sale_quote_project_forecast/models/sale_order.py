@@ -48,6 +48,7 @@ class SaleOrder(models.Model):
                     })
             employee = order_line.product_id.forecast_employee_id
             project = self.mapped('tasks_ids.project_id')
+            _logger.info("Mapping For Product {} Employee {} Line {}".format(order_line.product_id.name,employee.name,order_line.name))
             if len(project) == 1:
                 existing_mapping = self.env['project.sale.line.employee.map'].search([
                     ('project_id', '=', project.id),
