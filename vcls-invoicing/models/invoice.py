@@ -212,41 +212,87 @@ class Invoice(models.Model):
         product_obj = self.env['product.product']
         rate_product_ids = product_obj
         projects_row_data = OrderedDict()
+        list_timesheet_to_compute = {}
+
         for timesheet_id in self.timesheet_ids:
             # check if so line is invoiced
             if not timesheet_id.so_line.qty_invoiced:
                 continue
             project_id = timesheet_id.project_id
 
-            if self.merge_subtask and timesheet_id.task_id.parent_id: #if the task has a parent and we merge
-                parent_task_id = timesheet_id.task_id.parent_id
-            else:
-                parent_task_id = timesheet_id.task_id
+            if timesheet_id.task_id.parent_id:
+                if timesheet_id.task_id.parent_id in list_timesheet_to_compute:
+                    if timesheet_id.task_id[0] not in list_timesheet_to_compute[timesheet_id.task_id.parent_id[0]]:
+                        list_timesheet_to_compute[timesheet_id.task_id.parent_id[0]] += [timesheet_id.task_id[0]]
+                else:
+                    list_timesheet_to_compute[timesheet_id.task_id.parent_id[0]] = [timesheet_id.task_id[0]]
+            else: 
+                if timesheet_id.task_id[0] in list_timesheet_to_compute:
+                    if timesheet_id.task_id[0] not in list_timesheet_to_compute[timesheet_id.task_id[0]]:  # if the task is already in the list but is its own parent, put it a the begining of the list
+                        # list_timesheet_to_compute[timesheet_id.task_id[0]] += [timesheet_id.task_id[0]]
+                        list_timesheet_to_compute[timesheet_id.task_id[0]] = [timesheet_id.task_id[0]] + list_timesheet_to_compute[timesheet_id.task_id[0]]
+                else:
+                    list_timesheet_to_compute[timesheet_id.task_id[0]] = [timesheet_id.task_id[0]]
 
-            """task_id = timesheet_id.task_id
-            parent_task_id = task_id.parent_id or task_id"""
+        # Here we have a dict key: parent_task_id, value: list of subtask_id (con include the parent task id if there is time coded on it)
 
-            rate_product_id = timesheet_id.so_line.product_id
-            rate_product_ids |= rate_product_id
-            time_category_id = timesheet_id.time_category_id
-            unit_amount = timesheet_id.unit_amount
-            # project matrix data
-            project_rate_matrix_key = (project_id, rate_product_id)
-            project_rate_matrix_data.setdefault(project_rate_matrix_key, 0.)
-            project_rate_matrix_data[project_rate_matrix_key] += unit_amount
-            tasks_row_data = projects_row_data.setdefault(project_id, OrderedDict())
-            # task matrix data
-            task_rate_matrix_key = (project_id, parent_task_id, rate_product_id)
-            task_rate_matrix_data.setdefault(task_rate_matrix_key, 0.)
-            task_rate_matrix_data[task_rate_matrix_key] += unit_amount
-            time_category_row_data = tasks_row_data.setdefault(parent_task_id, OrderedDict())
-            # time category matrix data
-            if detailed:
-                time_category_matrix_key = (project_id, parent_task_id, time_category_id, rate_product_id)
-                time_category_rate_matrix_data.setdefault(time_category_matrix_key, 0.)
-                time_category_rate_matrix_data[time_category_matrix_key] += unit_amount
-                time_category_row_data.setdefault(time_category_id, None)
+        # for values in dict.values():
+        for parent_task, list_tasks in list_timesheet_to_compute.items():
+            number_tasks = len(list_tasks)
+            print("NOMBRE DE TACHES   ========> ", number_tasks)
+            for task_individual in list_tasks:
+                total_hours_task = 0.0
+                for timesheet_id in task_individual.timesheet_ids:
+                    if self.merge_subtask and timesheet_id.task_id.parent_id:  # if the task has a parent and we want to merge
+                        current_task_id = timesheet_id.task_id.parent_id
+                    else:
+                        current_task_id = timesheet_id.task_id
+
+                    rate_product_id = timesheet_id.so_line.product_id
+                    rate_product_ids |= rate_product_id
+                    time_category_id = timesheet_id.time_category_id
+                    unit_amount = timesheet_id.unit_amount
+
+                    # project matrix data
+                    project_rate_matrix_key = (project_id, rate_product_id)
+                    project_rate_matrix_data.setdefault(project_rate_matrix_key, 0.)
+                    project_rate_matrix_data[project_rate_matrix_key] += unit_amount
+                    tasks_row_data = projects_row_data.setdefault(project_id, OrderedDict())
+
+                    # task matrix data
+                    task_rate_matrix_key = (project_id, current_task_id, rate_product_id)
+                    # if timesheet_id.task_id.parent_id:
+                    #     task_to_use = timesheet_id.task_id.parent_id
+                    #     task_rate_matrix_key2 = (project_id, task_to_use, rate_product_id)
+                    #     task_rate_matrix_data[task_rate_matrix_key2][1] += unit_amount
+    
+                    # task_rate_matrix_data.setdefault(task_rate_matrix_key, [0., parent_task])
+                    task_rate_matrix_data.setdefault(task_rate_matrix_key, [0., 0.])
+                    task_rate_matrix_data[task_rate_matrix_key][0] += unit_amount
+                    task_rate_matrix_data[task_rate_matrix_key][1] += unit_amount
+                    
+                    # task_rate_matrix_data.setdefault(task_rate_matrix_key, 0.)
+                    # task_rate_matrix_data[task_rate_matrix_key] += unit_amount
+
+                    time_category_row_data = tasks_row_data.setdefault(current_task_id, [OrderedDict(), parent_task, number_tasks])
+                    
+                    # time_category_row_data = tasks_row_data.setdefault(current_task_id, OrderedDict()).copy()
+                    # tasks_row_data[current_task_id] = parent_task
+                    # tasks_row_data.setdefault(current_task_id, [OrderedDict(), parent_task])
+                    time_category_row_data = time_category_row_data[0]
+
+                    # time category matrix data
+                    if detailed:
+                        time_category_matrix_key = (project_id, current_task_id, time_category_id, rate_product_id)
+                        time_category_rate_matrix_data.setdefault(time_category_matrix_key, 0.)
+                        time_category_rate_matrix_data[time_category_matrix_key] += unit_amount
+                        time_category_row_data.setdefault(time_category_id, None)
+
+
+
+        # ORDRE DES COLONNES DE RATE
         # reorder rate_product_ids according to the richer one
+        rate_product_ids = rate_product_ids
         rate_product_ids = product_obj.browse(OrderedSet([
             couple[1].id for couple in
             sorted(
@@ -264,6 +310,67 @@ class Invoice(models.Model):
             'rate_product_ids': rate_product_ids,
             'projects_row_data': projects_row_data,
         }
+
+
+
+# # old functionnalities
+#         list_timesheet = list_timesheet_to_compute.values()
+#         result_list = []
+#         for task_list in list_timesheet:
+#             for task in task_list:
+#                 result_list += task
+
+#         for task in result_list:
+#             for timesheet_id in task.timesheet_ids:
+#                 if self.merge_subtask and timesheet_id.task_id.parent_id:  # if the task has a parent and we merge
+#                     parent_task_id = timesheet_id.task_id.parent_id
+#                 else:
+#                     parent_task_id = timesheet_id.task_id
+
+#                 """task_id = timesheet_id.task_id
+#                 parent_task_id = task_id.parent_id or task_id"""
+
+#                 rate_product_id = timesheet_id.so_line.product_id
+#                 rate_product_ids |= rate_product_id
+#                 time_category_id = timesheet_id.time_category_id
+#                 unit_amount = timesheet_id.unit_amount
+#                 # project matrix data
+#                 project_rate_matrix_key = (project_id, rate_product_id)
+#                 project_rate_matrix_data.setdefault(project_rate_matrix_key, 0.)
+#                 project_rate_matrix_data[project_rate_matrix_key] += unit_amount
+#                 tasks_row_data = projects_row_data.setdefault(project_id, OrderedDict())
+#                 # task matrix data
+#                 task_rate_matrix_key = (project_id, parent_task_id, rate_product_id)
+#                 task_rate_matrix_data.setdefault(task_rate_matrix_key, 0.)
+#                 task_rate_matrix_data[task_rate_matrix_key] += unit_amount
+#                 time_category_row_data = tasks_row_data.setdefault(parent_task_id, OrderedDict())
+#                 # time category matrix data
+#                 if detailed:
+#                     time_category_matrix_key = (project_id, parent_task_id, time_category_id, rate_product_id)
+#                     time_category_rate_matrix_data.setdefault(time_category_matrix_key, 0.)
+#                     time_category_rate_matrix_data[time_category_matrix_key] += unit_amount
+#                     time_category_row_data.setdefault(time_category_id, None)
+                 
+#         # ORDRE DES COLONNES DE RATE
+#         # reorder rate_product_ids according to the richer one
+#         rate_product_ids = rate_product_ids
+#         rate_product_ids = product_obj.browse(OrderedSet([
+#             couple[1].id for couple in
+#             sorted(
+#                 [(project_id, rate_product_id)
+#                     for project_id in projects_row_data.keys()
+#                     for rate_product_id in rate_product_ids],
+#                 key=lambda key: project_rate_matrix_data[key],
+#                 reverse=True
+#             )
+#         ]))
+#         return {
+#             'project_rate_matrix_data': project_rate_matrix_data,
+#             'task_rate_matrix_data': task_rate_matrix_data,
+#             'time_category_rate_matrix_data': time_category_rate_matrix_data,
+#             'rate_product_ids': rate_product_ids,
+#             'projects_row_data': projects_row_data,
+#         }
 
     @api.multi
     def _get_aggregated_invoice_report_data(self):
