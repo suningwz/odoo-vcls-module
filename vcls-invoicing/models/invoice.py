@@ -243,6 +243,8 @@ class Invoice(models.Model):
             for task_individual in list_tasks:
                 total_hours_task = 0.0
                 for timesheet_id in task_individual.timesheet_ids:
+                    if not timesheet_id.so_line.qty_invoiced:
+                        continue
                     if self.merge_subtask and timesheet_id.task_id.parent_id:  # if the task has a parent and we want to merge
                         current_task_id = timesheet_id.task_id.parent_id
                     else:
