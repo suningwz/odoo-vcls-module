@@ -270,11 +270,20 @@ class Invoice(models.Model):
                     task_rate_matrix_data.setdefault(task_rate_matrix_key, [0., 0.])
                     task_rate_matrix_data[task_rate_matrix_key][0] += unit_amount
                     task_rate_matrix_data[task_rate_matrix_key][1] += unit_amount
+                    if timesheet_id.task_id.parent_id or current_task_id == parent_task:
+                        print("Inside the task")
+                        task_to_use = timesheet_id.task_id.parent_id
+                        task_rate_matrix_key = (project_id, task_to_use, rate_product_id)
+                        task_rate_matrix_data.setdefault(task_rate_matrix_key, [0., 0.])
+                        task_rate_matrix_data[task_rate_matrix_key][1] += unit_amount
+                    print("AHHHHHHH task_rate_matrix_data[task_rate_matrix_key][1] = ", task_rate_matrix_data[task_rate_matrix_key][1])
+
+                    # task_rate_matrix_data[task_rate_matrix_key2][1] += unit_amount
                     
                     # task_rate_matrix_data.setdefault(task_rate_matrix_key, 0.)
                     # task_rate_matrix_data[task_rate_matrix_key] += unit_amount
 
-                    time_category_row_data = tasks_row_data.setdefault(current_task_id, [OrderedDict(), parent_task, number_tasks])
+                    time_category_row_data = tasks_row_data.setdefault(current_task_id, [OrderedDict(), parent_task, number_tasks, self.merge_subtask])
                     
                     # time_category_row_data = tasks_row_data.setdefault(current_task_id, OrderedDict()).copy()
                     # tasks_row_data[current_task_id] = parent_task
