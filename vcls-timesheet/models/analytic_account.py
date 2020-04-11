@@ -44,12 +44,6 @@ class AnalyticLine(models.Model):
         store=True,
     )
 
-    reporting_task_id = fields.Many2one(
-        comodel_name = 'project.task',
-        compute = '_compute_reporting_task',
-        store = True,
-    )
-
     # Used in order to group by client
     partner_id = fields.Many2one(
         'res.partner',
@@ -115,11 +109,6 @@ class AnalyticLine(models.Model):
         default = 'na',
         )
     
-    @api.depends('task_id','task_id.parent_id')
-    def _compute_reporting_task(self):
-        for ts in self:
-            ts.reporting_task_id = ts.task_id.parent_id if ts.task_id.parent_id else ts.task_id
-
     @api.depends('task_id','task_id.parent_id')
     def _compute_reporting_task(self):
         for ts in self:

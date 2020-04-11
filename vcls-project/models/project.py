@@ -75,6 +75,8 @@ class Project(models.Model):
                                       string='Consultants')
     ta_ids = fields.Many2many('hr.employee', relation='rel_project_tas', related='core_team_id.ta_ids',
                               string='Ta')
+    controller_id = fields.Many2one('res.users', related='partner_id.controller_id', string='Project Controller')
+    invoice_admin_id = fields.Many2one('res.users', related='partner_id.invoice_admin_id', string='Invoice Administrator')
 
     invoices_count = fields.Integer(
         compute='_get_out_invoice_ids',

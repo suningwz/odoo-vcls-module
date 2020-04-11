@@ -35,3 +35,11 @@ class UserInput(models.Model):
                 employee = self.env['hr.employee'].search(['related_partner_id','=',answer.partner_id],limit=1)
                 if employee:
                     answer.authorized_reader_ids = employee.lm_ids
+
+class HrAppraisal(models.Model):
+    _inherit = "hr.appraisal"
+    
+    @api.multi
+    def cancel_appraisal(self):
+        self = self.with_context(safe_unlink=True)
+        return super(HrAppraisal, self).cancel_appraisal()
