@@ -922,8 +922,9 @@ class SFProjectSync(models.Model):
         quotations = self.split_elements(my_elements)
         index = 0
         for item in quotations:
-            start_date = my_proposal['KimbleOne__DeliveryStartDate__c'] or date.today().strftime('%%Y-%%m-%%d')
-            end_date = my_project['KimbleOne__ExpectedEndDate__c'] or date.today().strftime('%%Y-%%m-%%d')
+            start_date = my_proposal['KimbleOne__DeliveryStartDate__c'] or date.today().strftime('%Y-%m-%d')
+            end_date = my_project['KimbleOne__ExpectedEndDate__c'] or date.today().strftime('%Y-%m-%d')
+            _logger.info("START {} END {}".format(start_date,end_date))
             if end_date < start_date:
                 _logger.info("START {} END {}".format(start_date,end_date))
                 end_date = start_date
