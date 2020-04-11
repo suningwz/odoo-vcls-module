@@ -616,13 +616,13 @@ class Invoice(models.Model):
                                                                                           date_ref=date.today())[0]
                 rec.vcls_due_date = max(line[0] for line in pterm_list)
 
-    @api.multi
+    """@api.multi
     @api.returns('self')
     def refund(self, date_invoice=None, date=None, description=None, journal_id=None):
         ret = super(Invoice,self).refund(date_invoice,date,description,journal_id)
         for inv in self:
             inv.release_timesheets()
-        return ret
+        return ret"""
 
     @api.multi
     def unlink(self):
