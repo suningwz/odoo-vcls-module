@@ -659,7 +659,7 @@ class SFProjectSync(models.Model):
                     subscriptions = self.env['sale.subscription'].search([('analytic_account_id','=',so.analytic_account_id.id)])
                     subscriptions.force_start_date()
 
-                project.process_forecasts(activity_data,assignment_data)
+                #project.process_forecasts(activity_data,assignment_data)
                 #project.build_mapping()
                 project.migration_status = 'structure'
     
