@@ -650,6 +650,7 @@ class Invoice(models.Model):
                     })
                 orders |= invoice.timesheet_ids.mapped('so_line.order_id')
         orders.mapped('order_line')._compute_qty_delivered()
+        orders.mapped('order_line')._get_invoice_qty()
 
 
     @api.multi
