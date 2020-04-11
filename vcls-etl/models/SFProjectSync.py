@@ -334,6 +334,8 @@ class SFProjectSync(models.Model):
                 if product:
                     employee = product.forecast_employee_id
                 #if not we look for the price, and DESCRIPTION OF THE SO LINE TO BE THE NAME OF THE ROLE IN KIMBLE
+            if not employee:
+                _logger.info("MAP.ERROR | No employee found for resource {} and role {}".format(assignment['KimbleOne__Resource__c'],assignment['KimbleOne__ActivityRole__c']))
 
             #we check if this employee is already mapped in the project, and if the mapping as the proper seniority
             map_create = True
