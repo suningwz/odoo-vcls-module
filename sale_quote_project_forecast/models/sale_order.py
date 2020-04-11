@@ -50,10 +50,11 @@ class SaleOrder(models.Model):
                     })
                     #_logger.info("SYNC | Forecast created in task {}".format(task.name))
             project = self.mapped('tasks_ids.project_id')
+            _logger.info("Mapping For Product {} Employee {} Line {}".format(order_line.product_id.name,employee.name,order_line.name))
             if len(project) == 1:
                 existing_mapping = self.env['project.sale.line.employee.map'].search([
                     ('project_id', '=', project.id),
-                    ('sale_line_id', '=', order_line.id),
+                    #('sale_line_id', '=', order_line.id),
                     ('employee_id', '=', employee.id)
                 ], limit=1)
                 

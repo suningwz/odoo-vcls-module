@@ -647,9 +647,17 @@ class Invoice(models.Model):
                                                                                           date_ref=date.today())[0]
                 rec.vcls_due_date = max(line[0] for line in pterm_list)
 
+    """@api.multi
+    @api.returns('self')
+    def refund(self, date_invoice=None, date=None, description=None, journal_id=None):
+        ret = super(Invoice,self).refund(date_invoice,date,description,journal_id)
+        for inv in self:
+            inv.release_timesheets()
+        return ret"""
+
     @api.multi
     def unlink(self):
-        orders = self.env['sale.order']
+        """orders = self.env['sale.order']
         for invoice in self:
             if invoice.timesheet_ids:
                 invoice.timesheet_ids.write({'stage_id':'invoiceable'})
@@ -657,7 +665,24 @@ class Invoice(models.Model):
             ret = super(Invoice, invoice).unlink()
             
         orders.mapped('order_line')._compute_qty_delivered()
-        return ret
+        return ret"""
+        self.release_timesheets()
+        return super(Invoice,self).unlink()
+    
+    @api.multi
+    def release_timesheets(self):
+        orders = self.env['sale.order']
+        for invoice in self:
+            if invoice.timesheet_ids:
+                _logger.info("{} timesheets released from invoice {}".format(len(invoice.timesheet_ids),invoice.id))
+                invoice.timesheet_ids.write({
+                    'stage_id':'invoiceable',
+                    'timesheet_invoice_id': False,
+                    })
+                orders |= invoice.timesheet_ids.mapped('so_line.order_id')
+        orders.mapped('order_line')._compute_qty_delivered()
+        orders.mapped('order_line')._get_invoice_qty()
+
 
     @api.multi
     def html_to_string(self, html_format):
