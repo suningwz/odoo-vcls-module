@@ -334,6 +334,8 @@ class SFProjectSync(models.Model):
                 if product:
                     employee = product.forecast_employee_id
                 #if not we look for the price, and DESCRIPTION OF THE SO LINE TO BE THE NAME OF THE ROLE IN KIMBLE
+            if not employee:
+                _logger.info("MAP.ERROR | No employee found for resource {} and role {}".format(assignment['KimbleOne__Resource__c'],assignment['KimbleOne__ActivityRole__c']))
 
             #we check if this employee is already mapped in the project, and if the mapping as the proper seniority
             map_create = True
@@ -361,10 +363,12 @@ class SFProjectSync(models.Model):
                     rate_id = rate_lines[0].product_id.product_tmpl_id
                     _logger.info("MAP.CREATED {} {}".format(employee.name, rate_id.name))
                 else:
-                    if employee:
+                    if not product_template:
+                        _logger.error("MAP.FAILED | No template found for {} {} for role {} in so lines {}".format(employee.name,employee.default_rate_ids[0].name,assignment['KimbleOne__ActivityRole__c'],so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
+                    elif employee:
                         _logger.error("MAP.FAILED {} {} Product T {} {} in so lines {}".format(employee.name,employee.default_rate_ids[0].name,product_template.name,product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
                     else:
-                        _logger.error("MAP.FAILED No employee Found for {} {} in so lines {}".format(product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
+                        _logger.error("MAP.FAILED No employee Found for {} in so lines {}".format(product_template.id,so_lines.filtered(lambda l: l.vcls_type == 'rate').mapped('name')))
                     rate_id = False
 
 
@@ -657,7 +661,7 @@ class SFProjectSync(models.Model):
                     subscriptions = self.env['sale.subscription'].search([('analytic_account_id','=',so.analytic_account_id.id)])
                     subscriptions.force_start_date()
 
-                project.process_forecasts(activity_data,assignment_data)
+                #project.process_forecasts(activity_data,assignment_data)
                 #project.build_mapping()
                 project.migration_status = 'structure'
     
@@ -920,6 +924,12 @@ class SFProjectSync(models.Model):
         quotations = self.split_elements(my_elements)
         index = 0
         for item in quotations:
+            start_date = my_proposal['KimbleOne__DeliveryStartDate__c'] or date.today().strftime('%Y-%m-%d')
+            end_date = my_project['KimbleOne__ExpectedEndDate__c'] or date.today().strftime('%Y-%m-%d')
+            _logger.info("START {} END {}".format(start_date,end_date))
+            if end_date < start_date:
+                _logger.info("START {} END {}".format(start_date,end_date))
+                end_date = start_date
             quote_vals = {
                 'company_id':o_company.id,
                 'partner_id':o_opp.partner_id.id,
@@ -931,8 +941,8 @@ class SFProjectSync(models.Model):
                 'invoicing_mode':item['mode'] if item['mode'] else False,
                 'pricelist_id':o_pricelist.id,
                 'scope_of_work': my_project['Scope_of_Work_Description__c'],
-                'expected_start_date':my_proposal['KimbleOne__DeliveryStartDate__c'] or date.today(),
-                'expected_end_date':my_project['KimbleOne__ExpectedEndDate__c'],
+                'expected_start_date':start_date,
+                'expected_end_date':end_date,
                 'tag_ids':[(4, tag, 0)],
                 'product_category_id':bl,
                 'fp_delivery_mode': 'manual',

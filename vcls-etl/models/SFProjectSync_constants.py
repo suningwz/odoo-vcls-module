@@ -9,6 +9,8 @@ ELEMENTS_INFO= [
 
     {'sf_id':'a3Q0Y000000Lo9X','name':'Generic | Revenue Milestones','type':'milestone','mode':False},
     {'sf_id':'a3Q3A0000008kjt','name':'Generic | 3rd Party Invoices','type':'milestone','mode':False},
+    {'sf_id':'a3Q3A0000008kju','name':'Generic | Percentage Revenues','type':'milestone','mode':False},
+
     {'sf_id':'a3Q3A0000008kjv','name':'Generic | Monthly Fees per Unit','type':'subscription','mode':False},
     {'sf_id':'a3Q3A0000008kjw','name':'Generic | Monthly Fees','type':'subscription','mode':False},
 ]
