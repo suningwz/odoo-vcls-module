@@ -52,10 +52,12 @@ class AccountAnalyticLine(models.Model):
                 self.env.user.company_id,
                 line.date or fields.Datetime.now(),
             )
-            line.write({
+            line.convertion_rate = line.company_currency_id.rate
+            line.debit_base_currency = debit_conv
+            """line.write({
                 'convertion_rate':line.company_currency_id.rate,
                 'debit_base_currency':debit_conv,
-            })
+            })"""
 
         for line in self.filtered(lambda l: l.credit>0 and l.company_currency_id): 
             credit_conv = line.company_currency_id._convert(
@@ -64,7 +66,9 @@ class AccountAnalyticLine(models.Model):
                 self.env.user.company_id,
                 line.date or fields.Datetime.now(),
             )
-            line.write({
+            line.convertion_rate = line.company_currency_id.rate
+            line.credit_base_currency = credit_conv
+            """line.write({
                 'convertion_rate':line.company_currency_id.rate,
                 'credit_base_currency':credit_conv,
-            })
+            })"""
