@@ -18,7 +18,7 @@
             <field name="debit" sum="Total Debit" string="D"/>
             <field name="credit" sum="Total Credit" string="C"/>
             <field name="debit_base_currency" sum="Total Debit EUR" string="D EUR"/>
-            <field name="debit_base_currency" sum="Total Credit EUR" string="C EUR"/>
+            <field name="credit_base_currency" sum="Total Credit EUR" string="C EUR"/>
             <field name="convertion_rate"/>
             <field name="reconciled" invisible="1"/>
             <field name="currency_id" readonly="True" invisible="1"/>
