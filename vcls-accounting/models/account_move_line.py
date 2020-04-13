@@ -26,21 +26,19 @@ class AccountAnalyticLine(models.Model):
     @api.depends('debit','credit')
     def _compute_base_currency(self):
         for rec in self:
-            rec._compute_base_currency = self.env.ref('base.EUR')
+            rec.base_currency_id = self.env.ref('base.EUR')
     
     convertion_rate = fields.Float(
         compute='_compute_base_values',
         store=True)
 
-    debit_base_currency = fields.Float(
+    debit_base_currency = fields.Monetary(
         default=0.0,
         currency_field='base_currency_id',
-        #compute="_compute_base_values",
         readonly=True)
     credit_base_currency = fields.Monetary(
         default=0.0,
         currency_field='base_currency_id',
-        #compute="_compute_base_values",
         readonly=True)
 
     @api.depends('debit','credit','company_currency_id')
