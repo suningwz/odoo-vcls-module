@@ -36,6 +36,7 @@ class AccountAnalyticLine(models.Model):
         default=0.0,
         currency_field='base_currency_id',
         readonly=True)
+        
     credit_base_currency = fields.Monetary(
         default=0.0,
         currency_field='base_currency_id',
@@ -52,10 +53,6 @@ class AccountAnalyticLine(models.Model):
             )
             line.convertion_rate = line.company_currency_id.rate
             line.debit_base_currency = debit_conv
-            """line.write({
-                'convertion_rate':line.company_currency_id.rate,
-                'debit_base_currency':debit_conv,
-            })"""
 
         for line in self.filtered(lambda l: l.credit>0 and l.company_currency_id): 
             credit_conv = line.company_currency_id._convert(
@@ -66,7 +63,3 @@ class AccountAnalyticLine(models.Model):
             )
             line.convertion_rate = line.company_currency_id.rate
             line.credit_base_currency = credit_conv
-            """line.write({
-                'convertion_rate':line.company_currency_id.rate,
-                'credit_base_currency':credit_conv,
-            })"""
