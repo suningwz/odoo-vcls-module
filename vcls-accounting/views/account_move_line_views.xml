@@ -17,9 +17,13 @@
             <field name="account_code"/>
             <field name="debit" sum="Total Debit" string="D"/>
             <field name="credit" sum="Total Credit" string="C"/>
+            <field name="debit_base_currency" sum="Total Debit EUR" string="D EUR"/>
+            <field name="credit_base_currency" sum="Total Credit EUR" string="C EUR"/>
+            <field name="convertion_rate"/>
             <field name="reconciled" invisible="1"/>
             <field name="currency_id" readonly="True" invisible="1"/>
             <field name="company_currency_id" invisible="1"/>
+            <field name="base_currency_id" invisible="1"/>
             <field name="company_id" invisible="1"/>
         </tree>
       </field>
@@ -44,6 +48,17 @@
       <field name="res_model">account.move.line</field>
       <field name="view_mode">tree</field>
       <field name="domain">[('journal_id.name','like','Expenses')]</field>
+      <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-accounting.expenses_move_line_tree')}),
+            ]"/>
+      <field name="context">{'search_default_company':1}</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="vcls-accounting.action_invoices_move">
+      <field name="name">Invoices</field>
+      <field name="res_model">account.move.line</field>
+      <field name="view_mode">tree</field>
+      <field name="domain">[('journal_id.name','like','Customer Invoices')]</field>
       <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('vcls-accounting.expenses_move_line_tree')}),
             ]"/>
@@ -79,6 +94,8 @@
     
     <menuitem name="Expenses" id="vcls-accounting.menu_move_expenses" parent="account.menu_finance_entries_accounting_entries"
               action="vcls-accounting.action_expenses_move"/>
+    <menuitem name="Invoices" id="vcls-accounting.menu_move_invoices" parent="account.menu_finance_entries_accounting_entries"
+              action="vcls-accounting.action_invoices_move"/>
     
   </data>
 </odoo>
