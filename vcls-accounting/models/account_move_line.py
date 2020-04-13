@@ -18,10 +18,23 @@ class AccountAnalyticLine(models.Model):
         related = 'account_id.code'
     )
 
-    base_currency_id = fields.Many2one('res.currency',compute="_compute_base_values", store=True)
-    debit_base_currency = fields.Monetary(default=0.0, currency_field='base_currency_id',compute="_compute_base_values",store=True)
-    credit_base_currency = fields.Monetary(default=0.0, currency_field='base_currency_id',compute="_compute_base_values",store=True)
-    convertion_rate = fields.Float(compute="_compute_base_values",store=True)
+    base_currency_id = fields.Many2one(
+        'res.currency',
+        compute="_compute_base_values",
+        store=True)
+    debit_base_currency = fields.Monetary(
+        default=0.0,
+        #currency_field='base_currency_id',
+        compute="_compute_base_values",
+        store=True)
+    credit_base_currency = fields.Monetary(
+        default=0.0,
+        #currency_field='base_currency_id',
+        compute="_compute_base_values",
+        store=True)
+    convertion_rate = fields.Float(
+        compute="_compute_base_values",
+        store=True)
 
     @api.depends('debit','credit','company_currency_id')
     def _compute_base_values(self):
