@@ -282,12 +282,6 @@ class ETLMap(models.Model):
             }
             self.update_keys(params)
 
-        
-
-        
-
-        
-
         ###CLOSING
         #we trigger the processing job
         """cron = self.env.ref('vcls-etl.cron_process')
