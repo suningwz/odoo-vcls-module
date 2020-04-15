@@ -12,10 +12,11 @@ class LeadQuotation(models.TransientModel):
 
     quotation_type = fields.Selection([
         ('new', 'New project'),
-        ('budget_extension', 'Budget extension'),
+    #     ('budget_extension', 'Budget extension'),
         ('scope_extension', 'Scope extension'),
     ], string='Quotation type', required=True, default='new'
     )
+
     existing_quotation_id = fields.Many2one(
         'sale.order', string="Existing quotation"
     )
