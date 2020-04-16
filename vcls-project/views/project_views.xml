@@ -237,7 +237,7 @@
             <field name="name">vcls.specific.project.form</field>
             <field name="model">project.project</field>
             <field name="inherit_id" ref="vcls_specific_project_form"/>
-            <field name="groups_id" eval="[(6,ref('vcls-hr.vcls_group_superuser_lvl1')),(6,ref('vcls-hr.group_bd_admin'))]"/>
+            <field name="groups_id" eval="[(4,ref('vcls-hr.vcls_group_superuser_lvl1')),(4,ref('vcls_security.group_bd_admin')), (4,ref('vcls-hr.vcls_group_superuser_lvl2'))]"/>
             <field name="arch" type="xml">
                 <field name="name" position="attributes">
                     <attribute name="readonly">0</attribute>
