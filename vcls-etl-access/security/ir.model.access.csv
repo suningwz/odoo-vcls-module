@@ -2,4 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_etl_access_keys_admin,access_etl_access_keys_admin,vcls-etl-access.model_etl_sync_access_keys,vcls-etl.vcls_migrators,1,1,1,1
 access_etl_sync_access_admin,access_etl_sync_access_admin,vcls-etl-access.model_etl_sync_access,vcls-etl.vcls_migrators,1,1,1,1
 access_etl_access_client_admin,access_etl_access_client_admin,vcls-etl-access.model_etl_access_client,vcls-etl.vcls_migrators,1,1,1,1
-
+access_etl_access_contact_admin,access_etl_access_contact_admin,vcls-etl-access.model_etl_access_contact,vcls-etl.vcls_migrators,1,1,1,1

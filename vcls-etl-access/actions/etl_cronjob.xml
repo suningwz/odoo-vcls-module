@@ -13,6 +13,7 @@
             <field name="code">full_update = True
 obj_dict = {
     'do_client':True,
+    'do_contact':True,
     }
 model.access_update_keys(obj_dict,full_update)
             </field>
@@ -31,12 +32,12 @@ model.access_update_keys(obj_dict,full_update)
             <field name="code">batch_size = None
 loop = False
 max_minutes = 9
-model.sf_process_keys(batch_size,loop,max_minutes)
+model.access_process_keys(batch_size,loop,max_minutes)
             </field>
         </record>
 
-        <record id="cron_relaunch" model="ir.cron">
-            <field name="name">ETL Relaunch Process Keys</field>
+        <record id="cron_relaunch_access" model="ir.cron">
+            <field name="name">ETL Relaunch Process Keys Access</field>
             <field name="active" eval="False" />
             <field name="user_id" ref="base.user_admin" />
             <field name="numbercall">-1</field>
@@ -45,7 +46,7 @@ model.sf_process_keys(batch_size,loop,max_minutes)
             <field name="doall">False</field>
             <field name="model_id" ref="model_etl_sync_access_keys" />
             <field name="state">code</field>
-            <field name="code">model.relaunch_cron('vcls-etl.cron_process',2)
+            <field name="code">model.relaunch_cron('vcls-etl-access.cron_process',2)
             </field>
         </record>
         

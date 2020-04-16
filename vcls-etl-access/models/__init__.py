@@ -7,3 +7,5 @@ from . import generalSync
 from . import ITranslator
 from . import TranslatorACGeneral
 from . import TranslatorACClient
+from . import TranslatorACContact
+from . import ACContactSync

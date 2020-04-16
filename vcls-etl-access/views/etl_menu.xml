@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-	<data>
-			
+	<data>	
 		<menuitem 
 			name="ETL ACCESS" 
 			parent="base.menu_custom" 
@@ -14,6 +13,13 @@
 			parent="menu_etl1" 
 			id="menu_etl_client" 
 			action="action_etl_client" 
+			sequence="6" />
+
+		<menuitem 
+			name="Access Contact" 
+			parent="menu_etl1" 
+			id="menu_etl_contact" 
+			action="action_etl_contact" 
 			sequence="6" />
 
 		<menuitem 

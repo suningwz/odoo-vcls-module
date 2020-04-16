@@ -1,4 +1,4 @@
-from . import TranslatorACClient
+from . import TranslatorACContact
 from . import ETL_ACCESS
 from . import generalSync
 import logging
@@ -10,9 +10,9 @@ from datetime import datetime
 
 from odoo import exceptions, models, fields, api
 
-class ACClientSync(models.Model):
-    _name = 'etl.access.client'
+class ACContactSync(models.Model):
+    _name = 'etl.access.contact'
     _inherit = 'etl.sync.access'
 
     def getAccessTranslator(self, accessInstance):
-        return TranslatorACClient.TranslatorACClient(accessInstance)
+        return TranslatorACContact.TranslatorACContact(accessInstance)

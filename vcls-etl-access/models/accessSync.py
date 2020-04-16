@@ -17,72 +17,46 @@ class accessSync(models.Model):
 
     def getAccessInstance(self):
         return ETL_ACCESS.ETL_ACCESS.getInstance()
-
-    def getAccessTranslator(self, sfInstance):
-        return "This stored de Translator"
-
-    def getCronId(self, isFullUpdate):
-        return "This store the cronId needed to be relaunch"
-    
-    def getSQLForKeys(self):
-        return "This store the sql query needed for get keys"
-    
-    def getSQLForRecord(self):
-        return "This store the sql query needed for get Salesforce Record"
-
-    def getModifiedRecordsOdoo(self):
-        return "This return the modified record from Odoo"
-
-    def getAllRecordsOdoo(self):
-        return "This return record from Odoo"
-
-    def getKeysFromOdoo(self):
-        return "This return the keys from Odoo"
-    
-    def getKeysToUpdateOdoo(self):
-        return "This return the keys from Odoo when state is needUpdateOdoo or needCreateOdoo"
-
-    def getKeysToUpdateExternal(self):
-        return "This return the keys from Odoo when state is needUpdateExteral or needCreateExternal"
-    
-    def createKey(self,odooId,externalId):
-        return "This will create a new key in etl.sync.keys"
-
-    def getExtModelName(self):
-        return "This return the model name of external"
     
     @api.model
     def access_process_keys(self,batch_size=False,loop=True,duration=9):
-        keys = self.env['etl.sync.access.keys'].search([('state','not in',['upToDate','postponed'])]).mapped('priority')
 
-        self.env.user.context_data_integration = True
+        priorities = self.env['etl.sync.access.keys'].search([('state','not in',['upToDate','postponed'])]).mapped('priority')
+        if priorities:
+            top_priority = max(priorities)
+        else:
+            top_priority = False
 
-        timestamp_end = datetime.now() + timedelta(minutes=duration) - timedelta(seconds=10)
-        loop_cron = loop
+        if top_priority:
+            self.env.user.context_data_integration = True
 
-        accessInstance = self.getAccessInstance()
+            loop_cron = loop
 
-        if keys:
-            template = keys[0]
-            _logger.info("ETL | Found {} {} keys {}".format(len(keys),template.externalObjName,template.state))
-            #we initiate a sync object
-            sync = self.env['etl.access.{}'.format(template.externalObjName.lower())]
-            translator = sync.getAccessTranslator(accessInstance)
-            counter = 0
+            accessInstance = self.getAccessInstance().getConnection()
 
-            #get SF records
-            query_id = "vcls-etl.etl_access_{}_query".format(template.externalObjName.lower())
-            sql = self.env.ref(query_id).value
-            records = accessInstance.getConnection().execute(sql)
-            if records:
-                _logger.info("ETL |  {} returned {} records from ACCESS".format(sql,len(records)))
-                #we start the processing loop
-                for access_rec in records:
-                    if datetime.now()>timestamp_end:
-                        break
-                    else:
+            if batch_size:
+                to_process = self.env['etl.sync.access.keys'].search([('state','not in',['upToDate','postponed']),('priority','=',top_priority)],limit=batch_size)
+            else:
+                to_process = self.env['etl.sync.access.keys'].search([('state','not in',['upToDate','postponed']),('priority','=',top_priority)])
+
+            if to_process:
+                template = to_process[0]
+                _logger.info("ETL | Found {} {} keys {}".format(len(to_process),template.externalObjName,template.state))
+                #we initiate a sync object
+                sync = self.env['etl.access.{}'.format(template.externalObjName.lower())]
+                translator = sync.getAccessTranslator(accessInstance)
+                counter = 0
+
+                #get SF records
+                query_id = "vcls-etl-access.etl_access_{}_query".format(template.externalObjName.lower())
+                sql = self.env.ref(query_id).value
+                records = accessInstance.execute(sql).fetchall()
+                if records:
+                    _logger.info("ETL |  {} returned {} records from ACCESS".format(sql,len(records)))
+                    #we start the processing loop
+                    for access_rec in records:
                         #grab the related key if in to_process
-                        key = keys.filtered(lambda p: p.externalId == access_rec['ClientId'])
+                        key = to_process.filtered(lambda p: p.externalId == str(access_rec[0]))
                         if key:
                             counter += 1
                             attributes = translator.translateToOdoo(access_rec, sync, accessInstance)
@@ -98,27 +72,27 @@ class accessSync(models.Model):
                                 if o_rec:
                                     o_rec.with_context(tracking_disable=1).write(attributes)
                                     key[0].write({'state':'upToDate','priority':0})
-                                    _logger.info("ETL | Record Updated {}/{} | {} | {}".format(counter,len(keys),key[0].externalObjName,attributes.get('log_info')))
+                                    _logger.info("ETL | Record Updated {}/{} | {} | {}".format(counter,len(to_process),key[0].externalObjName,attributes.get('log_info')))
                                 else:
                                     key[0].write({'state':'upToDate','priority':0})
-                                    _logger.info("ETL | Missed Update - Odoo record not found {}/{} | {} | {}".format(counter,len(keys),key[0].odooModelName,key[0].odooId))
+                                    _logger.info("ETL | Missed Update - Odoo record not found {}/{} | {} | {}".format(counter,len(to_process),key[0].odooModelName,key[0].odooId))
                             
                             #CREATE Case
                             elif key[0].state == 'needCreateOdoo':
                                 odoo_id = self.env[key[0].odooModelName].with_context(tracking_disable=1).create(attributes).id
                                 key[0].write({'state':'upToDate','odooId':odoo_id,'priority':0})
                                 #key[0].write({'state':'upToDate','priority':0})
-                                _logger.info("ETL | Record Created {}/{} | {} | {}".format(counter,len(keys),key[0].externalObjName,attributes.get('log_info')))
+                                _logger.info("ETL | Record Created {}/{} | {} | {}".format(counter,len(to_process),key[0].externalObjName,attributes.get('log_info')))
 
                             else:
                                 _logger.info("ETL | Non-managed key state {} | {}".format(key[0].id,key[0].state))
-                        
-            if loop_cron:
-                cron = self.env.ref('vcls-etl.cron_relaunch')
-                cron.write({
-                    'active': True,
-                    'nextcall': datetime.now() + timedelta(seconds=30),
-                    'numbercall': 1,
-                })
-                _logger.info("ETL | CRON renewed")
-            self.env.user.context_data_integration = False
+                            
+                if loop_cron:
+                    cron = self.env.ref('vcls-etl.cron_relaunch_access')
+                    cron.write({
+                        'active': True,
+                        'nextcall': datetime.now() + timedelta(seconds=30),
+                        'numbercall': 1,
+                    })
+                    _logger.info("ETL | CRON renewed")
+                self.env.user.context_data_integration = False

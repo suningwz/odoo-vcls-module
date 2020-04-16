@@ -20,7 +20,7 @@ class ETL_ACCESS:
             ETL_ACCESS.__instance = self
             conn_str = (
                 r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};'
-                r'DBQ=C:\Users\laamouri\OneDrive - VOISIN CONSULTING\Desktop\test.accdb;'
+                r'DBQ=C:\Users\laamouri\OneDrive - VOISIN CONSULTING\Desktop\restor\restauration\BHTbls.accdb;'
             )
             cnxn = pyodbc.connect(conn_str)
             ETL_ACCESS.instance = cnxn.cursor()

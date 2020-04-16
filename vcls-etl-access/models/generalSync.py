@@ -51,25 +51,24 @@ class ETLMap(models.Model):
     
     def update_keys(self,params={}):
         _logger.info("ETL | UPDATE KEYS {}".format(params))
-        rec_ext = params['accessInstance'].getConnection().execute(params['sql'])
+        rec_ext = params['accessInstance'].getConnection().execute(params['sql']).fetchall()
         print(rec_ext)
         keys_exist = self.search([('externalObjName','=',params['externalObjName']),('odooModelName','=',params['odooModelName'])])
         #we default the state of all keys
         keys_exist.write({'state':'upToDate','priority':0})
-        keys_exist_sfid = keys_exist.mapped('externalId')
+        keys_exist_acid = keys_exist.mapped('externalId')
         keys_create = keys_exist.filtered(lambda k: k.externalId and not k.odooId)
 
-        keys_update = self.env['etl.sync.keys']
+        keys_update = self.env['etl.sync.access.keys']
         keys_to_test=keys_exist.filtered(lambda k: k.externalId and k.odooId)
 
         #We look for non exisitng keys
         for rec in rec_ext:
-            if rec['Id'] not in keys_exist_sfid: #if the rec does not exists
+            if str(rec[0]) not in keys_exist_acid: #if the rec does not exists
 
                 vals = {
                     'externalObjName':params['externalObjName'],
-                    'externalId': rec['Id'],
-                    'lastModifiedExternal': datetime.strptime(rec['LastModifiedDate'], "%Y-%m-%dT%H:%M:%S.000+0000"),
+                    'externalId': str(rec[0]),
                     'odooModelName': params['odooModelName'],
                     'state':'needCreateOdoo',
                 }
@@ -78,7 +77,7 @@ class ETLMap(models.Model):
                 _logger.info("KEYS | {} New Creation {}".format(params['externalObjName'],vals))
 
             else: #we ensure not to try to update records we don't have in the rec
-                key = keys_to_test.filtered(lambda k: k.externalId==rec['Id'])
+                key = keys_to_test.filtered(lambda k: k.externalId == str(rec[0]))
                 if key:
                     keys_update |= key
                     _logger.info("KEYS | {} To Update {}".format(params['externalObjName'],key.odooId))         
@@ -120,10 +119,6 @@ class ETLMap(models.Model):
         #make time filter if required
         new_run = datetime.now(pytz.timezone("GMT"))
 
-        time_sql = ""
-
-        self.env.ref('vcls-etl.etl_sf_time_filter').value = time_sql
-
         ### CLIENTS KEYS PROCESSING
         if obj_dict.get('do_client',False):
             sql = """
@@ -131,8 +126,22 @@ class ETLMap(models.Model):
                 """
             params = {
                 'accessInstance':accessInstance,
-                'priority':850,
-                'externalObjName':'tblClient',
+                'priority':50,
+                'externalObjName':'client',
+                'sql': sql,
+                'odooModelName':'res.partner',
+                'is_full_update':True,
+            }
+            self.update_keys(params)
+
+        if obj_dict.get('do_contact',False):
+            sql = """
+                SELECT ClientID FROM tblClient 
+                """
+            params = {
+                'accessInstance':accessInstance,
+                'priority':40,
+                'externalObjName':'contact',
                 'sql': sql,
                 'odooModelName':'res.partner',
                 'is_full_update':True,
