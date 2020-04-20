@@ -13,17 +13,17 @@ _logger = logging.getLogger(__name__)
 
 class SaleReport(models.Model):
 
-    # _inherit = 'sale.report'
+    _inherit = 'sale.report'
 
-    # expected_start_date = fields.Date(
-    #     related='order_id.expected_start_date',
-    #     store=True,
-    # )
+    expected_start_date = fields.Date(
+        related='order_id.expected_start_date',
+        # store=True,
+    )
 
-    # expected_end_date = fields.Date(
-    #     related='order_id.expected_end_date',
-    #     store=True,
-    # )
+    expected_end_date = fields.Date(
+        related='order_id.expected_end_date',
+        # store=True,
+    )
 
     # def _query(self, with_clause='', fields={}, groupby='', from_clause=''):
     #     fields['expected_end_date'] = ",  s.expected_end_date as expected_end_date"
