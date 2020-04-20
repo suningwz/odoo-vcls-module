@@ -91,7 +91,7 @@ class ExpenseSheet(models.Model):
     # COMPUTE METHODS #
     ###################
 
-    @api.depends('type', 'project_id', 'employee_id')
+    @api.depends('type', 'project_id', 'employee_id','sale_order_id')
     def _compute_user_id(self):
         for record in self:
 
@@ -111,6 +111,10 @@ class ExpenseSheet(models.Model):
                         record.user_id = record.project_id.partner_id.controller_id
                     else:
                         record.user_id = record.project_id.user_id
+                elif record.sale_order_id:
+                    record.user_id = record.sale_order_id.core_team_id.lead_consultant.user_id if record.sale_order_id.core_team_id.lead_consultant.user_id else False
+                    if not record.user_id:
+                        raise ValidationError("Please add a lead consultant to the core team of the sale order {}".format(record.sale_order_id.name))
                 else:
                     record.user_id = False
 
