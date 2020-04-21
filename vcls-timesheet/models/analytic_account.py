@@ -509,6 +509,18 @@ class AnalyticLine(models.Model):
             write({'stage_id': 'invoiceable'})
 
     @api.model
+    def _clean_0_ts(self):
+        to_clean = self.search([
+            ('is_timesheet', '=', True),
+            ('validated', '=', True),
+            ('unit_amount','=',0.0),
+            ('timesheet_invoice_id','=',False),
+        ])
+
+        if to_clean:
+            to_clean.unlink()
+
+    @api.model
     def _smart_timesheeting_cron(self,hourly_offset=0):
         days = hourly_offset//24
         remainder = hourly_offset%24
