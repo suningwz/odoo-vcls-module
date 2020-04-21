@@ -14,20 +14,20 @@ class TranslatorACGeneral(ITranslator.ITranslator):
     @staticmethod
     def convertCityId(CityID, access):
         row = access.execute('select City from tblCity WHERE CityID =' + str(CityID)).fetchall()
-        if row[0][0]:
+        if row:
             return row[0][0]
         return False
 
     @staticmethod
     def convertStateId(StateID, access):
         row = access.execute('select State from tblState WHERE StateID =' + str(StateID)).fetchall()
-        if row[0][0]:
+        if row:
             return row[0][0]
         return False
 
     @staticmethod
     def convertCountryId(CountryID, access):
         row = access.execute('select Country from tblCountry WHERE CountryID =' + str(CountryID)).fetchall()
-        if row[0][0]:
+        if row:
             return row[0][0]
         return False

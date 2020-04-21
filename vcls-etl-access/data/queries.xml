@@ -15,5 +15,12 @@
                 FROM tblClient
             </field>
         </record>
+        <record id="etl_access_employee_query" model="ir.config_parameter">
+            <field name="key">etl_access_employee_query</field>
+            <field name="value">
+                SELECT *
+                FROM tblEmployee
+            </field>
+        </record>
     </data>
 </odoo>

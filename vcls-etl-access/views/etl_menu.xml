@@ -21,6 +21,12 @@
 			id="menu_etl_contact" 
 			action="action_etl_contact" 
 			sequence="6" />
+		<menuitem 
+			name="Access Employee" 
+			parent="menu_etl1" 
+			id="menu_etl_employee" 
+			action="action_etl_employee" 
+			sequence="6" />
 
 		<menuitem 
 			name="Keys" 

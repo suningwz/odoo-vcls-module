@@ -147,6 +147,20 @@ class ETLMap(models.Model):
                 'is_full_update':True,
             }
             self.update_keys(params)
+        
+        if obj_dict.get('do_employee',False):
+            sql = """
+                SELECT EmployeeID FROM tblEmployee
+                """
+            params = {
+                'accessInstance':accessInstance,
+                'priority':60,
+                'externalObjName':'employee',
+                'sql': sql,
+                'odooModelName':'hr.employee',
+                'is_full_update':True,
+            }
+            self.update_keys(params)
 
         ###CLOSING
         #we trigger the processing job

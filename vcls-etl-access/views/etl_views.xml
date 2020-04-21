@@ -11,6 +11,11 @@
 			<field name="res_model">etl.access.contact</field>
 			<field name="view_mode">kanban,tree,form,activity</field>
 		</record>
+		<record model="ir.actions.act_window" id="action_etl_employee">
+			<field name="name">ETL Access Employee</field>
+			<field name="res_model">etl.access.employee</field>
+			<field name="view_mode">kanban,tree,form,activity</field>
+		</record>
 		<record model="ir.actions.act_window" id="action_etl_keys1">
 			<field name="name">ETL Keys</field>
 			<field name="res_model">etl.sync.access.keys</field>

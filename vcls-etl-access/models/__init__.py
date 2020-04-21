@@ -9,3 +9,5 @@ from . import TranslatorACGeneral
 from . import TranslatorACClient
 from . import TranslatorACContact
 from . import ACContactSync
+from . import TranslatorACEmployee
+from . import ACEmployeeSync

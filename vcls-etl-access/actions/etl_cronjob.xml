@@ -14,6 +14,7 @@
 obj_dict = {
     'do_client':True,
     'do_contact':True,
+    'do_employee':True,
     }
 model.access_update_keys(obj_dict,full_update)
             </field>
