@@ -520,7 +520,7 @@ class Leads(models.Model):
             items = ref.split('-')
             if len(items)==2:
                 index = int(items[1])
-                if (items[0].lower() == client.altname.lower()) and index:
+                if client.altname and (items[0].lower() == client.altname.lower()) and index:
                     if index > client.core_process_index:
                         client.write({
                             'altname':items[0].upper(),
@@ -590,7 +590,13 @@ class Leads(models.Model):
             offset = name.upper().find(reference.upper())
             if offset == -1 and reference:
                 if len(name)>0:
-                    return "{} | {}".format(reference,name)
+                    name_without_ref = name.split('-')[1].split(None, 1)[1]
+                    ref_without_nb = reference.split('-')[0]
+                    offset_old_ref = name.upper().find(ref_without_nb)
+                    if offset_old_ref == -1 and reference:
+                        return "{} | {}".format(reference,name)
+                    else:  # looking for any reference to avoid duplicate
+                        return "{} {}".format(reference, name_without_ref)
                 else:
                     return reference
             else:
