@@ -539,7 +539,7 @@ class AnalyticLine(models.Model):
                     'project_id': task.project_id.id,
                     'main_project_id': parent_project_id.id,
                     'employee_id': employee.id,
-                    'name': "Smart Timesheeting",
+                    'name': "",
                 })
 
 
