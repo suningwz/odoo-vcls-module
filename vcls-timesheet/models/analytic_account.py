@@ -539,25 +539,9 @@ class AnalyticLine(models.Model):
                     'project_id': task.project_id.id,
                     'main_project_id': parent_project_id.id,
                     'employee_id': employee.id,
-                    'name': "",
+                    'name': "/",
                 })
 
-
-        """# We look for timesheets of the previous week
-        tasks = self.env['project.task'].search([
-            ('project_id', '!=', False),
-            ('effective_hours', '>', 0),
-            ('timesheet_ids.date', '>', fields.Datetime.now() - timedelta(days=7)),
-            ('timesheet_ids.date', '<', fields.Datetime.now()),
-        ])
-        for task in tasks:
-            self.create({
-                'date': fields.Date.today(),
-                'task_id': task.id,
-                'amount': 0,
-                'company_id': task.company_id,
-                'project_id': task.project_id.id,
-            })"""
 
     def _timesheet_preprocess(self, vals):
         vals = super(AnalyticLine, self)._timesheet_preprocess(vals)
