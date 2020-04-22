@@ -33,13 +33,13 @@ class AccountInvoiceRefund(models.TransientModel):
             for inv in to_process:
                 _logger.info("INVOICE TO REFUND {}".format(inv.name))
                 inv.release_timesheets()
-                for inv_line in inv.​invoice_line_ids:
+                """for inv_line in inv.​invoice_line_ids:
                     _logger.info("Found Invoice Line {}".format(inv_line.name))
                     inv_line.sale_line_ids.write({
                         'invoice_lines':[(4, inv_line.id, 0)],
                     })
                     sale_lines |= inv_line.sale_line_ids
             
-            sale_lines._get_invoice_qty()
+            sale_lines._get_invoice_qty()"""
 
         return ret
