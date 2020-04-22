@@ -4,6 +4,9 @@ from odoo import models, fields, api, _
 from odoo.tools.safe_eval import safe_eval
 from odoo.exceptions import UserError
 
+import logging
+_logger = logging.getLogger(__name__)
+
 
 class AccountInvoiceRefund(models.TransientModel):
     """Credit Notes"""
@@ -19,16 +22,19 @@ class AccountInvoiceRefund(models.TransientModel):
 
     @api.multi
     def compute_refund(self, mode='refund'):
+        to_process = self.env['account.invoice'].browse(self._context.get('active_ids',False))
+        if to_process:
+            _logger.info("INVOICES TO REFUND {}".format(to_process.mapped('name')))
         ret = super().compute_refund(mode)
 
         if mode in ('cancel', 'modify'):
             #if cancel or modify, we release the potential timesheets and add the invoice ref to the so_line for a proper invoiced_qty calculation
-            inv_obj = self.env['account.invoice']
-            context = dict(self._context or {})
             sale_lines = self.env['sale.order.line']
-            for inv in inv_obj.browse(context.get('active_ids')):
+            for inv in to_process:
+                _logger.info("INVOICE TO REFUND {}".format(inv.name))
                 inv.release_timesheets()
                 for inv_line in inv.​invoice_line_ids:
+                    _logger.info("Found Invoice Line {}".format(inv_line.name))
                     inv_line.sale_line_ids.write({
                         'invoice_lines':[(4, inv_line.id, 0)],
                     })
