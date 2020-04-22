@@ -24,22 +24,22 @@ class AccountInvoiceRefund(models.TransientModel):
     def compute_refund(self, mode='refund'):
         to_process = self.env['account.invoice'].browse(self._context.get('active_ids',False))
         if to_process:
-            _logger.info("INVOICES TO REFUND {}".format(to_process.mapped('name')))
+            _logger.info("INVOICES TO REFUND {}".format(to_process.mapped('id')))
         ret = super().compute_refund(mode)
 
         if mode in ('cancel', 'modify'):
             #if cancel or modify, we release the potential timesheets and add the invoice ref to the so_line for a proper invoiced_qty calculation
             sale_lines = self.env['sale.order.line']
             for inv in to_process:
-                _logger.info("INVOICE TO REFUND {}".format(inv.name))
+                _logger.info("INVOICE TO REFUND {}".format(inv.id))
                 inv.release_timesheets()
-                """for inv_line in inv.​invoice_line_ids:
+                for inv_line in inv.invoice_line_ids:
                     _logger.info("Found Invoice Line {}".format(inv_line.name))
                     inv_line.sale_line_ids.write({
                         'invoice_lines':[(4, inv_line.id, 0)],
                     })
                     sale_lines |= inv_line.sale_line_ids
             
-            sale_lines._get_invoice_qty()"""
+            sale_lines._get_invoice_qty()
 
         return ret
