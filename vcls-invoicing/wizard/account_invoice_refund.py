@@ -33,12 +33,25 @@ class AccountInvoiceRefund(models.TransientModel):
             for inv in to_process:
                 _logger.info("INVOICE TO REFUND {}".format(inv.id))
                 inv.release_timesheets()
-                for inv_line in inv.invoice_line_ids:
+                rinv = self.env['account.invoice'].search([('type','=','out_refund'),('origin','=',inv.number)],limit=1)
+                if rinv:
+                    _logger.info("Found Credit note {} for invoice {}".format(rinv.number,inv.number))
+                    for inv_line in inv.invoice_line_ids.filtered(lambda l: l.sale_line_ids):
+                        rinv_line = rinv.invoice_line_ids.filtered(lambda r: r.product_id == inv_line.product_id)
+                        if rinv_line:
+                            _logger.info("Found Matching Line {} {} {} {}".format(inv_line.product_id.name,inv_line.quantity,rinv_line.product_id.name,rinv_line.quantity))
+                            rinv_line.sale_line_ids = inv_line.sale_line_ids #we match the sale_order line behind to properly compute the invoiced qty afterwards
+                            inv_line.sale_line_ids.write({
+                                'invoice_lines':[(4, rinv_line.id, 0)],
+                            })
+                            sale_lines |= inv_line.sale_line_ids
+
+                """for inv_line in inv.invoice_line_ids:
                     _logger.info("Found Invoice Line {}".format(inv_line.name))
                     inv_line.sale_line_ids.write({
                         'invoice_lines':[(4, inv_line.id, 0)],
                     })
-                    sale_lines |= inv_line.sale_line_ids
+                    sale_lines |= inv_line.sale_line_ids"""
             
             sale_lines._get_invoice_qty()
 
