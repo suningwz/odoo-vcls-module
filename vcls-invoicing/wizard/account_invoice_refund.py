@@ -27,7 +27,7 @@ class AccountInvoiceRefund(models.TransientModel):
             context = dict(self._context or {})
             sale_lines = self.env['sale.order.line']
             for inv in inv_obj.browse(context.get('active_ids')):
-                #inv.release_timesheets()
+                inv.release_timesheets()
                 for inv_line in inv.​invoice_line_ids:
                     inv_line.sale_line_ids.write({
                         'invoice_lines':[(4, inv_line.id, 0)],
