@@ -15,7 +15,7 @@
 
 
 
-    'version': '1.3.24',
+    'version': '1.3.25',
 
     # any module necessary for this one to work correctly
     'depends': [
