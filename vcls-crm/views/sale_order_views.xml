@@ -33,8 +33,23 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
 
+                <!-- We remove some existing file to re-add them below-->
+                <field name="user_id" position="replace">
+                </field>
+                <field name="company_id" position="replace">
+                </field>
+                <field name="opportunity_id" position="replace">
+                </field>
+
                 <field name="name" position="attributes">
                     <attribute name="readonly">0</attribute>
+                </field>
+
+                <field name="team_id" position="attributes">
+                    <attribute name="options">{'no_open': True,'no_quick_create': True, 'no_create_edit' : True}</attribute>
+                </field>
+                <field name="analytic_account_id" position="attributes">
+                    <attribute name="options">{'no_open': True,'no_quick_create': True, 'no_create_edit' : True}</attribute>
                 </field>
 
                 <xpath expr="//header" position="attributes">    
