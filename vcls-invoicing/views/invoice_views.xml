@@ -109,6 +109,10 @@
                 <xpath expr="//button[@name='preview_invoice']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+
+                <xpath expr="//button[@name='action_invoice_open']" position="attributes">
+                    <attribute name="groups">vcls_security.group_finance_invoice_administrator</attribute>
+                </xpath>
                 
                 <xpath expr="//button[@id='account_invoice_payment_btn']" position="attributes">
                     <attribute name="attrs">{'invisible': ['|',('state', '!=', 'open'),('type','=','out_refund')]}</attribute>
