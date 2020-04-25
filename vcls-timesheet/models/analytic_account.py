@@ -509,6 +509,18 @@ class AnalyticLine(models.Model):
             write({'stage_id': 'invoiceable'})
 
     @api.model
+    def _clean_0_ts(self):
+        to_clean = self.search([
+            ('is_timesheet', '=', True),
+            ('validated', '=', True),
+            ('unit_amount','=',0.0),
+            ('timesheet_invoice_id','=',False),
+        ])
+
+        if to_clean:
+            to_clean.unlink()
+
+    @api.model
     def _smart_timesheeting_cron(self,hourly_offset=0):
         days = hourly_offset//24
         remainder = hourly_offset%24
@@ -539,25 +551,9 @@ class AnalyticLine(models.Model):
                     'project_id': task.project_id.id,
                     'main_project_id': parent_project_id.id,
                     'employee_id': employee.id,
-                    'name': "Smart Timesheeting",
+                    'name': "/",
                 })
 
-
-        """# We look for timesheets of the previous week
-        tasks = self.env['project.task'].search([
-            ('project_id', '!=', False),
-            ('effective_hours', '>', 0),
-            ('timesheet_ids.date', '>', fields.Datetime.now() - timedelta(days=7)),
-            ('timesheet_ids.date', '<', fields.Datetime.now()),
-        ])
-        for task in tasks:
-            self.create({
-                'date': fields.Date.today(),
-                'task_id': task.id,
-                'amount': 0,
-                'company_id': task.company_id,
-                'project_id': task.project_id.id,
-            })"""
 
     def _timesheet_preprocess(self, vals):
         vals = super(AnalyticLine, self)._timesheet_preprocess(vals)
