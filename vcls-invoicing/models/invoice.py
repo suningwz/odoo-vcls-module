@@ -655,15 +655,6 @@ class Invoice(models.Model):
 
     @api.multi
     def unlink(self):
-        """orders = self.env['sale.order']
-        for invoice in self:
-            if invoice.timesheet_ids:
-                invoice.timesheet_ids.write({'stage_id':'invoiceable'})
-                orders |= invoice.timesheet_ids.mapped('so_line.order_id')       
-            ret = super(Invoice, invoice).unlink()
-            
-        orders.mapped('order_line')._compute_qty_delivered()
-        return ret"""
         self.release_timesheets()
         return super(Invoice,self).unlink()
     
@@ -678,7 +669,7 @@ class Invoice(models.Model):
                     'timesheet_invoice_id': False,
                     })
                 orders |= invoice.timesheet_ids.mapped('so_line.order_id')
-        orders.mapped('order_line')._compute_qty_delivered()
+        #orders.mapped('order_line')._compute_qty_delivered()
         orders.mapped('order_line')._get_invoice_qty()
 
 
