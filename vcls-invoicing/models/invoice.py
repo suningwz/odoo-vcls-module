@@ -29,6 +29,7 @@ class Invoice(models.Model):
 
     po_id = fields.Many2one('invoicing.po',
                             #default = _get_default_po_id,
+                            help="This field will appear on the invoice",
                             string ='Client PO ref.')
 
     user_id = fields.Many2one(
@@ -52,9 +53,8 @@ class Invoice(models.Model):
 
 
     period_start = fields.Date()
-    lc_laius = fields.Text()
-    scope_of_work = fields.Text()
-
+    lc_laius = fields.Text(help="If this will appear on the invoice")
+    scope_of_work = fields.Text(help="This field will NOT appear on the invoice. Changing the field here will not change the project Scope of Word")
     vcls_due_date = fields.Date(string='Custom Due Date', compute='_compute_vcls_due_date')
     #origin_sale_orders = fields.Char(compute='compute_origin_sale_orders',string='Origin')
 
@@ -182,7 +182,6 @@ class Invoice(models.Model):
 
         #loop in projects
         for project in self.project_ids:
-
             #get last  as laius if non exists
             if not vals.get('lc_laius',self.lc_laius):
                 if project.summary_ids:
@@ -197,10 +196,9 @@ class Invoice(models.Model):
             # get sow if non exists
             if not vals.get('scope_of_work',self.scope_of_work):
                 if project.scope_of_work:
-                    sow += "{}\n".format(self.html_to_string(project.scope_of_work))
+                    vals['scope_of_work'] = self.html_to_string(project.scope_of_work)
             else:
                 sow = vals.get('scope_of_work', self.scope_of_work)
-
         return vals
 
     @api.multi
@@ -657,15 +655,6 @@ class Invoice(models.Model):
 
     @api.multi
     def unlink(self):
-        """orders = self.env['sale.order']
-        for invoice in self:
-            if invoice.timesheet_ids:
-                invoice.timesheet_ids.write({'stage_id':'invoiceable'})
-                orders |= invoice.timesheet_ids.mapped('so_line.order_id')       
-            ret = super(Invoice, invoice).unlink()
-            
-        orders.mapped('order_line')._compute_qty_delivered()
-        return ret"""
         self.release_timesheets()
         return super(Invoice,self).unlink()
     
@@ -680,7 +669,7 @@ class Invoice(models.Model):
                     'timesheet_invoice_id': False,
                     })
                 orders |= invoice.timesheet_ids.mapped('so_line.order_id')
-        orders.mapped('order_line')._compute_qty_delivered()
+        #orders.mapped('order_line')._compute_qty_delivered()
         orders.mapped('order_line')._get_invoice_qty()
 
 
