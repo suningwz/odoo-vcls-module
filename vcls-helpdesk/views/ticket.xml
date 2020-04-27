@@ -58,12 +58,14 @@
                         </group>
                         <field name="description" class="field_description" attrs="{'invisible': [('dynamic_description', '!=', '&lt;p&gt;&lt;br&gt;&lt;/p&gt;')]}" placeholder="Description of the ticket..."/>
                         <field name="dynamic_description" attrs="{'invisible': [('dynamic_description', '==', '&lt;p&gt;&lt;br&gt;&lt;/p&gt;')]}"/>
-                        <group string='Documented by support'>
+                        <group string='Documented by support' groups="helpdesk.group_helpdesk_user">
+                            <group name='assignment'>
                                 <field name="ticket_type_id" attrs="{'readonly': [('access_level', 'not in', ['support'])]}"/>
                                 <field name="user_id" class="field_user_id" attrs="{'invisible': [('access_level', 'not in', ['support'])]}"/>
                                 <field name="behalf"/>
                                 <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" attrs="{'readonly': [('access_level', 'not in', ['support'])]}"/>
                                 <field name="resolution" attrs="{'invisible': [('access_level', 'not in', ['support'])]}"/>
+                            </group>
                         </group>
                     </sheet>
                     <group>
