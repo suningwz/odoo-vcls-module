@@ -38,6 +38,7 @@
         'vcls_security',
         'vcls-risk',
         'vcls-invoicing',
+        'vcls-helpdesk',
     ],
 
     # always loaded
