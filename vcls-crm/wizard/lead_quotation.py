@@ -64,9 +64,10 @@ class LeadQuotation(models.TransientModel):
                 'company_id', 'deliverable_id', 'product_category_id', 'business_mode',
                 'agreement_id', 'po_id', 'payment_term_id', 'validity_date',
                 'scope_of_work', 'user_id', 'core_team_id', 'invoicing_frequency',
-                'risk_ids', 'expected_start_date', 'expected_end_date',
+                'risk_ids', 'expected_start_date', 'expected_end_date', 'revision_number',
             ]
             values = self.existing_quotation_id.read(fields_to_copy)[0]
+            values['revision_number'] += 1
             all_quotation_fields = self.existing_quotation_id._fields
             default_values = dict(
                 ('default_{}'
