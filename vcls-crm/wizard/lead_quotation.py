@@ -101,5 +101,6 @@ class LeadQuotation(models.TransientModel):
             # copy parent_id
             action['context'].update({
                 'default_parent_sale_order_id': self.existing_quotation_id.id,
+                'default_parent_id': self.existing_quotation_id.id,
             })
         return action
