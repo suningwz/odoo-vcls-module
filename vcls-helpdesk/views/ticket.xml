@@ -70,6 +70,7 @@
                                 <field name="description" string="Change Name"/>
                             
                             </page>
+                        </notebook>
                     </sheet>
                     <group>
                         <div class="oe_chatter">
