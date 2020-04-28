@@ -74,6 +74,9 @@ class Ticket(models.Model):
         string='Effort Assumption',
         help='Evaluate taking into account the developement, training and suport, etc.')
     related_effort_description = fields.Text()
+    planned_effort = fields.Integer(
+        default = 0,
+    )
 
     related_risk = fields.Selection([
         (1, 'Minor'),
