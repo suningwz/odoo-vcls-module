@@ -114,7 +114,7 @@
                 <separator/>
                 <filter string="My IA orders" name="ia_orders" domain="[('partner_id.invoice_admin_id','=', uid)]"/>
                 <separator/>
-                <filter string="To Be Invoiced" name="to_be_invoiced" domain="[('invoiceable_amount','&gt;', 0)]"/>
+                <filter string="To Be Invoiced" name="to_be_invoiced" domain="[('invoice_status','in', ['to invoice','upselling'])]"/>
             </xpath>
 
         </field>
