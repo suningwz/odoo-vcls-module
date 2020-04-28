@@ -70,7 +70,19 @@
                             </page>
                             <page string='Change Qualification' name='change_info' attrs="{'invisible':[('ticket_type_id','!=',10)]}">
                                 <group>
-                                    <field name="description" string="Change Name"/>
+                                    <group>
+                                        <field name="description" string="Change Name"/>
+                                        <field name="business_value"/>
+                                        <field name="business_value_description"/>
+                                        <field name="related_effort"/>
+                                        <field name="related_effort_description"/>
+                                        <field name="related_risk"/>
+                                        <field name="related_risk_description"/>
+                                    </group>
+                                    <group>
+                                        <field name="change_score"/>
+                                        <field name="approval_type"/>
+                                    </group>
                                 </group>
                             </page>
                         </notebook>
