@@ -68,7 +68,7 @@
                                     <field name="resolution" attrs="{'invisible': [('access_level', 'not in', ['support'])]}"/>
                                 </group>
                             </page>
-                            <page string='Change Qualification' name='change_info' attrs="{'invisible':[('ticket_type_id.name','!=','Change Request')]}">
+                            <page string='Change Qualification' name='change_info' attrs="{'invisible':[('ticket_type_id','!=',10)]}">
                                 <group>
                                     <field name="description" string="Change Name"/>
                                 </group>
