@@ -588,13 +588,13 @@ class Leads(models.Model):
         _logger.info("Build opp name {} {}".format(reference,name))
         #try:
             #we assume the pipe '|' to be the separator of ref and name
-        parts = name.split(' | ')
-        _logger.info("parts {}".format(parts))
+        parts = name.split('| ')
+        """_logger.info("parts {}".format(parts))
         if parts == name: #delimiter not found
             name_without_ref = name
-        else:
-            parts = parts.reverse()
-            name_without_ref = parts[0]
+        else:"""
+        parts.reverse()
+        name_without_ref = parts[0]
 
         if reference and name_without_ref:
             return "{} | {}".format(reference,name_without_ref)
