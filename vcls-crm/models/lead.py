@@ -589,7 +589,7 @@ class Leads(models.Model):
         #try:
             #we assume the pipe '|' to be the separator of ref and name
         parts = name.split(' | ')
-        _logger.info("parts".format(parts))
+        _logger.info("parts {}".format(parts))
         if parts == name: #delimiter not found
             name_without_ref = name
         else:
