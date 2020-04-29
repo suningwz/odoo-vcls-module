@@ -53,14 +53,14 @@ class LeadQuotation(models.TransientModel):
         }
 
         action['context'] = additional_context
-        _logger.info("OPP to QUOTE action context {}".format(action['context']))
+        
         if self.quotation_type == 'new':
             return action
         if self.quotation_type in ('budget_extension', 'scope_extension') and self.existing_quotation_id:
             # copy the quotation content
             fields_to_copy = [
-                'pricelist_id', 'currency_id', 'note', 'team_id',
-                'tag_ids', 'active', 'fiscal_position_id', 'risk_score', 'program_id', #'opportunity_id',
+                'pricelist_id', 'currency_id', 'note', 'team_id',#'tag_ids',
+                'active', 'fiscal_position_id', 'risk_score', 'program_id', #'opportunity_id',
                 'company_id', 'deliverable_id', 'product_category_id', 'business_mode',
                 'agreement_id', 'po_id', 'payment_term_id', 'validity_date',
                 'scope_of_work', 'user_id', 'core_team_id', 'invoicing_frequency',
@@ -103,4 +103,5 @@ class LeadQuotation(models.TransientModel):
                 'default_parent_sale_order_id': self.existing_quotation_id.id,
                 #'default_parent_id': self.existing_quotation_id.id,
             })
+            _logger.info("OPP to QUOTE action context {}".format(action['context']))
         return action
