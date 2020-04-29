@@ -127,6 +127,10 @@
                     context="{'search_default_group_category':1,'search_default_group_info':1,'tree_view_ref':'vcls-crm.product_tree_view','partner_id': parent.partner_id,'quantity': product_uom_qty,'pricelist': parent.pricelist_id,'uom':product_uom,'company_id': parent.company_id,'default_lst_price': price_unit,'default_description_sale': name,'business_mode':parent.business_mode,'business_line':parent.product_category_id,'deliverable_id':parent.deliverable_id }"/>
                 </xpath>
 
+                <xpath expr="//tree//field[@name='price_unit']" position="attributes">
+                    <attribute name="attrs">"{}"</attribute>
+                </xpath>
+
                 <xpath expr="//page/field[@name='sale_order_option_ids']/.." position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
