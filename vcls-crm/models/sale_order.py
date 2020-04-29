@@ -150,7 +150,7 @@ class SaleOrder(models.Model):
 
     @api.model
     def create(self, vals):
-        _logger.info("SO CREATE: {}".format(vals))
+        #_logger.info("SO CREATE: {}".format(vals))
         if self.env.user.context_data_integration:
             _logger.info("SO CREATE: {}".format(vals))
         # if we force the creation of a quotation with an exiting internal ref (e.g. during migration)
