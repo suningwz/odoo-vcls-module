@@ -128,7 +128,7 @@
                 </xpath>
 
                 <xpath expr="//tree//field[@name='price_unit']" position="attributes">
-                    <attribute name="attrs">"{}"</attribute>
+                    <attribute name="attrs">{}</attribute>
                 </xpath>
 
                 <xpath expr="//page/field[@name='sale_order_option_ids']/.." position="attributes">
