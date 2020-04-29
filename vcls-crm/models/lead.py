@@ -589,14 +589,18 @@ class Leads(models.Model):
         try:
             #we assume the pipe '|' to be the separator of ref and name
             parts = name.split(' | ')
-            name_without_ref = parts.reverse()[0]
-            if reference and name:
-                return "{} | {}".format(reference,name)
-            elif reference and not name:
+            if parts == name: #delimiter not found
+                name_without_ref = name
+            else:
+                name_without_ref = parts.reverse()[0]
+
+            if reference and name_without_ref:
+                return "{} | {}".format(reference,name_without_ref)
+            elif reference and not name_without_ref:
                 return reference
             else:
-                return name
-                
+                return name_without_ref
+
             """#test if the name already contains the ref
             offset = name.upper().find(reference.upper())
             if offset == -1 and reference:
