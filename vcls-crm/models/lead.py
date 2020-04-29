@@ -587,7 +587,17 @@ class Leads(models.Model):
     def build_opp_name(self,reference=False,name=False):
         _logger.info("Build opp name {} {}".format(reference,name))
         try:
-            #if the name already contains the ref
+            #we assume the pipe '|' to be the separator of ref and name
+            parts = name.split(' | ')
+            name_without_ref = parts.reverse()[0]
+            if reference and name:
+                return "{} | {}".format(reference,name)
+            elif reference and not name:
+                return reference
+            else:
+                return name
+                
+            """#test if the name already contains the ref
             offset = name.upper().find(reference.upper())
             if offset == -1 and reference:
                 if len(name)>0:
@@ -595,16 +605,16 @@ class Leads(models.Model):
                     ref_without_nb = reference.split('-')[0]
                     offset_old_ref = name.upper().find(ref_without_nb)
                     if offset_old_ref == -1 and reference:
-                        return "{} | {}".format(reference,name)
+                    return "{} | {}".format(reference,name)
                     else:  # looking for any reference to avoid duplicate
                         return "{} {}".format(reference, name_without_ref)
                 else:
                     return reference
             else:
-                return name
+                return name"""
 
         except:
-            _logger.info("Unable to extract ref from opp name {}".format(name))
+            #_logger.info("Unable to extract ref from opp name {}".format(name))
             return name
 
 
