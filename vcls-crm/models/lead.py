@@ -585,6 +585,7 @@ class Leads(models.Model):
             return False
     
     def build_opp_name(self,reference=False,name=False):
+        _logger.info("Build opp name {} {}".format(reference,name))
         try:
             #if the name already contains the ref
             offset = name.upper().find(reference.upper())
@@ -603,7 +604,7 @@ class Leads(models.Model):
                 return name
 
         except:
-            #_logger.info("Unable to extract ref from opp name {}".format(name))
+            _logger.info("Unable to extract ref from opp name {}".format(name))
             return name
 
 

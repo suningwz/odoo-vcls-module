@@ -99,6 +99,7 @@
                             <field name="user_id" string="Assigned To"/>
                             <field name="partner_id" string="Requested By"/>
                             <field name="stage_id"/>
+                            <field name="planned_effort"/>
                         </tree>
                         </field>
 
