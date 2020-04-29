@@ -589,10 +589,6 @@ class Leads(models.Model):
         #try:
             #we assume the pipe '|' to be the separator of ref and name
         parts = name.split('| ')
-        """_logger.info("parts {}".format(parts))
-        if parts == name: #delimiter not found
-            name_without_ref = name
-        else:"""
         parts.reverse()
         name_without_ref = parts[0]
 
@@ -602,26 +598,6 @@ class Leads(models.Model):
             return reference
         else:
             return name_without_ref
-
-        """#test if the name already contains the ref
-        offset = name.upper().find(reference.upper())
-        if offset == -1 and reference:
-            if len(name)>0:
-                name_without_ref = name.split('-')[1].split(None, 1)[1]
-                ref_without_nb = reference.split('-')[0]
-                offset_old_ref = name.upper().find(ref_without_nb)
-                if offset_old_ref == -1 and reference:
-                return "{} | {}".format(reference,name)
-                else:  # looking for any reference to avoid duplicate
-                    return "{} {}".format(reference, name_without_ref)
-            else:
-                return reference
-        else:
-            return name"""
-
-        """except:
-            _logger.info("Unable to extract ref from opp name {}".format(name))
-            return name"""
 
 
     @api.multi
