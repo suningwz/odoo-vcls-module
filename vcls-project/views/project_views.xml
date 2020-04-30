@@ -11,7 +11,7 @@
                 <form string="Project" create="false">
                     <header>
                         <button name="action_raise_new_invoice" string="Raise a new Invoice" type="object"
-                                class="oe_highlight oe_read_only"/>
+                                class="oe_highlight oe_read_only" invisible="1"/>
                         <button name="action_raise_new_risk" string="Raise a new Risk" type="object"
                                 class="oe_highlight oe_read_only"/>
                     </header>

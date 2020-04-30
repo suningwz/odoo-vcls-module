@@ -22,6 +22,11 @@ class ProjectTask(models.Model):
         string='Effort Assumption',
     )"""
 
+    ticket_ids = fields.One2many(
+        'helpdesk.ticket',
+        'task_id',
+        )
+
     task_type = fields.Selection([
         ('gen', 'Generic'),
         ('dev.vers', 'Development Version'),
