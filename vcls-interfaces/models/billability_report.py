@@ -13,7 +13,7 @@ class BillabilityReport(models.Model):
     active = fields.Boolean(string='Active', default=True)
     employee_id = fields.Many2one('hr.employee', string="Employee", readonly=True)
     company = fields.Char(readonly=True)
-    employee_name = fields.Char(related='employee_id.name', string="Employee Name", readonly=True)
+    employee_name = fields.Char(related='employee_id.name', string="Employee Name", readonly=True, store=True)
     email = fields.Char(related='employee_id.work_email', string="Email", readonly=True)
     Office = fields.Many2one(related='employee_id.office_id', string="Office", readonly=True)
     employee_start_date = fields.Date(related='employee_id.employee_start_date', string="Employee Start Date", readonly=True)
@@ -50,6 +50,10 @@ class BillabilityReport(models.Model):
     valued_billable_hours = fields.Float(readonly=True)
     non_billable_hours = fields.Float(readonly=True)
     valued_non_billable_hours = fields.Float(readonly=True)
+    billability_percent = fields.Float(readonly=True, digits = (12,2), store=True, group_operator="avg")
+    non_billability_percent = fields.Float(readonly=True, digits = (12,2), store=True, group_operator="avg")
+    total_time_coded = fields.Float(string='Time coded [h]', readonly=True)
+    total_time_coded_percent = fields.Float(string='coding ratio [%]', readonly=True, group_operator="avg")
 
     @api.multi
     @api.depends('employee_id.name', 'week_number', 'year')
@@ -88,19 +92,25 @@ class BillabilityReport(models.Model):
                 week_data_line['active'] = True
                 week_data_line['start_date'] = str(monday_date)
                 week_data_line['end_date'] = str(sunday_date)
-                billable_time_sheets = time_sheet.search([
-                    ('project_id', '!=', False), ('employee_id', '!=', 'False'),
-                    ('date', '>=', monday_date), ('date', '<=', sunday_date),
-                ])
-                non_billable_time_sheets = time_sheet.search([
-                    ('project_id', '=', False), ('employee_id', '!=', 'False'),
-                    ('date', '>=', monday_date), ('date', '<=', sunday_date),
-                ])
-                week_data_line['billable_hours'] = sum(billable_time_sheets.mapped('unit_amount'))
-                week_data_line['valued_billable_hours'] = sum(billable_time_sheets.mapped('unit_amount_rounded'))
-                week_data_line['non_billable_hours'] = sum(non_billable_time_sheets.mapped('unit_amount'))
-                week_data_line['valued_non_billable_hours'] = sum(
-                    non_billable_time_sheets.mapped('unit_amount_rounded'))
+                week_data_line['billable_hours'] = 0
+                week_data_line['non_billable_hours'] = 0
+                emp_id = int(week_data_line['Employee Internal ID'])
+                #this is where the calculations happen
+                week_data_line['billable_hours'] = sum(time_sheet.search([('employee_id', '=', emp_id),('date', '>=', monday_date), ('date', '<=', sunday_date), ('billability', '=', 'billable')]).mapped('unit_amount'))
+                week_data_line['non_billable_hours'] = sum(time_sheet.search([('employee_id', '=', emp_id),('date', '>=', monday_date), ('date', '<=', sunday_date), ('billability', '=', 'non_billable')]).mapped('unit_amount'))
+                week_data_line['valued_non_billable_hours'] = sum(time_sheet.search([('employee_id', '=', emp_id),('date', '>=', monday_date), ('date', '<=', sunday_date), ('billability', '=', 'non_billable')]).mapped('unit_amount_rounded'))
+                week_data_line['valued_billable_hours'] = sum(time_sheet.search([('employee_id', '=', emp_id),('date', '>=', monday_date), ('date', '<=', sunday_date), ('billability', '=', 'billable')]).mapped('unit_amount_rounded'))
+                week_data_line['total_time_coded'] = week_data_line['billable_hours'] + week_data_line['non_billable_hours']
+                #to avoid division by 0 if there is no capacity
+                if week_data_line['Effective Capacity [h]'] == 0:
+                    week_data_line['billability_percent'] = None
+                    week_data_line['non_billability_percent'] = None
+                    week_data_line['total_time_coded_percent'] = None
+                    continue
+                #calculate percentages from data
+                week_data_line['billability_percent'] = week_data_line['valued_billable_hours'] / week_data_line['Effective Capacity [h]'] * 100
+                week_data_line['non_billability_percent'] = week_data_line['valued_non_billable_hours'] / week_data_line['Effective Capacity [h]'] * 100
+                week_data_line['total_time_coded_percent'] = week_data_line['total_time_coded'] / week_data_line['Effective Capacity [h]'] * 100
 
             data += week_data
         field_mapping = self._get_field_mapping()
@@ -148,4 +158,8 @@ class BillabilityReport(models.Model):
             'valued_billable_hours': 'valued_billable_hours',
             'non_billable_hours': 'non_billable_hours',
             'valued_non_billable_hours': 'valued_non_billable_hours',
+            'billability_percent' : 'billability_percent',
+            'non_billability_percent' : 'non_billability_percent',
+            'total_time_coded' : 'total_time_coded',
+            'total_time_coded_percent' : 'total_time_coded_percent',
         }
