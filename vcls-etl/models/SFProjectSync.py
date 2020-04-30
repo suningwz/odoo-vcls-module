@@ -173,16 +173,18 @@ class SFProjectSync(models.Model):
                 'numbercall': 1,
             })
         
+        return launch_ts
+        
         
     
     @api.model
     def migrate_timesheets_ping(self,active=True):
         instance = self.getSFInstance()
-        projects = self.search([('migration_status','=','structure')]).sorted(key=lambda r: r.create_date)
+        projects = self.search([('migration_status','in',['structure','ts'])]).sorted(key=lambda r: r.create_date)
         if projects:
             _logger.info("PROJECT MIGRATION | Timesheets for {}".format(projects[0].project_sfname))
             projects[0].process_timesheets(instance)
-            projects = self.search([('migration_status','=','structure')]).sorted(key=lambda r: r.create_date)
+            projects = self.search([('migration_status','in',['structure','ts'])]).sorted(key=lambda r: r.create_date)
         
         if projects: #still timesheets to migrate, launch the pong version
             cron = self.env.ref('vcls-etl.cron_project_timesheets_pong')
@@ -191,6 +193,7 @@ class SFProjectSync(models.Model):
                 'nextcall': datetime.now() + timedelta(seconds=3),
                 'numbercall': 1,
             })
+            return True
         
         else:
             #we call back the structure migration job to process remaining projects
@@ -200,6 +203,7 @@ class SFProjectSync(models.Model):
                 'nextcall': datetime.now() + timedelta(seconds=3),
                 'numbercall': 1,
             })
+            return False
     
     @api.model
     def migrate_timesheets_pong(self,active=True):
@@ -217,6 +221,7 @@ class SFProjectSync(models.Model):
                 'nextcall': datetime.now() + timedelta(seconds=3),
                 'numbercall': 1,
             })
+            return True
         
         else:
             #we call back the structure migration job to process remining projects
@@ -226,6 +231,7 @@ class SFProjectSync(models.Model):
                 'nextcall': datetime.now() + timedelta(seconds=3),
                 'numbercall': 1,
             })
+            return False
     
     
     
