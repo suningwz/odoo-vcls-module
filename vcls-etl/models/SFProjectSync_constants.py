@@ -3,6 +3,7 @@
 
 ELEMENTS_INFO= [
     {'sf_id':'a3Q3A0000008kk2','name':'T&M | Consulting Work','type':'service','mode':'tm'},
+    {'sf_id':'a3Q0Y000000Lnma','name':'T&M | Project Advisors','type':'service','mode':'tm'},
 
     {'sf_id':'a3Q0Y000000LqGi','name':'Generic | Consulting Work Monthly Fees','type':'subscription','mode':'fixed_price'},
     {'sf_id':'a3Q3A0000008kjy','name':'Fixed Price | Consulting Work','type':'service','mode':'fixed_price'},

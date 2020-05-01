@@ -125,7 +125,7 @@ class SFProjectSync(models.Model):
                     if timesheets:
                         invoiced += sum(timesheets.mapped(lambda t: t.unit_amount_rounded*t.so_line_unit_price))
 
-            if invoiced<project.sf_invoiced_amount:
+            if invoiced<project.sf_invoiced_amount and lines:
                 _logger.info("Historical line to add with {}".format(project.sf_invoiced_amount-invoiced))
                 vals = {
                     'product_id': self.env.ref('vcls-etl.product_historical_balance').id,
