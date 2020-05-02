@@ -328,11 +328,12 @@ class SFProjectSync(models.Model):
         
         for assignment in assignment_data:
             a_ts = list(filter(lambda a: a['KimbleOne__ActivityAssignment__c']==assignment['Id'],e_ts))
-            if not a_ts:
+            if not a_ts or (not assignment['KimbleOne__ActivityRole__c']) :
+                _logger.info("MIGRATION WARNING: No Timesheets or No Role For {}".format(assignment['KimbleOne__ActivityRole__c']))
                 continue
             #assignment level values
             product_template = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
-            _logger.info("ROLE PROBLEM? {}".format(assignment['KimbleOne__ActivityRole__c']))
+            
             hourly_rate = assignment['KimbleOne__InvoicingCurrencyForecastRevenueRate__c']
             employee = self.sf_id_to_odoo_rec(assignment['KimbleOne__Resource__c'])
             if not employee: 
