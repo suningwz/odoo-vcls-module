@@ -269,7 +269,7 @@ class SFProjectSync(models.Model):
                         for element_key in keys:
                             project.process_element_ts(element_key,assignment_data,timesheet_data)
                         
-                        if len(timesheet_data)<500: #we got all the TS of the element
+                        if len(timesheet_data)<200: #we got all the TS of the element
                             migrating_line.ts_migrated = True
 
                     else:
@@ -1025,8 +1025,8 @@ class SFProjectSync(models.Model):
     def _get_timesheet_data(self,instance,filter_string = False, max_id=0):
         query = SFProjectSync_constants.SELECT_GET_TIME_ENTRIES
         query += "WHERE KimbleOne__DeliveryElement__c IN " + filter_string
-        #we add a filter and order by to manage batches of 500
-        query += " AND Migration_Index__c>{} ORDER BY Migration_Index__c LIMIT 500".format(max_id)
+        #we add a filter and order by to manage batches of 200
+        query += " AND Migration_Index__c>{} ORDER BY Migration_Index__c LIMIT 200".format(max_id)
         _logger.info(query)
 
         records = instance.getConnection().query_all(query)['records']
