@@ -332,6 +332,7 @@ class SFProjectSync(models.Model):
                 continue
             #assignment level values
             product_template = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
+            _logger.info("ROLE PROBLEM? {}".format(assignment['KimbleOne__ActivityRole__c']))
             hourly_rate = assignment['KimbleOne__InvoicingCurrencyForecastRevenueRate__c']
             employee = self.sf_id_to_odoo_rec(assignment['KimbleOne__Resource__c'])
             if not employee: 
