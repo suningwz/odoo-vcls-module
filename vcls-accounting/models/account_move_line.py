@@ -3,6 +3,11 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError, ValidationError
 
+class Move(models.Model):
+    _inherit = 'account.move'
+
+    period_end = fields.Date()
+
 class AccountAnalyticLine(models.Model):
     _inherit = 'account.move.line'
     
@@ -22,6 +27,10 @@ class AccountAnalyticLine(models.Model):
         'res.currency',
         compute='_compute_base_currency',
         store=True)
+    
+    period_end = fields.Date(
+        related = 'move_id.period_end',
+    )
 
     @api.depends('debit','credit')
     def _compute_base_currency(self):
@@ -63,3 +72,14 @@ class AccountAnalyticLine(models.Model):
             )
             line.convertion_rate = line.company_currency_id.rate
             line.credit_base_currency = credit_conv
+
+class Invoice(models.Model):
+    _inherit = 'account.invoice'
+
+    @api.multi
+    def action_invoice_open(self):
+        result = super(Invoice, self).action_invoice_open()
+         #we edit the date of the moves with the period end account.move.line account.move
+        result.move_id.period_end = result.timesheet_limit_date
+
+        return result
