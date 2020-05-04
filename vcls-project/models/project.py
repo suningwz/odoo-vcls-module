@@ -214,6 +214,7 @@ class Project(models.Model):
 
     def _get_risks(self):
         for project in self:
+            _logger.info("LOOKING for RISKS for project.project,{}".format(project.id))
             project.risk_ids = self.env['risk'].search([
                 ('resource', '=', 'project.project,{}'.format(project.id)),
             ])
