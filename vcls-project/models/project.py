@@ -96,8 +96,8 @@ class Project(models.Model):
 
     risk_ids = fields.Many2many(
         'risk', string='Risk',
-        compute='_get_risks',
-        #store = True,
+        compute='_compute_risk_ids',
+        store = True,
     )
 
     risk_score = fields.Integer(
@@ -212,9 +212,10 @@ class Project(models.Model):
             if project.summary_ids:
                 project.last_summary_date = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0].create_date
 
-    def _get_risks(self):
+    @api.depends('sale_order_id.risk_ids')
+    def _compute_risk_ids(self):
         for project in self:
-            _logger.info("LOOKING for RISKS for project.project,{}".format(project.id))
+            
             project.risk_ids = self.env['risk'].search([
                 ('resource', '=', 'project.project,{}'.format(project.id)),
             ])
