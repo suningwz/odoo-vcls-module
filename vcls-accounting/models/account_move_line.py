@@ -79,7 +79,7 @@ class Invoice(models.Model):
     @api.multi
     def action_invoice_open(self):
         result = super(Invoice, self).action_invoice_open()
-         #we edit the date of the moves with the period end account.move.line account.move
+        #we edit the date of the moves with the period end account.move.line account.move
         self.move_id.period_end = self.timesheet_limit_date
 
         return result
