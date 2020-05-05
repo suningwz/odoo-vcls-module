@@ -87,13 +87,14 @@ class LeadQuotation(models.TransientModel):
                 rate_lines = self.existing_quotation_id.order_line.filtered(lambda l: l.vcls_type=='rate')
                 order_lines_values = rate_lines.read()
                 all_order_line_fields = rate_lines._fields
-                to_copy_lines_fields = ('product_id','name','product_uom_qty','product_uom','price_unit','tax_id')
+                to_copy_lines_fields = ('product_id','name','product_uom_qty','product_uom','price_unit','tax_id','company_id','currency_id')
                 #no_copy_lines_fields = ('project_id', 'task_id', 'analytic_line_ids')
                 for order_line_values in order_lines_values:
                     for field_name, value in order_line_values.items():
                         if field_name not in to_copy_lines_fields:
                             order_line_values[field_name] = False
                             continue
+                        _logger.info("Field {} Value {}".format(field_name,value))
                         if all_order_line_fields[field_name].type == 'many2one':
                             order_line_values[field_name] = value and value[0] or False
                         
