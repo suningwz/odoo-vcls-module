@@ -82,6 +82,11 @@ class SaleOrder(models.Model):
         'Child Quotations'
     )
 
+    link_rates = fields.Boolean(
+        default = True,
+        help="If ticked, rates of the parent quotation will be copied to childs, and linked during the life of the projects",
+    )
+
     # Used as a hack to get the parent_id value
     # as for odoo default_parent_id in context is assigned
     # message.message parent_id

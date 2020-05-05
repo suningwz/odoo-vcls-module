@@ -91,6 +91,7 @@
                             <field name="pricelist_id" groups="vcls_security.group_finance_invoice_administrator,vcls_security.vcls_account_manager" options="{'no_create': True,'no_create_edit':True,'no_open':True}"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="parent_id" options="{'no_create': True}" readonly="1"/>
+                            <field name="link_rates" attrs="{'invisible': [('parent_id', '=', False)]}" readonly="1"/>
                             <field name="opportunity_id" options="{'no_create': True,'no_create_edit': True}" attrs="{'readonly': [('id', '&gt;', 0)]}" domain="[('partner_id','=',partner_id)]"/>
                             <!--<field name="opportunity_id" readonly="1"/>-->
                             <field name="internal_ref" options="{'no_create': True}" attrs="{'readonly': [('id', '&gt;', 0)]}"/>

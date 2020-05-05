@@ -21,6 +21,11 @@ class LeadQuotation(models.TransientModel):
         'sale.order', string="Existing quotation"
     )
 
+    link_rates = fields.Boolean(
+        default = True,
+        help="If ticked, rates of the parent quotation will be copied to childs, and linked during the life of the projects",
+    )
+
     @api.multi
     def confirm(self):
         self.ensure_one()
@@ -77,7 +82,29 @@ class LeadQuotation(models.TransientModel):
             )
             action['context'].update(default_values)
 
-            # copy order lines
+            #we copy rate lines, even for scope extention, in the case of linked_rate
+            if self.quotation_type != 'new' and self.link_rates:
+                rate_lines = self.existing_quotation_id.order_line.filtered(lambda l: l.product_id.vcls_type=='rate')
+                order_lines_values = rate_lines.read()
+                all_order_line_fields = rate_lines._fields
+                no_copy_lines_fields = ('project_id', 'task_id', 'analytic_line_ids')
+                for order_line_values in order_lines_values:
+                    for field_name, value in order_line_values.items():
+                        if field_name in no_copy_lines_fields:
+                            order_line_values[field_name] = False
+                            continue
+                        if all_order_line_fields[field_name].type == 'many2one':
+                            order_line_values[field_name] = value and value[0] or False
+                        
+                order_lines = [(5, 0, 0)] + [
+                    (0, 0, values)
+                    for values in order_lines_values
+                ]
+                action['context'].update({
+                    'default_order_line': order_lines,
+                })
+
+            """# copy order lines
             if self.quotation_type == 'budget_extension':
                 order_lines_values = self.existing_quotation_id.order_line.read()
                 all_order_line_fields = self.existing_quotation_id.order_line._fields
@@ -97,7 +124,7 @@ class LeadQuotation(models.TransientModel):
                 ]
                 action['context'].update({
                     'default_order_line': order_lines,
-                })
+                })"""
             # copy parent_id
             action['context'].update({
                 'default_parent_sale_order_id': self.existing_quotation_id.id,
