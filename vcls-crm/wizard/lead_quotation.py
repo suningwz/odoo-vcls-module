@@ -95,7 +95,6 @@ class LeadQuotation(models.TransientModel):
                             'product_uom_qty':rl.product_uom_qty,
                             'product_uom':rl.product_uom.id,
                             'price_unit':rl.price_unit,
-                            'order_id':self.existing_quotation_id.id,
                         }
                         _logger.info("New Line:{}".format(vals))
                         new_lines.append(vals)

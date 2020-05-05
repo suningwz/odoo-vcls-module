@@ -218,7 +218,7 @@ class SaleOrder(models.Model):
             if expected_start_date:
                 vals['expected_start_date'] = expected_start_date
                 #vals['expected_end_date'] = expected_start_date + relativedelta(months=+3)
-        _logger.info("{}".format(vals))     
+        #_logger.info("{}".format(vals))     
         order = super(SaleOrder, self).create(vals)
         return order
 
@@ -479,6 +479,7 @@ class SaleOrder(models.Model):
     #we override this to treat the case of link_rates
     def action_sync(self):
         super(SaleOrder, self).action_sync()
+        _logger.info("Linking Project Mapping Tables {} {}".format(self.parent_id,self.link_rates))
         if self.parent_id and self.link_rates:
             _logger.info("Linking Project Mapping Tables")
             self.map_match()
