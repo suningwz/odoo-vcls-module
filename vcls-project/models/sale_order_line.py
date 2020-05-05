@@ -21,6 +21,7 @@ class SaleOrderLine(models.Model):
             for child in line.order_id.child_ids.filtered(lambda c: c.link_rates):
                 to_update = child.order_line.filtered(lambda f: f.product_id == line.product_id)
                 if to_update:
+                    _logger.info("Linked Rate Line Updated | {} {} linked to {} {}".format(to_update.name,to_update.order_id.name,line.name,line.order_id.name))
                     to_update.write({
                         'name':line.name,
                         'price_unit':line.price_unit,
@@ -59,3 +60,7 @@ class SaleOrderLine(models.Model):
             for item in forecasts:
                 total += item.resource_hours*item.hourly_rate
             sol.forecasted_amount = total
+
+"""class ProjectSaleLineEmployeeMap(models.Model):
+
+    _inherit = 'project.sale.line.employee.map'"""
