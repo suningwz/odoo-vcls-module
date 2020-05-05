@@ -85,6 +85,33 @@ class LeadQuotation(models.TransientModel):
             #we copy rate lines, even for scope extention, in the case of linked_rate
             if self.quotation_type != 'new' and self.link_rates:
                 rate_lines = self.existing_quotation_id.order_line.filtered(lambda l: l.vcls_type=='rate')
+                if rate_lines:
+                    section = rate_lines[0].section_line_id
+                    new_lines = [{'display_type': 'line_section','name':section.name}]#we initiate with the Section line
+                    for rl in rate_lines:
+                        vals = {
+                            'product_id':rl.product_id.id,
+                            'name':rl.name,
+                            'product_uom_qty':rl.product_uom_qty,
+                            'product_uom':rl.product_uom.id,
+                            'price_unit':rl.price_unit,
+                            'tax_id':rl.tax_id.id,
+                        }
+                        _logger.info("New Line:{}".format(vals))
+                        new_lines.append(vals)
+                    
+                    order_lines = [(5, 0, 0)] + [
+                    (0, 0, values)
+                    for values in new_lines
+                    ]
+                
+                    action['context'].update({
+                        'default_order_line': order_lines,
+                    })
+                    
+
+                """
+                rate_lines = self.existing_quotation_id.order_line.filtered(lambda l: l.vcls_type=='rate')
                 order_lines_values = rate_lines.read()
                 all_order_line_fields = rate_lines._fields
                 to_copy_lines_fields = ('product_id','name','product_uom_qty','product_uom','price_unit','tax_id','company_id','currency_id')
@@ -102,13 +129,12 @@ class LeadQuotation(models.TransientModel):
                     (0, 0, values)
                     for values in order_lines_values
                 ]
-                for vals in order_lines_values:
-                    _logger.info("VALS: {}".format(vals))
+                
                 action['context'].update({
                     'default_order_line': order_lines,
                 })
 
-            """# copy order lines
+            # copy order lines
             if self.quotation_type == 'budget_extension':
                 order_lines_values = self.existing_quotation_id.order_line.read()
                 all_order_line_fields = self.existing_quotation_id.order_line._fields
@@ -134,5 +160,5 @@ class LeadQuotation(models.TransientModel):
                 'default_parent_sale_order_id': self.existing_quotation_id.id,
                 #'default_parent_id': self.existing_quotation_id.id,
             })
-            _logger.info("OPP to QUOTE action context {}".format(action['context']))
+            #_logger.info("OPP to QUOTE action context {}".format(action['context']))
         return action
