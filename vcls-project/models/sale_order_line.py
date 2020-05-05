@@ -14,6 +14,18 @@ class SaleOrderLine(models.Model):
         default = 0.0,
     )
 
+    @api.onchange('name','price_unit')
+    def _onchange_replicate(self):
+        for line in self.filtered(lambda l: l.vcls_type=='rate' and not l.order_id.parent_id): #if this is a rate in a parent quotations
+            #we search for child quotations
+            for child in line.order_id.child_ids.filtered(lambda c: c.link_rates):
+                to_update = child.order_line.filtered(lambda f: f.product_id == line.product_id)
+                if to_update:
+                    to_update.write({
+                        'name':line.name,
+                        'price_unit':line.price_unit,
+                    })
+
     @api.onchange('product_id')
     def _onchange_product(self):
         for line in self:
