@@ -102,6 +102,8 @@ class LeadQuotation(models.TransientModel):
                     (0, 0, values)
                     for values in order_lines_values
                 ]
+                for vals in order_lines_values:
+                    _logger.info("VALS: {}".format(vals))
                 action['context'].update({
                     'default_order_line': order_lines,
                 })
