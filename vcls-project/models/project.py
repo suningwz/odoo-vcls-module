@@ -545,8 +545,8 @@ class Project(models.Model):
         family_project_ids = parent_project_id | parent_project_id.child_id
         return family_project_ids
 
-    @api.onchange('sale_line_employee_ids')
+    """@api.onchange('sale_line_employee_ids')
     def _onchange_sale_line_employee_ids(self):
         for project in self.filtered(lambda p: not p.sale_order_id.parent_id and p.sale_order_id.child_ids): #if we make the change in a parent with childs
             for so in project.sale_order_id.child_ids.filtered(lambda o: o.link_rates): #for linked orders
-                so.map_match()
+                so.map_match()"""
