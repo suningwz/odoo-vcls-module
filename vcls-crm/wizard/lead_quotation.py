@@ -46,7 +46,7 @@ class LeadQuotation(models.TransientModel):
             'default_partner_shipping_id': lead.partner_id.id,
             'default_team_id': lead.team_id.id,
             'default_campaign_id': lead.campaign_id.id,
-            'default_medium_id': lead.medium_id.id,
+            #'default_medium_id': lead.medium_id.id,
             'default_origin': lead.name,
             'default_source_id': lead.source_id.id,
             'default_opportunity_id': lead.id,
@@ -65,7 +65,7 @@ class LeadQuotation(models.TransientModel):
             # copy the quotation content
             fields_to_copy = [
                 'pricelist_id', 'currency_id', 'note', 'team_id',#'tag_ids',
-                'active', 'fiscal_position_id', 'risk_score', 'program_id', #'opportunity_id',
+                'active', 'fiscal_position_id', 'risk_score', 'program_id', 'opportunity_id',
                 'company_id', 'deliverable_id', 'product_category_id', 'business_mode',
                 'agreement_id', 'po_id', 'payment_term_id', 'validity_date',
                 'scope_of_work', 'user_id', 'core_team_id', 'invoicing_frequency',
@@ -95,7 +95,7 @@ class LeadQuotation(models.TransientModel):
                             'product_uom_qty':rl.product_uom_qty,
                             'product_uom':rl.product_uom.id,
                             'price_unit':rl.price_unit,
-                            'order_id':False,
+                            'order_id':self.existing_quotation_id.id,
                         }
                         _logger.info("New Line:{}".format(vals))
                         new_lines.append(vals)
