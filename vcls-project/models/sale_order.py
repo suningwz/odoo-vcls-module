@@ -146,7 +146,7 @@ class SaleOrder(models.Model):
                 _logger.info("map_match | mapping line {} to {}.".format(o_line.name,self.name))
 
                 o_map_lines = self.parent_id.project_id.sale_line_employee_ids.filtered(lambda m: m.sale_line_id==o_line)
-                _logger.info("{} found in {}".format(o_map_lines.mapped('employee_id'),self.parent_id.project_id.sale_line_employee_ids.mapped('employee_id')))
+                _logger.info("{} found in {}".format(o_map_lines.mapped('employee_id.name'),self.parent_id.project_id.sale_line_employee_ids.mapped('employee_id.name')))
                 n_map_lines = self.project_id.sale_line_employee_ids
                 #we loop in the mapping table
                 for map_line in o_map_lines:
