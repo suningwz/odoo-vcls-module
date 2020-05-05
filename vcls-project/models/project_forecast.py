@@ -148,7 +148,10 @@ class ProjectForecast(models.Model):
                 limit=1
             )
             if rate_map:
-                return rate_map.price_unit
+                if rate_map.sale_line_id.product_uom == self.env.ref('uom.product_uom_day'): #if we are in daily
+                    return round(rate_map.price_unit/8,2)
+                else:
+                    return rate_map.price_unit
         return 0.0
 
     # Tis server action is meant to return a window action with proper model and active id

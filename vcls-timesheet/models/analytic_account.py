@@ -297,7 +297,11 @@ class AnalyticLine(models.Model):
                         vals.get('so_line', line.so_line.id))
 
                     if task.sale_line_id != so_line:  # if we map to a rate based product
-                        vals['so_line_unit_price'] = so_line.price_unit
+                        #we check if the line unit is hours or days to ensure the hourly price
+                        if so_line.product_uom == self.env.ref('uom.product_uom_day'): #if we are in daily
+                            vals['so_line_unit_price'] = round((so_line.price_unit/8.0),2)
+                        else:
+                            vals['so_line_unit_price'] = so_line.price_unit
                         vals['rate_id'] = so_line.product_id.product_tmpl_id.id
                         so_update = True
                         orders |= line.so_line.order_id
