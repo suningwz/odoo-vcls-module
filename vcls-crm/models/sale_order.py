@@ -474,3 +474,44 @@ class SaleOrder(models.Model):
             self.update({
                'partner_shipping_id': partner_shipping_id,
             })
+
+    #we override this to treat the case of link_rates
+    def action_sync(self):
+        super(SaleOrder, self).action_sync()
+        if self.parent_id and self.link_rates:
+            _logger.info("Linking Project Mapping Tables")
+            self.map_match()
+    
+    def map_match(self):
+        self.ensure_one()
+        self = self.sudo()
+        #we start from the rates of the parent order
+        for o_line in self.parent_id.order_line.filtered(lambda l: l.vcls_type == 'rate'):
+            n_line = self.order_line.filtered(lambda l: l.vcls_type == 'rate' and l.product_id == o_line.product_id)
+            if not n_line:
+                _logger.info("map_match | impossible to map line {} to {}. No target found".format(o_line.name,self.name))
+            elif len(n_line)>1:
+                _logger.info("map_match | impossible to map line {} to {}. Multiple targets found".format(o_line.name,self.name))
+            else:
+                _logger.info("map_match | mapping line {} to {}.".format(o_line.name,self.name))
+
+                o_map_lines = o_line.project_id.sale_line_employee_ids.filtered(lambda m: m.sale_line_id==o_line)
+                n_map_lines = n_line.project_id.sale_line_employee_ids
+                #we loop in the mapping table
+                for map_line in o_map_lines:
+                    found = n_map_lines.filtered(lambda f:  f.employee_id==map_line.employee_id and f.sale_line_id==n_line)
+                    if found: #the line if already ok
+                        _logger.info("map_match | correct mapping line exists.")
+                    else:
+                        found = n_map_lines.filtered(lambda f:  f.employee_id==map_line.employee_id)
+                        if found: #the employee is mapped, but not on the correct line
+                            found.sale_line_id = n_line
+                            _logger.info("map_match | employee {} re-mapped on correct line.".format(map_line.employee_id.name))
+                        else: #the map doesn't exist, we create it
+                            self.env['project.sale.line.employee.map'].create({
+                                'project_id': n_line.project_id.id,
+                                'sale_line_id': n_line.id,
+                                'employee_id': map_line.employee_id.id,
+                            })
+                            _logger.info("map_match | employee {} map created line.".format(map_line.employee_id.name))
+

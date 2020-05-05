@@ -84,7 +84,7 @@ class LeadQuotation(models.TransientModel):
 
             #we copy rate lines, even for scope extention, in the case of linked_rate
             if self.quotation_type != 'new' and self.link_rates:
-                rate_lines = self.existing_quotation_id.order_line.filtered(lambda l: l.product_id.vcls_type=='rate')
+                rate_lines = self.existing_quotation_id.order_line.filtered(lambda l: l.vcls_type=='rate')
                 order_lines_values = rate_lines.read()
                 all_order_line_fields = rate_lines._fields
                 no_copy_lines_fields = ('project_id', 'task_id', 'analytic_line_ids')
