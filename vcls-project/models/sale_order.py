@@ -145,9 +145,9 @@ class SaleOrder(models.Model):
             else:
                 _logger.info("map_match | mapping line {} to {}.".format(o_line.name,self.name))
 
-                o_map_lines = o_line.project_id.sale_line_employee_ids.filtered(lambda m: m.sale_line_id==o_line)
-                _logger.info("{} found in {}".format(o_map_lines.mapped('employee_id'),o_line.project_id.sale_line_employee_ids.mapped('employee_id')))
-                n_map_lines = n_line.project_id.sale_line_employee_ids
+                o_map_lines = self.parent_id.project_id.sale_line_employee_ids.filtered(lambda m: m.sale_line_id==o_line)
+                _logger.info("{} found in {}".format(o_map_lines.mapped('employee_id'),self.parent_id.project_id.sale_line_employee_ids.mapped('employee_id')))
+                n_map_lines = self.project_id.sale_line_employee_ids
                 #we loop in the mapping table
                 for map_line in o_map_lines:
                     found = n_map_lines.filtered(lambda f:  f.employee_id==map_line.employee_id and f.sale_line_id==n_line)
@@ -160,7 +160,7 @@ class SaleOrder(models.Model):
                             _logger.info("map_match | employee {} re-mapped on correct line.".format(map_line.employee_id.name))
                         else: #the map doesn't exist, we create it
                             self.env['project.sale.line.employee.map'].create({
-                                'project_id': n_line.project_id.id,
+                                'project_id': self.project_id.id,
                                 'sale_line_id': n_line.id,
                                 'employee_id': map_line.employee_id.id,
                             })
