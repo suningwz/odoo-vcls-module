@@ -91,8 +91,8 @@
                             <field name="pricelist_id" groups="vcls_security.group_finance_invoice_administrator,vcls_security.vcls_account_manager" options="{'no_create': True,'no_create_edit':True,'no_open':True}"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="parent_id" options="{'no_create': True}" readonly="1"/>
-                            <!--<field name="opportunity_id" options="{'no_create': True}" required="1" attrs="{'readonly': [('id', '&gt;', 0)]}" domain="[('partner_id','=',partner_id)]"/>-->
-                            <field name="opportunity_id" readonly="1"/>
+                            <field name="opportunity_id" options="{'no_create': True,'no_create_edit': True}" attrs="{'readonly': [('id', '&gt;', 0)]}" domain="[('partner_id','=',partner_id)]"/>
+                            <!--<field name="opportunity_id" readonly="1"/>-->
                             <field name="internal_ref" options="{'no_create': True}" attrs="{'readonly': [('id', '&gt;', 0)]}"/>
                             <field name="parent_sale_order_id" invisible="1"/>
                             <field name="project_id" options="{'no_create': True}" string="Linked Project" invisible="1"/>
@@ -108,7 +108,7 @@
                         </group>
                         <group string="Fine Filters (for specific line search)" invisible="1">
                             <field name="business_mode" widget="radio" string="3. Modify to focus on specific types"/>
-                            <field name="deliverable_id" domain="[('product_category_id','=',product_category_id)]" attrs="{'required': [('catalog_details', '=', True),('catalog_mode', '=', 'template')]}"/>
+                            <field name="deliverable_id" domain="[('product_category_id','=',product_category_id)]"/>
                         </group>
                         <!--<group string="Fine Filters (for specific line search)" attrs="{'invisible': [('catalog_details', '=', False)]}">
                             <field name="business_mode" widget="radio" string="3. Modify to focus on specific types"/>
@@ -125,6 +125,10 @@
                 <xpath expr="//field[@name='order_line']//tree/field[@name='product_id']" position="replace">
                     <field name="product_id" options="{'no_create':True,'no_create_edit':True}" attrs="{'readonly': [('product_updatable', '=', False)],'required': [('display_type', '=', False)],}" force_save="1"
                     context="{'search_default_group_category':1,'search_default_group_info':1,'tree_view_ref':'vcls-crm.product_tree_view','partner_id': parent.partner_id,'quantity': product_uom_qty,'pricelist': parent.pricelist_id,'uom':product_uom,'company_id': parent.company_id,'default_lst_price': price_unit,'default_description_sale': name,'business_mode':parent.business_mode,'business_line':parent.product_category_id,'deliverable_id':parent.deliverable_id }"/>
+                </xpath>
+
+                <xpath expr="//tree//field[@name='price_unit']" position="attributes">
+                    <attribute name="attrs">{}</attribute>
                 </xpath>
 
                 <xpath expr="//page/field[@name='sale_order_option_ids']/.." position="attributes">

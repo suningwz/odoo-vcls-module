@@ -373,11 +373,11 @@ class ResPartner(models.Model):
 
         if vals.get('email',False):
             # we search for existing partners with the same email, but we authorize the creation of a company AND an individual with the same email
-            existing = self.env['res.partner'].search([('email','=ilike',vals.get('email'))])
+            existing = self.env['res.partner'].search([('email','=ilike',vals.get('email'))],limit=1)
             #_logger.info("email {} existing {} all vals {}".format(vals.get('email'),existing.mapped('name'),vals))
             if existing and not '@vcls.com' in vals['email']:
                 if vals.get('is_company') == existing.is_company:
-                    raise UserError("Duplicates {}".format(existing.mapped('email')))
+                    raise UserError("We already found a entry with the same email {}.".format(existing.mapped('email')))
             
         new_contact = super(ResPartner, self).create(vals)
         if new_contact.type != 'contact':

@@ -125,7 +125,7 @@ class SFProjectSync(models.Model):
                     if timesheets:
                         invoiced += sum(timesheets.mapped(lambda t: t.unit_amount_rounded*t.so_line_unit_price))
 
-            if invoiced<project.sf_invoiced_amount:
+            if invoiced<project.sf_invoiced_amount and lines:
                 _logger.info("Historical line to add with {}".format(project.sf_invoiced_amount-invoiced))
                 vals = {
                     'product_id': self.env.ref('vcls-etl.product_historical_balance').id,
@@ -146,7 +146,7 @@ class SFProjectSync(models.Model):
 
     
     @api.model
-    def migrate_structure(self):
+    def migrate_structure(self,active=True):
         #we promote timesheet migrations of ongoing projects
         #If timesheets to migrate, we launch the CRON
         launch_ts = False
@@ -168,41 +168,45 @@ class SFProjectSync(models.Model):
             _logger.info("Timesheet Migration Callback!")
             cron = self.env.ref('vcls-etl.cron_project_timesheets_ping')
             cron.write({
-                'active': True,
+                'active': active,
                 'nextcall': datetime.now() + timedelta(seconds=3),
                 'numbercall': 1,
             })
+        
+        return launch_ts
         
         
     
     @api.model
-    def migrate_timesheets_ping(self):
+    def migrate_timesheets_ping(self,active=True):
         instance = self.getSFInstance()
-        projects = self.search([('migration_status','=','structure')]).sorted(key=lambda r: r.create_date)
+        projects = self.search([('migration_status','in',['structure','ts'])]).sorted(key=lambda r: r.create_date)
         if projects:
             _logger.info("PROJECT MIGRATION | Timesheets for {}".format(projects[0].project_sfname))
             projects[0].process_timesheets(instance)
-            projects = self.search([('migration_status','=','structure')]).sorted(key=lambda r: r.create_date)
+            projects = self.search([('migration_status','in',['structure','ts'])]).sorted(key=lambda r: r.create_date)
         
         if projects: #still timesheets to migrate, launch the pong version
             cron = self.env.ref('vcls-etl.cron_project_timesheets_pong')
             cron.write({
-                'active': True,
+                'active': active,
                 'nextcall': datetime.now() + timedelta(seconds=3),
                 'numbercall': 1,
             })
+            return True
         
         else:
             #we call back the structure migration job to process remaining projects
             cron = self.env.ref('vcls-etl.cron_project_structure')
             cron.write({
-                'active': True,
+                'active': active,
                 'nextcall': datetime.now() + timedelta(seconds=3),
                 'numbercall': 1,
             })
+            return False
     
     @api.model
-    def migrate_timesheets_pong(self):
+    def migrate_timesheets_pong(self,active=True):
         instance = self.getSFInstance()
         projects = self.search([('migration_status','in',['structure','ts'])]).sorted(key=lambda r: r.create_date)
         if projects:
@@ -213,19 +217,21 @@ class SFProjectSync(models.Model):
         if projects: #still timesheets to migrate, launch the ping version
             cron = self.env.ref('vcls-etl.cron_project_timesheets_ping')
             cron.write({
-                'active': True,
+                'active': active,
                 'nextcall': datetime.now() + timedelta(seconds=3),
                 'numbercall': 1,
             })
+            return True
         
         else:
             #we call back the structure migration job to process remining projects
             cron = self.env.ref('vcls-etl.cron_project_structure')
             cron.write({
-                'active': True,
+                'active': active,
                 'nextcall': datetime.now() + timedelta(seconds=3),
                 'numbercall': 1,
             })
+            return False
     
     
     
@@ -263,7 +269,7 @@ class SFProjectSync(models.Model):
                         for element_key in keys:
                             project.process_element_ts(element_key,assignment_data,timesheet_data)
                         
-                        if len(timesheet_data)<500: #we got all the TS of the element
+                        if len(timesheet_data)<200: #we got all the TS of the element
                             migrating_line.ts_migrated = True
 
                     else:
@@ -322,10 +328,12 @@ class SFProjectSync(models.Model):
         
         for assignment in assignment_data:
             a_ts = list(filter(lambda a: a['KimbleOne__ActivityAssignment__c']==assignment['Id'],e_ts))
-            if not a_ts:
+            if not a_ts or (not assignment['KimbleOne__ActivityRole__c']) :
+                _logger.info("MIGRATION WARNING: No Timesheets or No Role For {}".format(assignment['KimbleOne__ActivityRole__c']))
                 continue
             #assignment level values
             product_template = self.sf_id_to_odoo_rec(assignment['KimbleOne__ActivityRole__c'])
+            
             hourly_rate = assignment['KimbleOne__InvoicingCurrencyForecastRevenueRate__c']
             employee = self.sf_id_to_odoo_rec(assignment['KimbleOne__Resource__c'])
             if not employee: 
@@ -1017,8 +1025,8 @@ class SFProjectSync(models.Model):
     def _get_timesheet_data(self,instance,filter_string = False, max_id=0):
         query = SFProjectSync_constants.SELECT_GET_TIME_ENTRIES
         query += "WHERE KimbleOne__DeliveryElement__c IN " + filter_string
-        #we add a filter and order by to manage batches of 500
-        query += " AND Migration_Index__c>{} ORDER BY Migration_Index__c LIMIT 500".format(max_id)
+        #we add a filter and order by to manage batches of 200
+        query += " AND Migration_Index__c>{} ORDER BY Migration_Index__c LIMIT 200".format(max_id)
         _logger.info(query)
 
         records = instance.getConnection().query_all(query)['records']

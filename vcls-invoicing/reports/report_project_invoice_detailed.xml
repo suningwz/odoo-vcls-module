@@ -92,9 +92,8 @@
                     <table class="table table-sm o_main_table" name="invoice_detailed_table">
                     <t t-foreach="list(rate_data.keys())" t-as="task_id">
                         <t t-set="rates_dict" t-value="rate_data[task_id]"/>
-                        <thead>
-                        <tr t-if="not task_id_first">
-                            <!-- an inter table spacing (between a task and another one)-->
+                        <tbody>
+                       <tr t-if="not task_id_first">
                             <th colspan="4"/>
                         </tr>
                         <tr><th colspan="4">
@@ -106,8 +105,6 @@
                             <th class="text-right">Price</th>
                             <th class="text-right">Total</th>
                         </tr>
-                        </thead>
-                        <tbody>
                         <t t-foreach="list(rates_dict.keys())" t-as="rate_sale_line_id">
                         <tr>
                             <t t-set="rate_values" t-value="rates_dict[rate_sale_line_id]"/>
@@ -140,7 +137,6 @@
                         </div>
                     </div>
                     </div>
-
 
                     <div t-if="fixed_price_data">
                     <h5 class="mb8 mt16">Consulting Services | Fixed Price</h5>
@@ -210,7 +206,6 @@
                         </div>
                     </div>
                     </div>
-
 
                     <div t-if="expenses_and_communication_data">
                     <h5 class="mb8 mt16">Expense</h5>
