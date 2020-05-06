@@ -66,8 +66,13 @@ class SaleSubscription(models.Model):
                 #we find related so_lines
                 so_lines = self.env['sale.order.line'].search([('subscription_id','=',sub.id)])
                 _logger.info("SUB | Found SO lines {} related to {}".format(so_lines.mapped('name'),sub.display_name))
-                #for line in sub.recurring_invoice_line_ids:
+                for line in sub.recurring_invoice_line_ids:
                     #we get the related so_line
+                    so_line = so_lines.filtered(lambda s: s.product_id == line.product_id)
+                    if so_line:
+                        _logger.info("SUB | Adding {} on {} for {} in {}".format(line.quantity,so_line.qty_delivered,so_line.name,so_line.order_id.name))
+                        so_line.qty_delivered += line.quantity
+                    
 
             """next_date = subscription.recurring_next_date or current_date
             periods = {'daily': 'days', 'weekly': 'weeks', 'monthly': 'months', 'yearly': 'years'}
