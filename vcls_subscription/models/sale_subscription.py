@@ -50,7 +50,7 @@ class SaleSubscription(models.Model):
         if len(self) > 0:
             subscriptions = self
         else:
-            domain = [('recurring_next_date', '<=', current_date),
+            domain = [('recurring_next_date', '<=', current_date),('recurring_next_date', '>', 'date_start'),
                       '|', ('in_progress', '=', True), ('to_renew', '=', True)]
             subscriptions = self.search(domain)
 
