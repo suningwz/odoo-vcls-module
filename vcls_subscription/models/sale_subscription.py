@@ -34,9 +34,13 @@ class SaleSubscription(models.Model):
     @api.depends('recurring_invoice_line_ids')
     def _compute_management_mode(self):
         for sub in self:
-            temp = sub.recurring_invoice_line_ids.mapped('product_id.service_policy')
-            _logger.info("SUB | {}  {}".format(sub.name,temp))
-            sub.management_mode='deliver'
+            product_policies = sub.recurring_invoice_line_ids.mapped('product_id.service_policy')
+            if list(set(product_policies)) == ['delivered_manual']: #if all products are in delivered_manual policy
+                sub.management_mode='deliver'
+            else:
+                sub.management_mode='std'
+            
+            _logger.info("SUB | {} | {} | {}".format(sub.display_name,list(set(product_policies)),sub.management_mode))
 
     
 class SaleSubscriptionLine(models.Model):
