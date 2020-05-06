@@ -1,0 +1,13 @@
+{
+    'name': 'vcls_subscription',
+    'category': 'vcls-modules',
+    'sequence': 1,
+    'summary': ' ',
+    'depends': [
+        'base',
+    ],
+    'description': "",
+    'data': [
+        'views/views.xml',
+    ],
+}
