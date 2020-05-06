@@ -76,16 +76,9 @@ class SaleSubscription(models.Model):
                             so_line = found
                         _logger.info("SUB | Adding {} on {} for {} in {}".format(line.quantity,so_line.qty_delivered,so_line.name,so_line.order_id.name))
                         so_line.qty_delivered += line.quantity
-                    
 
-            """next_date = subscription.recurring_next_date or current_date
-            periods = {'daily': 'days', 'weekly': 'weeks', 'monthly': 'months', 'yearly': 'years'}
-            invoicing_period = relativedelta(**{periods[subscription.recurring_rule_type]: subscription.recurring_interval})
-            new_date = next_date + invoicing_period
-            subscription.write({'recurring_next_date': new_date.strftime('%Y-%m-%d')})"""
-
-
-"""    
-class SaleSubscriptionLine(models.Model):
-    _inherit = "sale.subscription.line"
-    """
+                next_date = sub.recurring_next_date or current_date
+                periods = {'daily': 'days', 'weekly': 'weeks', 'monthly': 'months', 'yearly': 'years'}
+                invoicing_period = relativedelta(**{periods[sub.recurring_rule_type]: sub.recurring_interval})
+                new_date = next_date + invoicing_period
+                sub.write({'recurring_next_date': new_date.strftime('%Y-%m-%d')})
