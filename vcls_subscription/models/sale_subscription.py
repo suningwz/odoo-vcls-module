@@ -68,8 +68,12 @@ class SaleSubscription(models.Model):
                 _logger.info("SUB | Found SO lines {} related to {}".format(so_lines.mapped('name'),sub.display_name))
                 for line in sub.recurring_invoice_line_ids:
                     #we get the related so_line
-                    so_line = so_lines.filtered(lambda s: s.product_id == line.product_id)
-                    if so_line:
+                    found = so_lines.filtered(lambda s: s.product_id == line.product_id)
+                    if found:
+                        if len(found)>1: #if several lines related to the same product, we try to match the name
+                            so_line = found.filtered(lambda n: n.name == line.name)
+                        else:
+                            so_line = found
                         _logger.info("SUB | Adding {} on {} for {} in {}".format(line.quantity,so_line.qty_delivered,so_line.name,so_line.order_id.name))
                         so_line.qty_delivered += line.quantity
                     
