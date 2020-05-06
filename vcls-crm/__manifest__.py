@@ -15,7 +15,7 @@
 
 
 
-    'version': '1.3.34',
+    'version': '1.3.35',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -40,7 +40,9 @@
         'sale_timesheet',
         'sale_purchase',
         'sale_subscription',
+        'vcls_subscription',
         'vcls_security',
+        
     ],
 
     'data': [

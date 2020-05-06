@@ -42,7 +42,26 @@ class SaleSubscription(models.Model):
             
             _logger.info("SUB | {} | {} | {}".format(sub.display_name,list(set(product_policies)),sub.management_mode))
 
-    
+    @api.multi
+    def _recurring_create_invoice(self, automatic=False):
+        #we initiate the list of subscriptions to be processed before to filter according to the management_mode
+        current_date = datetime.date.today()
+
+        if len(self) > 0:
+            subscriptions = self
+        else:
+            domain = [('recurring_next_date', '<=', current_date),
+                      '|', ('in_progress', '=', True), ('to_renew', '=', True)]
+            subscriptions = self.search(domain)
+
+        std_subs = subscriptions.filtered(lambda s: s.management_mode=='std')
+        _logger.info("SUB | {} standard subscriptions to process.".format(len(std_subs)))
+        super(SaleSubscription,std_subs)._recurring_create_invoice(automatic)
+
+        deliver_subs = subscriptions.filtered(lambda s: s.management_mode=='deliver')
+        _logger.info("SUB | {} deliver subscriptions to process.".format(len(deliver_subs)))
+
+"""    
 class SaleSubscriptionLine(models.Model):
     _inherit = "sale.subscription.line"
-    
+    """
