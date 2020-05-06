@@ -64,7 +64,7 @@ class SaleSubscription(models.Model):
             _logger.info("SUB | {} deliver subscriptions to process.".format(len(deliver_subs)))
             for sub in deliver_subs:
                 #we find related so_lines
-                so_lines = self.env['sale.order.line'].search([('subscription_id','=',sub)])
+                so_lines = self.env['sale.order.line'].search([('subscription_id','=',sub.id)])
                 _logger.info("SUB | Found SO lines {} related to {}".format(so_lines.mapped('name'),sub.display_name))
                 #for line in sub.recurring_invoice_line_ids:
                     #we get the related so_line
