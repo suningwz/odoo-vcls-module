@@ -21,9 +21,24 @@ _logger = logging.getLogger(__name__)
 
 class SaleSubscription(models.Model):
     _inherit = "sale.subscription"
+
+    management_mode = fields.Selection([
+        ('std', 'Standard'),
+        ('deliver', 'Deliver in Source Order'),], 
+        string="Management Mode",
+        store=True,
+        compute = '_compute_management_mode',
+        help="Standard | Use the Odoo way of managing subscriptions.\nDeliver | No invoice is generated, but the quantity is delivered after each period.",
+        )
+
+    @api.depends('recurring_invoice_line_ids')
+    def _compute_management_mode(self):
+        for sub in self:
+            temp = sub.recurring_invoice_line_ids.mapped('product_id.service_policy')
+            _logger.info("SUB | {}  {}".format(sub.name,temp))
+            sub.management_mode='deliver'
+
     
-
-
 class SaleSubscriptionLine(models.Model):
     _inherit = "sale.subscription.line"
     
