@@ -50,16 +50,31 @@ class SaleSubscription(models.Model):
         if len(self) > 0:
             subscriptions = self
         else:
-            domain = [('recurring_next_date', '<=', current_date),('recurring_next_date', '>', 'date_start'),
+            domain = [('recurring_next_date', '<=', current_date),
                       '|', ('in_progress', '=', True), ('to_renew', '=', True)]
             subscriptions = self.search(domain)
 
         std_subs = subscriptions.filtered(lambda s: s.management_mode=='std')
-        _logger.info("SUB | {} standard subscriptions to process.".format(len(std_subs)))
-        super(SaleSubscription,std_subs)._recurring_create_invoice(automatic)
+        if std_subs:
+            _logger.info("SUB | {} standard subscriptions to process.".format(len(std_subs)))
+            super(SaleSubscription,std_subs)._recurring_create_invoice(automatic)
 
         deliver_subs = subscriptions.filtered(lambda s: s.management_mode=='deliver')
-        _logger.info("SUB | {} deliver subscriptions to process.".format(len(deliver_subs)))
+        if deliver_subs:
+            _logger.info("SUB | {} deliver subscriptions to process.".format(len(deliver_subs)))
+            for sub in deliver_subs:
+                #we find related so_lines
+                so_lines = self.env['sale.order.line'].search([('subscription_id','=',sub)])
+                _logger.info("SUB | Found SO lines {} related to {}".format(so_lines.mapped('name'),sub.display_name))
+                #for line in sub.recurring_invoice_line_ids:
+                    #we get the related so_line
+
+            """next_date = subscription.recurring_next_date or current_date
+            periods = {'daily': 'days', 'weekly': 'weeks', 'monthly': 'months', 'yearly': 'years'}
+            invoicing_period = relativedelta(**{periods[subscription.recurring_rule_type]: subscription.recurring_interval})
+            new_date = next_date + invoicing_period
+            subscription.write({'recurring_next_date': new_date.strftime('%Y-%m-%d')})"""
+
 
 """    
 class SaleSubscriptionLine(models.Model):
