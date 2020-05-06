@@ -103,6 +103,7 @@ class salesforceSync(models.Model):
                         else:
                             #grab the related key if in to_process
                             key = to_process.filtered(lambda p: p.externalId == sf_rec['Id'])
+                            _logger.info("ETL |  In Odoo {} In record {}.".format(key.externalId if key else False,sf_rec['Id']))
                             if key:
                                 counter += 1
                                 attributes = translator.translateToOdoo(sf_rec, sync, sfInstance)
