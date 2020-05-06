@@ -34,7 +34,7 @@ class SaleSubscription(models.Model):
     @api.depends('recurring_invoice_line_ids')
     def _compute_management_mode(self):
         for sub in self:
-            product_policies = sub.recurring_invoice_line_ids.mapped('product_id.service_policy')
+            product_policies = sub.recurring_invoice_line_ids.mapped('product_id.product_tmpl_id.service_policy')
             if list(set(product_policies)) == ['delivered_manual']: #if all products are in delivered_manual policy
                 sub.management_mode='deliver'
             else:
