@@ -27,7 +27,6 @@
                         <filter string="External Comment" name="groupby_name" domain="[]" context="{'group_by':'name'}" help="Timesheet by External Comment"/>
                         <filter string="Employee" name="groupby_employee" domain="[]" context="{'group_by':'employee_id'}"/>
                         <filter string="Timesheet Date" name="groupby_date" domain="[]" context="{'group_by':'date'}" help="Timesheet by Date"/>
-                        <filter string="Status" name="groupby_stage" domain="[]" context="{'group_by':'stage_id'}" help="Timesheet by Stage"/>
                     </group>
                 </xpath>
             </field>
