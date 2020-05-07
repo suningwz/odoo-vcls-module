@@ -71,7 +71,7 @@ class Risk(models.Model):
     def _populate_risk_ids(self):
         for risk in self:
             parts = risk.resource.split(',')
-            target = self.env[parts[0]].browse(parts[1])
+            target = self.env[parts[0]].browse(int(parts[1]))
             if target:
                 target._compute_risk_ids()
 
