@@ -83,7 +83,7 @@ class SaleOrder(models.Model):
     )
 
     link_rates = fields.Boolean(
-        default = True,
+        default = False,
         help="If ticked, rates of the parent quotation will be copied to childs, and linked during the life of the projects",
     )
 

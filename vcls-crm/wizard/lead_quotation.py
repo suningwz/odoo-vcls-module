@@ -55,6 +55,7 @@ class LeadQuotation(models.TransientModel):
             'default_product_category_id': lead.product_category_id.id,
             'default_expected_start_date': lead.expected_start_date,
             'lead_quotation_type': self.quotation_type,
+            'default_link_rates': self.link_rates,
         }
 
         action['context'] = additional_context
