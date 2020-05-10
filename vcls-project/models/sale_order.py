@@ -108,7 +108,7 @@ class SaleOrder(models.Model):
 
     def action_sync(self):
         super(SaleOrder, self).action_sync()
-        for order in self.filtered(lambda s:s.parent_id and s.link_rates):
+        for order in self.filtered(lambda s:s.parent_id and s.link_rates and s.project_id):
             _logger.info("Linking Project Mapping Tables")
             order.map_match()
 
