@@ -68,7 +68,23 @@
                 <xpath expr="//button[@name='create_revision']" position="attributes">    
                     <attribute name="invisible">1</attribute>
                 </xpath>
-                
+
+                <xpath expr="//button[@name='create_revision']" position="before">    
+                    <button string="New Extension"
+                        name="%(vcls-crm.lead_quotation_wizard_form_action)d"
+                        type="action" class="oe_highlight"
+                        attrs="{'invisible': ['|',('id',=,False),('parent_id', '!=', False)]}"
+                        context="{'search_default_partner_id': partner_id,
+                                  'default_partner_id': partner_id,
+                                  'default_team_id': team_id,
+                                  'default_existing_quotation_id': id,
+                                  'default_link_rates': True,
+                                  'default_origin': origin,
+                                  'default_quotation_type':'scope_extension',
+                                  }"
+                        groups="vcls_security.vcls_account_manager,sales_team.group_sale_manager"/>
+                </xpath>
+
                 <xpath expr="//group" position="replace">
                     <group>
                         <field name="scope_of_work"/>

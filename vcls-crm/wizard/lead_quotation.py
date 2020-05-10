@@ -35,10 +35,18 @@ class LeadQuotation(models.TransientModel):
         active_model = context.get('active_model', '')
         active_id = context.get('active_id')
         _logger.info("OPP to QUOTE context {}".format(context))
-        if not active_model == 'crm.lead' or not active_id:
+
+        if not active_model in ['crm.lead','sale.order'] or not active_id:
             return
+        else:
+            temp = self.env[active_model].browse(active_id)
+
+        if active_model == 'sale.order':
+            lead = temp.opportunity_id
+        else:
+            lead = temp
         
-        lead = self.env['crm.lead'].browse(active_id)
+        #lead = self.env['crm.lead'].browse(active_id)
         _logger.info("OPP to QUOTE lead {}".format(lead.id))
         additional_context = {
             'search_default_partner_id': lead.partner_id.parent_id.id or lead.partner_id.id,
