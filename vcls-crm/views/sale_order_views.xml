@@ -73,7 +73,7 @@
                     <button string="New Extension"
                         name="%(vcls-crm.lead_quotation_wizard_form_action)d"
                         type="action" class="oe_highlight"
-                        attrs="{'invisible': ['|',('id',=,False),('parent_id', '!=', False)]}"
+                        attrs="{'invisible': [('parent_id', '!=', False)]}"
                         context="{'search_default_partner_id': partner_id,
                                   'default_partner_id': partner_id,
                                   'default_team_id': team_id,
