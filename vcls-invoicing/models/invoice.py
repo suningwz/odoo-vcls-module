@@ -349,6 +349,11 @@ class Invoice(models.Model):
 
             service_sale_line_id = task_id.sale_line_id
             service_section_line_id = service_sale_line_id.section_line_id
+            
+            if rate_sale_line_id.product_uom == self.env.ref('uom.product_uom_day'):
+                unit_of_measure = 'Day(s)'
+            else:
+                unit_of_measure = 'Hour(s)'
             rates_dict = data.setdefault(service_section_line_id, OrderedDict())
             values = rates_dict.setdefault(
                 rate_sale_line_id, {
@@ -356,6 +361,7 @@ class Invoice(models.Model):
                     'price': rate_sale_line_id.price_unit,
                     'currency_id': rate_sale_line_id.currency_id,
                     'uom_id': rate_sale_line_id.product_uom,
+                    'unit_of_measure': unit_of_measure,
                 })
             timesheet_uom_id = timesheet_id.product_uom_id
             qty = timesheet_uom_id._compute_quantity(
@@ -393,6 +399,10 @@ class Invoice(models.Model):
                 task_id = timesheet_id.task_id.parent_id
             else:
                 task_id = timesheet_id.task_id
+            if rate_sale_line_id.product_uom == self.env.ref('uom.product_uom_day'):
+                unit_of_measure = 'Day(s)'
+            else:
+                unit_of_measure = 'Hour(s)'
 
             rates_dict = data.setdefault(task_id, OrderedDict())
             values = rates_dict.setdefault(
@@ -401,6 +411,7 @@ class Invoice(models.Model):
                     'price': rate_sale_line_id.price_unit,
                     'currency_id': rate_sale_line_id.currency_id,
                     'uom_id': rate_sale_line_id.product_uom,
+                    'unit_of_measure': unit_of_measure,
                 })
             timesheet_uom_id = timesheet_id.product_uom_id
             qty = timesheet_uom_id._compute_quantity(

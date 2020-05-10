@@ -82,6 +82,11 @@ class SaleOrder(models.Model):
         'Child Quotations'
     )
 
+    link_rates = fields.Boolean(
+        default = False,
+        help="If ticked, rates of the parent quotation will be copied to childs, and linked during the life of the projects",
+    )
+
     # Used as a hack to get the parent_id value
     # as for odoo default_parent_id in context is assigned
     # message.message parent_id
@@ -150,7 +155,7 @@ class SaleOrder(models.Model):
 
     @api.model
     def create(self, vals):
-        #_logger.info("SO CREATE: {}".format(vals))
+        _logger.info("SO CREATE: {}".format(vals))
         if self.env.user.context_data_integration:
             _logger.info("SO CREATE: {}".format(vals))
         # if we force the creation of a quotation with an exiting internal ref (e.g. during migration)
@@ -177,6 +182,7 @@ class SaleOrder(models.Model):
             if vals.get('parent_sale_order_id') and not vals.get('parent_id'):
                 vals['parent_id'] = vals['parent_sale_order_id']
                 vals.pop('parent_sale_order_id')
+                
 
             if 'parent_id' in vals: #in this case, we are upselling and add a numerical index to the reference of the original quotation
                 parent_id = vals.get('parent_id')
@@ -212,7 +218,7 @@ class SaleOrder(models.Model):
             if expected_start_date:
                 vals['expected_start_date'] = expected_start_date
                 #vals['expected_end_date'] = expected_start_date + relativedelta(months=+3)
-                
+        #_logger.info("{}".format(vals))     
         order = super(SaleOrder, self).create(vals)
         return order
 
@@ -469,3 +475,6 @@ class SaleOrder(models.Model):
             self.update({
                'partner_shipping_id': partner_shipping_id,
             })
+    
+    
+

@@ -14,6 +14,19 @@ class SaleOrderLine(models.Model):
         default = 0.0,
     )
 
+    @api.onchange('name','price_unit')
+    def _onchange_replicate(self):
+        for line in self.filtered(lambda l: l.vcls_type=='rate' and not l.order_id.parent_id): #if this is a rate in a parent quotations
+            #we search for child quotations
+            for child in line.order_id.child_ids.filtered(lambda c: c.link_rates):
+                to_update = child.order_line.filtered(lambda f: f.product_id == line.product_id)
+                if to_update:
+                    _logger.info("Linked Rate Line Updated | {} {} linked to {} {}".format(to_update.name,to_update.order_id.name,line.name,line.order_id.name))
+                    to_update.write({
+                        'name':line.name,
+                        'price_unit':line.price_unit,
+                    })
+
     @api.onchange('product_id')
     def _onchange_product(self):
         for line in self:
@@ -47,3 +60,7 @@ class SaleOrderLine(models.Model):
             for item in forecasts:
                 total += item.resource_hours*item.hourly_rate
             sol.forecasted_amount = total
+
+"""class ProjectSaleLineEmployeeMap(models.Model):
+
+    _inherit = 'project.sale.line.employee.map'"""

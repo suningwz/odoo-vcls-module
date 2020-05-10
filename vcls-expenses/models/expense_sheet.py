@@ -179,11 +179,18 @@ class ExpenseSheet(models.Model):
     """ We override this to ensure a default journal to be properly updated """
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
-        self.address_id = self.employee_id.sudo().address_home_id
-        self.department_id = self.employee_id.department_id
-        #self.user_id = self.employee_id.expense_manager_id or self.employee_id.parent_id.user_id
-        self.journal_id = self.env['account.journal'].search([('type', '=', 'purchase'),('name', '=', 'Expenses'),('company_id', '=', self.employee_id.company_id.id)], limit=1)
-        self.bank_journal_id = self.env['account.journal'].search([('type', 'in', ['cash', 'bank']),('company_id', '=', self.employee_id.company_id.id)], limit=1)
+        self.write(self._get_info_from_employee(self.employee_id))
+
+    def _get_info_from_employee(self,employee_id,vals={}):
+        ''' this function is separated from _onchange_employee so it can be called before you create a sheet to avoid conflicts '''
+        new_vals = {
+            'address_id' : employee_id.address_home_id.id,
+            'department_id' : employee_id.department_id.id,
+            'journal_id' : self.env['account.journal'].search([('type', '=', 'purchase'),('name', '=', 'Expenses'),('company_id', '=', employee_id.company_id.id)], limit=1).id,
+            'bank_journal_id' : self.env['account.journal'].search([('type', 'in', ['cash', 'bank']),('company_id', '=', employee_id.company_id.id)], limit=1).id,
+        }
+        vals.update(new_vals)
+        return vals
 
     @api.multi
     def action_submit_sheet(self):
@@ -194,5 +201,3 @@ class ExpenseSheet(models.Model):
                         'tax_ids': False,
                     })
         return super(ExpenseSheet, self).action_submit_sheet()
-
-
