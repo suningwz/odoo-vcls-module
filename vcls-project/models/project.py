@@ -96,7 +96,7 @@ class Project(models.Model):
 
     risk_ids = fields.Many2many(
         'risk', string='Risk',
-        compute='_get_risks',
+        compute='_compute_risk_ids',
         store = True,
     )
 
@@ -212,8 +212,10 @@ class Project(models.Model):
             if project.summary_ids:
                 project.last_summary_date = project.summary_ids.sorted(lambda s: s.create_date, reverse=True)[0].create_date
 
-    def _get_risks(self):
+    @api.depends('sale_order_id.risk_ids')
+    def _compute_risk_ids(self):
         for project in self:
+            
             project.risk_ids = self.env['risk'].search([
                 ('resource', '=', 'project.project,{}'.format(project.id)),
             ])
@@ -542,3 +544,9 @@ class Project(models.Model):
         parent_project_id = self.parent_id or self
         family_project_ids = parent_project_id | parent_project_id.child_id
         return family_project_ids
+
+    """@api.onchange('sale_line_employee_ids')
+    def _onchange_sale_line_employee_ids(self):
+        for project in self.filtered(lambda p: not p.sale_order_id.parent_id and p.sale_order_id.child_ids): #if we make the change in a parent with childs
+            for so in project.sale_order_id.child_ids.filtered(lambda o: o.link_rates): #for linked orders
+                so.map_match()"""
